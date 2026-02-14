@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { RegisterForm } from "../components/RegisterForm";
+---
+
+<BaseLayout title="Registrace">
+  <div class="max-w-md mx-auto mt-16 p-6">
+    <RegisterForm client:load />
+  </div>
+</BaseLayout>

@@ -1,0 +1,58 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Platforma pro osobní rozvoj, zdraví a duchovní růst" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | Samo Fujera</title>
+  </head>
+  <body class="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
+    <header class="border-b border-[var(--border)]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="/" class="text-xl font-bold text-[var(--primary)]">
+            Samo Fujera
+          </a>
+          <nav class="flex items-center gap-6">
+            <a
+              href="/prihlaseni"
+              class="text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+            >
+              Přihlášení
+            </a>
+            <a
+              href="/registrace"
+              class="text-sm font-medium text-[var(--primary-foreground)] bg-[var(--primary)] hover:bg-[var(--primary)]/90 px-4 py-2 rounded-md transition-colors"
+            >
+              Registrace
+            </a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="border-t border-[var(--border)] mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <p class="text-sm text-[var(--muted-foreground)] text-center">
+          &copy; {new Date().getFullYear()} Samo Fujera. Všechna práva vyhrazena.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

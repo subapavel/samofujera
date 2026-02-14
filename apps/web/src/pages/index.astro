@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Osobní rozvoj, zdraví a duchovní růst">
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--foreground)]">
+      Cesta k&nbsp;lepšímu
+      <span class="text-[var(--primary)]">já</span>
+    </h1>
+    <p class="mt-6 text-lg sm:text-xl text-[var(--muted-foreground)] max-w-2xl mx-auto">
+      Digitální kurzy, členství a produkty pro váš osobní rozvoj, zdraví
+      a&nbsp;duchovní růst. Vše na jednom místě.
+    </p>
+    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a
+        href="/registrace"
+        class="inline-flex items-center justify-center rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-8 py-3 text-sm font-medium hover:bg-[var(--primary)]/90 transition-colors"
+      >
+        Začít zdarma
+      </a>
+      <a
+        href="/prihlaseni"
+        class="inline-flex items-center justify-center rounded-md border border-[var(--input)] bg-[var(--background)] text-[var(--foreground)] px-8 py-3 text-sm font-medium hover:bg-[var(--accent)] transition-colors"
+      >
+        Přihlásit se
+      </a>
+    </div>
+  </section>
+</BaseLayout>

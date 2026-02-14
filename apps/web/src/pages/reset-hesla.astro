@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ResetPasswordForm } from "../components/ResetPasswordForm";
+---
+
+<BaseLayout title="Obnovení hesla">
+  <div class="max-w-md mx-auto mt-16 p-6">
+    <ResetPasswordForm client:load />
+  </div>
+</BaseLayout>

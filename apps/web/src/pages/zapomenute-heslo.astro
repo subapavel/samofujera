@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ForgotPasswordForm } from "../components/ForgotPasswordForm";
+---
+
+<BaseLayout title="Zapomenuté heslo">
+  <div class="max-w-md mx-auto mt-16 p-6">
+    <ForgotPasswordForm client:load />
+  </div>
+</BaseLayout>

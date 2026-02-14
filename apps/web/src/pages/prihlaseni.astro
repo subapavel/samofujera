@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { LoginForm } from "../components/LoginForm";
+---
+
+<BaseLayout title="Přihlášení">
+  <div class="max-w-md mx-auto mt-16 p-6">
+    <LoginForm client:load />
+  </div>
+</BaseLayout>
