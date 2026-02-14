@@ -34,7 +34,7 @@ export function LoginForm() {
         setSessionConflict(
           body?.existingDevice ?? "jiné zařízení"
         );
-      } else if (err instanceof ApiError) {
+      } else if (err instanceof ApiError && err.status === 401) {
         setError("Nesprávný e-mail nebo heslo.");
       } else {
         setError("Přihlášení se nezdařilo. Zkuste to prosím znovu.");

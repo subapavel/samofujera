@@ -30,6 +30,21 @@ public class ProductAdminController {
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CatalogDtos.ProductDetailResponse>> getProduct(@PathVariable UUID id) {
+        var product = catalogService.getProductById(id);
+        var assets = catalogService.getAssetsForProduct(id);
+        var detail = new CatalogDtos.ProductDetailResponse(
+            product.id(), product.title(), product.slug(), product.description(),
+            product.shortDescription(), product.productType(), product.priceAmount(),
+            product.priceCurrency(), product.status(), product.thumbnailUrl(),
+            product.categoryId(), product.categoryName(),
+            assets,
+            product.createdAt(), product.updatedAt()
+        );
+        return ResponseEntity.ok(ApiResponse.ok(detail));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<CatalogDtos.ProductResponse>> createProduct(
             @Valid @RequestBody CatalogDtos.CreateProductRequest request) {

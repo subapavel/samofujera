@@ -2,6 +2,7 @@ import { apiFetch } from "./client";
 import type {
   ApiResponse,
   ProductResponse,
+  ProductDetailResponse,
   ProductListResponse,
   CategoryResponse,
   CreateProductRequest,
@@ -38,6 +39,9 @@ export const adminApi = {
       `/api/admin/products${qs ? `?${qs}` : ""}`,
     );
   },
+
+  getProduct: (id: string) =>
+    apiFetch<ApiResponse<ProductDetailResponse>>(`/api/admin/products/${id}`),
 
   createProduct: (data: CreateProductRequest) =>
     apiFetch<ApiResponse<ProductResponse>>("/api/admin/products", {

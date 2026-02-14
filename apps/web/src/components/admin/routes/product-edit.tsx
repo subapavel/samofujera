@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { adminApi, catalogApi } from "@samofujera/api-client";
+import { adminApi } from "@samofujera/api-client";
 import type { AssetResponse } from "@samofujera/api-client";
 import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 
@@ -60,14 +60,11 @@ export function ProductEditPage() {
 
   const productQuery = useQuery({
     queryKey: ["admin", "product", productId],
-    queryFn: () => adminApi.getProducts({ search: productId, limit: 100 }),
+    queryFn: () => adminApi.getProduct(productId),
     enabled: Boolean(productId),
   });
 
-  // We need to get the single product. Since admin API doesn't have getProduct by ID,
-  // we find it from the list. Alternatively, we re-use the getProducts with a search.
-  // For editing, we find the product by matching the ID from the list.
-  const product = productQuery.data?.data?.items?.find((p) => p.id === productId);
+  const product = productQuery.data?.data;
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -163,27 +160,7 @@ export function ProductEditPage() {
     ? flattenCategories(categoriesQuery.data.data)
     : [];
 
-  // Assets from the product response - we need the detail endpoint
-  // Since we don't have a getProduct(id) in adminApi, assets may come from the response.
-  // The product list items are ProductResponse which doesn't include assets.
-  // We'll store assets from the upload/delete mutations and show what we have.
-  const [assets, setAssets] = useState<AssetResponse[]>([]);
-
-  // Update assets when upload succeeds
-  useEffect(() => {
-    if (uploadMutation.isSuccess && uploadMutation.data?.data) {
-      setAssets((prev) => [...prev, uploadMutation.data.data]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadMutation.isSuccess, uploadMutation.data]);
-
-  // Remove asset from local list after deletion
-  useEffect(() => {
-    if (deleteAssetMutation.isSuccess && deleteAssetMutation.variables) {
-      setAssets((prev) => prev.filter((a) => a.id !== deleteAssetMutation.variables));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deleteAssetMutation.isSuccess, deleteAssetMutation.variables]);
+  const assets = product?.assets ?? [];
 
   if (productQuery.isLoading) {
     return <p className="text-[var(--muted-foreground)]">Načítání produktu...</p>;

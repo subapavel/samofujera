@@ -33,6 +33,12 @@ public class AuthController {
             @Valid @RequestBody AuthDtos.LoginRequest request,
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
+        // Invalidate any existing session to prevent stale cookie errors
+        var existingSession = httpRequest.getSession(false);
+        if (existingSession != null) {
+            existingSession.invalidate();
+        }
+
         try {
             var user = authService.login(request, httpRequest, httpResponse);
             return ResponseEntity.ok(ApiResponse.ok(user));
