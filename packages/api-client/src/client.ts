@@ -13,13 +13,13 @@ export async function apiFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
+  const isFormData = init?.body instanceof FormData;
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...init?.headers,
-    },
+    headers: isFormData
+      ? { ...init?.headers } // Let browser set Content-Type for FormData
+      : { "Content-Type": "application/json", ...init?.headers },
   });
 
   if (!res.ok) {

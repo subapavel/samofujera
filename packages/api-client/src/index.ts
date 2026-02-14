@@ -1,4 +1,9 @@
 export { apiFetch, ApiError } from "./client";
 export { authApi } from "./auth";
 export { userApi } from "./user";
+export { catalogApi } from "./catalog";
+export { ordersApi } from "./orders";
+export { checkoutApi } from "./checkout";
+export { libraryApi } from "./library";
+export { adminApi } from "./admin";
 export type * from "./types";
