@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public final class AuthDtos {
@@ -47,5 +48,16 @@ public final class AuthDtos {
         boolean conflict,
         String existingDevice,
         String sessionId
+    ) {}
+
+    public record SessionResponse(
+        String sessionId,
+        String deviceName,
+        String ipAddress,
+        LocalDateTime lastActiveAt
+    ) {}
+
+    public record DeleteAccountRequest(
+        @NotBlank String password
     ) {}
 }

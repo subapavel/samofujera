@@ -22,7 +22,7 @@ public class SessionRepository {
         return dsl.fetchCount(USER_SESSIONS, USER_SESSIONS.USER_ID.eq(userId));
     }
 
-    List<SessionInfo> findByUser(UUID userId) {
+    public List<SessionInfo> findByUser(UUID userId) {
         return dsl.selectFrom(USER_SESSIONS)
             .where(USER_SESSIONS.USER_ID.eq(userId))
             .orderBy(USER_SESSIONS.LAST_ACTIVE_AT.desc())
@@ -52,7 +52,7 @@ public class SessionRepository {
             .execute();
     }
 
-    void deleteAllByUser(UUID userId) {
+    public void deleteAllByUser(UUID userId) {
         dsl.deleteFrom(USER_SESSIONS)
             .where(USER_SESSIONS.USER_ID.eq(userId))
             .execute();
@@ -67,7 +67,7 @@ public class SessionRepository {
             .fetchOne(USER_SESSIONS.SESSION_ID);
     }
 
-    record SessionInfo(
+    public record SessionInfo(
         String sessionId,
         String deviceName,
         String ipAddress,

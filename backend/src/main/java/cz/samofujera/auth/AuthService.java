@@ -1,12 +1,16 @@
 package cz.samofujera.auth;
 
 import cz.samofujera.auth.event.PasswordResetRequestedEvent;
+import cz.samofujera.auth.event.UserBlockedEvent;
+import cz.samofujera.auth.event.UserDeletedEvent;
 import cz.samofujera.auth.event.UserRegisteredEvent;
+import cz.samofujera.auth.event.UserUnblockedEvent;
 import cz.samofujera.auth.internal.AuthUserRepository;
 import cz.samofujera.auth.internal.PasswordResetTokenRepository;
 import cz.samofujera.auth.internal.SessionConflictException;
 import cz.samofujera.auth.internal.SessionRepository;
 import cz.samofujera.auth.internal.SessionTrackingService;
+import cz.samofujera.shared.exception.NotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.jooq.DSLContext;
@@ -18,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
@@ -128,5 +133,99 @@ public class AuthService {
             .execute();
 
         passwordResetTokenRepository.markUsed(tokenInfo.tokenId());
+    }
+
+    public List<AuthDtos.SessionResponse> getSessions(UUID userId) {
+        return sessionRepository.findByUser(userId).stream()
+            .map(s -> new AuthDtos.SessionResponse(
+                s.sessionId(), s.deviceName(), s.ipAddress(), s.lastActiveAt()))
+            .toList();
+    }
+
+    public void revokeSession(UUID userId, String sessionId) {
+        // Verify session belongs to user before deleting
+        var userSessions = sessionRepository.findByUser(userId);
+        boolean owns = userSessions.stream()
+            .anyMatch(s -> s.sessionId().equals(sessionId));
+        if (!owns) {
+            throw new NotFoundException("Session not found");
+        }
+        sessionRepository.delete(sessionId);
+    }
+
+    public void blockUser(UUID userId) {
+        var user = dsl.selectFrom(USERS)
+            .where(USERS.ID.eq(userId))
+            .and(USERS.DELETED_AT.isNull())
+            .fetchOne();
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        dsl.update(USERS)
+            .set(USERS.BLOCKED_AT, LocalDateTime.now())
+            .set(USERS.UPDATED_AT, LocalDateTime.now())
+            .where(USERS.ID.eq(userId))
+            .execute();
+
+        sessionRepository.deleteAllByUser(userId);
+
+        eventPublisher.publishEvent(new UserBlockedEvent(userId, user.getEmail()));
+    }
+
+    public void unblockUser(UUID userId) {
+        var user = dsl.selectFrom(USERS)
+            .where(USERS.ID.eq(userId))
+            .and(USERS.DELETED_AT.isNull())
+            .fetchOne();
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        dsl.update(USERS)
+            .set(USERS.BLOCKED_AT, (LocalDateTime) null)
+            .set(USERS.UPDATED_AT, LocalDateTime.now())
+            .where(USERS.ID.eq(userId))
+            .execute();
+
+        eventPublisher.publishEvent(new UserUnblockedEvent(userId, user.getEmail()));
+    }
+
+    public void deleteAccount(UUID userId, String password, HttpServletRequest request) {
+        var user = dsl.selectFrom(USERS)
+            .where(USERS.ID.eq(userId))
+            .and(USERS.DELETED_AT.isNull())
+            .fetchOne();
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+
+        var originalEmail = user.getEmail();
+        var originalName = user.getName();
+
+        dsl.update(USERS)
+            .set(USERS.EMAIL, "deleted-" + UUID.randomUUID() + "@anonymized.local")
+            .set(USERS.NAME, "Deleted user")
+            .setNull(USERS.PASSWORD_HASH)
+            .setNull(USERS.STRIPE_CUSTOMER_ID)
+            .setNull(USERS.AVATAR_URL)
+            .set(USERS.DELETED_AT, LocalDateTime.now())
+            .set(USERS.UPDATED_AT, LocalDateTime.now())
+            .where(USERS.ID.eq(userId))
+            .execute();
+
+        sessionRepository.deleteAllByUser(userId);
+
+        var session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
+
+        eventPublisher.publishEvent(new UserDeletedEvent(userId, originalEmail, originalName));
     }
 }
