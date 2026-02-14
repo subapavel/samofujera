@@ -4,6 +4,8 @@ import { authApi } from "@samofujera/api-client";
 
 const navItems = [
   { label: "Dashboard", to: "/" as const },
+  { label: "Knihovna", to: "/knihovna" as const },
+  { label: "Objednávky", to: "/objednavky" as const },
   { label: "Profil", to: "/profile" as const },
   { label: "Aktivní sezení", to: "/sessions" as const },
   { label: "Smazat účet", to: "/delete-account" as const },
@@ -40,7 +42,9 @@ export function CustomerLayout({ children }: CustomerLayoutProps) {
                 <Link
                   to={item.to}
                   className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    currentPath === `/muj-ucet${item.to === "/" ? "" : item.to}`
+                    (item.to === "/"
+                      ? currentPath === "/muj-ucet" || currentPath === "/muj-ucet/"
+                      : currentPath.startsWith(`/muj-ucet${item.to}`))
                       ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
                       : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
                   }`}
