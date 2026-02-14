@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -208,6 +209,24 @@ public class CatalogService {
             .orElseThrow(() -> new NotFoundException("Product not found"));
 
         productRepository.updateStatus(id, "ARCHIVED");
+    }
+
+    // Public asset access methods (used by delivery module)
+
+    public CatalogDtos.AssetDetailResponse getAssetById(UUID assetId) {
+        var asset = digitalAssetRepository.findById(assetId)
+            .orElseThrow(() -> new NotFoundException("Asset not found"));
+        return new CatalogDtos.AssetDetailResponse(
+            asset.id(), asset.productId(), asset.assetType(), asset.fileKey(),
+            asset.fileName(), asset.fileSizeBytes(), asset.mimeType(),
+            asset.durationSeconds(), asset.sortOrder()
+        );
+    }
+
+    public String generateAssetDownloadUrl(UUID assetId, Duration ttl) {
+        var asset = digitalAssetRepository.findById(assetId)
+            .orElseThrow(() -> new NotFoundException("Asset not found"));
+        return r2StorageService.generatePresignedUrl(asset.fileKey(), ttl);
     }
 
     // Asset methods

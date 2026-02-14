@@ -85,4 +85,9 @@ public final class CatalogDtos {
         UUID id, String assetType, String fileName, long fileSizeBytes,
         String mimeType, Integer durationSeconds, int sortOrder
     ) {}
+
+    public record AssetDetailResponse(
+        UUID id, UUID productId, String assetType, String fileKey, String fileName,
+        long fileSizeBytes, String mimeType, Integer durationSeconds, int sortOrder
+    ) {}
 }
