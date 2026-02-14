@@ -134,6 +134,12 @@ public class CatalogService {
 
     // Product methods
 
+    public CatalogDtos.ProductResponse getProductById(UUID id) {
+        var product = productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+        return toProductResponse(product);
+    }
+
     public CatalogDtos.ProductListResponse getProducts(String status, UUID categoryId,
             String productType, String search, int page, int limit) {
         int offset = (page - 1) * limit;
