@@ -5,6 +5,9 @@ import { authApi } from "@samofujera/api-client";
 const navItems = [
   { label: "Dashboard", to: "/" as const },
   { label: "Users", to: "/users" as const },
+  { label: "Produkty", to: "/produkty" as const },
+  { label: "Kategorie", to: "/kategorie" as const },
+  { label: "Objednávky", to: "/objednavky" as const },
 ] as const;
 
 interface AdminLayoutProps {
@@ -38,7 +41,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <Link
                   to={item.to}
                   className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    currentPath === `/admin${item.to === "/" ? "" : item.to}`
+                    item.to === "/"
+                      ? currentPath === "/admin" || currentPath === "/admin/"
+                      : currentPath.startsWith(`/admin${item.to}`)
                       ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
                       : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
                   }`}
