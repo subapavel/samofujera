@@ -13,9 +13,12 @@ import java.util.Map;
 class EmailService {
 
     private final JavaMailSender mailSender;
+    private final String fromAddress;
 
-    EmailService(JavaMailSender mailSender) {
+    EmailService(JavaMailSender mailSender,
+                 @org.springframework.beans.factory.annotation.Value("${app.mail.from:noreply@mail.samofujera.cz}") String fromAddress) {
         this.mailSender = mailSender;
+        this.fromAddress = fromAddress;
     }
 
     void send(String to, String subject, String templateName, Map<String, String> vars) {
@@ -29,7 +32,7 @@ class EmailService {
             var helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setFrom("noreply@samofujera.cz");
+            helper.setFrom(fromAddress);
             helper.setText(html, true);
             mailSender.send(message);
         } catch (Exception e) {
