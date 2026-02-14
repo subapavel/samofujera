@@ -4,8 +4,8 @@ import {
   createRouter,
   Outlet,
 } from "@tanstack/react-router";
-import { AuthGuard } from "./components/AuthGuard";
-import { DashboardLayout } from "./components/DashboardLayout";
+import { AuthGuard } from "../AuthGuard";
+import { CustomerLayout } from "./CustomerLayout";
 import { DashboardPage } from "./routes/dashboard";
 import { SessionsPage } from "./routes/sessions";
 import { ProfilePage } from "./routes/profile";
@@ -14,9 +14,9 @@ import { DeleteAccountPage } from "./routes/delete-account";
 const rootRoute = createRootRoute({
   component: () => (
     <AuthGuard>
-      <DashboardLayout>
+      <CustomerLayout>
         <Outlet />
-      </DashboardLayout>
+      </CustomerLayout>
     </AuthGuard>
   ),
 });
@@ -52,7 +52,7 @@ const routeTree = rootRoute.addChildren([
   deleteAccountRoute,
 ]);
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({ routeTree, basepath: "/muj-ucet" });
 
 declare module "@tanstack/react-router" {
   interface Register {

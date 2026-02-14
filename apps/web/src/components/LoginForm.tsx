@@ -27,7 +27,7 @@ export function LoginForm() {
 
     try {
       await authApi.login({ email, password });
-      window.location.href = "/dashboard/";
+      window.location.href = "/muj-ucet";
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);

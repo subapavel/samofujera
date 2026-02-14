@@ -6,14 +6,10 @@ on:
     branches: [main, develop]
     paths:
       - 'apps/web/**'
-      - 'apps/admin/**'
-      - 'apps/customer/**'
       - 'packages/**'
   pull_request:
     paths:
       - 'apps/web/**'
-      - 'apps/admin/**'
-      - 'apps/customer/**'
       - 'packages/**'
 
 jobs:

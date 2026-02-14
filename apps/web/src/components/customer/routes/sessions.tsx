@@ -20,13 +20,13 @@ export function SessionsPage() {
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold">Aktivní sezení</h2>
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
         {sessionsQuery.isLoading && (
-          <p className="text-muted-foreground">Načítání sezení...</p>
+          <p className="text-[var(--muted-foreground)]">Načítání sezení...</p>
         )}
 
         {sessionsQuery.isError && (
-          <p className="text-destructive">
+          <p className="text-[var(--destructive)]">
             Nepodařilo se načíst sezení. Zkuste to prosím znovu.
           </p>
         )}
@@ -34,20 +34,20 @@ export function SessionsPage() {
         {sessionsQuery.isSuccess && (
           <>
             {sessionsQuery.data.data.length === 0 ? (
-              <p className="text-muted-foreground">Žádná aktivní sezení.</p>
+              <p className="text-[var(--muted-foreground)]">Žádná aktivní sezení.</p>
             ) : (
               <div className="space-y-4">
                 {sessionsQuery.data.data.map((session) => (
                   <div
                     key={session.sessionId}
-                    className="flex items-center justify-between rounded-md border border-border p-4"
+                    className="flex items-center justify-between rounded-md border border-[var(--border)] p-4"
                   >
                     <div className="space-y-1">
                       <p className="text-sm font-medium">{session.deviceName}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-[var(--muted-foreground)]">
                         IP: {session.ipAddress}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-[var(--muted-foreground)]">
                         Poslední aktivita:{" "}
                         {new Date(session.lastActiveAt).toLocaleString("cs-CZ")}
                       </p>

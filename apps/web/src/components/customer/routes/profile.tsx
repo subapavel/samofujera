@@ -46,11 +46,11 @@ export function ProfilePage() {
       <h2 className="mb-4 text-2xl font-bold">Profil</h2>
 
       {profileQuery.isLoading && (
-        <p className="text-muted-foreground">Načítání profilu...</p>
+        <p className="text-[var(--muted-foreground)]">Načítání profilu...</p>
       )}
 
       {profileQuery.isError && (
-        <p className="text-destructive">
+        <p className="text-[var(--destructive)]">
           Nepodařilo se načíst profil. Zkuste to prosím znovu.
         </p>
       )}
@@ -62,14 +62,14 @@ export function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">E-mail</p>
+              <p className="text-sm font-medium text-[var(--muted-foreground)]">E-mail</p>
               <p className="text-sm">{profileQuery.data.data.email}</p>
             </div>
 
             {isEditing ? (
               <form onSubmit={handleSave} className="space-y-3">
                 <div>
-                  <label htmlFor="name" className="mb-1 block text-sm font-medium text-muted-foreground">
+                  <label htmlFor="name" className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
                     Jméno
                   </label>
                   <Input
@@ -82,7 +82,7 @@ export function ProfilePage() {
                 </div>
 
                 {updateMutation.isError && (
-                  <p className="text-sm text-destructive">
+                  <p className="text-sm text-[var(--destructive)]">
                     Nepodařilo se uložit změny. Zkuste to prosím znovu.
                   </p>
                 )}
@@ -103,7 +103,7 @@ export function ProfilePage() {
               </form>
             ) : (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Jméno</p>
+                <p className="text-sm font-medium text-[var(--muted-foreground)]">Jméno</p>
                 <div className="flex items-center gap-3">
                   <p className="text-sm">{profileQuery.data.data.name}</p>
                   <Button variant="outline" size="sm" onClick={handleEdit}>

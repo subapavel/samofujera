@@ -20,8 +20,6 @@ import {
   DialogTrigger,
 } from "@samofujera/ui";
 
-const HOMEPAGE_URL = "http://localhost:4321";
-
 export function DeleteAccountPage() {
   const [password, setPassword] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -29,7 +27,7 @@ export function DeleteAccountPage() {
   const deleteMutation = useMutation({
     mutationFn: (pwd: string) => userApi.deleteAccount(pwd),
     onSuccess: () => {
-      window.location.href = HOMEPAGE_URL;
+      window.location.href = "/";
     },
   });
 
@@ -66,7 +64,7 @@ export function DeleteAccountPage() {
           <div>
             <label
               htmlFor="password"
-              className="mb-1 block text-sm font-medium text-muted-foreground"
+              className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]"
             >
               Pro potvrzení zadejte své heslo
             </label>
@@ -81,7 +79,7 @@ export function DeleteAccountPage() {
           </div>
 
           {deleteMutation.isError && (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-[var(--destructive)]">
               Nepodařilo se smazat účet. Zkontrolujte heslo a zkuste to znovu.
             </p>
           )}

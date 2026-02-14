@@ -2,8 +2,6 @@ import type { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { authApi } from "@samofujera/api-client";
 
-const LOGIN_URL = "http://localhost:4321/prihlaseni";
-
 const navItems = [
   { label: "Dashboard", to: "/" as const },
   { label: "Profil", to: "/profile" as const },
@@ -11,11 +9,11 @@ const navItems = [
   { label: "Smazat účet", to: "/delete-account" as const },
 ] as const;
 
-interface DashboardLayoutProps {
+interface CustomerLayoutProps {
   children: ReactNode;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function CustomerLayout({ children }: CustomerLayoutProps) {
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
@@ -23,16 +21,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     try {
       await authApi.logout();
     } finally {
-      window.location.href = LOGIN_URL;
+      window.location.href = "/prihlaseni";
     }
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
+    <div className="flex h-screen bg-[var(--background)] text-[var(--foreground)]">
       {/* Sidebar */}
-      <aside className="flex w-64 flex-col border-r border-border bg-card">
-        <div className="border-b border-border p-4">
-          <h1 className="text-lg font-semibold">Můj účet</h1>
+      <aside className="flex w-64 flex-col border-r border-[var(--border)] bg-[var(--card)]">
+        <div className="border-b border-[var(--border)] p-4">
+          <a href="/" className="text-lg font-semibold text-[var(--primary)]">Samo Fujera</a>
+          <p className="text-xs text-[var(--muted-foreground)]">Můj účet</p>
         </div>
         <nav className="flex-1 p-2">
           <ul className="space-y-1">
@@ -41,9 +40,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Link
                   to={item.to}
                   className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    currentPath === item.to
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    currentPath === `/muj-ucet${item.to === "/" ? "" : item.to}`
+                      ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                      : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
                   }`}
                 >
                   {item.label}
@@ -56,14 +55,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 items-center justify-between border-b border-border px-6">
-          <span className="text-sm font-medium text-muted-foreground">
-            Samo Fujera — Zákaznický panel
+        <header className="flex h-14 items-center justify-between border-b border-[var(--border)] px-6">
+          <span className="text-sm font-medium text-[var(--muted-foreground)]">
+            Samo Fujera — Můj účet
           </span>
           <button
             type="button"
             onClick={() => void handleLogout()}
-            className="rounded-md bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/80"
+            className="rounded-md bg-[var(--secondary)] px-3 py-1.5 text-sm font-medium text-[var(--secondary-foreground)] transition-colors hover:bg-[var(--secondary)]/80"
           >
             Odhlásit se
           </button>

@@ -4,14 +4,14 @@ import {
   createRouter,
   Outlet,
 } from "@tanstack/react-router";
-import { AuthGuard } from "./components/AuthGuard";
-import { AdminLayout } from "./components/AdminLayout";
+import { AuthGuard } from "../AuthGuard";
+import { AdminLayout } from "./AdminLayout";
 import { DashboardPage } from "./routes/dashboard";
 import { UsersPage } from "./routes/users";
 
 const rootRoute = createRootRoute({
   component: () => (
-    <AuthGuard>
+    <AuthGuard requiredRole="ADMIN">
       <AdminLayout>
         <Outlet />
       </AdminLayout>
@@ -33,7 +33,7 @@ const usersRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([dashboardRoute, usersRoute]);
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({ routeTree, basepath: "/admin" });
 
 declare module "@tanstack/react-router" {
   interface Register {

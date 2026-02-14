@@ -1,13 +1,12 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { userApi, ApiError } from "@samofujera/api-client";
 
-const LOGIN_URL = "http://localhost:4321/prihlaseni";
-
 interface AuthGuardProps {
   children: ReactNode;
+  requiredRole?: string;
 }
 
-export function AuthGuard({ children }: AuthGuardProps) {
+export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
   const [state, setState] = useState<"loading" | "authenticated" | "redirecting">("loading");
 
   useEffect(() => {
@@ -15,18 +14,22 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     async function checkAuth() {
       try {
-        await userApi.getProfile();
+        const response = await userApi.getProfile();
         if (!cancelled) {
-          setState("authenticated");
+          if (requiredRole && response.data.role !== requiredRole) {
+            setState("redirecting");
+            window.location.href = "/muj-ucet";
+          } else {
+            setState("authenticated");
+          }
         }
       } catch (error) {
         if (!cancelled) {
+          setState("redirecting");
           if (error instanceof ApiError && error.status === 401) {
-            setState("redirecting");
-            window.location.href = LOGIN_URL;
+            window.location.href = "/prihlaseni";
           } else {
-            setState("redirecting");
-            window.location.href = LOGIN_URL;
+            window.location.href = "/prihlaseni";
           }
         }
       }
@@ -37,12 +40,12 @@ export function AuthGuard({ children }: AuthGuardProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [requiredRole]);
 
   if (state === "loading") {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-muted-foreground text-sm">Načítání...</div>
+        <div className="text-sm text-[var(--muted-foreground)]">Načítání...</div>
       </div>
     );
   }
@@ -50,7 +53,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (state === "redirecting") {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-muted-foreground text-sm">Přesměrování na přihlášení...</div>
+        <div className="text-sm text-[var(--muted-foreground)]">Přesměrování...</div>
       </div>
     );
   }
