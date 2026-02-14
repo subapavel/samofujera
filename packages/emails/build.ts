@@ -6,6 +6,8 @@ import { PasswordReset } from "./src/PasswordReset";
 import { AccountBlocked } from "./src/AccountBlocked";
 import { AccountUnblocked } from "./src/AccountUnblocked";
 import { AccountDeleted } from "./src/AccountDeleted";
+import { OrderConfirmation } from "./src/OrderConfirmation";
+import { DigitalDelivery } from "./src/DigitalDelivery";
 
 const OUTPUT_DIR = "../../apps/backend/src/main/resources/templates/email";
 
@@ -17,6 +19,8 @@ const templates = [
   { name: "account-blocked", component: AccountBlocked },
   { name: "account-unblocked", component: AccountUnblocked },
   { name: "account-deleted", component: AccountDeleted },
+  { name: "order-confirmation", component: OrderConfirmation },
+  { name: "digital-delivery", component: DigitalDelivery },
 ];
 
 async function build() {

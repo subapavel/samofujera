@@ -5,10 +5,13 @@ import cz.samofujera.auth.event.UserBlockedEvent;
 import cz.samofujera.auth.event.UserDeletedEvent;
 import cz.samofujera.auth.event.UserRegisteredEvent;
 import cz.samofujera.auth.event.UserUnblockedEvent;
+import cz.samofujera.entitlement.event.EntitlementGrantedEvent;
+import cz.samofujera.order.event.OrderPaidEvent;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 class EmailListener {
@@ -49,5 +52,32 @@ class EmailListener {
     void on(UserDeletedEvent event) {
         emailService.send(event.originalEmail(), "Váš účet byl smazán", "account-deleted",
             Map.of("name", event.name()));
+    }
+
+    @ApplicationModuleListener
+    void on(OrderPaidEvent event) {
+        var itemLines = event.items().stream()
+            .map(i -> i.quantity() + "× " + i.productTitle())
+            .collect(Collectors.joining("<br>"));
+
+        emailService.send(event.userEmail(), "Potvrzení objednávky", "order-confirmation",
+            Map.of(
+                "name", event.userName(),
+                "orderId", event.orderId().toString(),
+                "items", itemLines,
+                "totalAmount", event.totalAmount().toPlainString(),
+                "currency", event.currency()
+            ));
+    }
+
+    @ApplicationModuleListener
+    void on(EntitlementGrantedEvent event) {
+        if ("DIGITAL".equals(event.productType()) || "STREAMING".equals(event.productType())) {
+            emailService.send(event.userEmail(), "Váš digitální obsah je připraven", "digital-delivery",
+                Map.of(
+                    "productTitle", event.productTitle(),
+                    "libraryUrl", frontendUrl + "/muj-ucet/knihovna"
+                ));
+        }
     }
 }
