@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { userApi, ApiError } from "@samofujera/api-client";
+import { userApi } from "@samofujera/api-client";
 
 interface AuthState {
   authenticated: boolean;
@@ -18,7 +18,7 @@ export function HeaderNav() {
         if (!cancelled) {
           setAuth({ authenticated: true, role: response.data.role });
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
           setAuth({ authenticated: false });
         }
@@ -29,7 +29,9 @@ export function HeaderNav() {
     return () => { cancelled = true; };
   }, []);
 
-  // Show nothing while loading to avoid flash
+  const linkClass = "text-xs font-medium uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors";
+  const btnClass = "text-xs font-medium uppercase tracking-wider text-[var(--primary-foreground)] bg-[var(--primary)] hover:opacity-90 px-4 py-2 rounded-sm transition-colors";
+
   if (auth === null) {
     return <nav className="flex items-center gap-6" />;
   }
@@ -38,17 +40,11 @@ export function HeaderNav() {
     return (
       <nav className="flex items-center gap-6">
         {auth.role === "ADMIN" && (
-          <a
-            href="/admin"
-            className="text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-          >
+          <a href="/admin" className={linkClass}>
             Administrace
           </a>
         )}
-        <a
-          href="/muj-ucet"
-          className="text-sm font-medium text-[var(--primary-foreground)] bg-[var(--primary)] hover:bg-[var(--primary)]/90 px-4 py-2 rounded-md transition-colors"
-        >
+        <a href="/muj-ucet" className={btnClass}>
           Můj účet
         </a>
       </nav>
@@ -57,16 +53,10 @@ export function HeaderNav() {
 
   return (
     <nav className="flex items-center gap-6">
-      <a
-        href="/prihlaseni"
-        className="text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-      >
+      <a href="/prihlaseni" className={linkClass}>
         Přihlášení
       </a>
-      <a
-        href="/registrace"
-        className="text-sm font-medium text-[var(--primary-foreground)] bg-[var(--primary)] hover:bg-[var(--primary)]/90 px-4 py-2 rounded-md transition-colors"
-      >
+      <a href="/registrace" className={btnClass}>
         Registrace
       </a>
     </nav>
