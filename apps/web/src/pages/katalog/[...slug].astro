@@ -1,9 +1,8 @@
 ---
 import "../../styles/global.css";
+import CatalogApp from "../../components/catalog/main";
 
-export function getStaticPaths() {
-  return [{ params: { slug: undefined } }];
-}
+export const prerender = false;
 ---
 
 <!doctype html>
@@ -26,10 +25,8 @@ export function getStaticPaths() {
         </div>
       </div>
     </header>
-    <div id="catalog-root" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"></div>
-    <script>
-      import { renderCatalog } from "../../components/catalog/main";
-      renderCatalog();
-    </script>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <CatalogApp client:only="react" />
+    </div>
   </body>
 </html>

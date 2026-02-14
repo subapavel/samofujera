@@ -1,9 +1,8 @@
 ---
 import "../../styles/global.css";
+import CustomerApp from "../../components/customer/main";
 
-export function getStaticPaths() {
-  return [{ params: { all: undefined } }];
-}
+export const prerender = false;
 ---
 
 <!doctype html>
@@ -16,10 +15,6 @@ export function getStaticPaths() {
     <title>Můj účet | Samo Fujera</title>
   </head>
   <body class="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
-    <div id="customer-root"></div>
-    <script>
-      import { renderCustomer } from "../../components/customer/main";
-      renderCustomer();
-    </script>
+    <CustomerApp client:only="react" />
   </body>
 </html>

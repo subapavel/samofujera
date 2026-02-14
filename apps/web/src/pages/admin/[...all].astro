@@ -1,9 +1,8 @@
 ---
 import "../../styles/global.css";
+import AdminApp from "../../components/admin/main";
 
-export function getStaticPaths() {
-  return [{ params: { all: undefined } }];
-}
+export const prerender = false;
 ---
 
 <!doctype html>
@@ -16,10 +15,6 @@ export function getStaticPaths() {
     <title>Admin | Samo Fujera</title>
   </head>
   <body class="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
-    <div id="admin-root"></div>
-    <script>
-      import { renderAdmin } from "../../components/admin/main";
-      renderAdmin();
-    </script>
+    <AdminApp client:only="react" />
   </body>
 </html>
