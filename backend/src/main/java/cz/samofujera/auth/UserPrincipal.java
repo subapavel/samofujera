@@ -1,4 +1,4 @@
-package cz.samofujera.auth.internal;
+package cz.samofujera.auth;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

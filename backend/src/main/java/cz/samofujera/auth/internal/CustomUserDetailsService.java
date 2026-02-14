@@ -1,5 +1,6 @@
 package cz.samofujera.auth.internal;
 
+import cz.samofujera.auth.UserPrincipal;
 import org.jooq.DSLContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

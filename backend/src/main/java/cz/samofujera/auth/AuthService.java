@@ -7,7 +7,7 @@ import cz.samofujera.auth.internal.PasswordResetTokenRepository;
 import cz.samofujera.auth.internal.SessionConflictException;
 import cz.samofujera.auth.internal.SessionRepository;
 import cz.samofujera.auth.internal.SessionTrackingService;
-import cz.samofujera.auth.internal.UserPrincipal;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.jooq.DSLContext;
 import org.springframework.context.ApplicationEventPublisher;
