@@ -19,24 +19,40 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionConflict, setSessionConflict] = useState<string | null>(null);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function doLogin(force: boolean) {
     setError(null);
     setIsLoading(true);
 
     try {
-      await authApi.login({ email, password });
+      await authApi.login({ email, password, force });
       window.location.href = "/muj-ucet";
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
+      if (err instanceof ApiError && err.status === 409) {
+        const body = err.body as { existingDevice?: string } | null;
+        setSessionConflict(
+          body?.existingDevice ?? "jiné zařízení"
+        );
+      } else if (err instanceof ApiError) {
+        setError("Nesprávný e-mail nebo heslo.");
       } else {
         setError("Přihlášení se nezdařilo. Zkuste to prosím znovu.");
       }
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSessionConflict(null);
+    await doLogin(false);
+  }
+
+  async function handleForceLogin() {
+    setSessionConflict(null);
+    await doLogin(true);
   }
 
   return (
@@ -47,11 +63,29 @@ export function LoginForm() {
           Zadejte svůj e-mail a heslo pro přihlášení.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => void handleSubmit(e)}>
         <CardContent className="space-y-4">
           {error !== null && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {sessionConflict !== null && (
+            <Alert>
+              <AlertDescription>
+                <p className="mb-2">
+                  Máte aktivní sezení na zařízení: <strong>{sessionConflict}</strong>.
+                  Chcete se přihlásit zde a odhlásit druhé zařízení?
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={isLoading}
+                  onClick={() => void handleForceLogin()}
+                >
+                  Ano, přihlásit se zde
+                </Button>
+              </AlertDescription>
             </Alert>
           )}
           <div className="space-y-2">
