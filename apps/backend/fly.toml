@@ -1,5 +1,5 @@
 app = "samofujera-api"
-primary_region = "waw"
+primary_region = "fra"
 
 [build]
   dockerfile = "Dockerfile"
@@ -24,5 +24,7 @@ primary_region = "waw"
   [checks.health]
     type = "http"
     port = 8080
-    path = "/actuator/health"
+    path = "/actuator/health/liveness"
     interval = "30s"
+    grace_period = "60s"
+    timeout = "5s"

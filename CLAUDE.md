@@ -26,7 +26,7 @@ event flows, deployment config, design system, and roadmap.
 | Payments       | Stripe (one-time + subscriptions)                       |
 | Storage        | Cloudflare R2 (files), Cloudflare Stream (video)        |
 | Email          | React Email templates, Resend (prod), Mailpit (dev)     |
-| Hosting        | Fly.io WAW (backend + Postgres + Redis), CF Pages (FE)  |
+| Hosting        | Fly.io FRA (backend + Postgres + Redis), CF Pages (FE)  |
 | Monorepo       | Turborepo + pnpm                                        |
 | CI/CD          | GitHub Actions                                          |
 

@@ -24,6 +24,9 @@ import java.util.List;
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 2592000) // 30 days
 class SecurityConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:4321,http://localhost:5173}")
+    private List<String> corsAllowedOrigins;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -66,7 +69,7 @@ class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4321", "http://localhost:5173"));
+        config.setAllowedOrigins(corsAllowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
