@@ -47,8 +47,10 @@ public class UserController {
 
     @GetMapping("/sessions")
     public ResponseEntity<ApiResponse<List<AuthDtos.SessionResponse>>> getSessions(
-            @AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.ok(ApiResponse.ok(authService.getSessions(principal.getId())));
+            @AuthenticationPrincipal UserPrincipal principal,
+            HttpServletRequest request) {
+        var currentSessionId = request.getSession(false) != null ? request.getSession(false).getId() : "";
+        return ResponseEntity.ok(ApiResponse.ok(authService.getSessions(principal.getId(), currentSessionId)));
     }
 
     @DeleteMapping("/sessions/{sessionId}")

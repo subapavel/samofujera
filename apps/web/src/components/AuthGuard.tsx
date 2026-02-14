@@ -26,11 +26,8 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
       } catch (error) {
         if (!cancelled) {
           setState("redirecting");
-          if (error instanceof ApiError && error.status === 401) {
-            window.location.href = "/prihlaseni";
-          } else {
-            window.location.href = "/prihlaseni";
-          }
+          sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
+          window.location.href = "/prihlaseni";
         }
       }
     }

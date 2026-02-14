@@ -29,6 +29,7 @@ export interface SessionResponse {
   deviceName: string;
   ipAddress: string;
   lastActiveAt: string;
+  current: boolean;
 }
 
 export interface ProfileResponse {

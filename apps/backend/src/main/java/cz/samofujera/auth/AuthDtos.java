@@ -54,7 +54,8 @@ public final class AuthDtos {
         String sessionId,
         String deviceName,
         String ipAddress,
-        LocalDateTime lastActiveAt
+        LocalDateTime lastActiveAt,
+        boolean current
     ) {}
 
     public record DeleteAccountRequest(

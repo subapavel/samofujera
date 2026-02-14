@@ -52,14 +52,20 @@ export function SessionsPage() {
                         {new Date(session.lastActiveAt).toLocaleString("cs-CZ")}
                       </p>
                     </div>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      disabled={revokeMutation.isPending}
-                      onClick={() => revokeMutation.mutate(session.sessionId)}
-                    >
-                      Odvolat
-                    </Button>
+                    {session.current ? (
+                      <span className="text-xs font-medium text-green-600">
+                        Toto zařízení
+                      </span>
+                    ) : (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={revokeMutation.isPending}
+                        onClick={() => revokeMutation.mutate(session.sessionId)}
+                      >
+                        Odvolat
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>

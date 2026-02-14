@@ -33,14 +33,16 @@ public class AuthController {
             @Valid @RequestBody AuthDtos.LoginRequest request,
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
-        // Invalidate any existing session to prevent stale cookie errors
+        // Capture and invalidate any existing session to prevent stale cookie errors
+        String oldSessionId = null;
         var existingSession = httpRequest.getSession(false);
         if (existingSession != null) {
+            oldSessionId = existingSession.getId();
             existingSession.invalidate();
         }
 
         try {
-            var user = authService.login(request, httpRequest, httpResponse);
+            var user = authService.login(request, httpRequest, httpResponse, oldSessionId);
             return ResponseEntity.ok(ApiResponse.ok(user));
         } catch (SessionConflictException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)

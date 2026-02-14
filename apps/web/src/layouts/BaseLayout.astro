@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { HeaderNav } from "../components/HeaderNav";
 
 interface Props {
   title: string;
@@ -25,20 +26,7 @@ const { title, description = "Platforma pro osobní rozvoj, zdraví a duchovní 
           <a href="/" class="text-xl font-bold text-[var(--primary)]">
             Samo Fujera
           </a>
-          <nav class="flex items-center gap-6">
-            <a
-              href="/prihlaseni"
-              class="text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-            >
-              Přihlášení
-            </a>
-            <a
-              href="/registrace"
-              class="text-sm font-medium text-[var(--primary-foreground)] bg-[var(--primary)] hover:bg-[var(--primary)]/90 px-4 py-2 rounded-md transition-colors"
-            >
-              Registrace
-            </a>
-          </nav>
+          <HeaderNav client:load />
         </div>
       </div>
     </header>

@@ -27,7 +27,9 @@ export function LoginForm() {
 
     try {
       await authApi.login({ email, password, force });
-      window.location.href = "/muj-ucet";
+      const redirect = sessionStorage.getItem("redirectAfterLogin") ?? "/muj-ucet";
+      sessionStorage.removeItem("redirectAfterLogin");
+      window.location.href = redirect;
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         const body = err.body as { existingDevice?: string } | null;

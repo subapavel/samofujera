@@ -79,10 +79,16 @@ public class AuthService {
 
     public AuthDtos.UserResponse login(AuthDtos.LoginRequest request,
                                         HttpServletRequest httpRequest,
-                                        jakarta.servlet.http.HttpServletResponse httpResponse) {
+                                        jakarta.servlet.http.HttpServletResponse httpResponse,
+                                        String oldSessionId) {
         var authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
+
+        // Clean up tracking entry for the old session from this browser
+        if (oldSessionId != null) {
+            sessionRepository.delete(oldSessionId);
+        }
 
         var principal = (UserPrincipal) authentication.getPrincipal();
         var trackResult = sessionTrackingService.checkAndTrack(
@@ -147,10 +153,11 @@ public class AuthService {
         passwordResetTokenRepository.markUsed(tokenInfo.tokenId());
     }
 
-    public List<AuthDtos.SessionResponse> getSessions(UUID userId) {
+    public List<AuthDtos.SessionResponse> getSessions(UUID userId, String currentSessionId) {
         return sessionRepository.findByUser(userId).stream()
             .map(s -> new AuthDtos.SessionResponse(
-                s.sessionId(), s.deviceName(), s.ipAddress(), s.lastActiveAt()))
+                s.sessionId(), s.deviceName(), s.ipAddress(), s.lastActiveAt(),
+                s.sessionId().equals(currentSessionId)))
             .toList();
     }
 
