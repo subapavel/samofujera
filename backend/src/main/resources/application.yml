@@ -11,6 +11,9 @@ spring:
     redis:
       namespace: samofujera:session
     timeout: 30d
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
   security:
     filter:
       order: -100

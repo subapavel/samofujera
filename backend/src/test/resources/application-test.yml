@@ -5,3 +5,6 @@ spring:
     clean-disabled: false
   jooq:
     sql-dialect: postgres
+  mail:
+    host: localhost
+    port: 1025
