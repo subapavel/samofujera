@@ -7,12 +7,15 @@ dist/
 build/
 .astro/
 .output/
+.turbo/
 
 # Java/Gradle
 backend/build/
 backend/.gradle/
+backend/target/
 *.class
 *.jar
+*.war
 
 # IDE
 .idea/
@@ -22,6 +25,8 @@ backend/.gradle/
 
 # Environment
 .env
+.env.local
+.env.*.local
 .env.*
 !.env.example
 
