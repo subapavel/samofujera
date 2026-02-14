@@ -1,0 +1,28 @@
+services:
+  samofujera-db:
+    image: postgres:17-alpine
+    container_name: samofujera-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: samofujera
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    volumes:
+      - samofujera-pgdata:/var/lib/postgresql/data
+
+  samofujera-redis:
+    image: redis:7-alpine
+    container_name: samofujera-redis
+    ports:
+      - "6379:6379"
+
+  samofujera-mailpit:
+    image: axllent/mailpit
+    container_name: samofujera-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  samofujera-pgdata:
