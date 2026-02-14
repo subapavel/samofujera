@@ -1,0 +1,47 @@
+package cz.samofujera.auth;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.util.UUID;
+
+public final class AuthDtos {
+    private AuthDtos() {}
+
+    public record RegisterRequest(
+        @NotBlank @Email String email,
+        @NotBlank @Size(min = 8) String password,
+        @NotBlank String name
+    ) {}
+
+    public record LoginRequest(
+        @NotBlank @Email String email,
+        @NotBlank String password,
+        String deviceFingerprint,
+        boolean force
+    ) {}
+
+    public record ForgotPasswordRequest(
+        @NotBlank @Email String email
+    ) {}
+
+    public record ResetPasswordRequest(
+        @NotBlank String token,
+        @NotBlank @Size(min = 8) String newPassword
+    ) {}
+
+    public record UserResponse(
+        UUID id,
+        String email,
+        String name,
+        String role,
+        String locale
+    ) {}
+
+    public record SessionConflictResponse(
+        boolean conflict,
+        String existingDevice,
+        String sessionId
+    ) {}
+}
