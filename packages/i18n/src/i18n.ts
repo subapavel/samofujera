@@ -9,8 +9,10 @@ export type Locale = keyof typeof locales;
 export const defaultLocale: Locale = "cs";
 
 export async function loadCatalog(locale: Locale) {
-  const { messages } = await import(`./locales/${locale}/messages.po`);
-  i18n.load(locale, messages);
+  const catalog = (await import(`./locales/${locale}/messages.po`)) as {
+    messages: Record<string, string>;
+  };
+  i18n.load(locale, catalog.messages);
   i18n.activate(locale);
 }
 
