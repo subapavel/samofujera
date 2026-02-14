@@ -19,8 +19,12 @@ public final class AuthDtos {
         @NotBlank @Email String email,
         @NotBlank String password,
         String deviceFingerprint,
-        boolean force
-    ) {}
+        Boolean force
+    ) {
+        public boolean isForce() {
+            return force != null && force;
+        }
+    }
 
     public record ForgotPasswordRequest(
         @NotBlank @Email String email

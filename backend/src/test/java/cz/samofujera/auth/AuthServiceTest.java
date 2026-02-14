@@ -1,12 +1,14 @@
 package cz.samofujera.auth;
 
 import cz.samofujera.auth.internal.AuthUserRepository;
+import cz.samofujera.auth.internal.SessionTrackingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import cz.samofujera.auth.event.UserRegisteredEvent;
@@ -24,12 +26,15 @@ class AuthServiceTest {
     @Mock private AuthUserRepository userRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private ApplicationEventPublisher eventPublisher;
+    @Mock private AuthenticationManager authenticationManager;
+    @Mock private SessionTrackingService sessionTrackingService;
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(userRepository, passwordEncoder, eventPublisher);
+        authService = new AuthService(userRepository, passwordEncoder, eventPublisher,
+            authenticationManager, sessionTrackingService);
     }
 
     @Test

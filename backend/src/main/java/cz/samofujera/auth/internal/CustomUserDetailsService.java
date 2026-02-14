@@ -31,6 +31,7 @@ class CustomUserDetailsService implements UserDetailsService {
         return new UserPrincipal(
                 record.getId(),
                 record.getEmail(),
+                record.getName(),
                 record.getPasswordHash(),
                 record.getRole(),
                 record.getBlockedAt() != null,

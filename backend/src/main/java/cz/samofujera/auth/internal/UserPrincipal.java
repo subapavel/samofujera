@@ -12,15 +12,17 @@ public class UserPrincipal implements UserDetails {
 
     private final UUID id;
     private final String email;
+    private final String name;
     private final String passwordHash;
     private final String role;
     private final boolean blocked;
     private final boolean deleted;
 
-    public UserPrincipal(UUID id, String email, String passwordHash,
+    public UserPrincipal(UUID id, String email, String name, String passwordHash,
                          String role, boolean blocked, boolean deleted) {
         this.id = id;
         this.email = email;
+        this.name = name;
         this.passwordHash = passwordHash;
         this.role = role;
         this.blocked = blocked;
@@ -28,6 +30,8 @@ public class UserPrincipal implements UserDetails {
     }
 
     public UUID getId() { return id; }
+
+    public String getName() { return name; }
 
     @Override
     public String getUsername() { return email; }
