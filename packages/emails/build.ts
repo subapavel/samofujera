@@ -7,7 +7,7 @@ import { AccountBlocked } from "./src/AccountBlocked";
 import { AccountUnblocked } from "./src/AccountUnblocked";
 import { AccountDeleted } from "./src/AccountDeleted";
 
-const OUTPUT_DIR = "../../backend/src/main/resources/templates/email";
+const OUTPUT_DIR = "../../apps/backend/src/main/resources/templates/email";
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 

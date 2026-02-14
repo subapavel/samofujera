@@ -147,7 +147,7 @@ main <- develop <- feature/<phase>-<description>
 ```bash
 docker compose up -d          # PostgreSQL, Redis, Mailpit, Stripe CLI
 # Backend:
-cd backend && ./gradlew bootRun --args='--spring.profiles.active=dev'
+cd apps/backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 # Frontend:
 pnpm dev                      # from apps/web
 ```
@@ -163,7 +163,8 @@ samofujera/
 ├── apps/
 │   ├── web/                     # Astro (public website, SSR)
 │   ├── admin/                   # React SPA (admin panel)
-│   └── customer/                # React SPA (customer dashboard)
+│   ├── customer/                # React SPA (customer dashboard)
+│   └── backend/                 # Spring Boot 4 + Modulith
 ├── packages/
 │   ├── ui/                      # Shared shadcn/ui components
 │   ├── api-client/              # Typed API client (shared)
@@ -171,7 +172,6 @@ samofujera/
 │   ├── i18n/                    # Shared translations (Lingui)
 │   ├── config/                  # Shared Tailwind/ESLint/TS config
 │   └── utils/                   # Shared formatters, validators
-├── backend/                     # Spring Boot 4 + Modulith
 ├── docker-compose.yml           # Local dev infrastructure
 ├── turbo.json                   # Turborepo config
 ├── commitlint.config.js         # Conventional commits enforcement

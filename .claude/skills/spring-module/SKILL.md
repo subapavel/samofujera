@@ -16,7 +16,7 @@ before generating any code.
 For module name `$ARGUMENTS`:
 
 ```
-backend/src/main/java/cz/samofujera/$ARGUMENTS/
+apps/backend/src/main/java/cz/samofujera/$ARGUMENTS/
 ├── ${Name}Service.java              # Public API
 ├── ${Name}Record.java               # Public DTO (Java record)
 ├── internal/
@@ -24,13 +24,13 @@ backend/src/main/java/cz/samofujera/$ARGUMENTS/
 └── event/
     └── ${Name}CreatedEvent.java     # Domain event
 
-backend/src/test/java/cz/samofujera/$ARGUMENTS/
+apps/backend/src/test/java/cz/samofujera/$ARGUMENTS/
 └── ${Name}ModuleIntegrationTest.java  # @ApplicationModuleTest
 ```
 
 ## Steps
 
-1. Create the package structure under `backend/src/main/java/cz/samofujera/$ARGUMENTS/`
+1. Create the package structure under `apps/backend/src/main/java/cz/samofujera/$ARGUMENTS/`
 2. Create the public service class with constructor injection
 3. Create the public record DTO
 4. Create the `internal/` package with a JOOQ repository skeleton

@@ -14,12 +14,12 @@ for PostgreSQL.
 ## Steps
 
 1. **Detect next version number:**
-   List existing migrations in `backend/src/main/resources/db/migration/`
+   List existing migrations in `apps/backend/src/main/resources/db/migration/`
    Find the highest `V{N}__` prefix and increment by 1.
    If no migrations exist, start with `V1__`.
 
 2. **Create migration file:**
-   Path: `backend/src/main/resources/db/migration/V{N}__${description}.sql`
+   Path: `apps/backend/src/main/resources/db/migration/V{N}__${description}.sql`
    - Replace spaces in description with underscores
    - Use lowercase for description
    - Example: `V3__create_products_table.sql`

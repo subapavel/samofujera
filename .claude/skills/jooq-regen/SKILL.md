@@ -17,7 +17,7 @@ Run this after every Flyway migration that changes the database schema.
 
 1. **Run JOOQ code generation:**
    ```bash
-   cd backend && ./gradlew generateJooq
+   cd backend && ./mvnw generateJooq
    ```
    This will:
    - Start a Testcontainers PostgreSQL instance
@@ -26,19 +26,19 @@ Run this after every Flyway migration that changes the database schema.
 
 2. **Verify generation succeeded:**
    ```bash
-   cd backend && ./gradlew compileJava
+   cd backend && ./mvnw compileJava
    ```
    If any existing JOOQ queries reference columns that changed, this will
    produce compile errors. Fix them.
 
 3. **Run tests to verify nothing broke:**
    ```bash
-   cd backend && ./gradlew test
+   cd backend && ./mvnw test
    ```
 
 ## Generated Classes Location
 ```
-backend/build/generated-sources/jooq/
+apps/backend/build/generated-sources/jooq/
 └── cz/samofujera/jooq/
     ├── tables/           # Table descriptors
     ├── tables/records/   # Row records

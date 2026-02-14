@@ -13,7 +13,7 @@ Use Context7 to verify the current JOOQ DSL API and query patterns.
 ## Steps
 
 1. Verify JOOQ classes exist for the target table (run `/jooq-regen` if not)
-2. Create repository in `backend/src/main/java/cz/samofujera/$0/internal/`
+2. Create repository in `apps/backend/src/main/java/cz/samofujera/$0/internal/`
 3. Write unit test with assertions on query behavior
 4. Run tests
 

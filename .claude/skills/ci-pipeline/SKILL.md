@@ -18,9 +18,9 @@ name: backend ci/cd
 on:
   push:
     branches: [main, develop]
-    paths: ['backend/**']
+    paths: ['apps/backend/**']
   pull_request:
-    paths: ['backend/**']
+    paths: ['apps/backend/**']
 
 jobs:
   test:
@@ -32,7 +32,7 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
-      - run: cd backend && ./gradlew test
+      - run: cd backend && ./mvnw test
 
   modulith-verify:
     needs: test
@@ -43,7 +43,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 25
-      - run: cd backend && ./gradlew modulithVerify
+      - run: cd backend && ./mvnw modulithVerify
 
   deploy:
     needs: modulith-verify
@@ -120,7 +120,7 @@ jobs:
 
 ## Rules
 - Always pin action versions (use @v4 not @latest)
-- Use pnpm for frontend, Gradle for backend
+- Use pnpm for frontend, Maven for backend
 - Run tests BEFORE deploy
 - Only deploy from main branch
 - Use secrets for tokens (FLY_API_TOKEN, etc.)
