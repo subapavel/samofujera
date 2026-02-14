@@ -10,7 +10,7 @@ import java.util.UUID;
 import static cz.samofujera.generated.jooq.Tables.USER_SESSIONS;
 
 @Repository
-class SessionRepository {
+public class SessionRepository {
 
     private final DSLContext dsl;
 
@@ -46,7 +46,7 @@ class SessionRepository {
             .execute();
     }
 
-    void delete(String sessionId) {
+    public void delete(String sessionId) {
         dsl.deleteFrom(USER_SESSIONS)
             .where(USER_SESSIONS.SESSION_ID.eq(sessionId))
             .execute();

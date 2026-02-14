@@ -1,7 +1,10 @@
 package cz.samofujera.auth;
 
 import cz.samofujera.auth.internal.AuthUserRepository;
+import cz.samofujera.auth.internal.PasswordResetTokenRepository;
+import cz.samofujera.auth.internal.SessionRepository;
 import cz.samofujera.auth.internal.SessionTrackingService;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,13 +31,17 @@ class AuthServiceTest {
     @Mock private ApplicationEventPublisher eventPublisher;
     @Mock private AuthenticationManager authenticationManager;
     @Mock private SessionTrackingService sessionTrackingService;
+    @Mock private DSLContext dsl;
+    @Mock private PasswordResetTokenRepository passwordResetTokenRepository;
+    @Mock private SessionRepository sessionRepository;
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
         authService = new AuthService(userRepository, passwordEncoder, eventPublisher,
-            authenticationManager, sessionTrackingService);
+            authenticationManager, sessionTrackingService, dsl, passwordResetTokenRepository,
+            sessionRepository);
     }
 
     @Test
