@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { adminApi } from "@samofujera/api-client";
+import { adminApi, catalogApi } from "@samofujera/api-client";
 import type { AssetResponse } from "@samofujera/api-client";
 import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 

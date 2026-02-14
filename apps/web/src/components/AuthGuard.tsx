@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { userApi, ApiError } from "@samofujera/api-client";
+import { userApi } from "@samofujera/api-client";
 
 interface AuthGuardProps {
   children: ReactNode;
