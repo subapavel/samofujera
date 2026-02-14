@@ -1,0 +1,107 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-02-14\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: cs\n"
+"Project-Id-Version: samofujera\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : (n>=5 && n<=10) ? 2 : 3;\n"
+
+#. Form labels
+msgid "auth.label.email"
+msgstr "Email"
+
+msgid "auth.label.password"
+msgstr "Heslo"
+
+msgid "auth.label.name"
+msgstr "Jméno"
+
+msgid "auth.label.newPassword"
+msgstr "Nové heslo"
+
+#. Button labels
+msgid "auth.button.login"
+msgstr "Přihlásit se"
+
+msgid "auth.button.register"
+msgstr "Registrovat"
+
+msgid "auth.button.logout"
+msgstr "Odhlásit se"
+
+msgid "auth.button.resetPassword"
+msgstr "Obnovit heslo"
+
+msgid "auth.button.deleteAccount"
+msgstr "Smazat účet"
+
+#. Validation errors
+msgid "auth.validation.invalidEmail"
+msgstr "Zadejte platný email"
+
+msgid "auth.validation.passwordMinLength"
+msgstr "Heslo musí mít alespoň 8 znaků"
+
+msgid "auth.validation.requiredField"
+msgstr "Vyplňte toto pole"
+
+#. Success messages
+msgid "auth.success.registration"
+msgstr "Registrace proběhla úspěšně"
+
+msgid "auth.success.passwordResetSent"
+msgstr "Odkaz pro obnovu hesla byl odeslán"
+
+#. Error messages
+msgid "auth.error.invalidCredentials"
+msgstr "Neplatný email nebo heslo"
+
+msgid "auth.error.emailAlreadyExists"
+msgstr "Účet s tímto emailem již existuje"
+
+#. Page titles
+msgid "auth.page.login"
+msgstr "Přihlášení"
+
+msgid "auth.page.register"
+msgstr "Registrace"
+
+msgid "auth.page.forgotPassword"
+msgstr "Zapomenuté heslo"
+
+msgid "auth.page.resetPassword"
+msgstr "Obnovení hesla"
+
+#. Navigation
+msgid "auth.nav.dashboard"
+msgstr "Dashboard"
+
+msgid "auth.nav.profile"
+msgstr "Profil"
+
+msgid "auth.nav.activeSessions"
+msgstr "Aktivní sezení"
+
+msgid "auth.nav.deleteAccount"
+msgstr "Smazat účet"
+
+#. Session management
+msgid "auth.session.activeDevices"
+msgstr "Aktivní zařízení"
+
+msgid "auth.session.revokeAccess"
+msgstr "Odvolat přístup"
+
+#. Account deletion
+msgid "auth.delete.confirmation"
+msgstr "Opravdu chcete smazat svůj účet?"
+
+msgid "auth.delete.passwordPrompt"
+msgstr "Zadejte heslo pro potvrzení"
