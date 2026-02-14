@@ -45,6 +45,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo build
+        env:
+          PUBLIC_API_URL: https://samofujera-api.fly.dev
       - name: deploy web
         uses: cloudflare/wrangler-action@v3
         with:
