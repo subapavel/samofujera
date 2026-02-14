@@ -143,7 +143,7 @@ public class CatalogService {
 
     public CatalogDtos.ProductListResponse getProducts(String status, UUID categoryId,
             String productType, String search, int page, int limit) {
-        int offset = (page - 1) * limit;
+        int offset = Math.max(0, (page - 1) * limit);
         var items = productRepository.findAll(status, categoryId, productType, search, offset, limit);
         long totalItems = productRepository.count(status, categoryId, productType, search);
         int totalPages = (int) Math.ceil((double) totalItems / limit);
