@@ -193,7 +193,7 @@ export interface CreateCategoryRequest {
   sortOrder: number;
 }
 
-export interface UpdateCategoryRequest extends CreateCategoryRequest {}
+export type UpdateCategoryRequest = CreateCategoryRequest;
 
 export interface UpdateShippingRequest {
   carrier?: string;
