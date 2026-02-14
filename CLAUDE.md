@@ -61,8 +61,8 @@ Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
 Scopes (warning-level — flexible):
 - `backend`    — Spring Boot application
 - `web`        — Astro public site
-- `admin`      — Admin React SPA
-- `customer`   — Customer dashboard React SPA
+- `admin`      — Admin section (/admin, React SPA inside Astro)
+- `customer`   — Customer dashboard (/muj-ucet, React SPA inside Astro)
 - `ui`         — Shared shadcn/ui components
 - `api-client` — Shared typed API client
 - `emails`     — React Email templates
@@ -161,9 +161,7 @@ samofujera/
 ├── docs/plans/                  # Design docs and implementation plans
 ├── .claude/skills/              # Custom project skills
 ├── apps/
-│   ├── web/                     # Astro (public website, SSR)
-│   ├── admin/                   # React SPA (admin panel)
-│   ├── customer/                # React SPA (customer dashboard)
+│   ├── web/                     # Astro app (public + /admin + /muj-ucet React SPAs)
 │   └── backend/                 # Spring Boot 4 + Modulith
 ├── packages/
 │   ├── ui/                      # Shared shadcn/ui components

@@ -47,21 +47,9 @@ jobs:
       - run: pnpm turbo build
         env:
           PUBLIC_API_URL: https://samofujera-api.fly.dev
-      - name: deploy web
+      - name: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy apps/web/dist --project-name=samofujera
-      - name: deploy admin
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy apps/admin/dist --project-name=samofujera-admin
-      - name: deploy customer
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy apps/customer/dist --project-name=samofujera-customer
