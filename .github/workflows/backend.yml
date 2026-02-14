@@ -1,0 +1,46 @@
+name: backend
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['backend/**']
+  pull_request:
+    paths: ['backend/**']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: cache maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('backend/pom.xml') }}
+      - name: test
+        working-directory: backend
+        run: ./mvnw verify
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: build jar
+        working-directory: backend
+        run: ./mvnw package -DskipTests
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: deploy
+        working-directory: backend
+        run: flyctl deploy --local-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
