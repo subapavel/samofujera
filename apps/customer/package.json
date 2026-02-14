@@ -1,0 +1,31 @@
+{
+  "name": "@samofujera/customer",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@samofujera/api-client": "workspace:^",
+    "@samofujera/config": "workspace:^",
+    "@samofujera/i18n": "workspace:^",
+    "@samofujera/ui": "workspace:^",
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-router": "^1.159.10",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.1.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.7.0",
+    "vite": "^7.3.1"
+  }
+}
