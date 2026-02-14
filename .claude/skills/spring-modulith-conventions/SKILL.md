@@ -33,12 +33,22 @@ cz.samofujera.<module>/
 3. **Events are Java records** — immutable, serializable
 4. **Public API = classes at module root** — Service + Records only
 5. **Internal = everything in `internal/`** — repositories, implementation details
+6. **Sub-packages need `@NamedInterface`** — expose `event/` or other sub-packages with
+   `@NamedInterface("events")` in `package-info.java` so other modules can access them
+7. **Avoid bean name conflicts** — don't name classes the same as Spring framework beans
+   (e.g. use `UserSessionRepository` not `SessionRepository` to avoid Spring Session conflict)
+8. **@Transactional on event publishers** — methods that call `publishEvent()` must be
+   `@Transactional` for `@ApplicationModuleListener` handlers to fire
 
 ## Event Publishing
 ```java
 // In the publishing module's service:
+// CRITICAL: Method MUST be @Transactional — @ApplicationModuleListener uses
+// @TransactionalEventListener which only fires AFTER transaction commit.
+// Without @Transactional, events are published but listeners never fire.
 private final ApplicationEventPublisher events;
 
+@Transactional
 public void completeOrder(UUID orderId) {
     // ... business logic ...
     events.publishEvent(new OrderPaidEvent(orderId, userId));

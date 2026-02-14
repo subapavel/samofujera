@@ -96,6 +96,15 @@ class ${Name}ModuleIntegrationTest {
 ```
 
 ## After Creation
-- Run `./gradlew test` to verify module boundaries
+- Run `./mvnw test` to verify module boundaries
 - If this module needs a database table, use `/flyway-migration` next
 - If this module needs JOOQ classes, use `/jooq-regen` after migration
+
+## Important Notes
+- **Bean naming**: Avoid class names that conflict with Spring framework beans
+  (e.g. don't use `SessionRepository` — Spring Session already defines that bean)
+- **Sub-package visibility**: If the `event/` package needs to be accessed by other
+  modules, add `@NamedInterface("events")` in `event/package-info.java`
+- **@Transactional**: Any service method that publishes events via
+  `ApplicationEventPublisher` MUST be annotated with `@Transactional` for
+  `@ApplicationModuleListener` handlers to fire

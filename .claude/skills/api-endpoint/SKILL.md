@@ -74,8 +74,10 @@ For paginated results, use `PagedResponse<T>`.
 
 ## Security
 - Public endpoints: no annotation needed (configured in `SecurityConfig`)
-- Authenticated endpoints: `@PreAuthorize("isAuthenticated()")`
-- Admin endpoints: `@PreAuthorize("hasRole('ADMIN')")`
+- Authenticated endpoints: URL pattern in `SecurityConfig` (`/api/**` requires auth)
+- Admin endpoints: URL pattern in `SecurityConfig` (`/api/admin/**` requires ADMIN role)
+- Session-based auth via Spring Session Redis + `HttpSessionSecurityContextRepository`
+- Access authenticated user via `@AuthenticationPrincipal UserPrincipal principal`
 
 ## Rules
 - Always TDD — test first, then implement
@@ -83,3 +85,5 @@ For paginated results, use `PagedResponse<T>`.
 - Always validate input (Bean Validation annotations on request records)
 - Always handle errors via `GlobalExceptionHandler`
 - i18n for any user-facing error messages
+- If method publishes domain events, add `@Transactional` annotation
+- Use `./mvnw test` to run tests (not gradle)
