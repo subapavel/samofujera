@@ -11,13 +11,13 @@ public class SessionTrackingService {
 
     private static final int MAX_SESSIONS = 3;
 
-    private final SessionRepository sessionRepository;
+    private final UserSessionRepository sessionRepository;
     private final DeviceFingerprintService fingerprintService;
     @SuppressWarnings("rawtypes")
     private final Optional<org.springframework.session.SessionRepository> springSessionRepository;
 
     @SuppressWarnings("rawtypes")
-    SessionTrackingService(SessionRepository sessionRepository,
+    SessionTrackingService(UserSessionRepository sessionRepository,
                            DeviceFingerprintService fingerprintService,
                            Optional<org.springframework.session.SessionRepository> springSessionRepository) {
         this.sessionRepository = sessionRepository;

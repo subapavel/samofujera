@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,6 +21,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 2592000) // 30 days
 class SecurityConfig {
 
     @Bean
@@ -38,9 +42,15 @@ class SecurityConfig {
                 .accessDeniedHandler((req, res, accessEx) ->
                     res.sendError(HttpStatus.FORBIDDEN.value()))
             )
+            .securityContext(ctx -> ctx.securityContextRepository(securityContextRepository()))
             .logout(logout -> logout.disable());
 
         return http.build();
+    }
+
+    @Bean
+    SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
     }
 
     @Bean

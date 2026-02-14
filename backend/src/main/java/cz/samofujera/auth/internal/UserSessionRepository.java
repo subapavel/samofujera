@@ -10,11 +10,11 @@ import java.util.UUID;
 import static cz.samofujera.generated.jooq.Tables.USER_SESSIONS;
 
 @Repository
-public class SessionRepository {
+public class UserSessionRepository {
 
     private final DSLContext dsl;
 
-    SessionRepository(DSLContext dsl) {
+    UserSessionRepository(DSLContext dsl) {
         this.dsl = dsl;
     }
 

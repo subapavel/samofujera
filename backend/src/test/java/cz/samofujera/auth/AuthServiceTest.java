@@ -2,7 +2,7 @@ package cz.samofujera.auth;
 
 import cz.samofujera.auth.internal.AuthUserRepository;
 import cz.samofujera.auth.internal.PasswordResetTokenRepository;
-import cz.samofujera.auth.internal.SessionRepository;
+import cz.samofujera.auth.internal.UserSessionRepository;
 import cz.samofujera.auth.internal.SessionTrackingService;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import cz.samofujera.auth.event.UserRegisteredEvent;
 
@@ -33,7 +34,8 @@ class AuthServiceTest {
     @Mock private SessionTrackingService sessionTrackingService;
     @Mock private DSLContext dsl;
     @Mock private PasswordResetTokenRepository passwordResetTokenRepository;
-    @Mock private SessionRepository sessionRepository;
+    @Mock private UserSessionRepository sessionRepository;
+    @Mock private SecurityContextRepository securityContextRepository;
 
     private AuthService authService;
 
@@ -41,7 +43,7 @@ class AuthServiceTest {
     void setUp() {
         authService = new AuthService(userRepository, passwordEncoder, eventPublisher,
             authenticationManager, sessionTrackingService, dsl, passwordResetTokenRepository,
-            sessionRepository);
+            sessionRepository, securityContextRepository);
     }
 
     @Test

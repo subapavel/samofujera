@@ -7,10 +7,10 @@ spring:
   jooq:
     sql-dialect: postgres
   session:
-    store-type: redis
-    redis:
-      namespace: samofujera:session
     timeout: 30d
+    data:
+      redis:
+        namespace: samofujera:session
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}

@@ -8,7 +8,7 @@ import cz.samofujera.auth.event.UserUnblockedEvent;
 import cz.samofujera.auth.internal.AuthUserRepository;
 import cz.samofujera.auth.internal.PasswordResetTokenRepository;
 import cz.samofujera.auth.internal.SessionConflictException;
-import cz.samofujera.auth.internal.SessionRepository;
+import cz.samofujera.auth.internal.UserSessionRepository;
 import cz.samofujera.auth.internal.SessionTrackingService;
 import cz.samofujera.shared.exception.NotFoundException;
 
@@ -17,9 +17,12 @@ import org.jooq.DSLContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,7 +40,8 @@ public class AuthService {
     private final SessionTrackingService sessionTrackingService;
     private final DSLContext dsl;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final SessionRepository sessionRepository;
+    private final UserSessionRepository sessionRepository;
+    private final SecurityContextRepository securityContextRepository;
 
     AuthService(AuthUserRepository userRepository,
                 PasswordEncoder passwordEncoder,
@@ -46,7 +50,8 @@ public class AuthService {
                 SessionTrackingService sessionTrackingService,
                 DSLContext dsl,
                 PasswordResetTokenRepository passwordResetTokenRepository,
-                SessionRepository sessionRepository) {
+                UserSessionRepository sessionRepository,
+                SecurityContextRepository securityContextRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.eventPublisher = eventPublisher;
@@ -55,8 +60,10 @@ public class AuthService {
         this.dsl = dsl;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.sessionRepository = sessionRepository;
+        this.securityContextRepository = securityContextRepository;
     }
 
+    @Transactional
     public AuthDtos.UserResponse register(AuthDtos.RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("User with this email already exists");
@@ -71,7 +78,8 @@ public class AuthService {
     }
 
     public AuthDtos.UserResponse login(AuthDtos.LoginRequest request,
-                                        HttpServletRequest httpRequest) {
+                                        HttpServletRequest httpRequest,
+                                        jakarta.servlet.http.HttpServletResponse httpResponse) {
         var authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
@@ -85,7 +93,10 @@ public class AuthService {
             throw new SessionConflictException(trackResult.existingDevice(), trackResult.sessionId());
         }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
         return new AuthDtos.UserResponse(
             principal.getId(),
@@ -105,6 +116,7 @@ public class AuthService {
         SecurityContextHolder.clearContext();
     }
 
+    @Transactional
     public void forgotPassword(AuthDtos.ForgotPasswordRequest request) {
         var user = dsl.selectFrom(USERS)
             .where(USERS.EMAIL.eq(request.email()))
@@ -153,6 +165,7 @@ public class AuthService {
         sessionRepository.delete(sessionId);
     }
 
+    @Transactional
     public void blockUser(UUID userId) {
         var user = dsl.selectFrom(USERS)
             .where(USERS.ID.eq(userId))
@@ -173,6 +186,7 @@ public class AuthService {
         eventPublisher.publishEvent(new UserBlockedEvent(userId, user.getEmail()));
     }
 
+    @Transactional
     public void unblockUser(UUID userId) {
         var user = dsl.selectFrom(USERS)
             .where(USERS.ID.eq(userId))
@@ -191,6 +205,7 @@ public class AuthService {
         eventPublisher.publishEvent(new UserUnblockedEvent(userId, user.getEmail()));
     }
 
+    @Transactional
     public void deleteAccount(UUID userId, String password, HttpServletRequest request) {
         var user = dsl.selectFrom(USERS)
             .where(USERS.ID.eq(userId))

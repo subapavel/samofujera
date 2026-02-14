@@ -4,6 +4,7 @@ import cz.samofujera.auth.internal.SessionConflictException;
 import cz.samofujera.shared.api.ApiResponse;
 import cz.samofujera.shared.api.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +31,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @Valid @RequestBody AuthDtos.LoginRequest request,
-            HttpServletRequest httpRequest) {
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         try {
-            var user = authService.login(request, httpRequest);
+            var user = authService.login(request, httpRequest, httpResponse);
             return ResponseEntity.ok(ApiResponse.ok(user));
         } catch (SessionConflictException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
