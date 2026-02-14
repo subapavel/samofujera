@@ -24,3 +24,13 @@ management:
     web:
       exposure:
         include: health,info
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:sk_test_placeholder}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_placeholder}
+
+r2:
+  endpoint: ${R2_ENDPOINT:http://localhost:9000}
+  access-key: ${R2_ACCESS_KEY:minioadmin}
+  secret-key: ${R2_SECRET_KEY:minioadmin}
+  bucket: ${R2_BUCKET:samofujera-assets}
