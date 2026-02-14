@@ -9,6 +9,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -53,6 +54,9 @@ public class R2StorageService {
             .endpointOverride(URI.create(endpoint))
             .credentialsProvider(credentials)
             .region(Region.of("auto"))
+            .serviceConfiguration(S3Configuration.builder()
+                .pathStyleAccessEnabled(true)
+                .build())
             .build();
     }
 
