@@ -53,9 +53,3 @@ const routeTree = rootRoute.addChildren([
 ]);
 
 export const router = createRouter({ routeTree, basepath: "/muj-ucet" });
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
