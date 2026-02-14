@@ -2,7 +2,11 @@
 import "../../styles/global.css";
 import CustomerApp from "../../components/customer/main";
 
-export const prerender = false;
+export const prerender = true;
+
+export function getStaticPaths() {
+  return [{ params: { all: undefined } }];
+}
 ---
 
 <!doctype html>

@@ -2,7 +2,11 @@
 import "../../styles/global.css";
 import CatalogApp from "../../components/catalog/main";
 
-export const prerender = false;
+export const prerender = true;
+
+export function getStaticPaths() {
+  return [{ params: { slug: undefined } }];
+}
 ---
 
 <!doctype html>
