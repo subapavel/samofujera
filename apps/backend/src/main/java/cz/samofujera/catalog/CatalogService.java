@@ -1,11 +1,14 @@
 package cz.samofujera.catalog;
 
 import cz.samofujera.catalog.internal.CategoryRepository;
+import cz.samofujera.catalog.internal.DigitalAssetRepository;
 import cz.samofujera.catalog.internal.ProductRepository;
+import cz.samofujera.catalog.internal.R2StorageService;
 import cz.samofujera.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,10 +19,15 @@ public class CatalogService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final DigitalAssetRepository digitalAssetRepository;
+    private final R2StorageService r2StorageService;
 
-    CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository) {
+    CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
+                   DigitalAssetRepository digitalAssetRepository, R2StorageService r2StorageService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
+        this.digitalAssetRepository = digitalAssetRepository;
+        this.r2StorageService = r2StorageService;
     }
 
     public List<CatalogDtos.CategoryResponse> getCategoryTree() {
@@ -141,12 +149,14 @@ public class CatalogService {
         var product = productRepository.findBySlug(slug)
             .orElseThrow(() -> new NotFoundException("Product not found"));
 
+        var assets = getAssetsForProduct(product.id());
+
         return new CatalogDtos.ProductDetailResponse(
             product.id(), product.title(), product.slug(), product.description(),
             product.shortDescription(), product.productType(), product.priceAmount(),
             product.priceCurrency(), product.status(), product.thumbnailUrl(),
             product.categoryId(), product.categoryName(),
-            List.of(), // assets stub — filled in Task 5
+            assets,
             product.createdAt(), product.updatedAt()
         );
     }
@@ -192,6 +202,74 @@ public class CatalogService {
             .orElseThrow(() -> new NotFoundException("Product not found"));
 
         productRepository.updateStatus(id, "ARCHIVED");
+    }
+
+    // Asset methods
+
+    @Transactional
+    public CatalogDtos.AssetResponse uploadAsset(UUID productId, String fileName, String mimeType,
+                                                  long fileSize, InputStream inputStream) {
+        productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        var assetType = resolveAssetType(mimeType);
+        var fileKey = "products/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
+        var sortOrder = digitalAssetRepository.countByProductId(productId);
+
+        r2StorageService.upload(fileKey, inputStream, fileSize, mimeType);
+
+        var assetId = digitalAssetRepository.create(
+            productId, assetType, fileKey, fileName, fileSize, mimeType, sortOrder);
+
+        var asset = digitalAssetRepository.findById(assetId)
+            .orElseThrow(() -> new NotFoundException("Asset not found"));
+
+        return toAssetResponse(asset);
+    }
+
+    @Transactional
+    public void deleteAsset(UUID productId, UUID assetId) {
+        var asset = digitalAssetRepository.findById(assetId)
+            .orElseThrow(() -> new NotFoundException("Asset not found"));
+
+        if (!asset.productId().equals(productId)) {
+            throw new IllegalArgumentException("Asset does not belong to product");
+        }
+
+        r2StorageService.delete(asset.fileKey());
+        digitalAssetRepository.delete(assetId);
+    }
+
+    public List<CatalogDtos.AssetResponse> getAssetsForProduct(UUID productId) {
+        return digitalAssetRepository.findByProductId(productId).stream()
+            .map(this::toAssetResponse)
+            .toList();
+    }
+
+    private String resolveAssetType(String mimeType) {
+        if (mimeType == null) {
+            return "OTHER";
+        }
+        if (mimeType.equals("application/pdf")) {
+            return "PDF";
+        }
+        if (mimeType.startsWith("audio/")) {
+            return "MP3";
+        }
+        if (mimeType.startsWith("video/")) {
+            return "VIDEO";
+        }
+        if (mimeType.equals("application/zip") || mimeType.equals("application/x-zip-compressed")) {
+            return "ZIP";
+        }
+        return "OTHER";
+    }
+
+    private CatalogDtos.AssetResponse toAssetResponse(DigitalAssetRepository.AssetRow row) {
+        return new CatalogDtos.AssetResponse(
+            row.id(), row.assetType(), row.fileName(), row.fileSizeBytes(),
+            row.mimeType(), row.durationSeconds(), row.sortOrder()
+        );
     }
 
     private CatalogDtos.ProductResponse toProductResponse(ProductRepository.ProductRow row) {
