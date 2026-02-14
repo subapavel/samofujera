@@ -1,6 +1,7 @@
 package cz.samofujera.catalog;
 
 import cz.samofujera.catalog.internal.CategoryRepository;
+import cz.samofujera.catalog.internal.ProductRepository;
 import cz.samofujera.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class CatalogService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    CatalogService(CategoryRepository categoryRepository) {
+    CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     public List<CatalogDtos.CategoryResponse> getCategoryTree() {
@@ -119,5 +122,84 @@ public class CatalogService {
             .orElseThrow(() -> new NotFoundException("Category not found"));
 
         categoryRepository.delete(id);
+    }
+
+    // Product methods
+
+    public CatalogDtos.ProductListResponse getProducts(String status, UUID categoryId,
+            String productType, String search, int page, int limit) {
+        int offset = (page - 1) * limit;
+        var items = productRepository.findAll(status, categoryId, productType, search, offset, limit);
+        long totalItems = productRepository.count(status, categoryId, productType, search);
+        int totalPages = (int) Math.ceil((double) totalItems / limit);
+
+        var responses = items.stream().map(this::toProductResponse).toList();
+        return new CatalogDtos.ProductListResponse(responses, page, limit, totalItems, totalPages);
+    }
+
+    public CatalogDtos.ProductDetailResponse getProductBySlug(String slug) {
+        var product = productRepository.findBySlug(slug)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        return new CatalogDtos.ProductDetailResponse(
+            product.id(), product.title(), product.slug(), product.description(),
+            product.shortDescription(), product.productType(), product.priceAmount(),
+            product.priceCurrency(), product.status(), product.thumbnailUrl(),
+            product.categoryId(), product.categoryName(),
+            List.of(), // assets stub — filled in Task 5
+            product.createdAt(), product.updatedAt()
+        );
+    }
+
+    @Transactional
+    public CatalogDtos.ProductResponse createProduct(CatalogDtos.CreateProductRequest request) {
+        if (productRepository.existsBySlug(request.slug())) {
+            throw new IllegalArgumentException("Product with slug '" + request.slug() + "' already exists");
+        }
+
+        var id = productRepository.create(
+            request.title(), request.slug(), request.description(), request.shortDescription(),
+            request.productType(), request.priceAmount(), request.priceCurrency(),
+            request.thumbnailUrl(), request.categoryId()
+        );
+
+        var created = productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        return toProductResponse(created);
+    }
+
+    @Transactional
+    public CatalogDtos.ProductResponse updateProduct(UUID id, CatalogDtos.UpdateProductRequest request) {
+        productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        productRepository.update(
+            id, request.title(), request.slug(), request.description(), request.shortDescription(),
+            request.productType(), request.priceAmount(), request.priceCurrency(),
+            request.status(), request.thumbnailUrl(), request.categoryId()
+        );
+
+        var updated = productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        return toProductResponse(updated);
+    }
+
+    @Transactional
+    public void archiveProduct(UUID id) {
+        productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        productRepository.updateStatus(id, "ARCHIVED");
+    }
+
+    private CatalogDtos.ProductResponse toProductResponse(ProductRepository.ProductRow row) {
+        return new CatalogDtos.ProductResponse(
+            row.id(), row.title(), row.slug(), row.description(), row.shortDescription(),
+            row.productType(), row.priceAmount(), row.priceCurrency(), row.status(),
+            row.thumbnailUrl(), row.categoryId(), row.categoryName(),
+            row.createdAt(), row.updatedAt()
+        );
     }
 }
