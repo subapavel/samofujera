@@ -26,5 +26,7 @@ management:
       enabled: false
 
 app:
+  frontend:
+    url: ${FRONTEND_URL:https://samofujera.pages.dev}
   cors:
     allowed-origins: ${CORS_ORIGINS:https://samofujera.cz,https://admin.samofujera.cz,https://app.samofujera.cz}

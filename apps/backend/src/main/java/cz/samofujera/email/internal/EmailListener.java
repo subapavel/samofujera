@@ -14,9 +14,12 @@ import java.util.Map;
 class EmailListener {
 
     private final EmailService emailService;
+    private final String frontendUrl;
 
-    EmailListener(EmailService emailService) {
+    EmailListener(EmailService emailService,
+                  @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:4321}") String frontendUrl) {
         this.emailService = emailService;
+        this.frontendUrl = frontendUrl;
     }
 
     @ApplicationModuleListener
@@ -29,7 +32,7 @@ class EmailListener {
     void on(PasswordResetRequestedEvent event) {
         emailService.send(event.email(), "Obnovení hesla", "password-reset",
             Map.of("token", event.token(),
-                   "resetLink", "https://samofujera.cz/reset-hesla?token=" + event.token()));
+                   "resetLink", frontendUrl + "/reset-hesla?token=" + event.token()));
     }
 
     @ApplicationModuleListener
