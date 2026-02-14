@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/samofujera
+    username: dev
+    password: dev
+  data:
+    redis:
+      host: localhost
+      port: 6379
