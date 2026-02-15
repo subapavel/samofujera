@@ -9,6 +9,7 @@ import type {
   ImageResponse,
   VariantResponse,
   CreateVariantRequest,
+  CategoryResponse,
 } from "@samofujera/api-client";
 import {
   Button,
@@ -37,25 +38,6 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function flattenCategories(
-  cats: Array<{ id: string; name: string; children: Array<{ id: string; name: string; children: unknown[] }> }>,
-  depth = 0,
-): Array<{ id: string; name: string; depth: number }> {
-  const result: Array<{ id: string; name: string; depth: number }> = [];
-  for (const cat of cats) {
-    result.push({ id: cat.id, name: cat.name, depth });
-    if (cat.children?.length) {
-      result.push(
-        ...flattenCategories(
-          cat.children as Array<{ id: string; name: string; children: Array<{ id: string; name: string; children: unknown[] }> }>,
-          depth + 1,
-        ),
-      );
-    }
-  }
-  return result;
 }
 
 const PRODUCT_TYPES: Array<{ value: ProductType; label: string }> = [
@@ -763,7 +745,9 @@ export function ProductEditPage() {
   const [productType, setProductType] = useState<ProductType>("EBOOK");
   const [priceCZK, setPriceCZK] = useState("");
   const [priceEUR, setPriceEUR] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [metaTitle, setMetaTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
   const [status, setStatus] = useState("DRAFT");
   const [formLoaded, setFormLoaded] = useState(false);
 
@@ -790,7 +774,9 @@ export function ProductEditPage() {
       setProductType(product.productType);
       setPriceCZK(product.prices.CZK != null ? String(product.prices.CZK) : "");
       setPriceEUR(product.prices.EUR != null ? String(product.prices.EUR) : "");
-      setCategoryId(product.categoryId ?? "");
+      setCategoryIds(product.categories?.map((c) => c.id) ?? []);
+      setMetaTitle(product.metaTitle ?? "");
+      setMetaDescription(product.metaDescription ?? "");
       setStatus(product.status);
       setFormLoaded(true);
     }
@@ -814,7 +800,9 @@ export function ProductEditPage() {
         shortDescription: shortDescription || undefined,
         productType,
         prices,
-        categoryId: categoryId || undefined,
+        categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
+        metaTitle: metaTitle || undefined,
+        metaDescription: metaDescription || undefined,
         status,
       });
     },
@@ -838,9 +826,13 @@ export function ProductEditPage() {
     updateMutation.mutate();
   }
 
-  const flatCategories = categoriesQuery.data?.data
-    ? flattenCategories(categoriesQuery.data.data)
-    : [];
+  const categories: CategoryResponse[] = categoriesQuery.data?.data ?? [];
+
+  function toggleCategory(id: string) {
+    setCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
+    );
+  }
 
   if (productQuery.isLoading) {
     return <p className="text-[var(--muted-foreground)]">Načítání produktu...</p>;
@@ -875,6 +867,7 @@ export function ProductEditPage() {
           {showVariantsTab && <TabsTrigger value="variants">Varianty</TabsTrigger>}
           {showFilesTab && <TabsTrigger value="files">Soubory</TabsTrigger>}
           {showMediaTab && <TabsTrigger value="media">Média</TabsTrigger>}
+          <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
@@ -997,21 +990,24 @@ export function ProductEditPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="categoryId">Kategorie</Label>
-                  <select
-                    id="categoryId"
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    disabled={isPending}
-                    className={selectClassName}
-                  >
-                    <option value="">-- Bez kategorie --</option>
-                    {flatCategories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {"  ".repeat(cat.depth)}{cat.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Label>Kategorie</Label>
+                  <div className="mt-1 max-h-48 space-y-2 overflow-y-auto rounded-md border border-[var(--border)] p-3">
+                    {categories.length === 0 ? (
+                      <p className="text-sm text-[var(--muted-foreground)]">Zadne kategorie</p>
+                    ) : (
+                      categories.map((cat) => (
+                        <label key={cat.id} className="flex items-center gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={categoryIds.includes(cat.id)}
+                            onChange={() => toggleCategory(cat.id)}
+                            disabled={isPending}
+                          />
+                          {cat.name}
+                        </label>
+                      ))
+                    )}
+                  </div>
                 </div>
 
                 {updateMutation.isError && (
@@ -1079,6 +1075,38 @@ export function ProductEditPage() {
             />
           </TabsContent>
         )}
+
+        <TabsContent value="seo">
+          <Card>
+            <CardHeader>
+              <CardTitle>SEO</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="metaTitle">Meta titulek</Label>
+                <Input
+                  id="metaTitle"
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  disabled={isPending}
+                  maxLength={255}
+                />
+              </div>
+              <div>
+                <Label htmlFor="metaDescription">Meta popis</Label>
+                <textarea
+                  id="metaDescription"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  disabled={isPending}
+                  rows={3}
+                  maxLength={500}
+                  className={textareaClassName}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );

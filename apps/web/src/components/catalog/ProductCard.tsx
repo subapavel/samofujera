@@ -31,10 +31,14 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="inline-block rounded-full bg-[var(--secondary)] px-2 py-0.5 text-xs font-medium text-[var(--secondary-foreground)]">
               {productTypeLabel(product.productType)}
             </span>
-            {product.categoryName && (
-              <span className="text-xs text-[var(--muted-foreground)]">
-                {product.categoryName}
-              </span>
+            {product.categories?.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {product.categories.map((cat) => (
+                  <span key={cat.id} className="inline-block rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs text-[var(--accent-foreground)]">
+                    {cat.name}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
           <CardTitle className="line-clamp-2 text-base">{product.title}</CardTitle>

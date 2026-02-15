@@ -58,9 +58,17 @@ export interface CategoryResponse {
   id: string;
   name: string;
   slug: string;
-  parentId: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
   sortOrder: number;
-  children: CategoryResponse[];
+}
+
+export interface CategorySummary {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 export type ProductType =
@@ -81,8 +89,9 @@ export interface ProductResponse {
   prices: Record<string, number>;
   status: string;
   thumbnailUrl: string | null;
-  categoryId: string | null;
-  categoryName: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  categories: CategorySummary[];
   createdAt: string;
   updatedAt: string;
 }
@@ -293,7 +302,9 @@ export interface CreateProductRequest {
   productType: ProductType;
   prices: Record<string, number>;
   thumbnailUrl?: string;
-  categoryId?: string;
+  categoryIds?: string[];
+  metaTitle?: string;
+  metaDescription?: string;
   variants?: CreateVariantRequest[];
   event?: CreateEventRequest;
   occurrences?: CreateOccurrenceRequest[];
@@ -306,7 +317,10 @@ export interface UpdateProductRequest extends CreateProductRequest {
 export interface CreateCategoryRequest {
   name: string;
   slug: string;
-  parentId?: string;
+  description?: string;
+  imageUrl?: string;
+  metaTitle?: string;
+  metaDescription?: string;
   sortOrder: number;
 }
 

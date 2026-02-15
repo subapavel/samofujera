@@ -87,11 +87,12 @@ export function ProductDetailPage() {
               <span className="inline-block rounded-full bg-[var(--secondary)] px-3 py-1 text-xs font-medium text-[var(--secondary-foreground)]">
                 {productTypeLabel(product.productType)}
               </span>
-              {product.categoryName && (
-                <span className="inline-block rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
-                  {product.categoryName}
-                </span>
-              )}
+              {product.categories?.length > 0 &&
+                product.categories.map((cat) => (
+                  <span key={cat.id} className="inline-block rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
+                    {cat.name}
+                  </span>
+                ))}
             </div>
             <h1 className="text-3xl font-bold">{product.title}</h1>
           </div>

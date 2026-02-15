@@ -25,11 +25,25 @@ function slugify(text: string): string {
 interface CategoryFormData {
   name: string;
   slug: string;
-  parentId: string;
+  description: string;
+  imageUrl: string;
+  metaTitle: string;
+  metaDescription: string;
   sortOrder: string;
 }
 
-const EMPTY_FORM: CategoryFormData = { name: "", slug: "", parentId: "", sortOrder: "0" };
+const EMPTY_FORM: CategoryFormData = {
+  name: "",
+  slug: "",
+  description: "",
+  imageUrl: "",
+  metaTitle: "",
+  metaDescription: "",
+  sortOrder: "0",
+};
+
+const textareaClassName =
+  "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm ring-offset-[var(--background)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
 
 export function CategoriesPage() {
   const queryClient = useQueryClient();
@@ -48,7 +62,10 @@ export function CategoriesPage() {
       adminApi.createCategory({
         name: form.name,
         slug: form.slug,
-        parentId: form.parentId || undefined,
+        description: form.description || undefined,
+        imageUrl: form.imageUrl || undefined,
+        metaTitle: form.metaTitle || undefined,
+        metaDescription: form.metaDescription || undefined,
         sortOrder: Number(form.sortOrder),
       }),
     onSuccess: async () => {
@@ -65,7 +82,10 @@ export function CategoriesPage() {
       return adminApi.updateCategory(editCategory.id, {
         name: form.name,
         slug: form.slug,
-        parentId: form.parentId || undefined,
+        description: form.description || undefined,
+        imageUrl: form.imageUrl || undefined,
+        metaTitle: form.metaTitle || undefined,
+        metaDescription: form.metaDescription || undefined,
         sortOrder: Number(form.sortOrder),
       });
     },
@@ -108,7 +128,10 @@ export function CategoriesPage() {
     setForm({
       name: cat.name,
       slug: cat.slug,
-      parentId: cat.parentId ?? "",
+      description: cat.description ?? "",
+      imageUrl: cat.imageUrl ?? "",
+      metaTitle: cat.metaTitle ?? "",
+      metaDescription: cat.metaDescription ?? "",
       sortOrder: String(cat.sortOrder),
     });
     setSlugManual(true);
@@ -132,83 +155,138 @@ export function CategoriesPage() {
     updateMutation.mutate();
   }
 
-  function flattenForParentSelect(
-    cats: CategoryResponse[],
-    excludeId?: string,
-    depth = 0,
-  ): Array<{ id: string; name: string; depth: number }> {
-    const result: Array<{ id: string; name: string; depth: number }> = [];
-    for (const cat of cats) {
-      if (cat.id !== excludeId) {
-        result.push({ id: cat.id, name: cat.name, depth });
-        if (cat.children?.length) {
-          result.push(...flattenForParentSelect(cat.children, excludeId, depth + 1));
-        }
-      }
-    }
-    return result;
-  }
-
   const allCategories = categoriesQuery.data?.data ?? [];
+  const sortedCategories = [...allCategories].sort((a, b) => a.sortOrder - b.sortOrder);
 
-  function renderCategoryTree(categories: CategoryResponse[], depth = 0) {
-    return categories.map((cat) => (
-      <div key={cat.id}>
-        <div
-          className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3"
-          style={{ paddingLeft: `${depth * 24 + 16}px` }}
-        >
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium">{cat.name}</span>
-            <span className="text-xs text-[var(--muted-foreground)]">{cat.slug}</span>
-            <span className="text-xs text-[var(--muted-foreground)]">#{cat.sortOrder}</span>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => openEdit(cat)}>
-              Upravit
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={deleteMutation.isPending}
-              onClick={() => handleDelete(cat)}
-            >
-              Smazat
-            </Button>
-          </div>
+  function renderFormFields(prefix: string, isPending: boolean) {
+    return (
+      <>
+        <div>
+          <Label htmlFor={`${prefix}-name`}>Nazev</Label>
+          <Input
+            id={`${prefix}-name`}
+            value={form.name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            required
+            disabled={isPending}
+          />
         </div>
-        {cat.children?.length > 0 && renderCategoryTree(cat.children, depth + 1)}
-      </div>
-    ));
+        <div>
+          <Label htmlFor={`${prefix}-slug`}>Slug</Label>
+          <Input
+            id={`${prefix}-slug`}
+            value={form.slug}
+            onChange={(e) => handleSlugChange(e.target.value)}
+            required
+            disabled={isPending}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${prefix}-description`}>Popis</Label>
+          <textarea
+            id={`${prefix}-description`}
+            value={form.description}
+            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+            disabled={isPending}
+            rows={3}
+            className={textareaClassName}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${prefix}-imageUrl`}>URL obrazku</Label>
+          <Input
+            id={`${prefix}-imageUrl`}
+            value={form.imageUrl}
+            onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
+            disabled={isPending}
+            placeholder="https://..."
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${prefix}-metaTitle`}>Meta titulek</Label>
+          <Input
+            id={`${prefix}-metaTitle`}
+            value={form.metaTitle}
+            onChange={(e) => setForm((prev) => ({ ...prev, metaTitle: e.target.value }))}
+            disabled={isPending}
+            maxLength={255}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${prefix}-metaDescription`}>Meta popis</Label>
+          <textarea
+            id={`${prefix}-metaDescription`}
+            value={form.metaDescription}
+            onChange={(e) => setForm((prev) => ({ ...prev, metaDescription: e.target.value }))}
+            disabled={isPending}
+            rows={2}
+            maxLength={500}
+            className={textareaClassName}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${prefix}-sort`}>Poradi</Label>
+          <Input
+            id={`${prefix}-sort`}
+            type="number"
+            value={form.sortOrder}
+            onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: e.target.value }))}
+            required
+            disabled={isPending}
+          />
+        </div>
+      </>
+    );
   }
-
-  const activeMutation = createOpen ? createMutation : updateMutation;
-  const parentOptions = flattenForParentSelect(allCategories, editCategory?.id);
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Kategorie</h2>
-        <Button onClick={openCreate}>Nová kategorie</Button>
+        <Button onClick={openCreate}>Nova kategorie</Button>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {categoriesQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Načítání kategorií...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">Nacitani kategorii...</p>
         )}
 
         {categoriesQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodařilo se načíst kategorie. Zkuste to prosím znovu.
+            Nepodarilo se nacist kategorie. Zkuste to prosim znovu.
           </p>
         )}
 
         {categoriesQuery.isSuccess && (
           <>
-            {allCategories.length === 0 ? (
-              <p className="p-6 text-[var(--muted-foreground)]">Žádné kategorie.</p>
+            {sortedCategories.length === 0 ? (
+              <p className="p-6 text-[var(--muted-foreground)]">Zadne kategorie.</p>
             ) : (
-              renderCategoryTree(allCategories)
+              sortedCategories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium">{cat.name}</span>
+                    <span className="text-xs text-[var(--muted-foreground)]">{cat.slug}</span>
+                    <span className="text-xs text-[var(--muted-foreground)]">#{cat.sortOrder}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => openEdit(cat)}>
+                      Upravit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      disabled={deleteMutation.isPending}
+                      onClick={() => handleDelete(cat)}
+                    >
+                      Smazat
+                    </Button>
+                  </div>
+                </div>
+              ))
             )}
           </>
         )}
@@ -218,65 +296,18 @@ export function CategoriesPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nová kategorie</DialogTitle>
+            <DialogTitle>Nova kategorie</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="create-name">Název</Label>
-              <Input
-                id="create-name"
-                value={form.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                required
-                disabled={createMutation.isPending}
-              />
-            </div>
-            <div>
-              <Label htmlFor="create-slug">Slug</Label>
-              <Input
-                id="create-slug"
-                value={form.slug}
-                onChange={(e) => handleSlugChange(e.target.value)}
-                required
-                disabled={createMutation.isPending}
-              />
-            </div>
-            <div>
-              <Label htmlFor="create-parent">Nadřazená kategorie</Label>
-              <select
-                id="create-parent"
-                value={form.parentId}
-                onChange={(e) => setForm((prev) => ({ ...prev, parentId: e.target.value }))}
-                disabled={createMutation.isPending}
-                className="flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
-              >
-                <option value="">-- Kořenová kategorie --</option>
-                {parentOptions.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {"  ".repeat(cat.depth)}{cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="create-sort">Pořadí</Label>
-              <Input
-                id="create-sort"
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: e.target.value }))}
-                required
-                disabled={createMutation.isPending}
-              />
-            </div>
+            {renderFormFields("create", createMutation.isPending)}
             {createMutation.isError && (
               <p className="text-sm text-[var(--destructive)]">
-                Nepodařilo se vytvořit kategorii.
+                Nepodarilo se vytvorit kategorii.
               </p>
             )}
             <DialogFooter>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Vytvářím..." : "Vytvořit"}
+                {createMutation.isPending ? "Vytvari se..." : "Vytvorit"}
               </Button>
             </DialogFooter>
           </form>
@@ -290,62 +321,15 @@ export function CategoriesPage() {
             <DialogTitle>Upravit kategorii</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="edit-name">Název</Label>
-              <Input
-                id="edit-name"
-                value={form.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                required
-                disabled={updateMutation.isPending}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-slug">Slug</Label>
-              <Input
-                id="edit-slug"
-                value={form.slug}
-                onChange={(e) => handleSlugChange(e.target.value)}
-                required
-                disabled={updateMutation.isPending}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-parent">Nadřazená kategorie</Label>
-              <select
-                id="edit-parent"
-                value={form.parentId}
-                onChange={(e) => setForm((prev) => ({ ...prev, parentId: e.target.value }))}
-                disabled={updateMutation.isPending}
-                className="flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
-              >
-                <option value="">-- Kořenová kategorie --</option>
-                {parentOptions.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {"  ".repeat(cat.depth)}{cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="edit-sort">Pořadí</Label>
-              <Input
-                id="edit-sort"
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: e.target.value }))}
-                required
-                disabled={updateMutation.isPending}
-              />
-            </div>
+            {renderFormFields("edit", updateMutation.isPending)}
             {updateMutation.isError && (
               <p className="text-sm text-[var(--destructive)]">
-                Nepodařilo se uložit změny.
+                Nepodarilo se ulozit zmeny.
               </p>
             )}
             <DialogFooter>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Ukládání..." : "Uložit"}
+                {updateMutation.isPending ? "Ukladani..." : "Ulozit"}
               </Button>
             </DialogFooter>
           </form>

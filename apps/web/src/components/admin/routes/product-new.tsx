@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { adminApi, catalogApi } from "@samofujera/api-client";
-import type { ProductType } from "@samofujera/api-client";
+import type { ProductType, CategoryResponse } from "@samofujera/api-client";
 import {
   Button,
   Input,
@@ -34,9 +34,6 @@ const PRODUCT_TYPES: Array<{ value: ProductType; label: string; description: str
   { value: "RECURRING_EVENT", label: "Opakovaná událost", description: "Pravidelně se opakující událost" },
   { value: "OFFLINE_EVENT", label: "Offline událost", description: "Prezenční událost na místě" },
 ];
-
-const selectClassName =
-  "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm";
 
 const textareaClassName =
   "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm ring-offset-[var(--background)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
@@ -103,7 +100,9 @@ function ProductForm({ productType }: { productType: ProductType }) {
   const [shortDescription, setShortDescription] = useState("");
   const [priceCZK, setPriceCZK] = useState("");
   const [priceEUR, setPriceEUR] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [metaTitle, setMetaTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -123,7 +122,9 @@ function ProductForm({ productType }: { productType: ProductType }) {
         shortDescription: shortDescription || undefined,
         productType,
         prices,
-        categoryId: categoryId || undefined,
+        categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
+        metaTitle: metaTitle || undefined,
+        metaDescription: metaDescription || undefined,
       });
     },
     onSuccess: (response) => {
@@ -148,28 +149,13 @@ function ProductForm({ productType }: { productType: ProductType }) {
     createMutation.mutate();
   }
 
-  function flattenCategories(
-    cats: Array<{ id: string; name: string; children: Array<{ id: string; name: string; children: unknown[] }> }>,
-    depth = 0,
-  ): Array<{ id: string; name: string; depth: number }> {
-    const result: Array<{ id: string; name: string; depth: number }> = [];
-    for (const cat of cats) {
-      result.push({ id: cat.id, name: cat.name, depth });
-      if (cat.children?.length) {
-        result.push(
-          ...flattenCategories(
-            cat.children as Array<{ id: string; name: string; children: Array<{ id: string; name: string; children: unknown[] }> }>,
-            depth + 1,
-          ),
-        );
-      }
-    }
-    return result;
-  }
+  const categories: CategoryResponse[] = categoriesQuery.data?.data ?? [];
 
-  const flatCategories = categoriesQuery.data?.data
-    ? flattenCategories(categoriesQuery.data.data)
-    : [];
+  function toggleCategory(id: string) {
+    setCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
+    );
+  }
 
   const isPending = createMutation.isPending;
   const typeLabel = PRODUCT_TYPES.find((t) => t.value === productType)?.label ?? productType;
@@ -194,6 +180,7 @@ function ProductForm({ productType }: { productType: ProductType }) {
           {showVariantsTab && <TabsTrigger value="variants">Varianty</TabsTrigger>}
           {showFilesTab && <TabsTrigger value="files">Soubory</TabsTrigger>}
           {showMediaTab && <TabsTrigger value="media">Média</TabsTrigger>}
+          <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
@@ -284,21 +271,24 @@ function ProductForm({ productType }: { productType: ProductType }) {
                 </div>
 
                 <div>
-                  <Label htmlFor="categoryId">Kategorie</Label>
-                  <select
-                    id="categoryId"
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    disabled={isPending}
-                    className={selectClassName}
-                  >
-                    <option value="">-- Bez kategorie --</option>
-                    {flatCategories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {"  ".repeat(cat.depth)}{cat.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Label>Kategorie</Label>
+                  <div className="mt-1 max-h-48 space-y-2 overflow-y-auto rounded-md border border-[var(--border)] p-3">
+                    {categories.length === 0 ? (
+                      <p className="text-sm text-[var(--muted-foreground)]">Zadne kategorie</p>
+                    ) : (
+                      categories.map((cat) => (
+                        <label key={cat.id} className="flex items-center gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={categoryIds.includes(cat.id)}
+                            onChange={() => toggleCategory(cat.id)}
+                            disabled={isPending}
+                          />
+                          {cat.name}
+                        </label>
+                      ))
+                    )}
+                  </div>
                 </div>
 
                 {createMutation.isError && (
@@ -354,6 +344,38 @@ function ProductForm({ productType }: { productType: ProductType }) {
             <SaveFirstPlaceholder label="Média" />
           </TabsContent>
         )}
+
+        <TabsContent value="seo">
+          <Card>
+            <CardHeader>
+              <CardTitle>SEO</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="metaTitle">Meta titulek</Label>
+                <Input
+                  id="metaTitle"
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  disabled={isPending}
+                  maxLength={255}
+                />
+              </div>
+              <div>
+                <Label htmlFor="metaDescription">Meta popis</Label>
+                <textarea
+                  id="metaDescription"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  disabled={isPending}
+                  rows={3}
+                  maxLength={500}
+                  className={textareaClassName}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
