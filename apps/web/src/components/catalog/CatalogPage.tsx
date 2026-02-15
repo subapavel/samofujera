@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { catalogApi } from "@samofujera/api-client";
-import { formatPrice, productTypeLabel } from "./utils";
+import { formatPrices, productTypeLabel } from "./utils";
 
 export function CatalogPage() {
   const { data, isLoading, isError } = useQuery({
@@ -75,7 +75,7 @@ export function CatalogPage() {
                   </p>
                 )}
                 <p className="mt-3 text-lg font-semibold text-[var(--primary)]">
-                  {formatPrice(product.priceAmount, product.priceCurrency)}
+                  {formatPrices(product.prices)}
                 </p>
               </div>
             </Link>

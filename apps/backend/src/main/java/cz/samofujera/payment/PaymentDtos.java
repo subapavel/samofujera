@@ -10,11 +10,13 @@ public final class PaymentDtos {
     private PaymentDtos() {}
 
     public record CheckoutRequest(
-        @NotNull List<CheckoutItem> items
+        @NotNull List<CheckoutItem> items,
+        String currency
     ) {}
 
     public record CheckoutItem(
         @NotNull UUID productId,
+        UUID variantId,
         @Min(1) int quantity
     ) {}
 

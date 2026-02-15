@@ -1,56 +1,68 @@
 package cz.samofujera.catalog;
 
-import cz.samofujera.catalog.internal.CategoryRepository;
-import cz.samofujera.catalog.internal.DigitalAssetRepository;
-import cz.samofujera.catalog.internal.ProductRepository;
-import cz.samofujera.catalog.internal.R2StorageService;
+import cz.samofujera.catalog.internal.*;
 import cz.samofujera.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CatalogService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
-    private final DigitalAssetRepository digitalAssetRepository;
+    private final ProductPriceRepository productPriceRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final VariantPriceRepository variantPriceRepository;
+    private final ProductFileRepository productFileRepository;
+    private final ProductMediaRepository productMediaRepository;
+    private final ProductImageRepository productImageRepository;
+    private final EventRepository eventRepository;
+    private final EventOccurrenceRepository eventOccurrenceRepository;
     private final R2StorageService r2StorageService;
 
     CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
-                   DigitalAssetRepository digitalAssetRepository, R2StorageService r2StorageService) {
+                   ProductPriceRepository productPriceRepository,
+                   ProductVariantRepository productVariantRepository,
+                   VariantPriceRepository variantPriceRepository,
+                   ProductFileRepository productFileRepository,
+                   ProductMediaRepository productMediaRepository,
+                   ProductImageRepository productImageRepository,
+                   EventRepository eventRepository,
+                   EventOccurrenceRepository eventOccurrenceRepository,
+                   R2StorageService r2StorageService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
-        this.digitalAssetRepository = digitalAssetRepository;
+        this.productPriceRepository = productPriceRepository;
+        this.productVariantRepository = productVariantRepository;
+        this.variantPriceRepository = variantPriceRepository;
+        this.productFileRepository = productFileRepository;
+        this.productMediaRepository = productMediaRepository;
+        this.productImageRepository = productImageRepository;
+        this.eventRepository = eventRepository;
+        this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.r2StorageService = r2StorageService;
     }
 
+    // --- Category methods ---
+
     public List<CatalogDtos.CategoryResponse> getCategoryTree() {
         var allCategories = categoryRepository.findAll();
-
-        // Build a map of id -> response with empty children
-        var responseMap = new LinkedHashMap<UUID, CatalogDtos.CategoryResponse>();
         var childrenMap = new LinkedHashMap<UUID, List<CatalogDtos.CategoryResponse>>();
 
-        // First pass: create all response objects
         for (var cat : allCategories) {
             childrenMap.put(cat.id(), new ArrayList<>());
         }
-
-        // Second pass: assign children
         for (var cat : allCategories) {
             if (cat.parentId() != null && childrenMap.containsKey(cat.parentId())) {
                 childrenMap.get(cat.parentId()).add(toResponse(cat, childrenMap));
             }
         }
 
-        // Build tree: return only root categories (no parent)
         var roots = new ArrayList<CatalogDtos.CategoryResponse>();
         for (var cat : allCategories) {
             if (cat.parentId() == null) {
@@ -64,11 +76,7 @@ public class CatalogService {
             CategoryRepository.CategoryRow row,
             LinkedHashMap<UUID, List<CatalogDtos.CategoryResponse>> childrenMap) {
         return new CatalogDtos.CategoryResponse(
-            row.id(),
-            row.name(),
-            row.slug(),
-            row.parentId(),
-            row.sortOrder(),
+            row.id(), row.name(), row.slug(), row.parentId(), row.sortOrder(),
             childrenMap.getOrDefault(row.id(), List.of())
         );
     }
@@ -78,67 +86,38 @@ public class CatalogService {
         if (categoryRepository.existsBySlug(request.slug())) {
             throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
         }
-
-        var id = categoryRepository.create(
-            request.name(),
-            request.slug(),
-            request.parentId(),
-            request.sortOrder()
-        );
-
+        var id = categoryRepository.create(request.name(), request.slug(), request.parentId(), request.sortOrder());
         var created = categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));
-
         return new CatalogDtos.CategoryResponse(
-            created.id(),
-            created.name(),
-            created.slug(),
-            created.parentId(),
-            created.sortOrder(),
-            List.of()
+            created.id(), created.name(), created.slug(), created.parentId(), created.sortOrder(), List.of()
         );
     }
 
     @Transactional
     public CatalogDtos.CategoryResponse updateCategory(UUID id, CatalogDtos.UpdateCategoryRequest request) {
-        categoryRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Category not found"));
-
-        categoryRepository.update(
-            id,
-            request.name(),
-            request.slug(),
-            request.parentId(),
-            request.sortOrder()
-        );
-
+        categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
+        categoryRepository.update(id, request.name(), request.slug(), request.parentId(), request.sortOrder());
         var updated = categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));
-
         return new CatalogDtos.CategoryResponse(
-            updated.id(),
-            updated.name(),
-            updated.slug(),
-            updated.parentId(),
-            updated.sortOrder(),
-            List.of()
+            updated.id(), updated.name(), updated.slug(), updated.parentId(), updated.sortOrder(), List.of()
         );
     }
 
     @Transactional
     public void deleteCategory(UUID id) {
-        categoryRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Category not found"));
-
+        categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
         categoryRepository.delete(id);
     }
 
-    // Product methods
+    // --- Product methods ---
 
     public CatalogDtos.ProductResponse getProductById(UUID id) {
         var product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
-        return toProductResponse(product);
+        var prices = productPriceRepository.findByProductId(id);
+        return toProductResponse(product, prices);
     }
 
     public CatalogDtos.ProductListResponse getProducts(String status, UUID categoryId,
@@ -148,24 +127,25 @@ public class CatalogService {
         long totalItems = productRepository.count(status, categoryId, productType, search);
         int totalPages = (int) Math.ceil((double) totalItems / limit);
 
-        var responses = items.stream().map(this::toProductResponse).toList();
+        var productIds = items.stream().map(ProductRepository.ProductRow::id).toList();
+        var pricesMap = productPriceRepository.findByProductIds(productIds);
+
+        var responses = items.stream()
+            .map(p -> toProductResponse(p, pricesMap.getOrDefault(p.id(), Map.of())))
+            .toList();
         return new CatalogDtos.ProductListResponse(responses, page, limit, totalItems, totalPages);
     }
 
     public CatalogDtos.ProductDetailResponse getProductBySlug(String slug) {
         var product = productRepository.findBySlug(slug)
             .orElseThrow(() -> new NotFoundException("Product not found"));
+        return buildDetailResponse(product);
+    }
 
-        var assets = getAssetsForProduct(product.id());
-
-        return new CatalogDtos.ProductDetailResponse(
-            product.id(), product.title(), product.slug(), product.description(),
-            product.shortDescription(), product.productType(), product.priceAmount(),
-            product.priceCurrency(), product.status(), product.thumbnailUrl(),
-            product.categoryId(), product.categoryName(),
-            assets,
-            product.createdAt(), product.updatedAt()
-        );
+    public CatalogDtos.ProductDetailResponse getProductDetailById(UUID id) {
+        var product = productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+        return buildDetailResponse(product);
     }
 
     @Transactional
@@ -176,14 +156,22 @@ public class CatalogService {
 
         var id = productRepository.create(
             request.title(), request.slug(), request.description(), request.shortDescription(),
-            request.productType(), request.priceAmount(), request.priceCurrency(),
-            request.thumbnailUrl(), request.categoryId()
+            request.productType(), request.thumbnailUrl(), request.categoryId()
         );
+
+        // Save prices
+        if (request.prices() != null) {
+            request.prices().forEach((currency, amount) ->
+                productPriceRepository.upsert(id, currency, amount));
+        }
+
+        // Save type-specific data
+        saveTypeSpecificData(id, request.productType(), request.variants(), request.event(), request.occurrences());
 
         var created = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
-
-        return toProductResponse(created);
+        var prices = productPriceRepository.findByProductId(id);
+        return toProductResponse(created, prices);
     }
 
     @Transactional
@@ -193,116 +181,420 @@ public class CatalogService {
 
         productRepository.update(
             id, request.title(), request.slug(), request.description(), request.shortDescription(),
-            request.productType(), request.priceAmount(), request.priceCurrency(),
-            request.status(), request.thumbnailUrl(), request.categoryId()
+            request.productType(), request.status(), request.thumbnailUrl(), request.categoryId()
         );
+
+        // Sync prices: delete all and re-insert
+        productPriceRepository.deleteByProductId(id);
+        if (request.prices() != null) {
+            request.prices().forEach((currency, amount) ->
+                productPriceRepository.upsert(id, currency, amount));
+        }
+
+        // Sync type-specific data
+        syncTypeSpecificData(id, request.productType(), request.variants(), request.event(), request.occurrences());
 
         var updated = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
-
-        return toProductResponse(updated);
+        var prices = productPriceRepository.findByProductId(id);
+        return toProductResponse(updated, prices);
     }
 
     @Transactional
     public void archiveProduct(UUID id) {
         productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
-
         productRepository.updateStatus(id, "ARCHIVED");
     }
 
-    // Public asset access methods (used by delivery module)
+    // --- Price lookup (used by order module) ---
 
-    public CatalogDtos.AssetDetailResponse getAssetById(UUID assetId) {
-        var asset = digitalAssetRepository.findById(assetId)
-            .orElseThrow(() -> new NotFoundException("Asset not found"));
-        return new CatalogDtos.AssetDetailResponse(
-            asset.id(), asset.productId(), asset.assetType(), asset.fileKey(),
-            asset.fileName(), asset.fileSizeBytes(), asset.mimeType(),
-            asset.durationSeconds(), asset.sortOrder()
+    public BigDecimal getProductPrice(UUID productId, String currency) {
+        return productPriceRepository.findByProductIdAndCurrency(productId, currency);
+    }
+
+    public BigDecimal getVariantPrice(UUID variantId, String currency) {
+        return variantPriceRepository.findByVariantIdAndCurrency(variantId, currency);
+    }
+
+    // --- File methods (EBOOK) ---
+
+    public CatalogDtos.FileDetailResponse getFileById(UUID fileId) {
+        var file = productFileRepository.findById(fileId)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+        return new CatalogDtos.FileDetailResponse(
+            file.id(), file.productId(), file.fileKey(), file.fileName(),
+            file.fileSizeBytes(), file.mimeType(), file.sortOrder()
         );
     }
 
-    public String generateAssetDownloadUrl(UUID assetId, Duration ttl) {
-        var asset = digitalAssetRepository.findById(assetId)
-            .orElseThrow(() -> new NotFoundException("Asset not found"));
-        return r2StorageService.generatePresignedUrl(asset.fileKey(), ttl);
+    public String generateFileDownloadUrl(UUID fileId, Duration ttl) {
+        var file = productFileRepository.findById(fileId)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+        return r2StorageService.generatePresignedUrl(file.fileKey(), ttl);
     }
 
-    // Asset methods
+    @Transactional
+    public CatalogDtos.FileResponse uploadFile(UUID productId, String fileName, String mimeType,
+                                                 long fileSize, InputStream inputStream) {
+        productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        var fileKey = "products/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
+        var sortOrder = productFileRepository.countByProductId(productId);
+
+        r2StorageService.upload(fileKey, inputStream, fileSize, mimeType);
+
+        var fileId = productFileRepository.create(productId, fileKey, fileName, fileSize, mimeType, sortOrder);
+        var created = productFileRepository.findById(fileId)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+
+        return toFileResponse(created);
+    }
 
     @Transactional
-    public CatalogDtos.AssetResponse uploadAsset(UUID productId, String fileName, String mimeType,
+    public void deleteFile(UUID productId, UUID fileId) {
+        var file = productFileRepository.findById(fileId)
+            .orElseThrow(() -> new NotFoundException("File not found"));
+        if (!file.productId().equals(productId)) {
+            throw new IllegalArgumentException("File does not belong to product");
+        }
+        r2StorageService.delete(file.fileKey());
+        productFileRepository.delete(fileId);
+    }
+
+    public List<CatalogDtos.FileResponse> getFilesForProduct(UUID productId) {
+        return productFileRepository.findByProductId(productId).stream()
+            .map(this::toFileResponse)
+            .toList();
+    }
+
+    // --- Media methods (AUDIO_VIDEO) ---
+
+    @Transactional
+    public CatalogDtos.MediaResponse createMedia(UUID productId, CatalogDtos.CreateMediaRequest request) {
+        productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        var mediaId = productMediaRepository.create(
+            productId, request.title(), request.mediaType(),
+            request.cfStreamUid(), request.fileKey(),
+            request.durationSeconds(), request.sortOrder()
+        );
+        var created = productMediaRepository.findById(mediaId)
+            .orElseThrow(() -> new NotFoundException("Media not found"));
+        return toMediaResponse(created);
+    }
+
+    @Transactional
+    public void deleteMedia(UUID productId, UUID mediaId) {
+        var media = productMediaRepository.findById(mediaId)
+            .orElseThrow(() -> new NotFoundException("Media not found"));
+        if (!media.productId().equals(productId)) {
+            throw new IllegalArgumentException("Media does not belong to product");
+        }
+        productMediaRepository.delete(mediaId);
+    }
+
+    public List<CatalogDtos.MediaResponse> getMediaForProduct(UUID productId) {
+        return productMediaRepository.findByProductId(productId).stream()
+            .map(this::toMediaResponse)
+            .toList();
+    }
+
+    // --- Event methods ---
+
+    public CatalogDtos.EventResponse getEventForProduct(UUID productId) {
+        var event = eventRepository.findByProductId(productId)
+            .orElseThrow(() -> new NotFoundException("Event not found"));
+        return toEventResponse(event);
+    }
+
+    public List<CatalogDtos.OccurrenceResponse> getOccurrencesForProduct(UUID productId) {
+        var event = eventRepository.findByProductId(productId).orElse(null);
+        if (event == null) return List.of();
+        return eventOccurrenceRepository.findByEventId(event.id()).stream()
+            .map(this::toOccurrenceResponse)
+            .toList();
+    }
+
+    // --- Variant methods ---
+
+    public List<CatalogDtos.VariantResponse> getVariantsForProduct(UUID productId) {
+        var variants = productVariantRepository.findByProductId(productId);
+        var variantIds = variants.stream().map(ProductVariantRepository.VariantRow::id).toList();
+        var variantPrices = variantPriceRepository.findByVariantIds(variantIds);
+
+        return variants.stream()
+            .map(v -> new CatalogDtos.VariantResponse(
+                v.id(), v.name(), v.sku(), v.stock(), v.sortOrder(),
+                variantPrices.getOrDefault(v.id(), Map.of())
+            ))
+            .toList();
+    }
+
+    public CatalogDtos.VariantResponse getVariantById(UUID variantId) {
+        var row = productVariantRepository.findById(variantId)
+            .orElseThrow(() -> new NotFoundException("Variant not found"));
+        var prices = variantPriceRepository.findByVariantIds(List.of(variantId));
+        return new CatalogDtos.VariantResponse(
+            row.id(), row.name(), row.sku(), row.stock(), row.sortOrder(),
+            prices.getOrDefault(variantId, Map.of())
+        );
+    }
+
+    public void decrementVariantStock(UUID variantId, int quantity) {
+        productVariantRepository.decrementStock(variantId, quantity);
+    }
+
+    // --- Image methods ---
+
+    @Transactional
+    public CatalogDtos.ImageResponse uploadImage(UUID productId, String fileName, String contentType,
                                                   long fileSize, InputStream inputStream) {
         productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        var assetType = resolveAssetType(mimeType);
-        var fileKey = "products/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
-        var sortOrder = digitalAssetRepository.countByProductId(productId);
+        var fileKey = "images/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
+        var sortOrder = productImageRepository.countByProductId(productId);
 
-        r2StorageService.upload(fileKey, inputStream, fileSize, mimeType);
+        r2StorageService.upload(fileKey, inputStream, fileSize, contentType);
 
-        var assetId = digitalAssetRepository.create(
-            productId, assetType, fileKey, fileName, fileSize, mimeType, sortOrder);
+        var imageId = productImageRepository.create(productId, fileKey, fileName, fileSize, contentType, null, sortOrder);
+        var created = productImageRepository.findById(imageId)
+            .orElseThrow(() -> new NotFoundException("Image not found"));
 
-        var asset = digitalAssetRepository.findById(assetId)
-            .orElseThrow(() -> new NotFoundException("Asset not found"));
-
-        return toAssetResponse(asset);
+        return toImageResponse(created);
     }
 
     @Transactional
-    public void deleteAsset(UUID productId, UUID assetId) {
-        var asset = digitalAssetRepository.findById(assetId)
-            .orElseThrow(() -> new NotFoundException("Asset not found"));
-
-        if (!asset.productId().equals(productId)) {
-            throw new IllegalArgumentException("Asset does not belong to product");
+    public void deleteImage(UUID productId, UUID imageId) {
+        var image = productImageRepository.findById(imageId)
+            .orElseThrow(() -> new NotFoundException("Image not found"));
+        if (!image.productId().equals(productId)) {
+            throw new IllegalArgumentException("Image does not belong to product");
         }
-
-        r2StorageService.delete(asset.fileKey());
-        digitalAssetRepository.delete(assetId);
+        r2StorageService.delete(image.fileKey());
+        productImageRepository.delete(imageId);
     }
 
-    public List<CatalogDtos.AssetResponse> getAssetsForProduct(UUID productId) {
-        return digitalAssetRepository.findByProductId(productId).stream()
-            .map(this::toAssetResponse)
+    @Transactional
+    public void reorderImages(UUID productId, List<UUID> imageIds) {
+        productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+        productImageRepository.reorder(imageIds);
+    }
+
+    @Transactional
+    public void updateImageAltText(UUID productId, UUID imageId, String altText) {
+        var image = productImageRepository.findById(imageId)
+            .orElseThrow(() -> new NotFoundException("Image not found"));
+        if (!image.productId().equals(productId)) {
+            throw new IllegalArgumentException("Image does not belong to product");
+        }
+        productImageRepository.updateAltText(imageId, altText);
+    }
+
+    public List<CatalogDtos.ImageResponse> getImagesForProduct(UUID productId) {
+        return productImageRepository.findByProductId(productId).stream()
+            .map(this::toImageResponse)
             .toList();
     }
 
-    private String resolveAssetType(String mimeType) {
-        if (mimeType == null) {
-            return "OTHER";
+    // --- Variant CRUD methods ---
+
+    @Transactional
+    public CatalogDtos.VariantResponse createVariant(UUID productId, CatalogDtos.CreateVariantRequest request) {
+        productRepository.findById(productId)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        var variantId = productVariantRepository.create(
+            productId, request.name(), request.sku(), request.stock(), request.sortOrder());
+        if (request.prices() != null) {
+            request.prices().forEach((currency, amount) ->
+                variantPriceRepository.upsert(variantId, currency, amount));
         }
-        if (mimeType.equals("application/pdf")) {
-            return "PDF";
-        }
-        if (mimeType.startsWith("audio/")) {
-            return "MP3";
-        }
-        if (mimeType.startsWith("video/")) {
-            return "VIDEO";
-        }
-        if (mimeType.equals("application/zip") || mimeType.equals("application/x-zip-compressed")) {
-            return "ZIP";
-        }
-        return "OTHER";
+
+        return getVariantById(variantId);
     }
 
-    private CatalogDtos.AssetResponse toAssetResponse(DigitalAssetRepository.AssetRow row) {
-        return new CatalogDtos.AssetResponse(
-            row.id(), row.assetType(), row.fileName(), row.fileSizeBytes(),
-            row.mimeType(), row.durationSeconds(), row.sortOrder()
+    @Transactional
+    public CatalogDtos.VariantResponse updateVariant(UUID productId, UUID variantId,
+                                                      CatalogDtos.CreateVariantRequest request) {
+        var variant = productVariantRepository.findById(variantId)
+            .orElseThrow(() -> new NotFoundException("Variant not found"));
+        if (!variant.productId().equals(productId)) {
+            throw new IllegalArgumentException("Variant does not belong to product");
+        }
+
+        productVariantRepository.update(variantId, request.name(), request.sku(), request.stock(), request.sortOrder());
+
+        variantPriceRepository.deleteByVariantId(variantId);
+        if (request.prices() != null) {
+            request.prices().forEach((currency, amount) ->
+                variantPriceRepository.upsert(variantId, currency, amount));
+        }
+
+        return getVariantById(variantId);
+    }
+
+    @Transactional
+    public void deleteVariant(UUID productId, UUID variantId) {
+        var variant = productVariantRepository.findById(variantId)
+            .orElseThrow(() -> new NotFoundException("Variant not found"));
+        if (!variant.productId().equals(productId)) {
+            throw new IllegalArgumentException("Variant does not belong to product");
+        }
+        variantPriceRepository.deleteByVariantId(variantId);
+        productVariantRepository.deleteById(variantId);
+    }
+
+    // --- Private helpers ---
+
+    private void saveTypeSpecificData(UUID productId, String productType,
+                                       List<CatalogDtos.CreateVariantRequest> variants,
+                                       CatalogDtos.CreateEventRequest event,
+                                       List<CatalogDtos.CreateOccurrenceRequest> occurrences) {
+        if ("PHYSICAL".equals(productType) && variants != null) {
+            for (var v : variants) {
+                var variantId = productVariantRepository.create(productId, v.name(), v.sku(), v.stock(), v.sortOrder());
+                if (v.prices() != null) {
+                    v.prices().forEach((currency, amount) ->
+                        variantPriceRepository.upsert(variantId, currency, amount));
+                }
+            }
+        }
+
+        if (isEventType(productType) && event != null) {
+            var eventId = eventRepository.create(
+                productId, event.venue(), event.capacity(),
+                event.isOnline(), event.streamUrl(), event.recordingProductId()
+            );
+            if (occurrences != null) {
+                for (var o : occurrences) {
+                    eventOccurrenceRepository.create(eventId, o.startsAt(), o.endsAt(), o.streamUrl());
+                }
+            }
+        }
+    }
+
+    private void syncTypeSpecificData(UUID productId, String productType,
+                                       List<CatalogDtos.CreateVariantRequest> variants,
+                                       CatalogDtos.CreateEventRequest event,
+                                       List<CatalogDtos.CreateOccurrenceRequest> occurrences) {
+        // Sync variants (delete + recreate)
+        if ("PHYSICAL".equals(productType) && variants != null) {
+            productVariantRepository.deleteByProductId(productId);
+            for (var v : variants) {
+                var variantId = productVariantRepository.create(productId, v.name(), v.sku(), v.stock(), v.sortOrder());
+                if (v.prices() != null) {
+                    v.prices().forEach((currency, amount) ->
+                        variantPriceRepository.upsert(variantId, currency, amount));
+                }
+            }
+        }
+
+        // Sync event + occurrences
+        if (isEventType(productType) && event != null) {
+            var existing = eventRepository.findByProductId(productId);
+            if (existing.isPresent()) {
+                eventOccurrenceRepository.deleteByEventId(existing.get().id());
+                eventRepository.update(
+                    existing.get().id(), event.venue(), event.capacity(),
+                    event.isOnline(), event.streamUrl(), event.recordingProductId()
+                );
+                if (occurrences != null) {
+                    for (var o : occurrences) {
+                        eventOccurrenceRepository.create(existing.get().id(), o.startsAt(), o.endsAt(), o.streamUrl());
+                    }
+                }
+            } else {
+                var eventId = eventRepository.create(
+                    productId, event.venue(), event.capacity(),
+                    event.isOnline(), event.streamUrl(), event.recordingProductId()
+                );
+                if (occurrences != null) {
+                    for (var o : occurrences) {
+                        eventOccurrenceRepository.create(eventId, o.startsAt(), o.endsAt(), o.streamUrl());
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isEventType(String productType) {
+        return "ONLINE_EVENT".equals(productType)
+            || "RECURRING_EVENT".equals(productType)
+            || "OFFLINE_EVENT".equals(productType);
+    }
+
+    private CatalogDtos.ProductDetailResponse buildDetailResponse(ProductRepository.ProductRow product) {
+        var prices = productPriceRepository.findByProductId(product.id());
+        var images = getImagesForProduct(product.id());
+        var variants = "PHYSICAL".equals(product.productType()) ? getVariantsForProduct(product.id()) : null;
+        var files = "EBOOK".equals(product.productType()) ? getFilesForProduct(product.id()) : null;
+        var media = "AUDIO_VIDEO".equals(product.productType()) ? getMediaForProduct(product.id()) : null;
+
+        CatalogDtos.EventResponse eventResp = null;
+        List<CatalogDtos.OccurrenceResponse> occurrenceResps = null;
+        if (isEventType(product.productType())) {
+            var eventOpt = eventRepository.findByProductId(product.id());
+            if (eventOpt.isPresent()) {
+                eventResp = toEventResponse(eventOpt.get());
+                occurrenceResps = eventOccurrenceRepository.findByEventId(eventOpt.get().id()).stream()
+                    .map(this::toOccurrenceResponse)
+                    .toList();
+            }
+        }
+
+        return new CatalogDtos.ProductDetailResponse(
+            product.id(), product.title(), product.slug(), product.description(),
+            product.shortDescription(), product.productType(), prices,
+            product.status(), product.thumbnailUrl(), product.categoryId(), product.categoryName(),
+            images, variants, files, media, eventResp, occurrenceResps,
+            product.createdAt(), product.updatedAt()
         );
     }
 
-    private CatalogDtos.ProductResponse toProductResponse(ProductRepository.ProductRow row) {
+    private CatalogDtos.ProductResponse toProductResponse(ProductRepository.ProductRow row,
+                                                            Map<String, BigDecimal> prices) {
         return new CatalogDtos.ProductResponse(
             row.id(), row.title(), row.slug(), row.description(), row.shortDescription(),
-            row.productType(), row.priceAmount(), row.priceCurrency(), row.status(),
-            row.thumbnailUrl(), row.categoryId(), row.categoryName(),
-            row.createdAt(), row.updatedAt()
+            row.productType(), prices, row.status(), row.thumbnailUrl(),
+            row.categoryId(), row.categoryName(), row.createdAt(), row.updatedAt()
+        );
+    }
+
+    private CatalogDtos.ImageResponse toImageResponse(ProductImageRepository.ImageRow row) {
+        var url = r2StorageService.generatePresignedUrl(row.fileKey(), Duration.ofHours(1));
+        return new CatalogDtos.ImageResponse(
+            row.id(), row.fileName(), url, row.altText(), row.sortOrder()
+        );
+    }
+
+    private CatalogDtos.FileResponse toFileResponse(ProductFileRepository.FileRow row) {
+        return new CatalogDtos.FileResponse(
+            row.id(), row.fileName(), row.fileSizeBytes(), row.mimeType(), row.sortOrder()
+        );
+    }
+
+    private CatalogDtos.MediaResponse toMediaResponse(ProductMediaRepository.MediaRow row) {
+        return new CatalogDtos.MediaResponse(
+            row.id(), row.title(), row.mediaType(), row.cfStreamUid(),
+            row.durationSeconds(), row.sortOrder()
+        );
+    }
+
+    private CatalogDtos.EventResponse toEventResponse(EventRepository.EventRow row) {
+        return new CatalogDtos.EventResponse(
+            row.id(), row.venue(), row.capacity(), row.isOnline(),
+            row.streamUrl(), row.recordingProductId()
+        );
+    }
+
+    private CatalogDtos.OccurrenceResponse toOccurrenceResponse(EventOccurrenceRepository.OccurrenceRow row) {
+        return new CatalogDtos.OccurrenceResponse(
+            row.id(), row.startsAt(), row.endsAt(), row.status(), row.streamUrl()
         );
     }
 }

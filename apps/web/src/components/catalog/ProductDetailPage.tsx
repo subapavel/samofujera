@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { catalogApi, checkoutApi } from "@samofujera/api-client";
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
-import { formatPrice, productTypeLabel, formatFileSize } from "./utils";
+import { formatPrices, productTypeLabel, formatFileSize, primaryPrice, formatPrice } from "./utils";
 
 export function ProductDetailPage() {
   const { slug } = useParams({ strict: false });
@@ -14,6 +14,8 @@ export function ProductDetailPage() {
     queryFn: () => catalogApi.getProduct(slug as string),
     enabled: !!slug,
   });
+
+  const product = data?.data;
 
   const checkoutMutation = useMutation({
     mutationFn: () =>
@@ -27,8 +29,6 @@ export function ProductDetailPage() {
       setCheckoutError("Nepodarilo se vytvorit objednavku. Zkuste to prosim znovu.");
     },
   });
-
-  const product = data?.data;
 
   if (isLoading) {
     return (
@@ -52,6 +52,8 @@ export function ProductDetailPage() {
       </div>
     );
   }
+
+  const price = primaryPrice(product.prices);
 
   return (
     <div>
@@ -105,29 +107,50 @@ export function ProductDetailPage() {
             </div>
           )}
 
-          {/* Assets */}
-          {product.assets && product.assets.length > 0 && (
+          {/* EBOOK: File list preview */}
+          {product.productType === "EBOOK" && product.files && product.files.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Obsah produktu</CardTitle>
+                <CardTitle className="text-lg">Soubory ke stazeni</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="divide-y divide-[var(--border)]">
-                  {product.assets.map((asset) => (
-                    <li key={asset.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[var(--muted-foreground)]">
-                          {assetTypeIcon(asset.assetType)}
-                        </span>
-                        <div>
-                          <p className="text-sm font-medium">{asset.fileName}</p>
+                  {product.files.map((file) => (
+                    <li key={file.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                      <span className="text-[var(--muted-foreground)]">{"\u{1F4C4}"}</span>
+                      <div>
+                        <p className="text-sm font-medium">{file.fileName}</p>
+                        <p className="text-xs text-[var(--muted-foreground)]">
+                          {file.mimeType} &middot; {formatFileSize(file.fileSizeBytes)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* AUDIO_VIDEO: Media list preview */}
+          {product.productType === "AUDIO_VIDEO" && product.media && product.media.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Obsah</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="divide-y divide-[var(--border)]">
+                  {product.media.map((media) => (
+                    <li key={media.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                      <span className="text-[var(--muted-foreground)]">
+                        {media.mediaType === "VIDEO" ? "\u{1F3AC}" : "\u{1F3B5}"}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium">{media.title}</p>
+                        {media.durationSeconds != null && (
                           <p className="text-xs text-[var(--muted-foreground)]">
-                            {asset.mimeType} &middot; {formatFileSize(asset.fileSizeBytes)}
-                            {asset.durationSeconds != null && (
-                              <> &middot; {formatDuration(asset.durationSeconds)}</>
-                            )}
+                            {formatDuration(media.durationSeconds)}
                           </p>
-                        </div>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -143,8 +166,13 @@ export function ProductDetailPage() {
             <Card>
               <CardContent className="p-6 space-y-4">
                 <p className="text-3xl font-bold text-[var(--primary)]">
-                  {formatPrice(product.priceAmount, product.priceCurrency)}
+                  {price ? formatPrice(price.amount, price.currency) : formatPrices(product.prices)}
                 </p>
+                {Object.keys(product.prices).length > 1 && (
+                  <p className="text-sm text-[var(--muted-foreground)]">
+                    {formatPrices(product.prices)}
+                  </p>
+                )}
                 <Button
                   className="w-full"
                   size="lg"
@@ -166,19 +194,6 @@ export function ProductDetailPage() {
       </div>
     </div>
   );
-}
-
-function assetTypeIcon(type: string): string {
-  switch (type) {
-    case "FILE":
-      return "\u{1F4C4}";
-    case "VIDEO":
-      return "\u{1F3AC}";
-    case "AUDIO":
-      return "\u{1F3B5}";
-    default:
-      return "\u{1F4CE}";
-  }
 }
 
 function formatDuration(seconds: number): string {

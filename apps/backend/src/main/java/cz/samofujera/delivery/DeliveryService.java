@@ -30,35 +30,58 @@ public class DeliveryService {
         this.rateLimitService = rateLimitService;
     }
 
-    public DeliveryDtos.DownloadResponse generateDownload(UUID userId, UUID assetId,
+    public DeliveryDtos.DownloadResponse generateDownload(UUID userId, UUID fileId,
                                                            String ipAddress, String userAgent) {
-        // 1. Get asset info
-        var asset = catalogService.getAssetById(assetId);
+        var file = catalogService.getFileById(fileId);
 
-        // 2. Check entitlement
-        if (!entitlementService.hasAccess(userId, asset.productId())) {
-            throw new AccessDeniedException("No access to this asset");
+        if (!entitlementService.hasAccess(userId, file.productId())) {
+            throw new AccessDeniedException("No access to this file");
         }
 
-        // 3. Check rate limit (max 5 downloads per hour)
         if (rateLimitService.isRateLimited(userId, 5)) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Download rate limit exceeded");
         }
 
-        // 4. Generate presigned URL (15 min TTL)
-        var downloadUrl = catalogService.generateAssetDownloadUrl(assetId, Duration.ofMinutes(15));
+        var downloadUrl = catalogService.generateFileDownloadUrl(fileId, Duration.ofMinutes(15));
+        downloadLogRepository.log(userId, fileId, ipAddress, userAgent);
 
-        // 5. Log download
-        downloadLogRepository.log(userId, assetId, ipAddress, userAgent);
-
-        // 6. Return response
-        return new DeliveryDtos.DownloadResponse(downloadUrl, asset.fileName(), asset.fileSizeBytes());
+        return new DeliveryDtos.DownloadResponse(downloadUrl, file.fileName(), file.fileSizeBytes());
     }
 
-    public List<CatalogDtos.AssetResponse> getEntitledAssets(UUID userId, UUID productId) {
+    public List<CatalogDtos.FileResponse> getEntitledFiles(UUID userId, UUID productId) {
         if (!entitlementService.hasAccess(userId, productId)) {
             throw new AccessDeniedException("No access to this product");
         }
-        return catalogService.getAssetsForProduct(productId);
+        return catalogService.getFilesForProduct(productId);
+    }
+
+    public DeliveryDtos.StreamResponse getEntitledMedia(UUID userId, UUID productId) {
+        if (!entitlementService.hasAccess(userId, productId)) {
+            throw new AccessDeniedException("No access to this product");
+        }
+        var mediaList = catalogService.getMediaForProduct(productId);
+        var items = mediaList.stream()
+            .map(m -> new DeliveryDtos.StreamItem(
+                m.id(), m.title(), m.mediaType(), m.cfStreamUid(),
+                m.durationSeconds(), m.sortOrder()
+            ))
+            .toList();
+        return new DeliveryDtos.StreamResponse(items);
+    }
+
+    public DeliveryDtos.EventAccessResponse getEntitledEventAccess(UUID userId, UUID productId) {
+        if (!entitlementService.hasAccess(userId, productId)) {
+            throw new AccessDeniedException("No access to this event");
+        }
+        var event = catalogService.getEventForProduct(productId);
+        var occurrences = catalogService.getOccurrencesForProduct(productId).stream()
+            .map(o -> new DeliveryDtos.OccurrenceItem(
+                o.id(), o.startsAt(), o.endsAt(), o.status(), o.streamUrl()
+            ))
+            .toList();
+        return new DeliveryDtos.EventAccessResponse(
+            event.id(), event.venue(), event.capacity(), event.isOnline(),
+            event.streamUrl(), occurrences
+        );
     }
 }

@@ -16,10 +16,10 @@ public class DownloadLogRepository {
         this.dsl = dsl;
     }
 
-    public void log(UUID userId, UUID assetId, String ipAddress, String userAgent) {
+    public void log(UUID userId, UUID fileId, String ipAddress, String userAgent) {
         dsl.insertInto(DOWNLOAD_LOGS)
             .set(DOWNLOAD_LOGS.USER_ID, userId)
-            .set(DOWNLOAD_LOGS.ASSET_ID, assetId)
+            .set(DOWNLOAD_LOGS.FILE_ID, fileId)
             .set(DOWNLOAD_LOGS.IP_ADDRESS, ipAddress)
             .set(DOWNLOAD_LOGS.USER_AGENT, userAgent)
             .execute();

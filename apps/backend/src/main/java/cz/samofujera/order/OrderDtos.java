@@ -14,6 +14,7 @@ public final class OrderDtos {
 
     public record CheckoutItem(
         @NotNull UUID productId,
+        UUID variantId,
         @Min(1) int quantity
     ) {}
 
@@ -31,6 +32,7 @@ public final class OrderDtos {
     public record OrderItemResponse(
         UUID id,
         UUID productId,
+        UUID variantId,
         String productTitle,
         String productType,
         int quantity,

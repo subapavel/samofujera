@@ -1,15 +1,34 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { adminApi } from "@samofujera/api-client";
-import { Button, Input } from "@samofujera/ui";
+import type { ProductType } from "@samofujera/api-client";
+import {
+  Button,
+  Input,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@samofujera/ui";
 
 const PRODUCT_TYPE_LABELS: Record<string, string> = {
-  DIGITAL: "Digitální",
-  STREAMING: "Streaming",
   PHYSICAL: "Fyzický",
-  EVENT: "Událost",
+  EBOOK: "E-book",
+  AUDIO_VIDEO: "Audio/Video",
+  ONLINE_EVENT: "Online událost",
+  RECURRING_EVENT: "Opakovaná událost",
+  OFFLINE_EVENT: "Offline událost",
 };
+
+const PRODUCT_TYPES: Array<{ value: ProductType; label: string }> = [
+  { value: "PHYSICAL", label: "Fyzický produkt" },
+  { value: "EBOOK", label: "E-book" },
+  { value: "AUDIO_VIDEO", label: "Audio/Video" },
+  { value: "ONLINE_EVENT", label: "Online událost" },
+  { value: "RECURRING_EVENT", label: "Opakovaná událost" },
+  { value: "OFFLINE_EVENT", label: "Offline událost" },
+];
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: "Koncept",
@@ -23,7 +42,14 @@ const STATUS_COLORS: Record<string, string> = {
   ARCHIVED: "bg-red-100 text-red-700",
 };
 
+function formatPrices(prices: Record<string, number>): string {
+  const entries = Object.entries(prices);
+  if (entries.length === 0) return "—";
+  return entries.map(([currency, amount]) => `${amount} ${currency}`).join(" / ");
+}
+
 export function ProductsPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
@@ -61,9 +87,30 @@ export function ProductsPage() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Produkty</h2>
-        <Link to="/produkty/novy">
-          <Button>Nový produkt</Button>
-        </Link>
+        <div className="flex">
+          <Link to="/produkty/novy">
+            <Button className="rounded-r-none">Nový produkt</Button>
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="rounded-l-none border-l border-l-[var(--primary-foreground)]/20 px-2">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 5L6 8L9 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {PRODUCT_TYPES.map((t) => (
+                <DropdownMenuItem
+                  key={t.value}
+                  onClick={() => void navigate({ to: "/produkty/novy", search: { typ: t.value } })}
+                >
+                  {t.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Filters */}
@@ -99,10 +146,12 @@ export function ProductsPage() {
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
           <option value="">Všechny typy</option>
-          <option value="DIGITAL">Digitální</option>
-          <option value="STREAMING">Streaming</option>
           <option value="PHYSICAL">Fyzický</option>
-          <option value="EVENT">Událost</option>
+          <option value="EBOOK">E-book</option>
+          <option value="AUDIO_VIDEO">Audio/Video</option>
+          <option value="ONLINE_EVENT">Online událost</option>
+          <option value="RECURRING_EVENT">Opakovaná událost</option>
+          <option value="OFFLINE_EVENT">Offline událost</option>
         </select>
       </div>
 
@@ -153,7 +202,7 @@ export function ProductsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        {product.priceAmount} {product.priceCurrency}
+                        {formatPrices(product.prices)}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">

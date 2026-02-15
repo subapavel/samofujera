@@ -32,11 +32,12 @@ public class OrderItemRepository {
         OffsetDateTime createdAt
     ) {}
 
-    public UUID create(UUID orderId, UUID productId, int quantity,
+    public UUID create(UUID orderId, UUID productId, UUID variantId, int quantity,
                        BigDecimal unitPrice, BigDecimal totalPrice, String productSnapshotJson) {
         return dsl.insertInto(ORDER_ITEMS)
             .set(ORDER_ITEMS.ORDER_ID, orderId)
             .set(ORDER_ITEMS.PRODUCT_ID, productId)
+            .set(ORDER_ITEMS.VARIANT_ID, variantId)
             .set(ORDER_ITEMS.QUANTITY, quantity)
             .set(ORDER_ITEMS.UNIT_PRICE, unitPrice)
             .set(ORDER_ITEMS.TOTAL_PRICE, totalPrice)

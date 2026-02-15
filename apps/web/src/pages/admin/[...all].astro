@@ -2,11 +2,7 @@
 import "../../styles/global.css";
 import AdminApp from "../../components/admin/main";
 
-export const prerender = true;
-
-export function getStaticPaths() {
-  return [{ params: { all: undefined } }];
-}
+export const prerender = false;
 ---
 
 <!doctype html>

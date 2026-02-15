@@ -57,9 +57,8 @@ class OrderIntegrationTest {
                         "title": "%s",
                         "slug": "%s",
                         "description": "Test product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK"
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00}
                     }
                     """.formatted(title, slug)))
             .andExpect(status().isCreated())
@@ -76,9 +75,8 @@ class OrderIntegrationTest {
                         "title": "%s",
                         "slug": "%s",
                         "description": "Test product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK",
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00},
                         "status": "ACTIVE"
                     }
                     """.formatted(title, slug)))
@@ -90,6 +88,7 @@ class OrderIntegrationTest {
     private String createOrder(UserPrincipal customer, String productId) throws Exception {
         var result = mockMvc.perform(post("/api/orders")
                 .with(user(customer))
+                .param("currency", "CZK")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     [{"productId": "%s", "quantity": 1}]
@@ -109,6 +108,7 @@ class OrderIntegrationTest {
 
         mockMvc.perform(post("/api/orders")
                 .with(user(customer))
+                .param("currency", "CZK")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     [{"productId": "%s", "quantity": 2}]

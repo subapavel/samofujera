@@ -14,9 +14,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static cz.samofujera.generated.jooq.Tables.PRODUCTS;
 import static cz.samofujera.generated.jooq.Tables.USERS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,9 +58,11 @@ class EntitlementIntegrationTest {
             "entitlement-product-" + suffix,
             "Test product for entitlement",
             "Short desc",
-            "DIGITAL_DOWNLOAD",
-            new BigDecimal("299.00"),
-            "CZK",
+            "EBOOK",
+            Map.of("CZK", new BigDecimal("299.00")),
+            null,
+            null,
+            null,
             null,
             null
         ));
@@ -74,7 +76,7 @@ class EntitlementIntegrationTest {
         var productId = createTestProduct(suffix);
 
         entitlementService.grantAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
-            "test@test.com", "Test Product", "DIGITAL_DOWNLOAD");
+            "test@test.com", "Test Product", "EBOOK");
 
         assertThat(entitlementService.hasAccess(userId, productId)).isTrue();
     }
@@ -94,7 +96,7 @@ class EntitlementIntegrationTest {
         var productId = createTestProduct(suffix);
 
         entitlementService.grantAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
-            "test@test.com", "Test Product", "DIGITAL_DOWNLOAD");
+            "test@test.com", "Test Product", "EBOOK");
         assertThat(entitlementService.hasAccess(userId, productId)).isTrue();
 
         entitlementService.revokeAccess(userId, productId);
@@ -108,13 +110,13 @@ class EntitlementIntegrationTest {
         var productId = createTestProduct(suffix);
 
         entitlementService.grantAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
-            "test@test.com", "Entitlement Product " + suffix, "DIGITAL_DOWNLOAD");
+            "test@test.com", "Entitlement Product " + suffix, "EBOOK");
 
         var library = entitlementService.getLibrary(userId);
         assertThat(library).hasSize(1);
         assertThat(library.getFirst().productId()).isEqualTo(productId);
         assertThat(library.getFirst().productTitle()).isEqualTo("Entitlement Product " + suffix);
-        assertThat(library.getFirst().productType()).isEqualTo("DIGITAL_DOWNLOAD");
+        assertThat(library.getFirst().productType()).isEqualTo("EBOOK");
     }
 
     @Test
@@ -128,7 +130,7 @@ class EntitlementIntegrationTest {
             orderId, userId, "test@test.com", "Test User",
             new BigDecimal("299.00"), "CZK",
             List.of(new OrderPaidEvent.OrderItem(
-                productId, "Entitlement Product " + suffix, "DIGITAL_DOWNLOAD", 1))
+                productId, "Entitlement Product " + suffix, "EBOOK", 1))
         );
 
         transactionTemplate.executeWithoutResult(status -> eventPublisher.publishEvent(event));

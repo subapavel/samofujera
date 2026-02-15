@@ -34,11 +34,27 @@ public class LibraryController {
         return ResponseEntity.ok(ApiResponse.ok(library));
     }
 
-    @GetMapping("/{productId}/assets")
-    public ResponseEntity<ApiResponse<List<CatalogDtos.AssetResponse>>> getProductAssets(
+    @GetMapping("/{productId}/files")
+    public ResponseEntity<ApiResponse<List<CatalogDtos.FileResponse>>> getProductFiles(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID productId) {
-        var assets = deliveryService.getEntitledAssets(principal.getId(), productId);
-        return ResponseEntity.ok(ApiResponse.ok(assets));
+        var files = deliveryService.getEntitledFiles(principal.getId(), productId);
+        return ResponseEntity.ok(ApiResponse.ok(files));
+    }
+
+    @GetMapping("/{productId}/media")
+    public ResponseEntity<ApiResponse<DeliveryDtos.StreamResponse>> getProductMedia(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID productId) {
+        var media = deliveryService.getEntitledMedia(principal.getId(), productId);
+        return ResponseEntity.ok(ApiResponse.ok(media));
+    }
+
+    @GetMapping("/{productId}/event")
+    public ResponseEntity<ApiResponse<DeliveryDtos.EventAccessResponse>> getProductEvent(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID productId) {
+        var event = deliveryService.getEntitledEventAccess(principal.getId(), productId);
+        return ResponseEntity.ok(ApiResponse.ok(event));
     }
 }

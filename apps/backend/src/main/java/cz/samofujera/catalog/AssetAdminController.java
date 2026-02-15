@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin/products/{productId}/assets")
+@RequestMapping("/api/admin/products/{productId}/files")
 public class AssetAdminController {
 
     private final CatalogService catalogService;
@@ -21,11 +21,11 @@ public class AssetAdminController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<CatalogDtos.AssetResponse>> uploadAsset(
+    public ResponseEntity<ApiResponse<CatalogDtos.FileResponse>> uploadFile(
             @PathVariable UUID productId,
             @RequestParam("file") MultipartFile file) throws IOException {
 
-        var asset = catalogService.uploadAsset(
+        var uploaded = catalogService.uploadFile(
             productId,
             file.getOriginalFilename(),
             file.getContentType(),
@@ -33,15 +33,15 @@ public class AssetAdminController {
             file.getInputStream()
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(asset));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(uploaded));
     }
 
-    @DeleteMapping("/{assetId}")
-    public ResponseEntity<Void> deleteAsset(
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity<Void> deleteFile(
             @PathVariable UUID productId,
-            @PathVariable UUID assetId) {
+            @PathVariable UUID fileId) {
 
-        catalogService.deleteAsset(productId, assetId);
+        catalogService.deleteFile(productId, fileId);
         return ResponseEntity.noContent().build();
     }
 }

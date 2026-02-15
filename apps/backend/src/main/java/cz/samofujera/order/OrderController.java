@@ -24,8 +24,9 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ApiResponse<OrderDtos.OrderResponse>> createOrder(
             @AuthenticationPrincipal UserPrincipal principal,
-            @Valid @RequestBody List<OrderDtos.CheckoutItem> items) {
-        var result = orderService.createOrder(principal.getId(), items);
+            @Valid @RequestBody List<OrderDtos.CheckoutItem> items,
+            @RequestParam(defaultValue = "CZK") String currency) {
+        var result = orderService.createOrder(principal.getId(), items, currency);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(result));
     }
 

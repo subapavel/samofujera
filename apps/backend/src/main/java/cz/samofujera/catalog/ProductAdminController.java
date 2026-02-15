@@ -32,16 +32,7 @@ public class ProductAdminController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CatalogDtos.ProductDetailResponse>> getProduct(@PathVariable UUID id) {
-        var product = catalogService.getProductById(id);
-        var assets = catalogService.getAssetsForProduct(id);
-        var detail = new CatalogDtos.ProductDetailResponse(
-            product.id(), product.title(), product.slug(), product.description(),
-            product.shortDescription(), product.productType(), product.priceAmount(),
-            product.priceCurrency(), product.status(), product.thumbnailUrl(),
-            product.categoryId(), product.categoryName(),
-            assets,
-            product.createdAt(), product.updatedAt()
-        );
+        var detail = catalogService.getProductDetailById(id);
         return ResponseEntity.ok(ApiResponse.ok(detail));
     }
 

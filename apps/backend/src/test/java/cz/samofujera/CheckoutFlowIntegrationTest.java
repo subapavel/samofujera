@@ -97,9 +97,8 @@ class CheckoutFlowIntegrationTest {
                         "title": "E2E Product %s",
                         "slug": "e2e-product-%s",
                         "description": "End-to-end test product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 499.00,
-                        "priceCurrency": "CZK",
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 499.00},
                         "categoryId": "%s"
                     }
                     """.formatted(suffix, suffix, categoryId)))
@@ -119,9 +118,8 @@ class CheckoutFlowIntegrationTest {
                         "title": "E2E Product %s",
                         "slug": "e2e-product-%s",
                         "description": "End-to-end test product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 499.00,
-                        "priceCurrency": "CZK",
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 499.00},
                         "categoryId": "%s",
                         "status": "ACTIVE"
                     }
@@ -161,7 +159,6 @@ class CheckoutFlowIntegrationTest {
             .andExpect(jsonPath("$.data.items.length()").value(1));
 
         // Step 6: Simulate payment completion by calling markAsPaid directly
-        // This is what happens after Stripe webhook verification in production.
         orderService.markAsPaid(
             UUID.fromString(orderId),
             "pi_e2e_test_" + suffix,
@@ -187,11 +184,11 @@ class CheckoutFlowIntegrationTest {
                 .andExpect(jsonPath("$.data.length()").value(1))
                 .andExpect(jsonPath("$.data[0].productId").value(productId))
                 .andExpect(jsonPath("$.data[0].productTitle").value("E2E Product " + suffix))
-                .andExpect(jsonPath("$.data[0].productType").value("DIGITAL_DOWNLOAD"));
+                .andExpect(jsonPath("$.data[0].productType").value("EBOOK"));
         });
 
-        // Step 10: Verify library assets endpoint works (even if no assets uploaded)
-        mockMvc.perform(get("/api/library/{productId}/assets", productId)
+        // Step 10: Verify library files endpoint works (even if no files uploaded)
+        mockMvc.perform(get("/api/library/{productId}/files", productId)
                 .with(user(customer)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isArray());
@@ -266,9 +263,8 @@ class CheckoutFlowIntegrationTest {
                         "title": "%s",
                         "slug": "%s",
                         "description": "E2E test product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK"
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00}
                     }
                     """.formatted(title, slug)))
             .andExpect(status().isCreated())
@@ -285,9 +281,8 @@ class CheckoutFlowIntegrationTest {
                         "title": "%s",
                         "slug": "%s",
                         "description": "E2E test product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK",
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00},
                         "status": "ACTIVE"
                     }
                     """.formatted(title, slug)))

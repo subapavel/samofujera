@@ -44,9 +44,8 @@ class AssetIntegrationTest {
                         "slug": "%s",
                         "description": "Test description",
                         "shortDescription": "Short desc",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK"
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00}
                     }
                     """.formatted(slug, slug)))
             .andExpect(status().isCreated())
@@ -57,61 +56,60 @@ class AssetIntegrationTest {
     }
 
     @Test
-    void uploadAsset_returns404_whenProductNotFound() throws Exception {
+    void uploadFile_returns404_whenProductNotFound() throws Exception {
         var nonExistentProductId = UUID.randomUUID();
         var file = new MockMultipartFile(
             "file", "test.pdf", "application/pdf", "PDF content".getBytes());
 
-        mockMvc.perform(multipart("/api/admin/products/{productId}/assets", nonExistentProductId)
+        mockMvc.perform(multipart("/api/admin/products/{productId}/files", nonExistentProductId)
                 .file(file)
                 .with(user(adminPrincipal())))
             .andExpect(status().isNotFound());
     }
 
     @Test
-    void uploadAsset_returns201_withValidProduct() throws Exception {
-        String slug = "asset-product-" + UUID.randomUUID().toString().substring(0, 8);
+    void uploadFile_returns201_withValidProduct() throws Exception {
+        String slug = "file-product-" + UUID.randomUUID().toString().substring(0, 8);
         var productId = createProduct(slug);
 
         var file = new MockMultipartFile(
             "file", "guide.pdf", "application/pdf", "PDF content".getBytes());
 
-        mockMvc.perform(multipart("/api/admin/products/{productId}/assets", productId)
+        mockMvc.perform(multipart("/api/admin/products/{productId}/files", productId)
                 .file(file)
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.id").exists())
-            .andExpect(jsonPath("$.data.assetType").value("PDF"))
             .andExpect(jsonPath("$.data.fileName").value("guide.pdf"))
             .andExpect(jsonPath("$.data.mimeType").value("application/pdf"))
             .andExpect(jsonPath("$.data.sortOrder").value(0));
     }
 
     @Test
-    void deleteAsset_returns204() throws Exception {
-        String slug = "delete-asset-" + UUID.randomUUID().toString().substring(0, 8);
+    void deleteFile_returns204() throws Exception {
+        String slug = "delete-file-" + UUID.randomUUID().toString().substring(0, 8);
         var productId = createProduct(slug);
 
         var file = new MockMultipartFile(
             "file", "to-delete.pdf", "application/pdf", "PDF content".getBytes());
 
-        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/assets", productId)
+        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/files", productId)
                 .file(file)
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andReturn();
 
-        var assetId = com.jayway.jsonpath.JsonPath.read(
+        var fileId = com.jayway.jsonpath.JsonPath.read(
             uploadResult.getResponse().getContentAsString(), "$.data.id").toString();
 
-        mockMvc.perform(delete("/api/admin/products/{productId}/assets/{assetId}", productId, assetId)
+        mockMvc.perform(delete("/api/admin/products/{productId}/files/{fileId}", productId, fileId)
                 .with(user(adminPrincipal())))
             .andExpect(status().isNoContent());
     }
 
     @Test
-    void productDetail_includesAssets() throws Exception {
-        String slug = "detail-assets-" + UUID.randomUUID().toString().substring(0, 8);
+    void productDetail_includesFiles() throws Exception {
+        String slug = "detail-files-" + UUID.randomUUID().toString().substring(0, 8);
         var productId = createProduct(slug);
 
         // Activate the product
@@ -122,28 +120,28 @@ class AssetIntegrationTest {
                     {
                         "title": "Test Product %s",
                         "slug": "%s",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00},
                         "status": "ACTIVE"
                     }
                     """.formatted(slug, slug)))
             .andExpect(status().isOk());
 
-        // Upload an asset
+        // Upload a file
         var file = new MockMultipartFile(
             "file", "ebook.pdf", "application/pdf", "PDF content".getBytes());
 
-        mockMvc.perform(multipart("/api/admin/products/{productId}/assets", productId)
+        mockMvc.perform(multipart("/api/admin/products/{productId}/files", productId)
                 .file(file)
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated());
 
-        // Get product by slug — should include assets
+        // Get product by slug — should include files
         mockMvc.perform(get("/api/catalog/products/{slug}", slug))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.assets").isArray())
-            .andExpect(jsonPath("$.data.assets.length()").value(1))
-            .andExpect(jsonPath("$.data.assets[0].fileName").value("ebook.pdf"))
-            .andExpect(jsonPath("$.data.assets[0].assetType").value("PDF"));
+            .andExpect(jsonPath("$.data.files").isArray())
+            .andExpect(jsonPath("$.data.files.length()").value(1))
+            .andExpect(jsonPath("$.data.files[0].fileName").value("ebook.pdf"))
+            .andExpect(jsonPath("$.data.files[0].mimeType").value("application/pdf"));
     }
 }

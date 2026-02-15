@@ -63,15 +63,22 @@ export interface CategoryResponse {
   children: CategoryResponse[];
 }
 
+export type ProductType =
+  | "PHYSICAL"
+  | "EBOOK"
+  | "AUDIO_VIDEO"
+  | "ONLINE_EVENT"
+  | "RECURRING_EVENT"
+  | "OFFLINE_EVENT";
+
 export interface ProductResponse {
   id: string;
   title: string;
   slug: string;
   description: string | null;
   shortDescription: string | null;
-  productType: string;
-  priceAmount: number;
-  priceCurrency: string;
+  productType: ProductType;
+  prices: Record<string, number>;
   status: string;
   thumbnailUrl: string | null;
   categoryId: string | null;
@@ -88,18 +95,64 @@ export interface ProductListResponse {
   totalPages: number;
 }
 
-export interface AssetResponse {
+export interface VariantResponse {
   id: string;
-  assetType: string;
+  name: string;
+  sku: string;
+  stock: number;
+  sortOrder: number;
+  prices: Record<string, number>;
+}
+
+export interface FileResponse {
+  id: string;
   fileName: string;
   fileSizeBytes: number;
   mimeType: string;
+  sortOrder: number;
+}
+
+export interface MediaResponse {
+  id: string;
+  title: string;
+  mediaType: "VIDEO" | "AUDIO";
+  cfStreamUid: string | null;
   durationSeconds: number | null;
   sortOrder: number;
 }
 
+export interface EventResponse {
+  id: string;
+  venue: string | null;
+  capacity: number | null;
+  isOnline: boolean;
+  streamUrl: string | null;
+  recordingProductId: string | null;
+}
+
+export interface OccurrenceResponse {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  status: string;
+  streamUrl: string | null;
+}
+
+export interface ImageResponse {
+  id: string;
+  fileName: string;
+  url: string;
+  altText: string | null;
+  sortOrder: number;
+}
+
 export interface ProductDetailResponse extends ProductResponse {
-  assets: AssetResponse[];
+  images: ImageResponse[];
+  variants: VariantResponse[] | null;
+  files: FileResponse[] | null;
+  media: MediaResponse[] | null;
+  event: EventResponse | null;
+  occurrences: OccurrenceResponse[] | null;
 }
 
 // Orders
@@ -107,6 +160,7 @@ export interface ProductDetailResponse extends ProductResponse {
 export interface OrderItemResponse {
   id: string;
   productId: string;
+  variantId: string | null;
   productTitle: string;
   productType: string;
   quantity: number;
@@ -143,8 +197,8 @@ export interface OrderListResponse {
 }
 
 export interface CheckoutRequest {
-  items: { productId: string; quantity: number }[];
-  voucherCode?: string;
+  items: { productId: string; variantId?: string; quantity: number }[];
+  currency?: string;
 }
 
 export interface CheckoutResponse {
@@ -157,7 +211,7 @@ export interface CheckoutResponse {
 export interface LibraryItem {
   productId: string;
   productTitle: string;
-  productType: string;
+  productType: ProductType;
   thumbnailUrl: string | null;
   grantedAt: string;
 }
@@ -168,18 +222,81 @@ export interface DownloadResponse {
   fileSize: number;
 }
 
+export interface StreamResponse {
+  items: StreamItem[];
+}
+
+export interface StreamItem {
+  id: string;
+  title: string;
+  mediaType: "VIDEO" | "AUDIO";
+  cfStreamUid: string | null;
+  durationSeconds: number | null;
+  sortOrder: number;
+}
+
+export interface EventAccessResponse {
+  eventId: string;
+  venue: string | null;
+  capacity: number | null;
+  isOnline: boolean;
+  streamUrl: string | null;
+  occurrences: OccurrenceItem[];
+}
+
+export interface OccurrenceItem {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  status: string;
+  streamUrl: string | null;
+}
+
 // Admin
+
+export interface CreateVariantRequest {
+  name: string;
+  sku: string;
+  stock: number;
+  sortOrder: number;
+  prices: Record<string, number>;
+}
+
+export interface CreateEventRequest {
+  venue?: string;
+  capacity?: number;
+  isOnline: boolean;
+  streamUrl?: string;
+  recordingProductId?: string;
+}
+
+export interface CreateOccurrenceRequest {
+  startsAt: string;
+  endsAt: string;
+  streamUrl?: string;
+}
+
+export interface CreateMediaRequest {
+  title: string;
+  mediaType: "VIDEO" | "AUDIO";
+  cfStreamUid?: string;
+  fileKey?: string;
+  durationSeconds?: number;
+  sortOrder: number;
+}
 
 export interface CreateProductRequest {
   title: string;
   slug: string;
   description?: string;
   shortDescription?: string;
-  productType: string;
-  priceAmount: number;
-  priceCurrency?: string;
+  productType: ProductType;
+  prices: Record<string, number>;
   thumbnailUrl?: string;
   categoryId?: string;
+  variants?: CreateVariantRequest[];
+  event?: CreateEventRequest;
+  occurrences?: CreateOccurrenceRequest[];
 }
 
 export interface UpdateProductRequest extends CreateProductRequest {

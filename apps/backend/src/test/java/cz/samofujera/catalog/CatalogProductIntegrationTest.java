@@ -2,16 +2,22 @@ package cz.samofujera.catalog;
 
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
+import cz.samofujera.catalog.internal.R2StorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -23,6 +29,9 @@ class CatalogProductIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private R2StorageService r2StorageService;
 
     private UserPrincipal adminPrincipal() {
         return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
@@ -39,8 +48,7 @@ class CatalogProductIntegrationTest {
                         "description": "Test description for %s",
                         "shortDescription": "Short desc",
                         "productType": "%s",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK"
+                        "prices": {"CZK": 299.00}
                     }
                     """.formatted(title, slug, title, productType)))
             .andExpect(status().isCreated())
@@ -64,8 +72,8 @@ class CatalogProductIntegrationTest {
                         "title": "Draft Product",
                         "slug": "%s",
                         "description": "A draft product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 199.00
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 199.00}
                     }
                     """.formatted(slug)))
             .andExpect(status().isCreated())
@@ -100,9 +108,8 @@ class CatalogProductIntegrationTest {
                         "title": "Active Product",
                         "slug": "%s",
                         "description": "An active product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 499.00,
-                        "priceCurrency": "CZK"
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 499.00, "EUR": 19.99}
                     }
                     """.formatted(slug)))
             .andExpect(status().isCreated())
@@ -120,9 +127,8 @@ class CatalogProductIntegrationTest {
                         "title": "Active Product",
                         "slug": "%s",
                         "description": "An active product",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 499.00,
-                        "priceCurrency": "CZK",
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 499.00, "EUR": 19.99},
                         "status": "ACTIVE"
                     }
                     """.formatted(slug)))
@@ -134,8 +140,8 @@ class CatalogProductIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.title").value("Active Product"))
             .andExpect(jsonPath("$.data.slug").value(slug))
-            .andExpect(jsonPath("$.data.priceAmount").value(499.00))
-            .andExpect(jsonPath("$.data.assets").isArray());
+            .andExpect(jsonPath("$.data.prices.CZK").value(499.00))
+            .andExpect(jsonPath("$.data.prices.EUR").value(19.99));
     }
 
     @Test
@@ -151,8 +157,8 @@ class CatalogProductIntegrationTest {
                     {
                         "title": "To Archive",
                         "slug": "%s",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 100.00
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 100.00}
                     }
                     """.formatted(slug)))
             .andExpect(status().isCreated())
@@ -181,8 +187,8 @@ class CatalogProductIntegrationTest {
         String slug2 = "meditation-guide-" + suffix;
 
         // Create two products with ACTIVE status
-        var id1 = createProduct("Yoga Basics " + suffix, slug1, "DIGITAL_DOWNLOAD");
-        var id2 = createProduct("Meditation Guide " + suffix, slug2, "DIGITAL_DOWNLOAD");
+        var id1 = createProduct("Yoga Basics " + suffix, slug1, "EBOOK");
+        var id2 = createProduct("Meditation Guide " + suffix, slug2, "EBOOK");
 
         // Set both to ACTIVE
         for (var id : new String[]{id1, id2}) {
@@ -193,8 +199,8 @@ class CatalogProductIntegrationTest {
                         {
                             "title": "%s",
                             "slug": "%s",
-                            "productType": "DIGITAL_DOWNLOAD",
-                            "priceAmount": 299.00,
+                            "productType": "EBOOK",
+                            "prices": {"CZK": 299.00},
                             "status": "ACTIVE"
                         }
                         """.formatted(
@@ -216,5 +222,156 @@ class CatalogProductIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.items[?(@.slug == '%s')]".formatted(slug2)).exists())
             .andExpect(jsonPath("$.data.items[?(@.slug == '%s')]".formatted(slug1)).doesNotExist());
+    }
+
+    // --- Image tests ---
+
+    @Test
+    void uploadAndDeleteImage() throws Exception {
+        when(r2StorageService.generatePresignedUrl(anyString(), any()))
+            .thenReturn("https://example.com/presigned");
+
+        String slug = "img-product-" + UUID.randomUUID().toString().substring(0, 8);
+        var productId = createProduct("Image Product", slug, "EBOOK");
+
+        var file = new MockMultipartFile(
+            "file", "photo.jpg", "image/jpeg", "JPEG content".getBytes());
+
+        // Upload image
+        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/images", productId)
+                .file(file)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").exists())
+            .andExpect(jsonPath("$.data.fileName").value("photo.jpg"))
+            .andExpect(jsonPath("$.data.sortOrder").value(0))
+            .andReturn();
+
+        var imageId = com.jayway.jsonpath.JsonPath.read(
+            uploadResult.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Verify product detail includes images
+        mockMvc.perform(get("/api/admin/products/{id}", productId)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.images").isArray())
+            .andExpect(jsonPath("$.data.images.length()").value(1))
+            .andExpect(jsonPath("$.data.images[0].fileName").value("photo.jpg"));
+
+        // Delete image
+        mockMvc.perform(delete("/api/admin/products/{productId}/images/{imageId}", productId, imageId)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isNoContent());
+
+        // Verify empty
+        mockMvc.perform(get("/api/admin/products/{id}", productId)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.images.length()").value(0));
+    }
+
+    @Test
+    void reorderImages() throws Exception {
+        when(r2StorageService.generatePresignedUrl(anyString(), any()))
+            .thenReturn("https://example.com/presigned");
+
+        String slug = "reorder-img-" + UUID.randomUUID().toString().substring(0, 8);
+        var productId = createProduct("Reorder Product", slug, "EBOOK");
+
+        // Upload two images
+        var file1 = new MockMultipartFile("file", "first.jpg", "image/jpeg", "img1".getBytes());
+        var file2 = new MockMultipartFile("file", "second.jpg", "image/jpeg", "img2".getBytes());
+
+        var r1 = mockMvc.perform(multipart("/api/admin/products/{productId}/images", productId)
+                .file(file1).with(user(adminPrincipal())))
+            .andExpect(status().isCreated())
+            .andReturn();
+        var id1 = com.jayway.jsonpath.JsonPath.read(r1.getResponse().getContentAsString(), "$.data.id").toString();
+
+        var r2 = mockMvc.perform(multipart("/api/admin/products/{productId}/images", productId)
+                .file(file2).with(user(adminPrincipal())))
+            .andExpect(status().isCreated())
+            .andReturn();
+        var id2 = com.jayway.jsonpath.JsonPath.read(r2.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Reorder: swap them
+        mockMvc.perform(put("/api/admin/products/{productId}/images/reorder", productId)
+                .with(user(adminPrincipal()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"imageIds": ["%s", "%s"]}
+                    """.formatted(id2, id1)))
+            .andExpect(status().isOk());
+
+        // Verify new order
+        mockMvc.perform(get("/api/admin/products/{id}", productId)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.images[0].fileName").value("second.jpg"))
+            .andExpect(jsonPath("$.data.images[1].fileName").value("first.jpg"));
+    }
+
+    // --- Variant CRUD tests ---
+
+    @Test
+    void createAndDeleteVariant() throws Exception {
+        when(r2StorageService.generatePresignedUrl(anyString(), any()))
+            .thenReturn("https://example.com/presigned");
+
+        String slug = "variant-product-" + UUID.randomUUID().toString().substring(0, 8);
+        var productId = createProduct("Variant Product", slug, "PHYSICAL");
+
+        // Create variant
+        var createResult = mockMvc.perform(post("/api/admin/products/{productId}/variants", productId)
+                .with(user(adminPrincipal()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "name": "Velikost M",
+                        "sku": "VP-M-%s",
+                        "stock": 10,
+                        "sortOrder": 0,
+                        "prices": {"CZK": 199.00, "EUR": 7.99}
+                    }
+                    """.formatted(slug)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").exists())
+            .andExpect(jsonPath("$.data.name").value("Velikost M"))
+            .andExpect(jsonPath("$.data.stock").value(10))
+            .andExpect(jsonPath("$.data.prices.CZK").value(199.00))
+            .andReturn();
+
+        var variantId = com.jayway.jsonpath.JsonPath.read(
+            createResult.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Update variant
+        mockMvc.perform(put("/api/admin/products/{productId}/variants/{variantId}", productId, variantId)
+                .with(user(adminPrincipal()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                        "name": "Velikost L",
+                        "sku": "VP-L-%s",
+                        "stock": 20,
+                        "sortOrder": 0,
+                        "prices": {"CZK": 249.00}
+                    }
+                    """.formatted(slug)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.name").value("Velikost L"))
+            .andExpect(jsonPath("$.data.stock").value(20))
+            .andExpect(jsonPath("$.data.prices.CZK").value(249.00));
+
+        // Delete variant
+        mockMvc.perform(delete("/api/admin/products/{productId}/variants/{variantId}", productId, variantId)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isNoContent());
+
+        // Verify product detail has no variants
+        mockMvc.perform(get("/api/admin/products/{id}", productId)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.variants").isArray())
+            .andExpect(jsonPath("$.data.variants.length()").value(0));
     }
 }

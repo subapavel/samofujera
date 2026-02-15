@@ -4,12 +4,12 @@ import { libraryApi } from "@samofujera/api-client";
 import { Button, Card, CardContent } from "@samofujera/ui";
 
 const productTypeLabels: Record<string, string> = {
-  DIGITAL_DOWNLOAD: "Digitální produkt",
-  STREAMING: "Streamování",
   PHYSICAL: "Fyzický produkt",
-  MEMBERSHIP: "Členství",
-  EVENT: "Událost",
-  VOUCHER: "Voucher",
+  EBOOK: "E-book",
+  AUDIO_VIDEO: "Audio/Video",
+  ONLINE_EVENT: "Online událost",
+  RECURRING_EVENT: "Opakovaná událost",
+  OFFLINE_EVENT: "Offline událost",
 };
 
 export function LibraryPage() {

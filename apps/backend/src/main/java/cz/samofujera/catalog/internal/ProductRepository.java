@@ -5,7 +5,6 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +29,6 @@ public class ProductRepository {
         String description,
         String shortDescription,
         String productType,
-        BigDecimal priceAmount,
-        String priceCurrency,
         String status,
         String thumbnailUrl,
         UUID categoryId,
@@ -46,8 +43,8 @@ public class ProductRepository {
 
         return dsl.select(
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE, PRODUCTS.PRICE_AMOUNT,
-                PRODUCTS.PRICE_CURRENCY, PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
+                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
+                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
                 PRODUCTS.CATEGORY_ID, CATEGORIES.NAME,
                 PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
             .from(PRODUCTS)
@@ -63,8 +60,6 @@ public class ProductRepository {
                 r.get(PRODUCTS.DESCRIPTION),
                 r.get(PRODUCTS.SHORT_DESCRIPTION),
                 r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.PRICE_AMOUNT),
-                r.get(PRODUCTS.PRICE_CURRENCY),
                 r.get(PRODUCTS.STATUS),
                 r.get(PRODUCTS.THUMBNAIL_URL),
                 r.get(PRODUCTS.CATEGORY_ID),
@@ -86,8 +81,8 @@ public class ProductRepository {
     public Optional<ProductRow> findById(UUID id) {
         return dsl.select(
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE, PRODUCTS.PRICE_AMOUNT,
-                PRODUCTS.PRICE_CURRENCY, PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
+                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
+                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
                 PRODUCTS.CATEGORY_ID, CATEGORIES.NAME,
                 PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
             .from(PRODUCTS)
@@ -100,8 +95,6 @@ public class ProductRepository {
                 r.get(PRODUCTS.DESCRIPTION),
                 r.get(PRODUCTS.SHORT_DESCRIPTION),
                 r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.PRICE_AMOUNT),
-                r.get(PRODUCTS.PRICE_CURRENCY),
                 r.get(PRODUCTS.STATUS),
                 r.get(PRODUCTS.THUMBNAIL_URL),
                 r.get(PRODUCTS.CATEGORY_ID),
@@ -114,8 +107,8 @@ public class ProductRepository {
     public Optional<ProductRow> findBySlug(String slug) {
         return dsl.select(
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE, PRODUCTS.PRICE_AMOUNT,
-                PRODUCTS.PRICE_CURRENCY, PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
+                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
+                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
                 PRODUCTS.CATEGORY_ID, CATEGORIES.NAME,
                 PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
             .from(PRODUCTS)
@@ -128,8 +121,6 @@ public class ProductRepository {
                 r.get(PRODUCTS.DESCRIPTION),
                 r.get(PRODUCTS.SHORT_DESCRIPTION),
                 r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.PRICE_AMOUNT),
-                r.get(PRODUCTS.PRICE_CURRENCY),
                 r.get(PRODUCTS.STATUS),
                 r.get(PRODUCTS.THUMBNAIL_URL),
                 r.get(PRODUCTS.CATEGORY_ID),
@@ -140,16 +131,13 @@ public class ProductRepository {
     }
 
     public UUID create(String title, String slug, String description, String shortDescription,
-                       String productType, BigDecimal priceAmount, String priceCurrency,
-                       String thumbnailUrl, UUID categoryId) {
+                       String productType, String thumbnailUrl, UUID categoryId) {
         return dsl.insertInto(PRODUCTS)
             .set(PRODUCTS.TITLE, title)
             .set(PRODUCTS.SLUG, slug)
             .set(PRODUCTS.DESCRIPTION, description)
             .set(PRODUCTS.SHORT_DESCRIPTION, shortDescription)
             .set(PRODUCTS.PRODUCT_TYPE, productType)
-            .set(PRODUCTS.PRICE_AMOUNT, priceAmount)
-            .set(PRODUCTS.PRICE_CURRENCY, priceCurrency != null ? priceCurrency : "CZK")
             .set(PRODUCTS.THUMBNAIL_URL, thumbnailUrl)
             .set(PRODUCTS.CATEGORY_ID, categoryId)
             .returning(PRODUCTS.ID)
@@ -158,16 +146,14 @@ public class ProductRepository {
     }
 
     public void update(UUID id, String title, String slug, String description,
-                       String shortDescription, String productType, BigDecimal priceAmount,
-                       String priceCurrency, String status, String thumbnailUrl, UUID categoryId) {
+                       String shortDescription, String productType, String status,
+                       String thumbnailUrl, UUID categoryId) {
         dsl.update(PRODUCTS)
             .set(PRODUCTS.TITLE, title)
             .set(PRODUCTS.SLUG, slug)
             .set(PRODUCTS.DESCRIPTION, description)
             .set(PRODUCTS.SHORT_DESCRIPTION, shortDescription)
             .set(PRODUCTS.PRODUCT_TYPE, productType)
-            .set(PRODUCTS.PRICE_AMOUNT, priceAmount)
-            .set(PRODUCTS.PRICE_CURRENCY, priceCurrency != null ? priceCurrency : "CZK")
             .set(PRODUCTS.STATUS, status)
             .set(PRODUCTS.THUMBNAIL_URL, thumbnailUrl)
             .set(PRODUCTS.CATEGORY_ID, categoryId)

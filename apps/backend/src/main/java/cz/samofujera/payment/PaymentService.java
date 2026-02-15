@@ -31,17 +31,18 @@ public class PaymentService {
     }
 
     public PaymentDtos.CheckoutResponse createCheckout(UUID userId, String userEmail, String userName,
-                                                        List<PaymentDtos.CheckoutItem> items) {
-        // Convert to order checkout items
+                                                        List<PaymentDtos.CheckoutItem> items, String currency) {
+        if (currency == null || currency.isBlank()) {
+            currency = "CZK";
+        }
+
         var orderItems = items.stream()
-            .map(item -> new OrderDtos.CheckoutItem(item.productId(), item.quantity()))
+            .map(item -> new OrderDtos.CheckoutItem(item.productId(), item.variantId(), item.quantity()))
             .toList();
 
-        // Create order
-        var order = orderService.createOrder(userId, orderItems);
+        var order = orderService.createOrder(userId, orderItems, currency);
         var orderId = order.id();
 
-        // Build Stripe Checkout Session
         var paramsBuilder = SessionCreateParams.builder()
             .setMode(SessionCreateParams.Mode.PAYMENT)
             .setClientReferenceId(orderId.toString())
@@ -49,7 +50,6 @@ public class PaymentService {
             .setSuccessUrl(frontendUrl + "/pokladna/uspech?session_id={CHECKOUT_SESSION_ID}")
             .setCancelUrl(frontendUrl + "/pokladna/zruseno");
 
-        // Add line items from order
         for (var orderItem : order.items()) {
             var lineItem = SessionCreateParams.LineItem.builder()
                 .setQuantity((long) orderItem.quantity())
@@ -64,7 +64,6 @@ public class PaymentService {
             paramsBuilder.addLineItem(lineItem);
         }
 
-        // Add metadata for reference
         paramsBuilder.putMetadata("order_id", orderId.toString());
         paramsBuilder.putMetadata("user_name", userName != null ? userName : "");
 
@@ -90,7 +89,6 @@ public class PaymentService {
             ? session.getCustomerDetails().getName()
             : null;
 
-        // Fall back to metadata for name if not available from customer details
         if (customerName == null && session.getMetadata() != null) {
             customerName = session.getMetadata().get("user_name");
         }

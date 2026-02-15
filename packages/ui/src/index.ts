@@ -32,4 +32,13 @@ export {
 } from "./components/form";
 export { Alert, AlertTitle, AlertDescription, alertVariants } from "./components/alert";
 export { Label } from "./components/label";
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/tabs";
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
+} from "./components/dropdown-menu";
 export { cn } from "./lib/utils";

@@ -2,8 +2,6 @@ package cz.samofujera.delivery;
 
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
-import cz.samofujera.catalog.CatalogService;
-import cz.samofujera.catalog.CatalogDtos;
 import cz.samofujera.catalog.internal.R2StorageService;
 import cz.samofujera.entitlement.EntitlementService;
 import org.jooq.DSLContext;
@@ -17,7 +15,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
@@ -38,9 +35,6 @@ class DeliveryIntegrationTest {
 
     @Autowired
     private DSLContext dsl;
-
-    @Autowired
-    private CatalogService catalogService;
 
     @Autowired
     private EntitlementService entitlementService;
@@ -65,8 +59,7 @@ class DeliveryIntegrationTest {
         return new UserPrincipal(id, email, "Test Customer", "$2a$10$dummyhashfortest", "USER", false, false);
     }
 
-    private UUID createProductWithAsset(String suffix) throws Exception {
-        // Create product via admin API
+    private UUID createProductWithFile(String suffix) throws Exception {
         var admin = adminPrincipal();
         var createResult = mockMvc.perform(post("/api/admin/products")
                 .with(user(admin))
@@ -76,9 +69,8 @@ class DeliveryIntegrationTest {
                         "title": "Delivery Product %s",
                         "slug": "delivery-product-%s",
                         "description": "Test product for delivery",
-                        "productType": "DIGITAL_DOWNLOAD",
-                        "priceAmount": 299.00,
-                        "priceCurrency": "CZK"
+                        "productType": "EBOOK",
+                        "prices": {"CZK": 299.00}
                     }
                     """.formatted(suffix, suffix)))
             .andExpect(status().isCreated())
@@ -90,36 +82,36 @@ class DeliveryIntegrationTest {
         return UUID.fromString(productIdStr);
     }
 
-    private UUID uploadAsset(UUID productId) throws Exception {
+    private UUID uploadFile(UUID productId) throws Exception {
         var file = new MockMultipartFile(
             "file", "guide.pdf", "application/pdf", "PDF content".getBytes());
 
-        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/assets", productId)
+        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/files", productId)
                 .file(file)
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andReturn();
 
-        var assetIdStr = com.jayway.jsonpath.JsonPath.read(
+        var fileIdStr = com.jayway.jsonpath.JsonPath.read(
             uploadResult.getResponse().getContentAsString(), "$.data.id").toString();
 
-        return UUID.fromString(assetIdStr);
+        return UUID.fromString(fileIdStr);
     }
 
     @Test
     void download_returns401_whenNotAuthenticated() throws Exception {
-        mockMvc.perform(get("/api/delivery/download/{id}", UUID.randomUUID()))
+        mockMvc.perform(get("/api/delivery/{fileId}/download", UUID.randomUUID()))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
     void download_returns403_whenNoEntitlement() throws Exception {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProductWithAsset(suffix);
-        var assetId = uploadAsset(productId);
+        var productId = createProductWithFile(suffix);
+        var fileId = uploadFile(productId);
         var customer = createTestCustomer();
 
-        mockMvc.perform(get("/api/delivery/download/{id}", assetId)
+        mockMvc.perform(get("/api/delivery/{fileId}/download", fileId)
                 .with(user(customer)))
             .andExpect(status().isForbidden());
     }
@@ -127,19 +119,19 @@ class DeliveryIntegrationTest {
     @Test
     void download_returnsUrl_whenEntitled() throws Exception {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProductWithAsset(suffix);
-        var assetId = uploadAsset(productId);
+        var productId = createProductWithFile(suffix);
+        var fileId = uploadFile(productId);
         var customer = createTestCustomer();
 
         // Grant entitlement
         entitlementService.grantAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
-            customer.getUsername(), "Delivery Product " + suffix, "DIGITAL_DOWNLOAD");
+            customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
         // Mock presigned URL generation
         when(r2StorageService.generatePresignedUrl(anyString(), any()))
             .thenReturn("https://r2.example.com/presigned-url");
 
-        mockMvc.perform(get("/api/delivery/download/{id}", assetId)
+        mockMvc.perform(get("/api/delivery/{fileId}/download", fileId)
                 .with(user(customer)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.downloadUrl").value("https://r2.example.com/presigned-url"))
@@ -150,11 +142,11 @@ class DeliveryIntegrationTest {
     @Test
     void library_returnsEntitledProducts() throws Exception {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProductWithAsset(suffix);
+        var productId = createProductWithFile(suffix);
         var customer = createTestCustomer();
 
         entitlementService.grantAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
-            customer.getUsername(), "Delivery Product " + suffix, "DIGITAL_DOWNLOAD");
+            customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
         mockMvc.perform(get("/api/library")
                 .with(user(customer)))
@@ -166,27 +158,27 @@ class DeliveryIntegrationTest {
     }
 
     @Test
-    void libraryAssets_returns403_whenNotEntitled() throws Exception {
+    void libraryFiles_returns403_whenNotEntitled() throws Exception {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProductWithAsset(suffix);
+        var productId = createProductWithFile(suffix);
         var customer = createTestCustomer();
 
-        mockMvc.perform(get("/api/library/{productId}/assets", productId)
+        mockMvc.perform(get("/api/library/{productId}/files", productId)
                 .with(user(customer)))
             .andExpect(status().isForbidden());
     }
 
     @Test
-    void libraryAssets_returnsAssets_whenEntitled() throws Exception {
+    void libraryFiles_returnsFiles_whenEntitled() throws Exception {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProductWithAsset(suffix);
-        var assetId = uploadAsset(productId);
+        var productId = createProductWithFile(suffix);
+        var fileId = uploadFile(productId);
         var customer = createTestCustomer();
 
         entitlementService.grantAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
-            customer.getUsername(), "Delivery Product " + suffix, "DIGITAL_DOWNLOAD");
+            customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
-        mockMvc.perform(get("/api/library/{productId}/assets", productId)
+        mockMvc.perform(get("/api/library/{productId}/files", productId)
                 .with(user(customer)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isArray())

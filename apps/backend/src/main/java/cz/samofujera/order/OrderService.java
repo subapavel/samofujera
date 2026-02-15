@@ -35,16 +35,18 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDtos.OrderResponse createOrder(UUID userId, List<OrderDtos.CheckoutItem> items) {
+    public OrderDtos.OrderResponse createOrder(UUID userId, List<OrderDtos.CheckoutItem> items, String currency) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order must have at least one item");
         }
+        if (currency == null || currency.isBlank()) {
+            currency = "CZK";
+        }
 
-        // Look up each product and calculate total
         BigDecimal totalAmount = BigDecimal.ZERO;
 
-        record ResolvedItem(CatalogDtos.ProductResponse product, int quantity,
-                            BigDecimal unitPrice, BigDecimal lineTotal) {}
+        record ResolvedItem(CatalogDtos.ProductResponse product, UUID variantId,
+                            int quantity, BigDecimal unitPrice, BigDecimal lineTotal) {}
 
         var resolvedItems = new java.util.ArrayList<ResolvedItem>();
 
@@ -53,26 +55,48 @@ public class OrderService {
             if (!"ACTIVE".equals(product.status())) {
                 throw new IllegalArgumentException("Product '" + product.title() + "' is not available for purchase");
             }
-            var unitPrice = product.priceAmount();
+
+            BigDecimal unitPrice;
+            if (item.variantId() != null) {
+                unitPrice = catalogService.getVariantPrice(item.variantId(), currency);
+                if (unitPrice == null) {
+                    throw new IllegalArgumentException("Variant has no price in " + currency);
+                }
+                // Validate stock
+                var variant = catalogService.getVariantById(item.variantId());
+                if (variant.stock() < item.quantity()) {
+                    throw new IllegalArgumentException("Insufficient stock for variant '" + variant.name() + "'");
+                }
+            } else {
+                unitPrice = catalogService.getProductPrice(item.productId(), currency);
+                if (unitPrice == null) {
+                    throw new IllegalArgumentException("Product '" + product.title() + "' has no price in " + currency);
+                }
+            }
+
             var lineTotal = unitPrice.multiply(BigDecimal.valueOf(item.quantity()));
             totalAmount = totalAmount.add(lineTotal);
-            resolvedItems.add(new ResolvedItem(product, item.quantity(), unitPrice, lineTotal));
+            resolvedItems.add(new ResolvedItem(product, item.variantId(), item.quantity(), unitPrice, lineTotal));
         }
 
-        // Create order
-        var orderId = orderRepository.create(userId, totalAmount, "CZK", "cs");
+        var orderId = orderRepository.create(userId, totalAmount, currency, "cs");
 
-        // Create order items with product snapshots
         for (var resolved : resolvedItems) {
-            var snapshot = buildProductSnapshot(resolved.product());
+            var snapshot = buildProductSnapshot(resolved.product(), resolved.unitPrice(), currency);
             orderItemRepository.create(
                 orderId,
                 resolved.product().id(),
+                resolved.variantId(),
                 resolved.quantity(),
                 resolved.unitPrice(),
                 resolved.lineTotal(),
                 snapshot
             );
+
+            // Decrement stock for physical variants
+            if (resolved.variantId() != null) {
+                catalogService.decrementVariantStock(resolved.variantId(), resolved.quantity());
+            }
         }
 
         return getOrderById(orderId);
@@ -86,7 +110,6 @@ public class OrderService {
 
         orderRepository.updateStatus(orderId, "PAID", stripePaymentId);
 
-        // Build event items from order items
         var orderItems = orderItemRepository.findByOrderId(orderId);
         var eventItems = orderItems.stream()
             .map(item -> {
@@ -209,6 +232,7 @@ public class OrderService {
         return new OrderDtos.OrderItemResponse(
             item.id(),
             item.productId(),
+            item.variantId(),
             title,
             type,
             item.quantity(),
@@ -228,42 +252,32 @@ public class OrderService {
         );
     }
 
-    private String buildProductSnapshot(CatalogDtos.ProductResponse product) {
+    private String buildProductSnapshot(CatalogDtos.ProductResponse product,
+                                         BigDecimal price, String currency) {
         var thumbnailValue = product.thumbnailUrl() != null
             ? "\"" + escapeJson(product.thumbnailUrl()) + "\""
             : "null";
         return "{\"title\":\"" + escapeJson(product.title())
             + "\",\"productType\":\"" + escapeJson(product.productType())
-            + "\",\"priceAmount\":" + product.priceAmount().toPlainString()
-            + ",\"priceCurrency\":\"" + escapeJson(product.priceCurrency())
+            + "\",\"priceAmount\":" + price.toPlainString()
+            + ",\"priceCurrency\":\"" + escapeJson(currency)
             + "\",\"thumbnailUrl\":" + thumbnailValue + "}";
     }
 
     private String extractJsonField(String json, String field) {
         var key = "\"" + field + "\":";
         int idx = json.indexOf(key);
-        if (idx < 0) {
-            return null;
-        }
+        if (idx < 0) return null;
         int valueStart = idx + key.length();
-        // Skip whitespace (PostgreSQL JSONB adds spaces after colons)
-        while (valueStart < json.length() && json.charAt(valueStart) == ' ') {
-            valueStart++;
-        }
-        if (valueStart >= json.length()) {
-            return null;
-        }
+        while (valueStart < json.length() && json.charAt(valueStart) == ' ') valueStart++;
+        if (valueStart >= json.length()) return null;
         if (json.charAt(valueStart) == '"') {
             int end = json.indexOf('"', valueStart + 1);
             return end > 0 ? json.substring(valueStart + 1, end) : null;
         }
-        if (json.startsWith("null", valueStart)) {
-            return null;
-        }
+        if (json.startsWith("null", valueStart)) return null;
         int end = valueStart;
-        while (end < json.length() && json.charAt(end) != ',' && json.charAt(end) != '}') {
-            end++;
-        }
+        while (end < json.length() && json.charAt(end) != ',' && json.charAt(end) != '}') end++;
         return json.substring(valueStart, end);
     }
 

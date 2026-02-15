@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 import type { ProductResponse } from "@samofujera/api-client";
-import { formatPrice, productTypeLabel } from "./utils";
+import { formatPrices, productTypeLabel } from "./utils";
 
 interface ProductCardProps {
   product: ProductResponse;
@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </p>
           )}
           <p className="text-lg font-bold text-[var(--primary)]">
-            {formatPrice(product.priceAmount, product.priceCurrency)}
+            {formatPrices(product.prices)}
           </p>
         </CardContent>
       </Card>
@@ -56,13 +56,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
 function productTypeIcon(type: string): string {
   switch (type) {
-    case "DIGITAL":
+    case "EBOOK":
       return "\u{1F4E5}";
-    case "STREAMING":
+    case "AUDIO_VIDEO":
       return "\u{25B6}\u{FE0F}";
     case "PHYSICAL":
       return "\u{1F4E6}";
-    case "EVENT":
+    case "ONLINE_EVENT":
+    case "RECURRING_EVENT":
+    case "OFFLINE_EVENT":
       return "\u{1F3AB}";
     default:
       return "\u{1F4C4}";

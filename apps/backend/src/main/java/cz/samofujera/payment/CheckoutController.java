@@ -29,7 +29,8 @@ public class CheckoutController {
             principal.getId(),
             principal.getUsername(),
             principal.getName(),
-            request.items()
+            request.items(),
+            request.currency()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(result));
     }
