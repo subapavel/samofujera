@@ -99,7 +99,7 @@ class CheckoutFlowIntegrationTest {
                         "description": "End-to-end test product",
                         "productType": "EBOOK",
                         "prices": {"CZK": 499.00},
-                        "categoryId": "%s"
+                        "categoryIds": ["%s"]
                     }
                     """.formatted(suffix, suffix, categoryId)))
             .andExpect(status().isCreated())
@@ -120,7 +120,7 @@ class CheckoutFlowIntegrationTest {
                         "description": "End-to-end test product",
                         "productType": "EBOOK",
                         "prices": {"CZK": 499.00},
-                        "categoryId": "%s",
+                        "categoryIds": ["%s"],
                         "status": "ACTIVE"
                     }
                     """.formatted(suffix, suffix, categoryId)))

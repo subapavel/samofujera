@@ -106,6 +106,54 @@ class CatalogCategoryIntegrationTest {
     }
 
     @Test
+    void createCategory_withDescriptionAndSeo_returns201() throws Exception {
+        mockMvc.perform(post("/api/admin/categories")
+                .with(user(adminPrincipal()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Meditace", "slug": "meditace-seo-test", "sortOrder": 1,
+                     "description": "Meditační produkty", "metaTitle": "Meditace | Samo Fujera",
+                     "metaDescription": "Nejlepší meditační produkty"}
+                    """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.description").value("Meditační produkty"))
+            .andExpect(jsonPath("$.data.metaTitle").value("Meditace | Samo Fujera"))
+            .andExpect(jsonPath("$.data.metaDescription").value("Nejlepší meditační produkty"));
+    }
+
+    @Test
+    void updateCategory_slugUniqueness_returns400() throws Exception {
+        var admin = adminPrincipal();
+        // Create two categories
+        mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Cat A", "slug": "cat-a-unique-test", "sortOrder": 0}
+                    """))
+            .andExpect(status().isCreated());
+
+        var cat2Result = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Cat B", "slug": "cat-b-unique-test", "sortOrder": 1}
+                    """))
+            .andExpect(status().isCreated())
+            .andReturn();
+        var cat2Id = com.jayway.jsonpath.JsonPath.read(cat2Result.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Try to update cat B with cat A's slug
+        mockMvc.perform(put("/api/admin/categories/" + cat2Id)
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Cat B", "slug": "cat-a-unique-test", "sortOrder": 1}
+                    """))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void deleteCategory_works() throws Exception {
         var admin = adminPrincipal();
 
@@ -131,5 +179,53 @@ class CatalogCategoryIntegrationTest {
         mockMvc.perform(get("/api/catalog/categories"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data[?(@.slug == 'delete-test')]").doesNotExist());
+    }
+
+    @Test
+    void createProduct_withMultipleCategories_returnsCategories() throws Exception {
+        var admin = adminPrincipal();
+
+        // Create two categories
+        var cat1Result = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin)).contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Meditace", "slug": "meditace-mn-test", "sortOrder": 0}
+                    """))
+            .andExpect(status().isCreated()).andReturn();
+        var cat1Id = com.jayway.jsonpath.JsonPath.read(cat1Result.getResponse().getContentAsString(), "$.data.id").toString();
+
+        var cat2Result = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin)).contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Jóga", "slug": "joga-mn-test", "sortOrder": 1}
+                    """))
+            .andExpect(status().isCreated()).andReturn();
+        var cat2Id = com.jayway.jsonpath.JsonPath.read(cat2Result.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Create product with both categories
+        mockMvc.perform(post("/api/admin/products")
+                .with(user(admin)).contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"title": "Meditační e-book", "slug": "meditacni-ebook-mn-test",
+                     "productType": "EBOOK", "prices": {"CZK": 199},
+                     "categoryIds": ["%s", "%s"]}
+                    """.formatted(cat1Id, cat2Id)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.categories").isArray())
+            .andExpect(jsonPath("$.data.categories.length()").value(2));
+    }
+
+    @Test
+    void createProduct_withSeoFields_returnsSeoData() throws Exception {
+        mockMvc.perform(post("/api/admin/products")
+                .with(user(adminPrincipal())).contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"title": "SEO Test Product", "slug": "seo-test-product",
+                     "productType": "EBOOK", "prices": {"CZK": 99},
+                     "metaTitle": "SEO Title", "metaDescription": "SEO Description"}
+                    """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.metaTitle").value("SEO Title"))
+            .andExpect(jsonPath("$.data.metaDescription").value("SEO Description"));
     }
 }

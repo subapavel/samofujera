@@ -64,6 +64,8 @@ class EntitlementIntegrationTest {
             null,
             null,
             null,
+            null,
+            null,
             null
         ));
         return product.id();
