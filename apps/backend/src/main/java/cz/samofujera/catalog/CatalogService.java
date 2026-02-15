@@ -24,6 +24,7 @@ public class CatalogService {
     private final EventRepository eventRepository;
     private final EventOccurrenceRepository eventOccurrenceRepository;
     private final R2StorageService r2StorageService;
+    private final ProductCategoryAssignmentRepository assignmentRepository;
 
     CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
                    ProductPriceRepository productPriceRepository,
@@ -34,7 +35,8 @@ public class CatalogService {
                    ProductImageRepository productImageRepository,
                    EventRepository eventRepository,
                    EventOccurrenceRepository eventOccurrenceRepository,
-                   R2StorageService r2StorageService) {
+                   R2StorageService r2StorageService,
+                   ProductCategoryAssignmentRepository assignmentRepository) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.productPriceRepository = productPriceRepository;
@@ -46,38 +48,21 @@ public class CatalogService {
         this.eventRepository = eventRepository;
         this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.r2StorageService = r2StorageService;
+        this.assignmentRepository = assignmentRepository;
     }
 
     // --- Category methods ---
 
-    public List<CatalogDtos.CategoryResponse> getCategoryTree() {
-        var allCategories = categoryRepository.findAll();
-        var childrenMap = new LinkedHashMap<UUID, List<CatalogDtos.CategoryResponse>>();
-
-        for (var cat : allCategories) {
-            childrenMap.put(cat.id(), new ArrayList<>());
-        }
-        for (var cat : allCategories) {
-            if (cat.parentId() != null && childrenMap.containsKey(cat.parentId())) {
-                childrenMap.get(cat.parentId()).add(toResponse(cat, childrenMap));
-            }
-        }
-
-        var roots = new ArrayList<CatalogDtos.CategoryResponse>();
-        for (var cat : allCategories) {
-            if (cat.parentId() == null) {
-                roots.add(toResponse(cat, childrenMap));
-            }
-        }
-        return roots;
+    public List<CatalogDtos.CategoryResponse> getCategories() {
+        return categoryRepository.findAll().stream()
+            .map(this::toCategoryResponse)
+            .toList();
     }
 
-    private CatalogDtos.CategoryResponse toResponse(
-            CategoryRepository.CategoryRow row,
-            LinkedHashMap<UUID, List<CatalogDtos.CategoryResponse>> childrenMap) {
+    private CatalogDtos.CategoryResponse toCategoryResponse(CategoryRepository.CategoryRow row) {
         return new CatalogDtos.CategoryResponse(
-            row.id(), row.name(), row.slug(), row.parentId(), row.sortOrder(),
-            childrenMap.getOrDefault(row.id(), List.of())
+            row.id(), row.name(), row.slug(), row.description(),
+            row.imageUrl(), row.metaTitle(), row.metaDescription(), row.sortOrder()
         );
     }
 
@@ -86,23 +71,25 @@ public class CatalogService {
         if (categoryRepository.existsBySlug(request.slug())) {
             throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
         }
-        var id = categoryRepository.create(request.name(), request.slug(), request.parentId(), request.sortOrder());
+        var id = categoryRepository.create(
+            request.name(), request.slug(), request.description(), request.imageUrl(),
+            request.metaTitle(), request.metaDescription(), request.sortOrder()
+        );
         var created = categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));
-        return new CatalogDtos.CategoryResponse(
-            created.id(), created.name(), created.slug(), created.parentId(), created.sortOrder(), List.of()
-        );
+        return toCategoryResponse(created);
     }
 
     @Transactional
     public CatalogDtos.CategoryResponse updateCategory(UUID id, CatalogDtos.UpdateCategoryRequest request) {
         categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
-        categoryRepository.update(id, request.name(), request.slug(), request.parentId(), request.sortOrder());
+        categoryRepository.update(
+            id, request.name(), request.slug(), request.description(), request.imageUrl(),
+            request.metaTitle(), request.metaDescription(), request.sortOrder()
+        );
         var updated = categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));
-        return new CatalogDtos.CategoryResponse(
-            updated.id(), updated.name(), updated.slug(), updated.parentId(), updated.sortOrder(), List.of()
-        );
+        return toCategoryResponse(updated);
     }
 
     @Transactional
@@ -117,21 +104,38 @@ public class CatalogService {
         var product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
         var prices = productPriceRepository.findByProductId(id);
-        return toProductResponse(product, prices);
+        var categories = assignmentRepository.findCategoriesForProduct(id).stream()
+            .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
+            .toList();
+        return toProductResponse(product, prices, categories);
     }
 
-    public CatalogDtos.ProductListResponse getProducts(String status, UUID categoryId,
+    public CatalogDtos.ProductListResponse getProducts(String status, String categorySlug,
             String productType, String search, int page, int limit) {
+        List<UUID> productIdsInCategory = null;
+        if (categorySlug != null && !categorySlug.isBlank()) {
+            productIdsInCategory = assignmentRepository.findProductIdsByCategorySlug(categorySlug);
+            if (productIdsInCategory.isEmpty()) {
+                return new CatalogDtos.ProductListResponse(List.of(), page, limit, 0, 0);
+            }
+        }
+
         int offset = Math.max(0, (page - 1) * limit);
-        var items = productRepository.findAll(status, categoryId, productType, search, offset, limit);
-        long totalItems = productRepository.count(status, categoryId, productType, search);
+        var items = productRepository.findAll(status, productIdsInCategory, productType, search, offset, limit);
+        long totalItems = productRepository.count(status, productIdsInCategory, productType, search);
         int totalPages = (int) Math.ceil((double) totalItems / limit);
 
         var productIds = items.stream().map(ProductRepository.ProductRow::id).toList();
         var pricesMap = productPriceRepository.findByProductIds(productIds);
+        var categoriesMap = assignmentRepository.findCategoriesForProducts(productIds);
 
         var responses = items.stream()
-            .map(p -> toProductResponse(p, pricesMap.getOrDefault(p.id(), Map.of())))
+            .map(p -> {
+                var cats = categoriesMap.getOrDefault(p.id(), List.of()).stream()
+                    .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
+                    .toList();
+                return toProductResponse(p, pricesMap.getOrDefault(p.id(), Map.of()), cats);
+            })
             .toList();
         return new CatalogDtos.ProductListResponse(responses, page, limit, totalItems, totalPages);
     }
@@ -156,8 +160,13 @@ public class CatalogService {
 
         var id = productRepository.create(
             request.title(), request.slug(), request.description(), request.shortDescription(),
-            request.productType(), request.thumbnailUrl(), request.categoryId()
+            request.productType(), request.thumbnailUrl(), request.metaTitle(), request.metaDescription()
         );
+
+        // Assign categories
+        if (request.categoryIds() != null && !request.categoryIds().isEmpty()) {
+            assignmentRepository.assignCategories(id, request.categoryIds());
+        }
 
         // Save prices
         if (request.prices() != null) {
@@ -171,7 +180,10 @@ public class CatalogService {
         var created = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
         var prices = productPriceRepository.findByProductId(id);
-        return toProductResponse(created, prices);
+        var categories = assignmentRepository.findCategoriesForProduct(id).stream()
+            .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
+            .toList();
+        return toProductResponse(created, prices, categories);
     }
 
     @Transactional
@@ -181,8 +193,12 @@ public class CatalogService {
 
         productRepository.update(
             id, request.title(), request.slug(), request.description(), request.shortDescription(),
-            request.productType(), request.status(), request.thumbnailUrl(), request.categoryId()
+            request.productType(), request.status(), request.thumbnailUrl(),
+            request.metaTitle(), request.metaDescription()
         );
+
+        // Sync category assignments
+        assignmentRepository.assignCategories(id, request.categoryIds() != null ? request.categoryIds() : List.of());
 
         // Sync prices: delete all and re-insert
         productPriceRepository.deleteByProductId(id);
@@ -197,7 +213,10 @@ public class CatalogService {
         var updated = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
         var prices = productPriceRepository.findByProductId(id);
-        return toProductResponse(updated, prices);
+        var categories = assignmentRepository.findCategoriesForProduct(id).stream()
+            .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
+            .toList();
+        return toProductResponse(updated, prices, categories);
     }
 
     @Transactional
@@ -530,6 +549,9 @@ public class CatalogService {
 
     private CatalogDtos.ProductDetailResponse buildDetailResponse(ProductRepository.ProductRow product) {
         var prices = productPriceRepository.findByProductId(product.id());
+        var categories = assignmentRepository.findCategoriesForProduct(product.id()).stream()
+            .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
+            .toList();
         var images = getImagesForProduct(product.id());
         var variants = "PHYSICAL".equals(product.productType()) ? getVariantsForProduct(product.id()) : null;
         var files = "EBOOK".equals(product.productType()) ? getFilesForProduct(product.id()) : null;
@@ -550,18 +572,21 @@ public class CatalogService {
         return new CatalogDtos.ProductDetailResponse(
             product.id(), product.title(), product.slug(), product.description(),
             product.shortDescription(), product.productType(), prices,
-            product.status(), product.thumbnailUrl(), product.categoryId(), product.categoryName(),
+            product.status(), product.thumbnailUrl(),
+            product.metaTitle(), product.metaDescription(), categories,
             images, variants, files, media, eventResp, occurrenceResps,
             product.createdAt(), product.updatedAt()
         );
     }
 
     private CatalogDtos.ProductResponse toProductResponse(ProductRepository.ProductRow row,
-                                                            Map<String, BigDecimal> prices) {
+                                                            Map<String, BigDecimal> prices,
+                                                            List<CatalogDtos.CategorySummary> categories) {
         return new CatalogDtos.ProductResponse(
             row.id(), row.title(), row.slug(), row.description(), row.shortDescription(),
             row.productType(), prices, row.status(), row.thumbnailUrl(),
-            row.categoryId(), row.categoryName(), row.createdAt(), row.updatedAt()
+            row.metaTitle(), row.metaDescription(), categories,
+            row.createdAt(), row.updatedAt()
         );
     }
 

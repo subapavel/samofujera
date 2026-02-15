@@ -18,34 +18,37 @@ public final class CatalogDtos {
     // Category DTOs
 
     public record CategoryResponse(
-        UUID id,
-        String name,
-        String slug,
-        UUID parentId,
-        int sortOrder,
-        List<CategoryResponse> children
+        UUID id, String name, String slug, String description,
+        String imageUrl, String metaTitle, String metaDescription, int sortOrder
     ) {}
 
     public record CreateCategoryRequest(
         @NotBlank @Size(max = 255) String name,
         @NotBlank @Size(max = 255) String slug,
-        UUID parentId,
+        String description, String imageUrl,
+        @Size(max = 255) String metaTitle,
+        @Size(max = 500) String metaDescription,
         int sortOrder
     ) {}
 
     public record UpdateCategoryRequest(
         @NotBlank @Size(max = 255) String name,
         @NotBlank @Size(max = 255) String slug,
-        UUID parentId,
+        String description, String imageUrl,
+        @Size(max = 255) String metaTitle,
+        @Size(max = 500) String metaDescription,
         int sortOrder
     ) {}
+
+    public record CategorySummary(UUID id, String name, String slug) {}
 
     // Product DTOs
 
     public record ProductResponse(
         UUID id, String title, String slug, String description, String shortDescription,
         String productType, Map<String, BigDecimal> prices,
-        String status, String thumbnailUrl, UUID categoryId, String categoryName,
+        String status, String thumbnailUrl,
+        String metaTitle, String metaDescription, List<CategorySummary> categories,
         OffsetDateTime createdAt, OffsetDateTime updatedAt
     ) {}
 
@@ -56,7 +59,8 @@ public final class CatalogDtos {
     public record ProductDetailResponse(
         UUID id, String title, String slug, String description, String shortDescription,
         String productType, Map<String, BigDecimal> prices,
-        String status, String thumbnailUrl, UUID categoryId, String categoryName,
+        String status, String thumbnailUrl,
+        String metaTitle, String metaDescription, List<CategorySummary> categories,
         List<ImageResponse> images,
         List<VariantResponse> variants,
         List<FileResponse> files,
@@ -74,7 +78,9 @@ public final class CatalogDtos {
         @NotBlank String productType,
         @NotNull Map<String, @DecimalMin("0.01") BigDecimal> prices,
         String thumbnailUrl,
-        UUID categoryId,
+        List<UUID> categoryIds,
+        @Size(max = 255) String metaTitle,
+        @Size(max = 500) String metaDescription,
         @Valid List<CreateVariantRequest> variants,
         @Valid CreateEventRequest event,
         @Valid List<CreateOccurrenceRequest> occurrences
@@ -89,7 +95,9 @@ public final class CatalogDtos {
         @NotNull Map<String, @DecimalMin("0.01") BigDecimal> prices,
         String status,
         String thumbnailUrl,
-        UUID categoryId,
+        List<UUID> categoryIds,
+        @Size(max = 255) String metaTitle,
+        @Size(max = 500) String metaDescription,
         @Valid List<CreateVariantRequest> variants,
         @Valid CreateEventRequest event,
         @Valid List<CreateOccurrenceRequest> occurrences

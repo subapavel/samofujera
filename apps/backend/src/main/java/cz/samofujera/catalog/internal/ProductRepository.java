@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static cz.samofujera.generated.jooq.Tables.CATEGORIES;
 import static cz.samofujera.generated.jooq.Tables.PRODUCTS;
 
 @Repository
@@ -31,24 +30,23 @@ public class ProductRepository {
         String productType,
         String status,
         String thumbnailUrl,
-        UUID categoryId,
-        String categoryName,
+        String metaTitle,
+        String metaDescription,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
     ) {}
 
-    public List<ProductRow> findAll(String status, UUID categoryId, String productType,
+    public List<ProductRow> findAll(String status, List<UUID> productIdsInCategory, String productType,
                                     String search, int offset, int limit) {
-        var condition = buildCondition(status, categoryId, productType, search);
+        var condition = buildCondition(status, productIdsInCategory, productType, search);
 
         return dsl.select(
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
                 PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
                 PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.CATEGORY_ID, CATEGORIES.NAME,
+                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
                 PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
             .from(PRODUCTS)
-            .leftJoin(CATEGORIES).on(PRODUCTS.CATEGORY_ID.eq(CATEGORIES.ID))
             .where(condition)
             .orderBy(PRODUCTS.CREATED_AT.desc())
             .offset(offset)
@@ -62,15 +60,15 @@ public class ProductRepository {
                 r.get(PRODUCTS.PRODUCT_TYPE),
                 r.get(PRODUCTS.STATUS),
                 r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.CATEGORY_ID),
-                r.get(CATEGORIES.NAME),
+                r.get(PRODUCTS.META_TITLE),
+                r.get(PRODUCTS.META_DESCRIPTION),
                 r.get(PRODUCTS.CREATED_AT),
                 r.get(PRODUCTS.UPDATED_AT)
             ));
     }
 
-    public long count(String status, UUID categoryId, String productType, String search) {
-        var condition = buildCondition(status, categoryId, productType, search);
+    public long count(String status, List<UUID> productIdsInCategory, String productType, String search) {
+        var condition = buildCondition(status, productIdsInCategory, productType, search);
 
         return dsl.selectCount()
             .from(PRODUCTS)
@@ -83,10 +81,9 @@ public class ProductRepository {
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
                 PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
                 PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.CATEGORY_ID, CATEGORIES.NAME,
+                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
                 PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
             .from(PRODUCTS)
-            .leftJoin(CATEGORIES).on(PRODUCTS.CATEGORY_ID.eq(CATEGORIES.ID))
             .where(PRODUCTS.ID.eq(id))
             .fetchOptional(r -> new ProductRow(
                 r.get(PRODUCTS.ID),
@@ -97,8 +94,8 @@ public class ProductRepository {
                 r.get(PRODUCTS.PRODUCT_TYPE),
                 r.get(PRODUCTS.STATUS),
                 r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.CATEGORY_ID),
-                r.get(CATEGORIES.NAME),
+                r.get(PRODUCTS.META_TITLE),
+                r.get(PRODUCTS.META_DESCRIPTION),
                 r.get(PRODUCTS.CREATED_AT),
                 r.get(PRODUCTS.UPDATED_AT)
             ));
@@ -109,10 +106,9 @@ public class ProductRepository {
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
                 PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
                 PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.CATEGORY_ID, CATEGORIES.NAME,
+                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
                 PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
             .from(PRODUCTS)
-            .leftJoin(CATEGORIES).on(PRODUCTS.CATEGORY_ID.eq(CATEGORIES.ID))
             .where(PRODUCTS.SLUG.eq(slug))
             .fetchOptional(r -> new ProductRow(
                 r.get(PRODUCTS.ID),
@@ -123,15 +119,15 @@ public class ProductRepository {
                 r.get(PRODUCTS.PRODUCT_TYPE),
                 r.get(PRODUCTS.STATUS),
                 r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.CATEGORY_ID),
-                r.get(CATEGORIES.NAME),
+                r.get(PRODUCTS.META_TITLE),
+                r.get(PRODUCTS.META_DESCRIPTION),
                 r.get(PRODUCTS.CREATED_AT),
                 r.get(PRODUCTS.UPDATED_AT)
             ));
     }
 
     public UUID create(String title, String slug, String description, String shortDescription,
-                       String productType, String thumbnailUrl, UUID categoryId) {
+                       String productType, String thumbnailUrl, String metaTitle, String metaDescription) {
         return dsl.insertInto(PRODUCTS)
             .set(PRODUCTS.TITLE, title)
             .set(PRODUCTS.SLUG, slug)
@@ -139,7 +135,8 @@ public class ProductRepository {
             .set(PRODUCTS.SHORT_DESCRIPTION, shortDescription)
             .set(PRODUCTS.PRODUCT_TYPE, productType)
             .set(PRODUCTS.THUMBNAIL_URL, thumbnailUrl)
-            .set(PRODUCTS.CATEGORY_ID, categoryId)
+            .set(PRODUCTS.META_TITLE, metaTitle)
+            .set(PRODUCTS.META_DESCRIPTION, metaDescription)
             .returning(PRODUCTS.ID)
             .fetchOne()
             .getId();
@@ -147,7 +144,7 @@ public class ProductRepository {
 
     public void update(UUID id, String title, String slug, String description,
                        String shortDescription, String productType, String status,
-                       String thumbnailUrl, UUID categoryId) {
+                       String thumbnailUrl, String metaTitle, String metaDescription) {
         dsl.update(PRODUCTS)
             .set(PRODUCTS.TITLE, title)
             .set(PRODUCTS.SLUG, slug)
@@ -156,7 +153,8 @@ public class ProductRepository {
             .set(PRODUCTS.PRODUCT_TYPE, productType)
             .set(PRODUCTS.STATUS, status)
             .set(PRODUCTS.THUMBNAIL_URL, thumbnailUrl)
-            .set(PRODUCTS.CATEGORY_ID, categoryId)
+            .set(PRODUCTS.META_TITLE, metaTitle)
+            .set(PRODUCTS.META_DESCRIPTION, metaDescription)
             .set(PRODUCTS.UPDATED_AT, OffsetDateTime.now())
             .where(PRODUCTS.ID.eq(id))
             .execute();
@@ -177,13 +175,14 @@ public class ProductRepository {
         );
     }
 
-    private Condition buildCondition(String status, UUID categoryId, String productType, String search) {
+    private Condition buildCondition(String status, List<UUID> productIdsInCategory,
+                                     String productType, String search) {
         Condition condition = DSL.trueCondition();
         if (status != null) {
             condition = condition.and(PRODUCTS.STATUS.eq(status));
         }
-        if (categoryId != null) {
-            condition = condition.and(PRODUCTS.CATEGORY_ID.eq(categoryId));
+        if (productIdsInCategory != null && !productIdsInCategory.isEmpty()) {
+            condition = condition.and(PRODUCTS.ID.in(productIdsInCategory));
         }
         if (productType != null) {
             condition = condition.and(PRODUCTS.PRODUCT_TYPE.eq(productType));

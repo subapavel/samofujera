@@ -23,7 +23,7 @@ public class ProductAdminController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int limit,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) UUID category,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String search) {
         var result = catalogService.getProducts(status, category, type, search, page, limit);
