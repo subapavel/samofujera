@@ -83,6 +83,10 @@ public class CatalogService {
     @Transactional
     public CatalogDtos.CategoryResponse updateCategory(UUID id, CatalogDtos.UpdateCategoryRequest request) {
         categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
+        var existingBySlug = categoryRepository.findBySlug(request.slug());
+        if (existingBySlug.isPresent() && !existingBySlug.get().id().equals(id)) {
+            throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
+        }
         categoryRepository.update(
             id, request.name(), request.slug(), request.description(), request.imageUrl(),
             request.metaTitle(), request.metaDescription(), request.sortOrder()
@@ -164,9 +168,7 @@ public class CatalogService {
         );
 
         // Assign categories
-        if (request.categoryIds() != null && !request.categoryIds().isEmpty()) {
-            assignmentRepository.assignCategories(id, request.categoryIds());
-        }
+        assignCategoriesIfPresent(id, request.categoryIds());
 
         // Save prices
         if (request.prices() != null) {
@@ -198,7 +200,7 @@ public class CatalogService {
         );
 
         // Sync category assignments
-        assignmentRepository.assignCategories(id, request.categoryIds() != null ? request.categoryIds() : List.of());
+        assignCategoriesIfPresent(id, request.categoryIds());
 
         // Sync prices: delete all and re-insert
         productPriceRepository.deleteByProductId(id);
@@ -469,6 +471,19 @@ public class CatalogService {
     }
 
     // --- Private helpers ---
+
+    private void assignCategoriesIfPresent(UUID productId, List<UUID> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            assignmentRepository.removeAllForProduct(productId);
+            return;
+        }
+        for (var catId : categoryIds) {
+            if (!categoryRepository.existsById(catId)) {
+                throw new NotFoundException("Category not found: " + catId);
+            }
+        }
+        assignmentRepository.assignCategories(productId, categoryIds);
+    }
 
     private void saveTypeSpecificData(UUID productId, String productType,
                                        List<CatalogDtos.CreateVariantRequest> variants,

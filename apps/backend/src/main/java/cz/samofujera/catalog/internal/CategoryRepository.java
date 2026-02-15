@@ -119,6 +119,13 @@ public class CategoryRepository {
             .execute();
     }
 
+    public boolean existsById(UUID id) {
+        return dsl.fetchExists(
+            dsl.selectFrom(PRODUCT_CATEGORIES)
+               .where(PRODUCT_CATEGORIES.ID.eq(id))
+        );
+    }
+
     public boolean existsBySlug(String slug) {
         return dsl.fetchExists(
             dsl.selectFrom(PRODUCT_CATEGORIES)
