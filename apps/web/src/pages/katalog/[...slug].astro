@@ -1,5 +1,5 @@
 ---
-import "../../styles/global.css";
+import PublicLayout from "../../layouts/PublicLayout.astro";
 import CatalogApp from "../../components/catalog/main";
 
 export const prerender = true;
@@ -9,28 +9,8 @@ export function getStaticPaths() {
 }
 ---
 
-<!doctype html>
-<html lang="cs">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Katalog | Samo Fujera</title>
-  </head>
-  <body class="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
-    <header class="border-b border-[var(--border)]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <a href="/" class="text-xl font-bold text-[var(--primary)]">Samo Fujera</a>
-          <nav class="flex items-center gap-6">
-            <a href="/katalog" class="text-sm font-medium text-[var(--foreground)]">Katalog</a>
-            <a href="/prihlaseni" class="text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Přihlášení</a>
-          </nav>
-        </div>
-      </div>
-    </header>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <CatalogApp client:only="react" />
-    </div>
-  </body>
-</html>
+<PublicLayout title="Katalog">
+  <div class="max-w-7xl mx-auto py-4">
+    <CatalogApp client:only="react" />
+  </div>
+</PublicLayout>

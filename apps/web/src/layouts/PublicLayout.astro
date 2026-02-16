@@ -33,10 +33,12 @@ const currentPath = Astro.url.pathname;
     <!-- Top bar with auth links -->
     <TopBar client:load />
 
-    <!-- Green navigation -->
-    <PublicNav client:load currentPath={currentPath} />
+    <!-- Green navigation (inset from edges, separated from topbar) -->
+    <div class="px-4 mt-4">
+      <PublicNav client:load currentPath={currentPath} />
+    </div>
 
-    <main class="flex-1 py-6 sm:py-10">
+    <main class="flex-1 px-4 py-4">
       <slot />
     </main>
 

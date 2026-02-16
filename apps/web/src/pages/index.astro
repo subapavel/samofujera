@@ -1,239 +1,227 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
-
-const sectionClass = "bg-repeat px-6 sm:px-12 py-12 sm:py-16 text-center";
-const sectionStyle = "background-image: url('/images/bg-body-texture.png');";
 ---
 
 <PublicLayout title="Osobní rozvoj, zdraví a duchovní růst">
-  <div class="max-w-7xl mx-auto px-2 sm:px-4 space-y-0">
+  <section
+    class="bg-repeat px-6 sm:px-12 lg:px-16 py-12 sm:py-16 text-center"
+    style="background-image: url('/images/bg-body-texture.png');"
+  >
+    <div class="max-w-[1060px] mx-auto">
 
-    <!-- Hero -->
-    <section class={sectionClass} style={sectionStyle}>
-      <div class="max-w-3xl mx-auto">
-        <p class="text-lg sm:text-xl leading-relaxed text-[var(--foreground)]">
-          <strong>Každý člověk se někdy dostane do bodu, kdy běžná řešení nestačí.</strong>
+      <!-- Hero -->
+      <p class="text-lg sm:text-xl leading-relaxed text-black/90">
+        <strong>Každý člověk se někdy dostane do bodu, kdy běžná řešení nestačí.</strong>
+      </p>
+      <p class="mt-4 text-base text-black/60">
+        Tento prostor je určen těm, kteří chtějí jít hlouběji a&nbsp;hledat skutečné příčiny.
+      </p>
+
+      <hr class="border-black/20 max-w-4xl mx-auto my-12 sm:my-16" />
+
+      <!-- Pomoc při tělesných, psychických a životních obtížích -->
+      <h2 class="font-heading text-2xl sm:text-3xl font-medium mb-8 text-black/90">
+        Pomoc při tělesných, psychických a&nbsp;životních obtížích
+      </h2>
+      <div class="space-y-4 text-base leading-relaxed text-black/60">
+        <p>
+          Pracuji s&nbsp;lidmi, kteří cítí, že jejich potíže nejsou jen náhodou nebo chybou těla.
+          Společně hledáme skutečnou příčinu obtíží&nbsp;– v&nbsp;souvislostech života, psychiky i&nbsp;vnitřního nastavení.
         </p>
-        <p class="mt-4 text-base text-[var(--muted-foreground)]">
-          Tento prostor je určen těm, kteří chtějí jít hlouběji a&nbsp;hledat skutečné příčiny.
+        <p>
+          Cílem není opravit člověka, ale návrat k&nbsp;přirozené rovnováze.
+        </p>
+        <p>
+          Osobní konzultace, besedy, meditace, dovolené… vedené zkušeností, nikoli metodou.
         </p>
       </div>
-    </section>
 
-    <!-- Pomoc při tělesných, psychických a životních obtížích -->
-    <section class={sectionClass} style={sectionStyle}>
-      <div class="max-w-3xl mx-auto">
-        <h2 class="font-heading text-2xl sm:text-3xl font-medium mb-8">
-          Pomoc při tělesných, psychických a&nbsp;životních obtížích
-        </h2>
-        <div class="space-y-4 text-base leading-relaxed text-[var(--muted-foreground)]">
-          <p>
-            Pracuji s&nbsp;lidmi, kteří cítí, že jejich potíže nejsou jen náhodou nebo chybou těla.
-            Společně hledáme skutečnou příčinu obtíží&nbsp;– v&nbsp;souvislostech života, psychiky i&nbsp;vnitřního nastavení.
-          </p>
-          <p>
-            Cílem není opravit člověka, ale návrat k&nbsp;přirozené rovnováze.
-          </p>
-          <p>
-            Osobní konzultace, besedy, meditace, dovolené… vedené zkušeností, nikoli metodou.
-          </p>
-        </div>
-      </div>
-    </section>
+      <hr class="border-black/20 max-w-4xl mx-auto my-12 sm:my-16" />
 
-    <!-- Možná jste tady, protože... -->
-    <section class={sectionClass} style={sectionStyle}>
-      <div class="max-w-3xl mx-auto">
-        <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-10">
-          Možná jste tady, protože…
-        </h2>
-        <div class="space-y-8 text-base leading-relaxed text-[var(--muted-foreground)]">
-          <p>
-            Možná se navrchu nic zásadního neděje, ale uvnitř cítíte, že něco není v&nbsp;rovnováze.
-            Tělo nebo psychika opakovaně upozorňují, že dosavadní způsob fungování už není udržitelný.
-            A&nbsp;možná jen víte, že je čas se na svůj život podívat jinak&nbsp;– klidněji, pravdivěji.
-          </p>
-          <div>
-            <h3 class="text-lg font-semibold text-[var(--foreground)] mb-2">Cítíte únavu, tlak nebo opakující se potíže</h3>
-            <p>Tělo nebo psychika dávají signál, že dosavadní způsob života už nestačí.</p>
-          </div>
-          <div>
-            <h3 class="text-lg font-semibold text-[var(--foreground)] mb-2">Hledáte hlubší smysl a&nbsp;vnitřní klid</h3>
-            <p>Všelijak fungujete, ale uvnitř chybí ticho, ukotvení a&nbsp;směr.</p>
-          </div>
-          <div>
-            <h3 class="text-lg font-semibold text-[var(--foreground)] mb-2">Stojíte na životní křižovatce</h3>
-            <p>Rozhodnutí nelze udělat hlavou&nbsp;– je třeba slyšet pravdu zevnitř.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Jak vás mohu podpořit -->
-    <section class={sectionClass} style={sectionStyle}>
-      <div class="max-w-3xl mx-auto">
-        <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-6">
-          Jak vás mohu podpořit
-        </h2>
-        <p class="text-base text-[var(--muted-foreground)] mb-12">
-          Podpora může mít různé podoby. Důležité není, kterou zvolíte, ale že na to nejste sami.
+      <!-- Možná jste tady, protože... -->
+      <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-10 text-black/90">
+        Možná jste tady, protože…
+      </h2>
+      <div class="space-y-8 text-base leading-relaxed text-black/60">
+        <p>
+          Možná se navrchu nic zásadního neděje, ale uvnitř cítíte, že něco není v&nbsp;rovnováze.
+          Tělo nebo psychika opakovaně upozorňují, že dosavadní způsob fungování už není udržitelný.
+          A&nbsp;možná jen víte, že je čas se na svůj život podívat jinak&nbsp;– klidněji, pravdivěji.
         </p>
-
-        <!-- 1. Osobní konzultace -->
-        <div class="mb-14">
-          <h3 class="font-heading text-xl font-medium text-[var(--foreground)] mb-4">
-            1. Osobní konzultace
-          </h3>
-          <div class="space-y-4 text-base leading-relaxed text-[var(--muted-foreground)]">
-            <p>
-              Individuální setkání, kde je prostor mluvit otevřeně o&nbsp;tom, co se skutečně děje&nbsp;– v&nbsp;těle, v&nbsp;psychice i&nbsp;v&nbsp;životě jako celku.
-            </p>
-            <p>
-              Konzultace nejsou vedené podle pevné metody. Vycházejí z&nbsp;rozhovoru, pozorování souvislostí a&nbsp;práce s&nbsp;tím, co se v&nbsp;danou chvíli ukazuje jako podstatné.
-            </p>
-            <p>
-              Individuální setkání zaměřené na skutečnou příčinu obtíží&nbsp;– ne jen jejich projevy.
-            </p>
-            <ul class="list-disc list-inside space-y-1 mt-4">
-              <li>osobně nebo online</li>
-            </ul>
-          </div>
-          <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="/konzultace" class="inline-block border border-[var(--border)] text-[var(--foreground)] text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-[var(--accent)] transition-colors">
-              Jak probíhá konzultace
-            </a>
-            <a href="/konzultace" class="inline-block border border-[var(--border)] text-[var(--foreground)] text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-[var(--accent)] transition-colors">
-              Objednat konzultaci
-            </a>
-          </div>
-        </div>
-
-        <hr class="border-[var(--border)] max-w-xs mx-auto mb-14" />
-
-        <!-- 2. Programy, besedy a setkání -->
-        <div class="mb-14">
-          <h3 class="font-heading text-xl font-medium text-[var(--foreground)] mb-4">
-            2. Programy, besedy a&nbsp;setkání
-          </h3>
-          <div class="space-y-4 text-base leading-relaxed text-[var(--muted-foreground)]">
-            <p>
-              Setkání, kde se společné sdílení stává zdrojem porozumění.
-              Témata vycházejí z&nbsp;každodenního života, zdraví, vztahů i&nbsp;smyslu bytí.
-            </p>
-            <p>
-              Skupinový prostor často umožňuje zahlédnout vlastní situaci z&nbsp;nové perspektivy&nbsp;– bez tlaku, bez hodnocení.
-            </p>
-            <ul class="list-disc list-inside space-y-1 mt-4">
-              <li>živé besedy</li>
-              <li>tematické programy</li>
-              <li>inspirativní rozhovory</li>
-            </ul>
-          </div>
-          <div class="mt-6">
-            <a href="/akce/kalendar" class="inline-block border border-[var(--border)] text-[var(--foreground)] text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-[var(--accent)] transition-colors">
-              Zobrazit aktuální program
-            </a>
-          </div>
-        </div>
-
-        <hr class="border-[var(--border)] max-w-xs mx-auto mb-14" />
-
-        <!-- 3. Audio nahrávky, meditace a texty -->
         <div>
-          <h3 class="font-heading text-xl font-medium text-[var(--foreground)] mb-4">
-            3. Audio nahrávky, meditace a&nbsp;texty
-          </h3>
-          <div class="space-y-4 text-base leading-relaxed text-[var(--muted-foreground)]">
-            <p>
-              Nahrávky a&nbsp;psané texty jako tichý doprovod do každodenního života.
-              Hodné pro chvíle, kdy potřebujete zpomalit, ztišit se nebo se znovu spojit sami se sebou.
-            </p>
-            <ul class="list-disc list-inside space-y-1 mt-4">
-              <li>meditace</li>
-              <li>audio zamyšlení</li>
-              <li>audio kurzy a&nbsp;semináře</li>
-              <li>knihy a&nbsp;digitální texty</li>
-            </ul>
-          </div>
-          <div class="mt-6">
-            <a href="/katalog" class="inline-block border border-[var(--border)] text-[var(--foreground)] text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-[var(--accent)] transition-colors">
-              Přejít do obchodu
-            </a>
-          </div>
+          <h3 class="text-lg font-semibold text-black/90 mb-2">Cítíte únavu, tlak nebo opakující se potíže</h3>
+          <p>Tělo nebo psychika dávají signál, že dosavadní způsob života už nestačí.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-black/90 mb-2">Hledáte hlubší smysl a&nbsp;vnitřní klid</h3>
+          <p>Všelijak fungujete, ale uvnitř chybí ticho, ukotvení a&nbsp;směr.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-black/90 mb-2">Stojíte na životní křižovatce</h3>
+          <p>Rozhodnutí nelze udělat hlavou&nbsp;– je třeba slyšet pravdu zevnitř.</p>
         </div>
       </div>
-    </section>
 
-    <!-- Kdo vás provází -->
-    <section class={sectionClass} style={sectionStyle}>
-      <div class="max-w-3xl mx-auto">
-        <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-8">
-          Kdo vás provází
-        </h2>
-        <p class="text-base leading-relaxed text-[var(--muted-foreground)] mb-4">
-          Jmenuji se <strong class="text-[var(--foreground)]">Sámo Fujera</strong>.
-        </p>
-        <div class="space-y-4 text-base leading-relaxed text-[var(--muted-foreground)]">
+      <hr class="border-black/20 max-w-4xl mx-auto my-12 sm:my-16" />
+
+      <!-- Jak vás mohu podpořit -->
+      <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-6 text-black/90">
+        Jak vás mohu podpořit
+      </h2>
+      <p class="text-base text-black/60 mb-12">
+        Podpora může mít různé podoby. Důležité není, kterou zvolíte, ale že na to nejste sami.
+      </p>
+
+      <!-- 1. Osobní konzultace -->
+      <div class="mb-14">
+        <h3 class="font-heading text-xl font-medium text-black/90 mb-4">
+          1. Osobní konzultace
+        </h3>
+        <div class="space-y-4 text-base leading-relaxed text-black/60">
           <p>
-            Dlouhodobě se věnuji práci s&nbsp;lidmi, kteří procházejí tělesným, psychickými nebo životními obtížemi a&nbsp;cítí, že běžná řešení pro ně nejsou dostačující.
+            Individuální setkání, kde je prostor mluvit otevřeně o&nbsp;tom, co se skutečně děje&nbsp;– v&nbsp;těle, v&nbsp;psychice i&nbsp;v&nbsp;životě jako celku.
           </p>
           <p>
-            Nevycházím z&nbsp;jednoho systému ani naučeného postupu. Opírám se o&nbsp;osobní zkušenost, pozorování života a&nbsp;rozhovor, který jde k&nbsp;podstatě.
+            Konzultace nejsou vedené podle pevné metody. Vycházejí z&nbsp;rozhovoru, pozorování souvislostí a&nbsp;práce s&nbsp;tím, co se v&nbsp;danou chvíli ukazuje jako podstatné.
           </p>
           <p>
-            Věřím, že skutečná změna nepřichází tlakem ani snahou člověka opravit, ale ve chvíli, kdy se znovu setkáte s&nbsp;tím, kým přirozeně je.
+            Individuální setkání zaměřené na skutečnou příčinu obtíží&nbsp;– ne jen jejich projevy.
           </p>
-          <p>
-            Při setkáních vytvářím prostor, kde není potřeba nic dokazovat.
-          </p>
-          <p>
-            Jen se zastavit, podívat se pravdivě na svou situaci a&nbsp;nechat vyvstal další krok.
-          </p>
+          <ul class="list-disc list-inside space-y-1 mt-4">
+            <li>osobně nebo online</li>
+          </ul>
         </div>
-        <div class="mt-8">
-          <a href="/o-samovi" class="inline-block border border-[var(--border)] text-[var(--foreground)] text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-[var(--accent)] transition-colors">
-            Více o&nbsp;Sámovi
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="/konzultace" class="inline-block border border-black/20 text-black/90 text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-black/5 transition-colors">
+            Jak probíhá konzultace
           </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pokud cítíte, že je čas... -->
-    <section class={sectionClass} style={sectionStyle}>
-      <div class="max-w-3xl mx-auto">
-        <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-8">
-          Pokud cítíte, že je čas…
-        </h2>
-        <div class="space-y-4 text-base leading-relaxed text-[var(--muted-foreground)]">
-          <p>
-            Možná ještě nemáte jasno v&nbsp;tom, co přesně potřebujete. To je v&nbsp;pořádku.
-          </p>
-          <p>
-            První krok často není odpověď, ale ochota zastavit se a&nbsp;podívat se na svou situaci bez spěchu.
-          </p>
-          <p>
-            Pokud cítíte, že by vám takový prostor mohl být užitečný, jste vítáni.
-          </p>
-        </div>
-        <div class="mt-8">
-          <a href="/konzultace" class="inline-block border border-[var(--border)] text-[var(--foreground)] text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-[var(--accent)] transition-colors">
+          <a href="/konzultace" class="inline-block border border-black/20 text-black/90 text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-black/5 transition-colors">
             Objednat konzultaci
           </a>
         </div>
-        <p class="font-heading mt-10 text-base font-medium text-[var(--foreground)]">
-          Každá změna začíná chvílí, kdy si dovolíme být k&nbsp;sobě pravdiví.
-        </p>
+      </div>
 
-        <!-- Fotka Sáma -->
-        <div class="mt-10">
-          <img
-            src="/images/samo-fujera.webp"
-            alt="Sámo Fujera"
-            class="max-w-xs sm:max-w-sm mx-auto"
-          />
+      <hr class="border-black/20 max-w-4xl mx-auto mb-14" />
+
+      <!-- 2. Programy, besedy a setkání -->
+      <div class="mb-14">
+        <h3 class="font-heading text-xl font-medium text-black/90 mb-4">
+          2. Programy, besedy a&nbsp;setkání
+        </h3>
+        <div class="space-y-4 text-base leading-relaxed text-black/60">
+          <p>
+            Setkání, kde se společné sdílení stává zdrojem porozumění.
+            Témata vycházejí z&nbsp;každodenního života, zdraví, vztahů i&nbsp;smyslu bytí.
+          </p>
+          <p>
+            Skupinový prostor často umožňuje zahlédnout vlastní situaci z&nbsp;nové perspektivy&nbsp;– bez tlaku, bez hodnocení.
+          </p>
+          <ul class="list-disc list-inside space-y-1 mt-4">
+            <li>živé besedy</li>
+            <li>tematické programy</li>
+            <li>inspirativní rozhovory</li>
+          </ul>
+        </div>
+        <div class="mt-6">
+          <a href="/akce/kalendar" class="inline-block border border-black/20 text-black/90 text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-black/5 transition-colors">
+            Zobrazit aktuální program
+          </a>
         </div>
       </div>
-    </section>
 
-  </div>
+      <hr class="border-black/20 max-w-4xl mx-auto mb-14" />
+
+      <!-- 3. Audio nahrávky, meditace a texty -->
+      <div>
+        <h3 class="font-heading text-xl font-medium text-black/90 mb-4">
+          3. Audio nahrávky, meditace a&nbsp;texty
+        </h3>
+        <div class="space-y-4 text-base leading-relaxed text-black/60">
+          <p>
+            Nahrávky a&nbsp;psané texty jako tichý doprovod do každodenního života.
+            Hodné pro chvíle, kdy potřebujete zpomalit, ztišit se nebo se znovu spojit sami se sebou.
+          </p>
+          <ul class="list-disc list-inside space-y-1 mt-4">
+            <li>meditace</li>
+            <li>audio zamyšlení</li>
+            <li>audio kurzy a&nbsp;semináře</li>
+            <li>knihy a&nbsp;digitální texty</li>
+          </ul>
+        </div>
+        <div class="mt-6">
+          <a href="/katalog" class="inline-block border border-black/20 text-black/90 text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-black/5 transition-colors">
+            Přejít do obchodu
+          </a>
+        </div>
+      </div>
+
+      <hr class="border-black/20 max-w-4xl mx-auto my-12 sm:my-16" />
+
+      <!-- Kdo vás provází -->
+      <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-8 text-black/90">
+        Kdo vás provází
+      </h2>
+      <p class="text-base leading-relaxed text-black/60 mb-4">
+        Jmenuji se <strong class="text-black/90">Sámo Fujera</strong>.
+      </p>
+      <div class="space-y-4 text-base leading-relaxed text-black/60">
+        <p>
+          Dlouhodobě se věnuji práci s&nbsp;lidmi, kteří procházejí tělesným, psychickými nebo životními obtížemi a&nbsp;cítí, že běžná řešení pro ně nejsou dostačující.
+        </p>
+        <p>
+          Nevycházím z&nbsp;jednoho systému ani naučeného postupu. Opírám se o&nbsp;osobní zkušenost, pozorování života a&nbsp;rozhovor, který jde k&nbsp;podstatě.
+        </p>
+        <p>
+          Věřím, že skutečná změna nepřichází tlakem ani snahou člověka opravit, ale ve chvíli, kdy se znovu setkáte s&nbsp;tím, kým přirozeně je.
+        </p>
+        <p>
+          Při setkáních vytvářím prostor, kde není potřeba nic dokazovat.
+        </p>
+        <p>
+          Jen se zastavit, podívat se pravdivě na svou situaci a&nbsp;nechat vyvstal další krok.
+        </p>
+      </div>
+      <div class="mt-8">
+        <a href="/o-samovi" class="inline-block border border-black/20 text-black/90 text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-black/5 transition-colors">
+          Více o&nbsp;Sámovi
+        </a>
+      </div>
+
+      <hr class="border-black/20 max-w-4xl mx-auto my-12 sm:my-16" />
+
+      <!-- Pokud cítíte, že je čas... -->
+      <h2 class="font-heading text-2xl sm:text-3xl italic font-medium mb-8 text-black/90">
+        Pokud cítíte, že je čas…
+      </h2>
+      <div class="space-y-4 text-base leading-relaxed text-black/60">
+        <p>
+          Možná ještě nemáte jasno v&nbsp;tom, co přesně potřebujete. To je v&nbsp;pořádku.
+        </p>
+        <p>
+          První krok často není odpověď, ale ochota zastavit se a&nbsp;podívat se na svou situaci bez spěchu.
+        </p>
+        <p>
+          Pokud cítíte, že by vám takový prostor mohl být užitečný, jste vítáni.
+        </p>
+      </div>
+      <div class="mt-8">
+        <a href="/konzultace" class="inline-block border border-black/20 text-black/90 text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-black/5 transition-colors">
+          Objednat konzultaci
+        </a>
+      </div>
+      <p class="font-heading mt-10 text-base font-medium text-black/90">
+        Každá změna začíná chvílí, kdy si dovolíme být k&nbsp;sobě pravdiví.
+      </p>
+
+      <!-- Fotka Sáma -->
+      <div class="mt-10">
+        <img
+          src="/images/samo-fujera.webp"
+          alt="Sámo Fujera"
+          class="max-w-xs sm:max-w-sm mx-auto"
+        />
+      </div>
+
+    </div>
+  </section>
 </PublicLayout>

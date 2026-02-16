@@ -35,7 +35,10 @@ export function TopBar() {
     "text-xs uppercase tracking-wider text-white/80 hover:text-white transition-colors";
 
   return (
-    <div className="bg-[var(--primary)] text-white text-xs py-1.5">
+    <div
+      className="bg-cover bg-center text-white text-xs py-3"
+      style={{ backgroundImage: "url('/images/bg-pattern-green.jpg')" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-end gap-4">
         {auth === null ? (
           <span className="h-4" />
