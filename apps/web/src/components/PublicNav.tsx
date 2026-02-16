@@ -94,12 +94,12 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                   <button
                     type="button"
                     onClick={() => toggleDropdown(item.label)}
-                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center ${
                       isActive(item) ? "active" : ""
                     } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
                     {item.label}
-                    <ChevronDown className="inline size-3 ml-0.5" />
+                    <ChevronDown className="size-3.5 ml-[3px] relative -top-px" strokeWidth={2.5} />
                   </button>
                 ) : (
                   <a
@@ -130,13 +130,13 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             ))}
 
             {/* Separator + Košík */}
-            <span className="relative mx-4 h-[34px] w-px bg-white/35" />
+            <span className="relative mx-4 h-[34px] w-px bg-white/35 self-center" />
             <a
               href="/kosik"
-              className="nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
+              className="nav-link pl-[8px] py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
             >
               Košík
-              <ShoppingBag className="size-4" strokeWidth={1.5} />
+              <ShoppingBag className="size-4 relative -top-[2px] ml-[4px]" strokeWidth={1.5} />
             </a>
           </div>
 
