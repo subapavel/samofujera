@@ -52,11 +52,46 @@ const description = "Page description for SEO";
 </MarketingLayout>
 ```
 
+## SPA Catch-All Pages (CRITICAL)
+
+For React SPA sections (`/admin/*`, `/muj-ucet/*`), the `[...all].astro`
+catch-all page MUST use `prerender = false`. NEVER use `prerender = true`
+with `getStaticPaths` — it only generates listed paths and breaks direct
+browser navigation to sub-routes.
+
+```astro
+---
+import "../../styles/global.css";
+import AdminApp from "../../components/admin/main";
+
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Admin | Samo Fujera</title>
+  </head>
+  <body class="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
+    <AdminApp client:only="react" />
+  </body>
+</html>
+```
+
+Key rules:
+- `client:only="react"` — NEVER `client:load` (TanStack Router needs browser APIs)
+- `prerender = false` — NEVER `true` (breaks direct URL navigation)
+- No `getStaticPaths` needed with `prerender = false`
+
 ## Hydration Directives
 - `client:load` — Hydrate on page load (use sparingly)
 - `client:visible` — Hydrate when scrolled into view (preferred)
 - `client:idle` — Hydrate when browser is idle
-- `client:only="react"` — Skip SSR, client-only rendering
+- `client:only="react"` — Skip SSR, client-only rendering (REQUIRED for SPA shells)
 
 ## i18n
 All user-facing text must go through Lingui. For Astro pages, import and use

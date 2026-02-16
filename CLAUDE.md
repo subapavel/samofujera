@@ -93,6 +93,18 @@ All database access through JOOQ generated classes. Type-safe queries only.
 ### 9. pnpm only
 Use pnpm for all frontend/monorepo operations. No npm, no yarn.
 
+### 10. SPA catch-all routes must use `prerender = false`
+The admin (`/admin`) and customer (`/muj-ucet`) sections are React SPAs served
+from Astro `[...all].astro` catch-all pages. These MUST have `export const prerender = false`
+— never `prerender = true` with `getStaticPaths`. With `prerender = true`, only
+explicitly listed paths work; direct browser navigation to any sub-route (e.g.
+`/admin/media`) returns Astro 404. With `prerender = false`, Astro serves the
+SPA shell for every sub-path and TanStack Router handles client-side routing.
+
+Reference files:
+- `apps/web/src/pages/admin/[...all].astro`
+- `apps/web/src/pages/muj-ucet/[...all].astro`
+
 ## Code Conventions
 
 ### Backend (Java/Spring)
