@@ -11,9 +11,12 @@ import { UsersPage } from "./routes/users";
 import { ProductsPage } from "./routes/products";
 import { ProductNewPage } from "./routes/product-new";
 import { ProductEditPage } from "./routes/product-edit";
-import { CategoriesPage } from "./routes/categories";
+import { CategoryListPage } from "./routes/category-list";
+import { CategoryNewPage } from "./routes/category-new";
+import { CategoryEditPage } from "./routes/category-edit";
 import { OrdersPage } from "./routes/orders";
 import { OrderDetailPage } from "./routes/order-detail";
+import { MediaPage } from "./routes/media";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -58,10 +61,22 @@ const productEditRoute = createRoute({
   component: ProductEditPage,
 });
 
-const categoriesRoute = createRoute({
+const categoryListRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/kategorie",
-  component: CategoriesPage,
+  path: "/produkty/kategorie",
+  component: CategoryListPage,
+});
+
+const categoryNewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/produkty/kategorie/nova",
+  component: CategoryNewPage,
+});
+
+const categoryEditRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/produkty/kategorie/$categoryId",
+  component: CategoryEditPage,
 });
 
 const ordersRoute = createRoute({
@@ -76,15 +91,24 @@ const orderDetailRoute = createRoute({
   component: OrderDetailPage,
 });
 
+const mediaRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/media",
+  component: MediaPage,
+});
+
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
   usersRoute,
   productsRoute,
   productNewRoute,
   productEditRoute,
-  categoriesRoute,
+  categoryListRoute,
+  categoryNewRoute,
+  categoryEditRoute,
   ordersRoute,
   orderDetailRoute,
+  mediaRoute,
 ]);
 
 export const router = createRouter({ routeTree, basepath: "/admin" });

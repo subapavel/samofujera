@@ -6,7 +6,8 @@ const navItems = [
   { label: "Dashboard", to: "/" as const },
   { label: "Users", to: "/users" as const },
   { label: "Produkty", to: "/produkty" as const },
-  { label: "Kategorie", to: "/kategorie" as const },
+  { label: "Kategorie", to: "/produkty/kategorie" as const },
+  { label: "Media", to: "/media" as const },
   { label: "Objednávky", to: "/objednavky" as const },
 ] as const;
 
