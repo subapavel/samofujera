@@ -85,6 +85,17 @@ public class StorageService {
         s3Client.putObject(request, RequestBody.fromInputStream(inputStream, contentLength));
     }
 
+    public void upload(String key, byte[] data, String contentType) {
+        var request = PutObjectRequest.builder()
+            .bucket(bucket)
+            .key(key)
+            .contentType(contentType)
+            .contentLength((long) data.length)
+            .build();
+
+        s3Client.putObject(request, RequestBody.fromBytes(data));
+    }
+
     public void copy(String sourceKey, String destinationKey) {
         var request = CopyObjectRequest.builder()
             .sourceBucket(bucket)
@@ -103,6 +114,13 @@ public class StorageService {
             .build();
 
         s3Client.deleteObject(request);
+    }
+
+    public void deleteByPrefix(String prefix) {
+        var keys = listKeys(prefix);
+        for (var key : keys) {
+            delete(key);
+        }
     }
 
     public String generatePresignedUrl(String key, Duration ttl) {
