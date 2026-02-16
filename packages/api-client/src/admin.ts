@@ -54,6 +54,12 @@ export const adminApi = {
       body: JSON.stringify(data),
     }),
 
+  createDraft: (productType: string) =>
+    apiFetch<ApiResponse<ProductResponse>>("/api/admin/products/draft", {
+      method: "POST",
+      body: JSON.stringify({ productType }),
+    }),
+
   updateProduct: (id: string, data: UpdateProductRequest) =>
     apiFetch<ApiResponse<ProductResponse>>(`/api/admin/products/${id}`, {
       method: "PUT",

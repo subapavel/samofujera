@@ -149,9 +149,12 @@ export interface OccurrenceResponse {
 }
 
 export interface ImageResponse {
-  id: string;
-  fileName: string;
-  url: string;
+  mediaItemId: string;
+  originalUrl: string;
+  thumbUrl: string | null;
+  mediumUrl: string | null;
+  largeUrl: string | null;
+  ogUrl: string | null;
   altText: string | null;
   sortOrder: number;
 }
@@ -335,24 +338,19 @@ export interface UpdateShippingRequest {
 
 // Media Library types
 
-export interface MediaFolderResponse {
-  id: string;
-  name: string;
-  slug: string;
-  parentFolderId: string | null;
-  createdAt: string;
-}
-
 export interface MediaItemResponse {
   id: string;
   originalFilename: string;
-  url: string;
+  originalUrl: string;
+  thumbUrl: string | null;
+  mediumUrl: string | null;
+  largeUrl: string | null;
+  ogUrl: string | null;
   mimeType: string;
   fileSizeBytes: number;
   width: number | null;
   height: number | null;
   altText: string | null;
-  folderId: string | null;
   createdAt: string;
 }
 
@@ -364,32 +362,6 @@ export interface MediaItemListResponse {
   totalPages: number;
 }
 
-export interface TempUploadResponse {
-  tempKey: string;
-  previewUrl: string;
-}
-
-export interface CreateMediaFolderRequest {
-  name: string;
-  slug: string;
-  parentFolderId?: string;
-}
-
-export interface RenameMediaFolderRequest {
-  name: string;
-  slug: string;
-}
-
-export interface CreateMediaItemRequest {
-  tempKey: string;
-  folderId?: string;
-  altText?: string;
-  originalFilename?: string;
-  mimeType?: string;
-  fileSizeBytes?: number;
-}
-
 export interface UpdateMediaItemRequest {
   altText?: string;
-  folderId?: string;
 }
