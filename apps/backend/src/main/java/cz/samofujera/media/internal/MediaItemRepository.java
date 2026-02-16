@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.MEDIA_ITEMS;
+import static cz.samofujera.generated.jooq.Tables.PRODUCT_CATEGORIES;
+import static cz.samofujera.generated.jooq.Tables.PRODUCT_GALLERY;
 
 @Repository
 public class MediaItemRepository {
@@ -21,12 +23,12 @@ public class MediaItemRepository {
         this.dsl = dsl;
     }
 
-    public record MediaItemRow(UUID id, UUID folderId, String originalFilename, String storageKey,
+    public record MediaItemRow(UUID id, String originalFilename, String storageKey,
                                 String mimeType, long fileSizeBytes, Integer width, Integer height,
                                 String altText, OffsetDateTime createdAt, OffsetDateTime updatedAt) {}
 
-    public List<MediaItemRow> findAll(UUID folderId, String mimeTypePrefix, String search, int offset, int limit) {
-        var condition = buildCondition(folderId, mimeTypePrefix, search);
+    public List<MediaItemRow> findAll(String source, String mimeTypePrefix, String search, int offset, int limit) {
+        var condition = buildCondition(source, mimeTypePrefix, search);
 
         return dsl.selectFrom(MEDIA_ITEMS)
             .where(condition)
@@ -36,8 +38,8 @@ public class MediaItemRepository {
             .fetch(this::toRow);
     }
 
-    public long count(UUID folderId, String mimeTypePrefix, String search) {
-        var condition = buildCondition(folderId, mimeTypePrefix, search);
+    public long count(String source, String mimeTypePrefix, String search) {
+        var condition = buildCondition(source, mimeTypePrefix, search);
 
         return dsl.selectCount()
             .from(MEDIA_ITEMS)
@@ -51,10 +53,9 @@ public class MediaItemRepository {
             .fetchOptional(this::toRow);
     }
 
-    public UUID create(UUID folderId, String originalFilename, String storageKey, String mimeType,
+    public UUID create(String originalFilename, String storageKey, String mimeType,
                        long fileSizeBytes, Integer width, Integer height, String altText) {
         return dsl.insertInto(MEDIA_ITEMS)
-            .set(MEDIA_ITEMS.FOLDER_ID, folderId)
             .set(MEDIA_ITEMS.ORIGINAL_FILENAME, originalFilename)
             .set(MEDIA_ITEMS.STORAGE_KEY, storageKey)
             .set(MEDIA_ITEMS.MIME_TYPE, mimeType)
@@ -67,10 +68,9 @@ public class MediaItemRepository {
             .getId();
     }
 
-    public void update(UUID id, String altText, UUID folderId) {
+    public void update(UUID id, String altText) {
         dsl.update(MEDIA_ITEMS)
             .set(MEDIA_ITEMS.ALT_TEXT, altText)
-            .set(MEDIA_ITEMS.FOLDER_ID, folderId)
             .set(MEDIA_ITEMS.UPDATED_AT, OffsetDateTime.now())
             .where(MEDIA_ITEMS.ID.eq(id))
             .execute();
@@ -82,11 +82,11 @@ public class MediaItemRepository {
             .execute();
     }
 
-    private Condition buildCondition(UUID folderId, String mimeTypePrefix, String search) {
+    private Condition buildCondition(String source, String mimeTypePrefix, String search) {
         Condition condition = DSL.trueCondition();
 
-        if (folderId != null) {
-            condition = condition.and(MEDIA_ITEMS.FOLDER_ID.eq(folderId));
+        if (source != null && !source.isBlank()) {
+            condition = condition.and(buildSourceCondition(source));
         }
         if (mimeTypePrefix != null && !mimeTypePrefix.isBlank()) {
             condition = condition.and(MEDIA_ITEMS.MIME_TYPE.startsWith(mimeTypePrefix));
@@ -101,10 +101,27 @@ public class MediaItemRepository {
         return condition;
     }
 
+    private Condition buildSourceCondition(String source) {
+        var inProductGallery = MEDIA_ITEMS.ID.in(
+            DSL.select(PRODUCT_GALLERY.MEDIA_ITEM_ID).from(PRODUCT_GALLERY)
+        );
+        var inProductCategories = MEDIA_ITEMS.ID.in(
+            DSL.select(PRODUCT_CATEGORIES.IMAGE_MEDIA_ID)
+                .from(PRODUCT_CATEGORIES)
+                .where(PRODUCT_CATEGORIES.IMAGE_MEDIA_ID.isNotNull())
+        );
+
+        return switch (source) {
+            case "products" -> inProductGallery;
+            case "product_categories" -> inProductCategories;
+            case "unlinked" -> inProductGallery.not().and(inProductCategories.not());
+            default -> DSL.trueCondition();
+        };
+    }
+
     private MediaItemRow toRow(cz.samofujera.generated.jooq.tables.records.MediaItemsRecord r) {
         return new MediaItemRow(
             r.getId(),
-            r.getFolderId(),
             r.getOriginalFilename(),
             r.getStorageKey(),
             r.getMimeType(),
