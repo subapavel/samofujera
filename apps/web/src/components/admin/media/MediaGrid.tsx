@@ -40,7 +40,7 @@ export function MediaGrid({ items, selectedId, onSelect }: MediaGridProps) {
           >
             {isImage ? (
               <img
-                src={item.url}
+                src={item.thumbUrl ?? item.originalUrl}
                 alt={item.altText ?? item.originalFilename}
                 className="aspect-square w-full rounded object-cover"
               />
