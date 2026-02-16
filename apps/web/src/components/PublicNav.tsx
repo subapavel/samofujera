@@ -77,7 +77,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-[22px]">
+        <div className="flex items-center gap-[138px] py-[22px]">
           {/* Logo */}
           <a
             href="/"
@@ -94,7 +94,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                   <button
                     type="button"
                     onClick={() => toggleDropdown(item.label)}
-                    className={`nav-link px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
                       isActive(item) ? "active" : ""
                     } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
@@ -104,7 +104,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                 ) : (
                   <a
                     href={item.href}
-                    className={`nav-link px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
                       isActive(item) ? "active" : ""
                     } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
@@ -133,7 +133,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             <span className="relative mx-4 h-[34px] w-px bg-white/35" />
             <a
               href="/kosik"
-              className="nav-link px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
+              className="nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
             >
               Košík
               <ShoppingBag className="size-4" strokeWidth={1.5} />
@@ -184,7 +184,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                     <button
                       type="button"
                       onClick={() => toggleDropdown(item.label)}
-                      className={`nav-link w-full text-left px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                      className={`nav-link w-full text-left px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
                         isActive(item) ? "active" : ""
                       }`}
                     >
@@ -208,7 +208,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                 ) : (
                   <a
                     href={item.href}
-                    className={`nav-link block px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link block px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
                       isActive(item) ? "active" : ""
                     }`}
                   >
@@ -220,7 +220,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             <div className="border-t border-white/10 pt-2 mt-2">
               <a
                 href="/kosik"
-                className="nav-link block px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors"
+                className="nav-link block px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors"
               >
                 Košík
               </a>

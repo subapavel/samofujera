@@ -24,5 +24,6 @@
 .nav-separator::after {
   content: "/";
   color: rgba(255, 255, 255, 0.8);
-  margin-left: 0.5rem;
+  margin-left: 0.625rem;
+  margin-right: 0.625rem;
 }
