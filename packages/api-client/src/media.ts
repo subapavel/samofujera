@@ -11,6 +11,8 @@ import type {
   UpdateMediaItemRequest,
 } from "./types";
 
+const BASE_URL = import.meta.env?.PUBLIC_API_URL ?? "http://localhost:8080";
+
 export const mediaApi = {
   getFolders: () =>
     apiFetch<ApiResponse<MediaFolderResponse[]>>("/api/admin/media/folders"),
@@ -86,4 +88,46 @@ export const mediaApi = {
 
   deleteItem: (id: string) =>
     apiFetch<void>(`/api/admin/media/${id}`, { method: "DELETE" }),
+
+  uploadWithProgress: (
+    file: File,
+    onProgress: (percent: number) => void,
+    folderId?: string,
+    altText?: string,
+  ): { promise: Promise<ApiResponse<MediaItemResponse>>; abort: () => void } => {
+    const xhr = new XMLHttpRequest();
+    const promise = new Promise<ApiResponse<MediaItemResponse>>(
+      (resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        if (folderId) formData.append("folderId", folderId);
+        if (altText) formData.append("altText", altText);
+
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            onProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        });
+
+        xhr.addEventListener("load", () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(
+              JSON.parse(xhr.responseText) as ApiResponse<MediaItemResponse>,
+            );
+          } else {
+            reject(new Error(`Upload failed: ${xhr.status}`));
+          }
+        });
+
+        xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+        xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
+
+        xhr.open("POST", `${BASE_URL}/api/admin/media/upload`);
+        xhr.withCredentials = true;
+        xhr.send(formData);
+      },
+    );
+
+    return { promise, abort: () => xhr.abort() };
+  },
 };

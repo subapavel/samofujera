@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { mediaApi } from "@samofujera/api-client";
 import type { MediaItemResponse } from "@samofujera/api-client";
 import {
@@ -11,6 +11,8 @@ import {
 } from "@samofujera/ui";
 import { FolderTree } from "./FolderTree";
 import { MediaGrid } from "./MediaGrid";
+import { UploadProgress } from "./UploadProgress";
+import { useMultiUpload } from "./useMultiUpload";
 
 interface MediaPickerProps {
   value: string | null;
@@ -19,7 +21,6 @@ interface MediaPickerProps {
 }
 
 export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
-  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState<string | undefined>(
     undefined,
@@ -52,19 +53,15 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
     enabled: open,
   });
 
-  const uploadMutation = useMutation({
-    mutationFn: (file: File) => mediaApi.uploadDirect(file, selectedFolderId),
-    onSuccess: async (response) => {
-      await queryClient.invalidateQueries({ queryKey: ["media", "items"] });
-      onChange(response.data.id);
-      setOpen(false);
-    },
+  const multiUpload = useMultiUpload({
+    folderId: selectedFolderId,
   });
 
   function handleUpload() {
-    const file = fileInputRef.current?.files?.[0];
-    if (file) {
-      uploadMutation.mutate(file);
+    const files = fileInputRef.current?.files;
+    if (files && files.length > 0) {
+      multiUpload.addFiles(files);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   }
 
@@ -161,6 +158,16 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
             </div>
           </div>
 
+          {multiUpload.uploads.length > 0 && (
+            <div className="border-t border-[var(--border)] pt-3">
+              <UploadProgress
+                uploads={multiUpload.uploads}
+                onCancel={multiUpload.cancelUpload}
+                onClearDone={multiUpload.clearDone}
+              />
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex items-center justify-between border-t border-[var(--border)] pt-4">
             <div className="flex items-center gap-2">
@@ -168,6 +175,7 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
                 ref={fileInputRef}
                 type="file"
                 accept={accept}
+                multiple
                 className="hidden"
                 onChange={handleUpload}
               />
@@ -176,9 +184,9 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={uploadMutation.isPending}
+                disabled={multiUpload.isUploading}
               >
-                {uploadMutation.isPending ? "Nahravam..." : "Nahrat novy"}
+                {multiUpload.isUploading ? "Nahravam..." : "Nahrat soubory"}
               </Button>
             </div>
             <div className="flex gap-2">
@@ -200,12 +208,6 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
               </Button>
             </div>
           </div>
-
-          {uploadMutation.isError && (
-            <p className="text-sm text-[var(--destructive)]">
-              Nepodarilo se nahrat soubor. Zkuste to prosim znovu.
-            </p>
-          )}
         </DialogContent>
       </Dialog>
     </div>

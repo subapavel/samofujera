@@ -5,6 +5,8 @@ import type { MediaItemResponse } from "@samofujera/api-client";
 import { Button, Input, Label } from "@samofujera/ui";
 import { FolderTree } from "../media/FolderTree";
 import { MediaGrid } from "../media/MediaGrid";
+import { UploadProgress } from "../media/UploadProgress";
+import { useMultiUpload } from "../media/useMultiUpload";
 
 const textareaClassName =
   "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm ring-offset-[var(--background)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
@@ -45,12 +47,8 @@ export function MediaPage() {
       }),
   });
 
-  const uploadMutation = useMutation({
-    mutationFn: (file: File) => mediaApi.uploadDirect(file, selectedFolderId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["media", "items"] });
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    },
+  const multiUpload = useMultiUpload({
+    folderId: selectedFolderId,
   });
 
   const updateAltTextMutation = useMutation({
@@ -73,8 +71,11 @@ export function MediaPage() {
   });
 
   function handleUpload() {
-    const file = fileInputRef.current?.files?.[0];
-    if (file) uploadMutation.mutate(file);
+    const files = fileInputRef.current?.files;
+    if (files && files.length > 0) {
+      multiUpload.addFiles(files);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   function handleSelectItem(item: MediaItemResponse) {
@@ -112,23 +113,28 @@ export function MediaPage() {
           <input
             ref={fileInputRef}
             type="file"
+            multiple
             className="hidden"
             onChange={handleUpload}
           />
           <Button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploadMutation.isPending}
+            disabled={multiUpload.isUploading}
           >
-            {uploadMutation.isPending ? "Nahravam..." : "Nahrat soubor"}
+            {multiUpload.isUploading ? "Nahravam..." : "Nahrat soubory"}
           </Button>
         </div>
       </div>
 
-      {uploadMutation.isError && (
-        <p className="mb-4 text-sm text-[var(--destructive)]">
-          Nepodarilo se nahrat soubor. Zkuste to prosim znovu.
-        </p>
+      {multiUpload.uploads.length > 0 && (
+        <div className="mb-4">
+          <UploadProgress
+            uploads={multiUpload.uploads}
+            onCancel={multiUpload.cancelUpload}
+            onClearDone={multiUpload.clearDone}
+          />
+        </div>
       )}
 
       <div className="flex gap-6">
