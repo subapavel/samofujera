@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { adminApi, catalogApi } from "@samofujera/api-client";
+import { adminApi, catalogApi, mediaApi } from "@samofujera/api-client";
 import type {
   ProductType,
   FileResponse,
@@ -24,6 +24,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@samofujera/ui";
+import { MediaPicker } from "../media/MediaPicker";
 
 function slugify(text: string): string {
   return text
@@ -69,39 +70,57 @@ function GalleryTab({
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
+  const [pickerValue, setPickerValue] = useState<string | null>(null);
 
-  const uploadImageMutation = useMutation({
-    mutationFn: (file: File) => adminApi.uploadImage(productId, file),
+  // Upload file to media library, then link the resulting media item to the product
+  const uploadAndLinkMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const uploadResult = await mediaApi.uploadDirect(file);
+      const mediaItemId = uploadResult.data.id;
+      await adminApi.linkImage(productId, mediaItemId);
+    },
     onSuccess: async () => {
       await onInvalidate();
       if (imageInputRef.current) imageInputRef.current.value = "";
     },
   });
 
-  const deleteImageMutation = useMutation({
-    mutationFn: (imageId: string) => adminApi.deleteImage(productId, imageId),
+  // Link an existing media item from the library to the product
+  const linkImageMutation = useMutation({
+    mutationFn: (mediaItemId: string) => adminApi.linkImage(productId, mediaItemId),
+    onSuccess: onInvalidate,
+  });
+
+  const unlinkImageMutation = useMutation({
+    mutationFn: (mediaItemId: string) => adminApi.unlinkImage(productId, mediaItemId),
     onSuccess: onInvalidate,
   });
 
   const reorderMutation = useMutation({
-    mutationFn: (imageIds: string[]) => adminApi.reorderImages(productId, imageIds),
-    onSuccess: onInvalidate,
-  });
-
-  const updateAltTextMutation = useMutation({
-    mutationFn: ({ imageId, altText }: { imageId: string; altText: string }) =>
-      adminApi.updateImageAltText(productId, imageId, altText),
+    mutationFn: (mediaItemIds: string[]) => adminApi.reorderImages(productId, mediaItemIds),
     onSuccess: onInvalidate,
   });
 
   function handleUploadImage() {
     const file = imageInputRef.current?.files?.[0];
-    if (file) uploadImageMutation.mutate(file);
+    if (file) uploadAndLinkMutation.mutate(file);
   }
 
-  function handleDeleteImage(image: ImageResponse) {
-    if (window.confirm(`Opravdu chcete smazat obrázek "${image.fileName}"?`)) {
-      deleteImageMutation.mutate(image.id);
+  function handleUnlinkImage(image: ImageResponse) {
+    if (window.confirm("Opravdu chcete odebrat tento obrázek z galerie?")) {
+      unlinkImageMutation.mutate(image.mediaItemId);
+    }
+  }
+
+  function handlePickerChange(id: string | null) {
+    setPickerValue(id);
+    if (id) {
+      // Check if this media item is already linked
+      const alreadyLinked = images.some((img) => img.mediaItemId === id);
+      if (!alreadyLinked) {
+        linkImageMutation.mutate(id);
+      }
+      setPickerValue(null);
     }
   }
 
@@ -123,16 +142,15 @@ function GalleryTab({
     const newOrder = [...images];
     const [moved] = newOrder.splice(dragSourceIndex, 1);
     newOrder.splice(targetIndex, 0, moved);
-    reorderMutation.mutate(newOrder.map((img) => img.id));
+    reorderMutation.mutate(newOrder.map((img) => img.mediaItemId));
     setDragOverIndex(null);
     setDragSourceIndex(null);
   }
 
-  function handleAltTextBlur(image: ImageResponse, newAltText: string) {
-    if (newAltText !== (image.altText ?? "")) {
-      updateAltTextMutation.mutate({ imageId: image.id, altText: newAltText });
-    }
-  }
+  const isPending =
+    uploadAndLinkMutation.isPending ||
+    linkImageMutation.isPending ||
+    unlinkImageMutation.isPending;
 
   return (
     <Card>
@@ -144,7 +162,7 @@ function GalleryTab({
           <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {images.map((image, index) => (
               <div
-                key={image.id}
+                key={image.mediaItemId}
                 draggable
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
@@ -155,26 +173,21 @@ function GalleryTab({
                 }`}
               >
                 <img
-                  src={image.url}
-                  alt={image.altText ?? image.fileName}
+                  src={image.thumbUrl ?? image.originalUrl}
+                  alt={image.altText ?? ""}
                   className="aspect-square w-full rounded object-cover"
                 />
-                <div className="mt-1.5 space-y-1">
-                  <p className="truncate text-xs text-[var(--muted-foreground)]">
-                    {image.fileName}
-                  </p>
-                  <input
-                    type="text"
-                    defaultValue={image.altText ?? ""}
-                    placeholder="Alt text..."
-                    onBlur={(e) => handleAltTextBlur(image, e.target.value)}
-                    className="w-full rounded border border-[var(--border)] bg-transparent px-1.5 py-0.5 text-xs"
-                  />
-                </div>
+                {image.altText && (
+                  <div className="mt-1.5">
+                    <p className="truncate text-xs text-[var(--muted-foreground)]">
+                      {image.altText}
+                    </p>
+                  </div>
+                )}
                 <button
                   type="button"
-                  onClick={() => handleDeleteImage(image)}
-                  disabled={deleteImageMutation.isPending}
+                  onClick={() => handleUnlinkImage(image)}
+                  disabled={unlinkImageMutation.isPending}
                   className="absolute right-1 top-1 hidden rounded bg-[var(--destructive)] px-1.5 py-0.5 text-xs text-[var(--destructive-foreground)] group-hover:block"
                 >
                   ✕
@@ -202,15 +215,23 @@ function GalleryTab({
           <Button
             type="button"
             onClick={handleUploadImage}
-            disabled={uploadImageMutation.isPending}
+            disabled={isPending}
           >
-            {uploadImageMutation.isPending ? "Nahrávám..." : "Nahrát"}
+            {uploadAndLinkMutation.isPending ? "Nahrávám..." : "Nahrát"}
           </Button>
         </div>
 
-        {uploadImageMutation.isError && (
+        <div className="mt-3">
+          <MediaPicker
+            value={pickerValue}
+            onChange={handlePickerChange}
+            accept="image/*"
+          />
+        </div>
+
+        {(uploadAndLinkMutation.isError || linkImageMutation.isError) && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Nepodařilo se nahrát obrázek. Zkuste to prosím znovu.
+            Nepodařilo se přidat obrázek. Zkuste to prosím znovu.
           </p>
         )}
       </CardContent>

@@ -69,41 +69,29 @@ export const adminApi = {
   deleteProduct: (id: string) =>
     apiFetch<void>(`/api/admin/products/${id}`, { method: "DELETE" }),
 
-  // Images
+  // Images (linked via media items)
 
-  uploadImage: (productId: string, file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return apiFetch<ApiResponse<ImageResponse>>(
+  linkImage: (productId: string, mediaItemId: string) =>
+    apiFetch<ApiResponse<ImageResponse>>(
       `/api/admin/products/${productId}/images`,
       {
         method: "POST",
-        body: formData,
+        body: JSON.stringify({ mediaItemId }),
       },
-    );
-  },
+    ),
 
-  deleteImage: (productId: string, imageId: string) =>
+  unlinkImage: (productId: string, mediaItemId: string) =>
     apiFetch<void>(
-      `/api/admin/products/${productId}/images/${imageId}`,
+      `/api/admin/products/${productId}/images/${mediaItemId}`,
       { method: "DELETE" },
     ),
 
-  reorderImages: (productId: string, imageIds: string[]) =>
+  reorderImages: (productId: string, mediaItemIds: string[]) =>
     apiFetch<void>(
       `/api/admin/products/${productId}/images/reorder`,
       {
         method: "PUT",
-        body: JSON.stringify({ imageIds }),
-      },
-    ),
-
-  updateImageAltText: (productId: string, imageId: string, altText: string) =>
-    apiFetch<void>(
-      `/api/admin/products/${productId}/images/${imageId}/alt-text`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({ altText }),
+        body: JSON.stringify({ mediaItemIds }),
       },
     ),
 
