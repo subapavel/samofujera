@@ -1,1 +1,12 @@
 @import "@samofujera/ui/tailwind.css";
+
+.topbar-auth-link {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 300;
+}
+.topbar-auth-link:hover {
+  color: rgb(230, 188, 145);
+}
+.topbar-auth-link.active {
+  color: rgb(230, 188, 145);
+}

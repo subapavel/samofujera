@@ -46,7 +46,26 @@ The brand design is: calm, meditative, personal, authentic.
 - Rounded corners (0.5rem radius), soft shadows
 - See `architektura.md` section 2 for full brand identity
 
+## Gotchas
+
+### Hover with arbitrary RGB values doesn't work reliably
+`hover:text-[rgb(230,188,145)]` and `hover:!text-[rgb(230,188,145)]` may silently
+fail in Tailwind 4 — the hover state never applies. This affects arbitrary color
+values with `rgb()`, `rgba()`, and possibly `oklch()` in hover/focus variants.
+
+**Workaround:** Use plain CSS classes in `global.css` instead:
+```css
+.my-link {
+  color: rgba(255, 255, 255, 0.8);
+}
+.my-link:hover {
+  color: rgb(230, 188, 145);
+}
+```
+This is more reliable than fighting Tailwind's arbitrary value specificity.
+
 ## Rules
 - Always use the shared theme preset from `packages/config/tailwind/`
 - Never hardcode color values — use theme tokens (`bg-earth`, `text-sage`)
+- When hover/focus with arbitrary color values fails, fall back to plain CSS classes
 - Verify all Tailwind 4 syntax against Context7 before writing
