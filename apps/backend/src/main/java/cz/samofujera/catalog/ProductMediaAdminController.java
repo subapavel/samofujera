@@ -11,11 +11,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/products/{productId}/media")
-public class MediaAdminController {
+public class ProductMediaAdminController {
 
     private final CatalogService catalogService;
 
-    MediaAdminController(CatalogService catalogService) {
+    ProductMediaAdminController(CatalogService catalogService) {
         this.catalogService = catalogService;
     }
 

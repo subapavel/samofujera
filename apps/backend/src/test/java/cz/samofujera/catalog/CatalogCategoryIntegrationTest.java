@@ -2,12 +2,14 @@ package cz.samofujera.catalog;
 
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
+import cz.samofujera.shared.storage.StorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
@@ -23,6 +25,9 @@ class CatalogCategoryIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private StorageService storageService;
 
     private UserPrincipal adminPrincipal() {
         return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
@@ -45,13 +50,15 @@ class CatalogCategoryIntegrationTest {
                 .with(user(adminPrincipal()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "E-books", "slug": "e-books-create-test", "sortOrder": 1}
+                    {"name": "E-books", "slug": "e-books-create-test"}
                     """))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.name").value("E-books"))
             .andExpect(jsonPath("$.data.slug").value("e-books-create-test"))
-            .andExpect(jsonPath("$.data.sortOrder").value(1))
-            .andExpect(jsonPath("$.data.id").exists());
+            .andExpect(jsonPath("$.data.sortOrder").isNumber())
+            .andExpect(jsonPath("$.data.id").exists())
+            .andExpect(jsonPath("$.data.imageMediaId").isEmpty())
+            .andExpect(jsonPath("$.data.imageUrl").isEmpty());
     }
 
     @Test
@@ -59,7 +66,7 @@ class CatalogCategoryIntegrationTest {
         mockMvc.perform(post("/api/admin/categories")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Test", "slug": "test-unauth", "sortOrder": 0}
+                    {"name": "Test", "slug": "test-unauth"}
                     """))
             .andExpect(status().isUnauthorized());
     }
@@ -70,9 +77,33 @@ class CatalogCategoryIntegrationTest {
                 .with(user(userPrincipal()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Test", "slug": "test-user-forbidden", "sortOrder": 0}
+                    {"name": "Test", "slug": "test-user-forbidden"}
                     """))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getCategory_returns200() throws Exception {
+        var admin = adminPrincipal();
+
+        var createResult = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Get Test", "slug": "get-test-category"}
+                    """))
+            .andExpect(status().isCreated())
+            .andReturn();
+
+        var id = com.jayway.jsonpath.JsonPath.read(
+            createResult.getResponse().getContentAsString(), "$.data.id").toString();
+
+        mockMvc.perform(get("/api/admin/categories/" + id)
+                .with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id").value(id))
+            .andExpect(jsonPath("$.data.name").value("Get Test"))
+            .andExpect(jsonPath("$.data.slug").value("get-test-category"));
     }
 
     @Test
@@ -84,7 +115,7 @@ class CatalogCategoryIntegrationTest {
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Old Name", "slug": "update-test", "sortOrder": 0}
+                    {"name": "Old Name", "slug": "update-test"}
                     """))
             .andExpect(status().isCreated())
             .andReturn();
@@ -97,12 +128,11 @@ class CatalogCategoryIntegrationTest {
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "New Name", "slug": "update-test-new", "sortOrder": 5}
+                    {"name": "New Name", "slug": "update-test-new"}
                     """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.name").value("New Name"))
-            .andExpect(jsonPath("$.data.slug").value("update-test-new"))
-            .andExpect(jsonPath("$.data.sortOrder").value(5));
+            .andExpect(jsonPath("$.data.slug").value("update-test-new"));
     }
 
     @Test
@@ -111,7 +141,7 @@ class CatalogCategoryIntegrationTest {
                 .with(user(adminPrincipal()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Meditace", "slug": "meditace-seo-test", "sortOrder": 1,
+                    {"name": "Meditace", "slug": "meditace-seo-test",
                      "description": "Meditační produkty", "metaTitle": "Meditace | Samo Fujera",
                      "metaDescription": "Nejlepší meditační produkty"}
                     """))
@@ -129,7 +159,7 @@ class CatalogCategoryIntegrationTest {
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Cat A", "slug": "cat-a-unique-test", "sortOrder": 0}
+                    {"name": "Cat A", "slug": "cat-a-unique-test"}
                     """))
             .andExpect(status().isCreated());
 
@@ -137,7 +167,7 @@ class CatalogCategoryIntegrationTest {
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Cat B", "slug": "cat-b-unique-test", "sortOrder": 1}
+                    {"name": "Cat B", "slug": "cat-b-unique-test"}
                     """))
             .andExpect(status().isCreated())
             .andReturn();
@@ -148,7 +178,7 @@ class CatalogCategoryIntegrationTest {
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Cat B", "slug": "cat-a-unique-test", "sortOrder": 1}
+                    {"name": "Cat B", "slug": "cat-a-unique-test"}
                     """))
             .andExpect(status().isBadRequest());
     }
@@ -162,7 +192,7 @@ class CatalogCategoryIntegrationTest {
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "To Delete", "slug": "delete-test", "sortOrder": 0}
+                    {"name": "To Delete", "slug": "delete-test"}
                     """))
             .andExpect(status().isCreated())
             .andReturn();
@@ -182,6 +212,67 @@ class CatalogCategoryIntegrationTest {
     }
 
     @Test
+    void reorderCategories_returns204() throws Exception {
+        var admin = adminPrincipal();
+
+        // Create 3 categories
+        var cat1Result = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Reorder A", "slug": "reorder-a"}
+                    """))
+            .andExpect(status().isCreated()).andReturn();
+        var cat1Id = com.jayway.jsonpath.JsonPath.read(
+            cat1Result.getResponse().getContentAsString(), "$.data.id").toString();
+
+        var cat2Result = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Reorder B", "slug": "reorder-b"}
+                    """))
+            .andExpect(status().isCreated()).andReturn();
+        var cat2Id = com.jayway.jsonpath.JsonPath.read(
+            cat2Result.getResponse().getContentAsString(), "$.data.id").toString();
+
+        var cat3Result = mockMvc.perform(post("/api/admin/categories")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"name": "Reorder C", "slug": "reorder-c"}
+                    """))
+            .andExpect(status().isCreated()).andReturn();
+        var cat3Id = com.jayway.jsonpath.JsonPath.read(
+            cat3Result.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Reorder: C, A, B
+        mockMvc.perform(put("/api/admin/categories/reorder")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"categoryIds": ["%s", "%s", "%s"]}
+                    """.formatted(cat3Id, cat1Id, cat2Id)))
+            .andExpect(status().isNoContent());
+
+        // Verify new order via get by id
+        mockMvc.perform(get("/api/admin/categories/" + cat3Id)
+                .with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.sortOrder").value(0));
+
+        mockMvc.perform(get("/api/admin/categories/" + cat1Id)
+                .with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.sortOrder").value(1));
+
+        mockMvc.perform(get("/api/admin/categories/" + cat2Id)
+                .with(user(admin)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.sortOrder").value(2));
+    }
+
+    @Test
     void createProduct_withMultipleCategories_returnsCategories() throws Exception {
         var admin = adminPrincipal();
 
@@ -189,7 +280,7 @@ class CatalogCategoryIntegrationTest {
         var cat1Result = mockMvc.perform(post("/api/admin/categories")
                 .with(user(admin)).contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Meditace", "slug": "meditace-mn-test", "sortOrder": 0}
+                    {"name": "Meditace", "slug": "meditace-mn-test"}
                     """))
             .andExpect(status().isCreated()).andReturn();
         var cat1Id = com.jayway.jsonpath.JsonPath.read(cat1Result.getResponse().getContentAsString(), "$.data.id").toString();
@@ -197,7 +288,7 @@ class CatalogCategoryIntegrationTest {
         var cat2Result = mockMvc.perform(post("/api/admin/categories")
                 .with(user(admin)).contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"name": "Jóga", "slug": "joga-mn-test", "sortOrder": 1}
+                    {"name": "Jóga", "slug": "joga-mn-test"}
                     """))
             .andExpect(status().isCreated()).andReturn();
         var cat2Id = com.jayway.jsonpath.JsonPath.read(cat2Result.getResponse().getContentAsString(), "$.data.id").toString();
