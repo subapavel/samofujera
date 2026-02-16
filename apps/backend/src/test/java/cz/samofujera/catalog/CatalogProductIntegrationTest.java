@@ -223,6 +223,41 @@ class CatalogProductIntegrationTest {
             .andExpect(jsonPath("$.data.items[?(@.slug == '%s')]".formatted(slug1)).doesNotExist());
     }
 
+    // --- Auto-draft creation tests ---
+
+    @Test
+    void createDraft_returnsNewDraftProduct() throws Exception {
+        mockMvc.perform(post("/api/admin/products/draft")
+                .with(user(adminPrincipal()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"productType": "EBOOK"}
+                    """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").exists())
+            .andExpect(jsonPath("$.data.status").value("DRAFT"))
+            .andExpect(jsonPath("$.data.productType").value("EBOOK"))
+            .andExpect(jsonPath("$.data.title").value("Nový produkt"))
+            .andExpect(jsonPath("$.data.slug").exists())
+            .andExpect(jsonPath("$.data.images").isArray())
+            .andExpect(jsonPath("$.data.images.length()").value(0));
+    }
+
+    @Test
+    void createDraft_physicalProduct() throws Exception {
+        mockMvc.perform(post("/api/admin/products/draft")
+                .with(user(adminPrincipal()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"productType": "PHYSICAL"}
+                    """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.productType").value("PHYSICAL"))
+            .andExpect(jsonPath("$.data.status").value("DRAFT"))
+            .andExpect(jsonPath("$.data.variants").isArray())
+            .andExpect(jsonPath("$.data.variants.length()").value(0));
+    }
+
     // --- Variant CRUD tests ---
 
     @Test

@@ -165,6 +165,70 @@ class MediaIntegrationTest {
     }
 
     @Test
+    void upload_imageWithVariants_returnsVariantUrls() throws Exception {
+        setupStorageMocks();
+        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
+            .thenReturn(Map.of(
+                "thumb", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 150, 150),
+                "medium", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 600, 400),
+                "large", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 1200, 800),
+                "og", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 1200, 630)
+            ));
+
+        var file = new MockMultipartFile("file", "photo.jpg",
+            "image/jpeg", "fake image content".getBytes());
+
+        mockMvc.perform(multipart("/api/admin/media/upload")
+                .file(file)
+                .param("altText", "Photo with variants")
+                .with(user(adminPrincipal())))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").exists())
+            .andExpect(jsonPath("$.data.originalUrl").exists())
+            .andExpect(jsonPath("$.data.thumbUrl").exists())
+            .andExpect(jsonPath("$.data.mediumUrl").exists())
+            .andExpect(jsonPath("$.data.largeUrl").exists())
+            .andExpect(jsonPath("$.data.ogUrl").exists());
+    }
+
+    @Test
+    void getItems_withProductsSourceFilter_returnsOk() throws Exception {
+        mockMvc.perform(get("/api/admin/media")
+                .param("source", "products")
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.items").isArray());
+    }
+
+    @Test
+    void getItems_withProductCategoriesSourceFilter_returnsOk() throws Exception {
+        mockMvc.perform(get("/api/admin/media")
+                .param("source", "product_categories")
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.items").isArray());
+    }
+
+    @Test
+    void getItems_withTypeFilter_returnsOk() throws Exception {
+        mockMvc.perform(get("/api/admin/media")
+                .param("type", "image")
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.items").isArray());
+    }
+
+    @Test
+    void getItems_withSearchFilter_returnsOk() throws Exception {
+        mockMvc.perform(get("/api/admin/media")
+                .param("search", "nonexistent-file")
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.items").isArray())
+            .andExpect(jsonPath("$.data.totalItems").value(0));
+    }
+
+    @Test
     void getItem_returns200() throws Exception {
         setupStorageMocks();
         when(imageVariantService.generateVariants(any(byte[].class), anyString()))
