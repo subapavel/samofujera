@@ -49,19 +49,19 @@ export function TopBar() {
         <div className="hidden sm:flex items-center gap-4">
           <a
             href="tel:+420728137626"
-            className="flex items-center gap-1.5 text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)]"
+            className="flex items-center gap-1.5 text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)] underline-offset-4"
           >
             <Phone className="size-3.5" />
             +420 728 137 626
           </a>
           <a
             href="mailto:info@samfujera.cz"
-            className="flex items-center gap-1.5 text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)]"
+            className="flex items-center gap-1.5 text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)] underline-offset-4"
           >
             <Mail className="size-3.5" />
             info@samfujera.cz
           </a>
-          <span className="flex items-center gap-1.5 text-white/80">
+          <span className="flex items-center gap-1.5 text-white">
             <Info className="size-3.5" />
             Volejte pondělí-pátek 10.00-17.00 hodin
           </span>
