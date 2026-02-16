@@ -11,11 +11,10 @@ export interface UploadItem {
 }
 
 interface UseMultiUploadOptions {
-  folderId?: string;
   onAllDone?: () => void;
 }
 
-export function useMultiUpload({ folderId, onAllDone }: UseMultiUploadOptions) {
+export function useMultiUpload(options?: UseMultiUploadOptions) {
   const queryClient = useQueryClient();
   const [uploads, setUploads] = useState<UploadItem[]>([]);
   const abortFns = useRef<Map<string, () => void>>(new Map());
@@ -34,7 +33,6 @@ export function useMultiUpload({ folderId, onAllDone }: UseMultiUploadOptions) {
       const { promise, abort } = mediaApi.uploadWithProgress(
         item.file,
         (progress) => updateUpload(item.id, { progress, status: "uploading" }),
-        folderId,
       );
 
       abortFns.current.set(item.id, abort);
@@ -52,7 +50,7 @@ export function useMultiUpload({ folderId, onAllDone }: UseMultiUploadOptions) {
           abortFns.current.delete(item.id);
         });
     },
-    [folderId, updateUpload, queryClient],
+    [updateUpload, queryClient],
   );
 
   const addFiles = useCallback(
@@ -84,8 +82,8 @@ export function useMultiUpload({ folderId, onAllDone }: UseMultiUploadOptions) {
 
   const clearDone = useCallback(() => {
     setUploads((prev) => prev.filter((u) => u.status !== "done"));
-    onAllDone?.();
-  }, [onAllDone]);
+    options?.onAllDone?.();
+  }, [options]);
 
   const isUploading = uploads.some(
     (u) => u.status === "pending" || u.status === "uploading",

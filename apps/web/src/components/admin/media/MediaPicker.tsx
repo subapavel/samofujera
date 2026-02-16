@@ -8,8 +8,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  Input,
 } from "@samofujera/ui";
-import { FolderTree } from "./FolderTree";
 import { MediaGrid } from "./MediaGrid";
 import { UploadProgress } from "./UploadProgress";
 import { useMultiUpload } from "./useMultiUpload";
@@ -22,9 +22,7 @@ interface MediaPickerProps {
 
 export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
   const [open, setOpen] = useState(false);
-  const [selectedFolderId, setSelectedFolderId] = useState<string | undefined>(
-    undefined,
-  );
+  const [search, setSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(
     null,
   );
@@ -36,26 +34,18 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
     enabled: Boolean(value),
   });
 
-  const foldersQuery = useQuery({
-    queryKey: ["media", "folders"],
-    queryFn: () => mediaApi.getFolders(),
-    enabled: open,
-  });
-
   const itemsQuery = useQuery({
-    queryKey: ["media", "items", { folderId: selectedFolderId }],
+    queryKey: ["media", "items", { search, accept }],
     queryFn: () =>
       mediaApi.getItems({
-        folderId: selectedFolderId,
+        search: search || undefined,
         type: accept?.startsWith("image/") ? "IMAGE" : undefined,
         limit: 50,
       }),
     enabled: open,
   });
 
-  const multiUpload = useMultiUpload({
-    folderId: selectedFolderId,
-  });
+  const multiUpload = useMultiUpload();
 
   function handleUpload() {
     const files = fileInputRef.current?.files;
@@ -83,14 +73,17 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
 
   const currentItem = currentItemQuery.data?.data;
   const isImage = currentItem?.mimeType.startsWith("image/");
+  const previewUrl = currentItem
+    ? (currentItem.thumbUrl ?? currentItem.originalUrl)
+    : undefined;
 
   return (
     <div>
       {value && currentItem ? (
         <div className="flex items-center gap-3">
-          {isImage ? (
+          {isImage && previewUrl ? (
             <img
-              src={currentItem.url}
+              src={previewUrl}
               alt={currentItem.altText ?? currentItem.originalFilename}
               className="h-16 w-16 rounded-md border border-[var(--border)] object-cover"
             />
@@ -130,32 +123,30 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
             <DialogTitle>Vybrat soubor</DialogTitle>
           </DialogHeader>
 
-          <div className="flex gap-4">
-            {/* Folder sidebar */}
-            <div className="w-48 shrink-0 border-r border-[var(--border)] pr-4">
-              <FolderTree
-                folders={foldersQuery.data?.data ?? []}
-                selectedFolderId={selectedFolderId}
-                onSelect={setSelectedFolderId}
+          {/* Search */}
+          <div>
+            <Input
+              placeholder="Hledat podle nazvu..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          {/* Grid area */}
+          <div className="min-h-[300px]">
+            {itemsQuery.isLoading && (
+              <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
+                Nacitani...
+              </p>
+            )}
+
+            {itemsQuery.isSuccess && (
+              <MediaGrid
+                items={itemsQuery.data.data.items}
+                selectedId={selectedItem?.id}
+                onSelect={handleSelect}
               />
-            </div>
-
-            {/* Grid area */}
-            <div className="min-h-[300px] flex-1">
-              {itemsQuery.isLoading && (
-                <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-                  Nacitani...
-                </p>
-              )}
-
-              {itemsQuery.isSuccess && (
-                <MediaGrid
-                  items={itemsQuery.data.data.items}
-                  selectedId={selectedItem?.id}
-                  onSelect={handleSelect}
-                />
-              )}
-            </div>
+            )}
           </div>
 
           {multiUpload.uploads.length > 0 && (
