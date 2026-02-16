@@ -19,13 +19,13 @@ public final class CatalogDtos {
 
     public record CategoryResponse(
         UUID id, String name, String slug, String description,
-        String imageUrl, String metaTitle, String metaDescription, int sortOrder
+        UUID imageMediaId, String metaTitle, String metaDescription, int sortOrder
     ) {}
 
     public record CreateCategoryRequest(
         @NotBlank @Size(max = 255) String name,
         @NotBlank @Size(max = 255) String slug,
-        String description, String imageUrl,
+        String description, UUID imageMediaId,
         @Size(max = 255) String metaTitle,
         @Size(max = 500) String metaDescription,
         int sortOrder
@@ -34,7 +34,7 @@ public final class CatalogDtos {
     public record UpdateCategoryRequest(
         @NotBlank @Size(max = 255) String name,
         @NotBlank @Size(max = 255) String slug,
-        String description, String imageUrl,
+        String description, UUID imageMediaId,
         @Size(max = 255) String metaTitle,
         @Size(max = 500) String metaDescription,
         int sortOrder

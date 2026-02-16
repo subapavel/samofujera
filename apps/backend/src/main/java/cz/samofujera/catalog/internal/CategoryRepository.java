@@ -24,7 +24,7 @@ public class CategoryRepository {
         String name,
         String slug,
         String description,
-        String imageUrl,
+        UUID imageMediaId,
         String metaTitle,
         String metaDescription,
         int sortOrder,
@@ -40,7 +40,7 @@ public class CategoryRepository {
                 r.getName(),
                 r.getSlug(),
                 r.getDescription(),
-                r.getImageUrl(),
+                r.getImageMediaId(),
                 r.getMetaTitle(),
                 r.getMetaDescription(),
                 r.getSortOrder(),
@@ -57,7 +57,7 @@ public class CategoryRepository {
                 r.getName(),
                 r.getSlug(),
                 r.getDescription(),
-                r.getImageUrl(),
+                r.getImageMediaId(),
                 r.getMetaTitle(),
                 r.getMetaDescription(),
                 r.getSortOrder(),
@@ -74,7 +74,7 @@ public class CategoryRepository {
                 r.getName(),
                 r.getSlug(),
                 r.getDescription(),
-                r.getImageUrl(),
+                r.getImageMediaId(),
                 r.getMetaTitle(),
                 r.getMetaDescription(),
                 r.getSortOrder(),
@@ -83,13 +83,13 @@ public class CategoryRepository {
             ));
     }
 
-    public UUID create(String name, String slug, String description, String imageUrl,
+    public UUID create(String name, String slug, String description, UUID imageMediaId,
                        String metaTitle, String metaDescription, int sortOrder) {
         return dsl.insertInto(PRODUCT_CATEGORIES)
             .set(PRODUCT_CATEGORIES.NAME, name)
             .set(PRODUCT_CATEGORIES.SLUG, slug)
             .set(PRODUCT_CATEGORIES.DESCRIPTION, description)
-            .set(PRODUCT_CATEGORIES.IMAGE_URL, imageUrl)
+            .set(PRODUCT_CATEGORIES.IMAGE_MEDIA_ID, imageMediaId)
             .set(PRODUCT_CATEGORIES.META_TITLE, metaTitle)
             .set(PRODUCT_CATEGORIES.META_DESCRIPTION, metaDescription)
             .set(PRODUCT_CATEGORIES.SORT_ORDER, sortOrder)
@@ -98,13 +98,13 @@ public class CategoryRepository {
             .getId();
     }
 
-    public void update(UUID id, String name, String slug, String description, String imageUrl,
+    public void update(UUID id, String name, String slug, String description, UUID imageMediaId,
                        String metaTitle, String metaDescription, int sortOrder) {
         dsl.update(PRODUCT_CATEGORIES)
             .set(PRODUCT_CATEGORIES.NAME, name)
             .set(PRODUCT_CATEGORIES.SLUG, slug)
             .set(PRODUCT_CATEGORIES.DESCRIPTION, description)
-            .set(PRODUCT_CATEGORIES.IMAGE_URL, imageUrl)
+            .set(PRODUCT_CATEGORIES.IMAGE_MEDIA_ID, imageMediaId)
             .set(PRODUCT_CATEGORIES.META_TITLE, metaTitle)
             .set(PRODUCT_CATEGORIES.META_DESCRIPTION, metaDescription)
             .set(PRODUCT_CATEGORIES.SORT_ORDER, sortOrder)

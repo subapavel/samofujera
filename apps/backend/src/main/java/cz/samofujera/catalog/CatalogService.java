@@ -62,7 +62,7 @@ public class CatalogService {
     private CatalogDtos.CategoryResponse toCategoryResponse(CategoryRepository.CategoryRow row) {
         return new CatalogDtos.CategoryResponse(
             row.id(), row.name(), row.slug(), row.description(),
-            row.imageUrl(), row.metaTitle(), row.metaDescription(), row.sortOrder()
+            row.imageMediaId(), row.metaTitle(), row.metaDescription(), row.sortOrder()
         );
     }
 
@@ -72,7 +72,7 @@ public class CatalogService {
             throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
         }
         var id = categoryRepository.create(
-            request.name(), request.slug(), request.description(), request.imageUrl(),
+            request.name(), request.slug(), request.description(), request.imageMediaId(),
             request.metaTitle(), request.metaDescription(), request.sortOrder()
         );
         var created = categoryRepository.findById(id)
@@ -88,7 +88,7 @@ public class CatalogService {
             throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
         }
         categoryRepository.update(
-            id, request.name(), request.slug(), request.description(), request.imageUrl(),
+            id, request.name(), request.slug(), request.description(), request.imageMediaId(),
             request.metaTitle(), request.metaDescription(), request.sortOrder()
         );
         var updated = categoryRepository.findById(id)
