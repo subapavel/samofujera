@@ -3,6 +3,7 @@ package cz.samofujera.catalog;
 import cz.samofujera.catalog.internal.*;
 import cz.samofujera.media.MediaService;
 import cz.samofujera.shared.exception.NotFoundException;
+import cz.samofujera.shared.storage.StorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class CatalogService {
     private final ProductGalleryRepository galleryRepository;
     private final EventRepository eventRepository;
     private final EventOccurrenceRepository eventOccurrenceRepository;
-    private final R2StorageService r2StorageService;
+    private final StorageService storageService;
     private final ProductCategoryAssignmentRepository assignmentRepository;
     private final MediaService mediaService;
 
@@ -37,7 +38,7 @@ public class CatalogService {
                    ProductGalleryRepository galleryRepository,
                    EventRepository eventRepository,
                    EventOccurrenceRepository eventOccurrenceRepository,
-                   R2StorageService r2StorageService,
+                   StorageService storageService,
                    ProductCategoryAssignmentRepository assignmentRepository,
                    MediaService mediaService) {
         this.categoryRepository = categoryRepository;
@@ -50,7 +51,7 @@ public class CatalogService {
         this.galleryRepository = galleryRepository;
         this.eventRepository = eventRepository;
         this.eventOccurrenceRepository = eventOccurrenceRepository;
-        this.r2StorageService = r2StorageService;
+        this.storageService = storageService;
         this.assignmentRepository = assignmentRepository;
         this.mediaService = mediaService;
     }
@@ -287,7 +288,7 @@ public class CatalogService {
     public String generateFileDownloadUrl(UUID fileId, Duration ttl) {
         var file = productFileRepository.findById(fileId)
             .orElseThrow(() -> new NotFoundException("File not found"));
-        return r2StorageService.generatePresignedUrl(file.fileKey(), ttl);
+        return storageService.generatePresignedUrl(file.fileKey(), ttl);
     }
 
     @Transactional
@@ -299,7 +300,7 @@ public class CatalogService {
         var fileKey = "products/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
         var sortOrder = productFileRepository.countByProductId(productId);
 
-        r2StorageService.upload(fileKey, inputStream, fileSize, mimeType);
+        storageService.upload(fileKey, inputStream, fileSize, mimeType);
 
         var fileId = productFileRepository.create(productId, fileKey, fileName, fileSize, mimeType, sortOrder);
         var created = productFileRepository.findById(fileId)
@@ -315,7 +316,7 @@ public class CatalogService {
         if (!file.productId().equals(productId)) {
             throw new IllegalArgumentException("File does not belong to product");
         }
-        r2StorageService.delete(file.fileKey());
+        storageService.delete(file.fileKey());
         productFileRepository.delete(fileId);
     }
 

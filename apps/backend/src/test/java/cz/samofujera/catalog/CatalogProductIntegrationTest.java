@@ -2,7 +2,7 @@ package cz.samofujera.catalog;
 
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
-import cz.samofujera.catalog.internal.R2StorageService;
+import cz.samofujera.shared.storage.StorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +30,7 @@ class CatalogProductIntegrationTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private R2StorageService r2StorageService;
+    private StorageService storageService;
 
     private UserPrincipal adminPrincipal() {
         return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
@@ -227,7 +227,7 @@ class CatalogProductIntegrationTest {
 
     @Test
     void createAndDeleteVariant() throws Exception {
-        when(r2StorageService.generatePresignedUrl(anyString(), any()))
+        when(storageService.generatePresignedUrl(anyString(), any()))
             .thenReturn("https://example.com/presigned");
 
         String slug = "variant-product-" + UUID.randomUUID().toString().substring(0, 8);

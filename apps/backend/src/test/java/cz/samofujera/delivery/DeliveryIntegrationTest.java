@@ -2,7 +2,7 @@ package cz.samofujera.delivery;
 
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
-import cz.samofujera.catalog.internal.R2StorageService;
+import cz.samofujera.shared.storage.StorageService;
 import cz.samofujera.entitlement.EntitlementService;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class DeliveryIntegrationTest {
     private EntitlementService entitlementService;
 
     @MockitoBean
-    private R2StorageService r2StorageService;
+    private StorageService storageService;
 
     private UserPrincipal adminPrincipal() {
         return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
@@ -128,7 +128,7 @@ class DeliveryIntegrationTest {
             customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
         // Mock presigned URL generation
-        when(r2StorageService.generatePresignedUrl(anyString(), any()))
+        when(storageService.generatePresignedUrl(anyString(), any()))
             .thenReturn("https://r2.example.com/presigned-url");
 
         mockMvc.perform(get("/api/delivery/{fileId}/download", fileId)
