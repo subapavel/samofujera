@@ -186,8 +186,17 @@ export const adminApi = {
       },
     ),
 
+  getCategory: (id: string) =>
+    apiFetch<ApiResponse<CategoryResponse>>(`/api/admin/categories/${id}`),
+
   deleteCategory: (id: string) =>
     apiFetch<void>(`/api/admin/categories/${id}`, { method: "DELETE" }),
+
+  reorderCategories: (categoryIds: string[]) =>
+    apiFetch<void>("/api/admin/categories/reorder", {
+      method: "PUT",
+      body: JSON.stringify({ categoryIds }),
+    }),
 
   // Orders
 

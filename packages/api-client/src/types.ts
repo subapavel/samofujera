@@ -59,6 +59,7 @@ export interface CategoryResponse {
   name: string;
   slug: string;
   description: string | null;
+  imageMediaId: string | null;
   imageUrl: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
@@ -318,10 +319,9 @@ export interface CreateCategoryRequest {
   name: string;
   slug: string;
   description?: string;
-  imageUrl?: string;
+  imageMediaId?: string;
   metaTitle?: string;
   metaDescription?: string;
-  sortOrder: number;
 }
 
 export type UpdateCategoryRequest = CreateCategoryRequest;
@@ -330,4 +330,65 @@ export interface UpdateShippingRequest {
   carrier?: string;
   trackingNumber?: string;
   trackingUrl?: string;
+}
+
+// Media Library types
+
+export interface MediaFolderResponse {
+  id: string;
+  name: string;
+  slug: string;
+  parentFolderId: string | null;
+  createdAt: string;
+}
+
+export interface MediaItemResponse {
+  id: string;
+  originalFilename: string;
+  url: string;
+  mimeType: string;
+  fileSizeBytes: number;
+  width: number | null;
+  height: number | null;
+  altText: string | null;
+  folderId: string | null;
+  createdAt: string;
+}
+
+export interface MediaItemListResponse {
+  items: MediaItemResponse[];
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface TempUploadResponse {
+  tempKey: string;
+  previewUrl: string;
+}
+
+export interface CreateMediaFolderRequest {
+  name: string;
+  slug: string;
+  parentFolderId?: string;
+}
+
+export interface RenameMediaFolderRequest {
+  name: string;
+  slug: string;
+}
+
+export interface CreateMediaItemRequest {
+  tempKey: string;
+  folderId?: string;
+  altText?: string;
+  originalFilename?: string;
+  mimeType?: string;
+  fileSizeBytes?: number;
+}
+
+export interface UpdateMediaItemRequest {
+  altText?: string;
+  folderId?: string;
 }
