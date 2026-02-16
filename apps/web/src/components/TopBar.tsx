@@ -45,8 +45,8 @@ export function TopBar() {
       className="relative bg-repeat text-white text-[13px] font-medium py-2.5"
       style={{ backgroundImage: "url('/images/bg-pattern-green.jpg')" }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <div className="hidden sm:flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-4 nav:px-8 flex items-center justify-between">
+        <div className="hidden nav:flex items-center gap-4">
           <a
             href="tel:+420728137626"
             className="flex items-center gap-1.5 text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)] underline-offset-4"
@@ -67,7 +67,7 @@ export function TopBar() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4 mx-auto sm:mx-0 sm:ml-auto">
+        <div className="flex items-center gap-4 mx-auto nav:mx-0 nav:ml-auto">
           {auth === null ? (
             <span className="h-4" />
           ) : auth.authenticated ? (

@@ -21,6 +21,9 @@
   --font-sans: "Inter", sans-serif;
   --font-heading: "Playfair Display", serif;
 
+  /* Custom breakpoints */
+  --breakpoint-nav: 900px;
+
   /* Border radius */
   --radius-lg: 0.75rem;
   --radius-md: 0.5rem;

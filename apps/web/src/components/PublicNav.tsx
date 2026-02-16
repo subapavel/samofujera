@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronDown, ShoppingBag } from "lucide-react";
 
 interface NavItem {
@@ -7,7 +7,8 @@ interface NavItem {
   children?: NavItem[];
 }
 
-const navItems: NavItem[] = [
+// Main nav items (without "Více" — that's generated dynamically as overflow)
+const mainNavItems: NavItem[] = [
   { label: "Úvod", href: "/" },
   { label: "O Sámovi", href: "/o-samovi" },
   { label: "Konzultace", href: "/konzultace" },
@@ -25,14 +26,22 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "Články", href: "/clanky" },
+];
+
+// Items always in "Více" dropdown
+const moreChildren: NavItem[] = [
+  { label: "Otázky a odpovědi", href: "/otazky-a-odpovedi" },
+  { label: "Tvorba", href: "/tvorba" },
+  { label: "Kontakt", href: "/kontakt" },
+];
+
+// All items for mobile menu (flat list)
+const allNavItems: NavItem[] = [
+  ...mainNavItems,
   {
     label: "Více",
     href: "#",
-    children: [
-      { label: "Otázky a odpovědi", href: "/otazky-a-odpovedi" },
-      { label: "Tvorba", href: "/tvorba" },
-      { label: "Kontakt", href: "/kontakt" },
-    ],
+    children: moreChildren,
   },
 ];
 
@@ -43,7 +52,12 @@ interface PublicNavProps {
 export function PublicNav({ currentPath }: PublicNavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(mainNavItems.length);
   const navRef = useRef<HTMLElement>(null);
+  const desktopNavRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const cartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -54,6 +68,50 @@ export function PublicNav({ currentPath }: PublicNavProps) {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  const calculateVisibleItems = useCallback(() => {
+    const container = desktopNavRef.current;
+    if (!container || container.offsetParent === null) return;
+
+    const containerWidth = container.offsetWidth;
+    // Reserve space for "Více" button + separator + košík
+    const moreWidth = moreRef.current?.offsetWidth ?? 80;
+    const cartWidth = cartRef.current?.offsetWidth ?? 120;
+    const reservedWidth = moreWidth + cartWidth + 16; // 16px for separator margins
+
+    let usedWidth = 0;
+    let count = 0;
+
+    for (let i = 0; i < mainNavItems.length; i++) {
+      const el = itemRefs.current[i];
+      if (!el) continue;
+      const itemWidth = el.offsetWidth;
+      if (usedWidth + itemWidth + reservedWidth > containerWidth) break;
+      usedWidth += itemWidth;
+      count++;
+    }
+
+    // Always show at least 1 item
+    setVisibleCount(Math.max(1, count));
+  }, []);
+
+  useEffect(() => {
+    const container = desktopNavRef.current;
+    if (!container) return;
+
+    // Initial calculation after fonts load
+    const timer = setTimeout(calculateVisibleItems, 100);
+
+    const observer = new ResizeObserver(() => {
+      calculateVisibleItems();
+    });
+    observer.observe(container);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [calculateVisibleItems]);
 
   function isActive(item: NavItem): boolean {
     if (item.href === "/" && currentPath === "/") return true;
@@ -67,6 +125,16 @@ export function PublicNav({ currentPath }: PublicNavProps) {
     setOpenDropdown((prev) => (prev === label ? null : label));
   }
 
+  // Visible items in the nav bar
+  const visibleItems = mainNavItems.slice(0, visibleCount);
+  // Overflow items that go into "Více"
+  const overflowItems = mainNavItems.slice(visibleCount);
+  // Build "Více" dropdown children: overflow items (as links or sub-menus) + always-present children
+  const moreDropdownItems: NavItem[] = [
+    ...overflowItems,
+    ...moreChildren,
+  ];
+
   return (
     <nav
       ref={navRef}
@@ -76,27 +144,32 @@ export function PublicNav({ currentPath }: PublicNavProps) {
         fontFamily: "'Josefin Sans', sans-serif",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-[138px] py-[25px] lg:py-[22px]">
+      <div className="max-w-7xl mx-auto px-4 nav:px-8">
+        <div className="flex items-center gap-[138px] nav:gap-[50px] py-[25px] nav:py-[22px]">
           {/* Logo */}
           <a
             href="/"
-            className="text-[16px] lg:text-[21px] font-light text-white whitespace-nowrap -ml-[6px] lg:ml-[78px] tracking-tight lg:tracking-normal"
+            className="text-[16px] nav:text-[21px] font-light text-white whitespace-nowrap -ml-[6px] nav:ml-[4px] tracking-tight nav:tracking-normal"
           >
             Sámo Fujera
           </a>
 
           {/* Desktop nav */}
-          <div className="hidden lg:flex items-center">
-            {navItems.map((item, index) => (
-              <div key={item.label} className="relative">
+          <div ref={desktopNavRef} className="hidden nav:flex items-center flex-1 min-w-0">
+            {mainNavItems.map((item, index) => (
+              <div
+                key={item.label}
+                ref={(el) => { itemRefs.current[index] = el; }}
+                className={`relative shrink-0 ${index >= visibleCount ? "invisible absolute" : ""}`}
+                style={index >= visibleCount ? { pointerEvents: "none", position: "absolute", opacity: 0 } : undefined}
+              >
                 {item.children ? (
                   <button
                     type="button"
                     onClick={() => toggleDropdown(item.label)}
-                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center ${
+                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center whitespace-nowrap ${
                       isActive(item) ? "active" : ""
-                    } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
+                    } nav-separator`}
                   >
                     {item.label}
                     <ChevronDown className="size-3.5 ml-[3px] relative -top-px" strokeWidth={2.5} />
@@ -104,16 +177,16 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                 ) : (
                   <a
                     href={item.href}
-                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors whitespace-nowrap ${
                       isActive(item) ? "active" : ""
-                    } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
+                    } nav-separator`}
                   >
                     {item.label}
                   </a>
                 )}
 
-                {/* Dropdown */}
-                {item.children && openDropdown === item.label && (
+                {/* Dropdown for items with children (only visible ones) */}
+                {index < visibleCount && item.children && openDropdown === item.label && (
                   <div className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg py-2 min-w-48 z-50">
                     {item.children.map((child) => (
                       <a
@@ -129,19 +202,64 @@ export function PublicNav({ currentPath }: PublicNavProps) {
               </div>
             ))}
 
+            {/* "Více" overflow menu — always visible */}
+            <div ref={moreRef} className="relative shrink-0">
+              <button
+                type="button"
+                onClick={() => toggleDropdown("__more__")}
+                className="nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center whitespace-nowrap"
+              >
+                Více
+                <ChevronDown className="size-3.5 ml-[3px] relative -top-px" strokeWidth={2.5} />
+              </button>
+
+              {openDropdown === "__more__" && (
+                <div className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg py-2 min-w-48 z-50">
+                  {moreDropdownItems.map((item) =>
+                    item.children ? (
+                      <div key={item.label}>
+                        <span className="block px-4 py-2 text-sm font-medium text-gray-900">
+                          {item.label}
+                        </span>
+                        {item.children.map((child) => (
+                          <a
+                            key={child.href}
+                            href={child.href}
+                            className="block px-6 py-1.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                          >
+                            {child.label}
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                      >
+                        {item.label}
+                      </a>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Separator + Košík */}
-            <span className="relative mx-4 h-[34px] w-px bg-white/35 self-center" />
-            <a
-              href="/kosik"
-              className="nav-link pl-[8px] py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
-            >
-              Košík
-              <ShoppingBag className="size-4 relative -top-[2px] ml-[4px]" strokeWidth={1.5} />
-            </a>
+            <div ref={cartRef} className="flex items-center shrink-0 ml-auto mr-[16px]">
+              <span className="relative mx-4 h-[34px] w-px bg-white/35 self-center" />
+              <a
+                href="/kosik"
+                className="nav-link pl-[8px] py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5 whitespace-nowrap"
+              >
+                Košík
+                <ShoppingBag className="size-4 relative -top-[2px] ml-[4px]" strokeWidth={1.5} />
+              </a>
+            </div>
           </div>
 
           {/* Mobile cart + hamburger */}
-          <div className="lg:hidden flex items-center gap-4 ml-auto mr-[2px]">
+          <div className="nav:hidden flex items-center gap-4 ml-auto mr-[2px]">
             <a href="/kosik" className="text-white hover:text-amber-400 transition-colors">
               <ShoppingBag className="size-[22px]" strokeWidth={1.5} />
             </a>
@@ -180,9 +298,9 @@ export function PublicNav({ currentPath }: PublicNavProps) {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="lg:hidden bg-[var(--primary)]/95 backdrop-blur-sm border-t border-white/10">
+        <div className="nav:hidden bg-[var(--primary)]/95 backdrop-blur-sm border-t border-white/10">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-            {navItems.map((item) => (
+            {allNavItems.map((item) => (
               <div key={item.label}>
                 {item.children ? (
                   <>

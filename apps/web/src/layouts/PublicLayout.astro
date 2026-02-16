@@ -34,11 +34,11 @@ const currentPath = Astro.url.pathname;
     <TopBar client:load />
 
     <!-- Green navigation (inset from edges, separated from topbar) -->
-    <div class="px-2 mt-2 sm:px-4 sm:mt-4">
+    <div class="px-2 mt-2 nav:px-4 nav:mt-4">
       <PublicNav client:load currentPath={currentPath} />
     </div>
 
-    <main class="flex-1 px-2 py-2 sm:px-4 sm:py-4">
+    <main class="flex-1 px-2 py-2 nav:px-4 nav:py-4">
       <slot />
     </main>
 
