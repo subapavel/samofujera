@@ -69,33 +69,33 @@ export function PublicNav({ currentPath }: PublicNavProps) {
   return (
     <nav
       ref={navRef}
-      className="relative bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/bg-pattern-green.jpg')" }}
+      className="relative bg-repeat"
+      style={{
+        backgroundImage: "url('/images/bg-pattern-green.jpg')",
+        fontFamily: "'Josefin Sans', sans-serif",
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between py-[22px]">
           {/* Logo */}
           <a
             href="/"
-            className="text-xl font-medium text-white whitespace-nowrap"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-[21px] font-light text-white whitespace-nowrap"
           >
             Sámo Fujera
           </a>
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <div key={item.label} className="relative">
                 {item.children ? (
                   <button
                     type="button"
                     onClick={() => toggleDropdown(item.label)}
-                    className={`px-3 py-2 text-xs font-medium uppercase tracking-wider transition-colors ${
-                      isActive(item)
-                        ? "text-amber-400"
-                        : "text-white/90 hover:text-amber-400"
-                    }`}
+                    className={`nav-link px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                      isActive(item) ? "active" : ""
+                    } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
                     {item.label}
                     <span className="ml-1 text-[10px]">&#9662;</span>
@@ -103,11 +103,9 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                 ) : (
                   <a
                     href={item.href}
-                    className={`px-3 py-2 text-xs font-medium uppercase tracking-wider transition-colors ${
-                      isActive(item)
-                        ? "text-amber-400"
-                        : "text-white/90 hover:text-amber-400"
-                    }`}
+                    className={`nav-link px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                      isActive(item) ? "active" : ""
+                    } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
                     {item.label}
                   </a>
@@ -120,7 +118,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                       <a
                         key={child.href}
                         href={child.href}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[var(--primary)] transition-colors"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                       >
                         {child.label}
                       </a>
@@ -134,7 +132,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             <span className="text-white/30 mx-2">|</span>
             <a
               href="/kosik"
-              className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-white/90 hover:text-amber-400 transition-colors flex items-center gap-1.5"
+              className="nav-link px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
             >
               Košík
               <svg
@@ -198,10 +196,8 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                     <button
                       type="button"
                       onClick={() => toggleDropdown(item.label)}
-                      className={`w-full text-left px-3 py-2 text-sm font-medium uppercase tracking-wider transition-colors ${
-                        isActive(item)
-                          ? "text-amber-400"
-                          : "text-white/90 hover:text-amber-400"
+                      className={`nav-link w-full text-left px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                        isActive(item) ? "active" : ""
                       }`}
                     >
                       {item.label}
@@ -215,7 +211,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                           <a
                             key={child.href}
                             href={child.href}
-                            className="block px-3 py-1.5 text-sm text-white/70 hover:text-amber-400 transition-colors"
+                            className="nav-link block px-3 py-1.5 text-sm transition-colors"
                           >
                             {child.label}
                           </a>
@@ -226,10 +222,8 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                 ) : (
                   <a
                     href={item.href}
-                    className={`block px-3 py-2 text-sm font-medium uppercase tracking-wider transition-colors ${
-                      isActive(item)
-                        ? "text-amber-400"
-                        : "text-white/90 hover:text-amber-400"
+                    className={`nav-link block px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                      isActive(item) ? "active" : ""
                     }`}
                   >
                     {item.label}
@@ -240,7 +234,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             <div className="border-t border-white/10 pt-2 mt-2">
               <a
                 href="/kosik"
-                className="block px-3 py-2 text-sm font-medium uppercase tracking-wider text-white/90 hover:text-amber-400 transition-colors"
+                className="nav-link block px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors"
               >
                 Košík
               </a>
