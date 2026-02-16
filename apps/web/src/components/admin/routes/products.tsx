@@ -68,6 +68,13 @@ export function ProductsPage() {
       }),
   });
 
+  const createDraftMutation = useMutation({
+    mutationFn: (productType: string) => adminApi.createDraft(productType),
+    onSuccess: (response) => {
+      void navigate({ to: "/produkty/$productId", params: { productId: response.data.id } });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminApi.deleteProduct(id),
     onSuccess: async () => {
@@ -103,7 +110,8 @@ export function ProductsPage() {
               {PRODUCT_TYPES.map((t) => (
                 <DropdownMenuItem
                   key={t.value}
-                  onClick={() => void navigate({ to: "/produkty/novy", search: { typ: t.value } })}
+                  disabled={createDraftMutation.isPending}
+                  onClick={() => createDraftMutation.mutate(t.value)}
                 >
                   {t.label}
                 </DropdownMenuItem>

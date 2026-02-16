@@ -50,9 +50,6 @@ const productNewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/produkty/novy",
   component: ProductNewPage,
-  validateSearch: (search: Record<string, unknown>) => ({
-    typ: (search.typ as string) || undefined,
-  }),
 });
 
 const productEditRoute = createRoute({
