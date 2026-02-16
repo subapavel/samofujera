@@ -67,7 +67,7 @@ export function TopBar() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="flex items-center gap-4 mx-auto sm:mx-0 sm:ml-auto">
           {auth === null ? (
             <span className="h-4" />
           ) : auth.authenticated ? (
