@@ -123,16 +123,11 @@ public final class CatalogDtos {
 
     // Image DTOs
 
-    public record ImageResponse(
-        UUID id, String fileName, String url, String altText, int sortOrder
-    ) {}
+    public record ImageResponse(UUID mediaItemId, String originalUrl, String thumbUrl,
+        String mediumUrl, String largeUrl, String ogUrl, String altText, int sortOrder) {}
 
     public record ReorderImagesRequest(
-        @NotNull List<UUID> imageIds
-    ) {}
-
-    public record UpdateImageAltTextRequest(
-        String altText
+        @NotNull List<UUID> mediaItemIds
     ) {}
 
     // File DTOs (EBOOK)

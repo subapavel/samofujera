@@ -21,6 +21,7 @@ public class CatalogService {
     private final VariantPriceRepository variantPriceRepository;
     private final ProductFileRepository productFileRepository;
     private final ProductMediaRepository productMediaRepository;
+    private final ProductGalleryRepository galleryRepository;
     private final EventRepository eventRepository;
     private final EventOccurrenceRepository eventOccurrenceRepository;
     private final R2StorageService r2StorageService;
@@ -33,6 +34,7 @@ public class CatalogService {
                    VariantPriceRepository variantPriceRepository,
                    ProductFileRepository productFileRepository,
                    ProductMediaRepository productMediaRepository,
+                   ProductGalleryRepository galleryRepository,
                    EventRepository eventRepository,
                    EventOccurrenceRepository eventOccurrenceRepository,
                    R2StorageService r2StorageService,
@@ -45,6 +47,7 @@ public class CatalogService {
         this.variantPriceRepository = variantPriceRepository;
         this.productFileRepository = productFileRepository;
         this.productMediaRepository = productMediaRepository;
+        this.galleryRepository = galleryRepository;
         this.eventRepository = eventRepository;
         this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.r2StorageService = r2StorageService;
@@ -436,6 +439,35 @@ public class CatalogService {
         productVariantRepository.deleteById(variantId);
     }
 
+    // --- Product gallery methods ---
+
+    @Transactional
+    public void addImageToProduct(UUID productId, UUID mediaItemId) {
+        int count = galleryRepository.countByProductId(productId);
+        galleryRepository.add(productId, mediaItemId, count);
+    }
+
+    @Transactional
+    public void removeImageFromProduct(UUID productId, UUID mediaItemId) {
+        galleryRepository.remove(productId, mediaItemId);
+    }
+
+    @Transactional
+    public void reorderProductImages(UUID productId, List<UUID> mediaItemIds) {
+        galleryRepository.reorder(productId, mediaItemIds);
+    }
+
+    public List<CatalogDtos.ImageResponse> getImagesForProduct(UUID productId) {
+        var entries = galleryRepository.findByProductId(productId);
+        return entries.stream().map(entry -> {
+            var mediaItem = mediaService.getById(entry.mediaItemId());
+            return new CatalogDtos.ImageResponse(
+                mediaItem.id(), mediaItem.originalUrl(), mediaItem.thumbUrl(),
+                mediaItem.mediumUrl(), mediaItem.largeUrl(), mediaItem.ogUrl(),
+                mediaItem.altText(), entry.sortOrder());
+        }).toList();
+    }
+
     // --- Private helpers ---
 
     private void assignCategoriesIfPresent(UUID productId, List<UUID> categoryIds) {
@@ -533,8 +565,7 @@ public class CatalogService {
         var categories = assignmentRepository.findCategoriesForProduct(product.id()).stream()
             .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
             .toList();
-        // TODO: Replace with product_gallery lookup in Task #44
-        List<CatalogDtos.ImageResponse> images = List.of();
+        var images = getImagesForProduct(product.id());
         var variants = "PHYSICAL".equals(product.productType()) ? getVariantsForProduct(product.id()) : null;
         var files = "EBOOK".equals(product.productType()) ? getFilesForProduct(product.id()) : null;
         var media = "AUDIO_VIDEO".equals(product.productType()) ? getMediaForProduct(product.id()) : null;
