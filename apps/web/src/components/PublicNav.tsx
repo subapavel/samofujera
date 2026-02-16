@@ -77,11 +77,11 @@ export function PublicNav({ currentPath }: PublicNavProps) {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-[138px] py-[22px]">
+        <div className="flex items-center gap-[138px] py-[25px] lg:py-[22px]">
           {/* Logo */}
           <a
             href="/"
-            className="text-[21px] font-light text-white whitespace-nowrap ml-[78px]"
+            className="text-[16px] lg:text-[21px] font-light text-white whitespace-nowrap -ml-[6px] lg:ml-[78px] tracking-tight lg:tracking-normal"
           >
             Sámo Fujera
           </a>
@@ -140,16 +140,20 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             </a>
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile cart + hamburger */}
+          <div className="lg:hidden flex items-center gap-4 ml-auto mr-[2px]">
+            <a href="/kosik" className="text-white hover:text-amber-400 transition-colors">
+              <ShoppingBag className="size-[22px]" strokeWidth={1.5} />
+            </a>
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden text-white p-2"
+            className="text-white p-0"
             aria-label="Menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-[26px] w-[26px]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -170,6 +174,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
               )}
             </svg>
           </button>
+          </div>
         </div>
       </div>
 
