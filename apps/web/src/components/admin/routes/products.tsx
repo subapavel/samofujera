@@ -31,8 +31,8 @@ const PRODUCT_TYPES: Array<{ value: ProductType; label: string }> = [
 ];
 
 const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Koncept",
-  ACTIVE: "Aktivní",
+  DRAFT: "Draft",
+  ACTIVE: "Publikováno",
   ARCHIVED: "Archivováno",
 };
 
@@ -133,9 +133,8 @@ export function ProductsPage() {
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
           <option value="">Všechny stavy</option>
-          <option value="DRAFT">Koncept</option>
-          <option value="ACTIVE">Aktivní</option>
-          <option value="ARCHIVED">Archivováno</option>
+          <option value="DRAFT">Draft</option>
+          <option value="ACTIVE">Publikováno</option>
         </select>
         <select
           value={typeFilter}

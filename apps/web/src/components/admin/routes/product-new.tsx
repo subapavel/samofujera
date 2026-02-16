@@ -110,7 +110,7 @@ function ProductForm({ productType }: { productType: ProductType }) {
   });
 
   const createMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: (status: string) => {
       const prices: Record<string, number> = {};
       if (priceCZK) prices.CZK = Number(priceCZK);
       if (priceEUR) prices.EUR = Number(priceEUR);
@@ -125,6 +125,7 @@ function ProductForm({ productType }: { productType: ProductType }) {
         categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
         metaTitle: metaTitle || undefined,
         metaDescription: metaDescription || undefined,
+        status,
       });
     },
     onSuccess: (response) => {
@@ -144,9 +145,13 @@ function ProductForm({ productType }: { productType: ProductType }) {
     setSlug(value);
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  function handleSaveAsDraft(event: React.FormEvent) {
     event.preventDefault();
-    createMutation.mutate();
+    createMutation.mutate("DRAFT");
+  }
+
+  function handlePublish() {
+    createMutation.mutate("ACTIVE");
   }
 
   const categories: CategoryResponse[] = categoriesQuery.data?.data ?? [];
@@ -189,7 +194,7 @@ function ProductForm({ productType }: { productType: ProductType }) {
               <CardTitle>Údaje o produktu</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSaveAsDraft} className="space-y-4">
                 <div>
                   <Label htmlFor="title">Název</Label>
                   <Input
@@ -298,16 +303,15 @@ function ProductForm({ productType }: { productType: ProductType }) {
                 )}
 
                 <div className="flex gap-2">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? "Vytvářím..." : "Vytvořit produkt"}
-                  </Button>
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={() => void navigate({ to: "/produkty/novy" })}
+                    onClick={handlePublish}
                     disabled={isPending}
                   >
-                    Změnit typ
+                    {isPending ? "Ukládám..." : "Publikovat"}
+                  </Button>
+                  <Button type="submit" variant="outline" disabled={isPending}>
+                    Uložit jako draft
                   </Button>
                   <Button
                     type="button"

@@ -742,13 +742,11 @@ export function ProductEditPage() {
   const [slugManual, setSlugManual] = useState(false);
   const [description, setDescription] = useState("");
   const [shortDescription, setShortDescription] = useState("");
-  const [productType, setProductType] = useState<ProductType>("EBOOK");
   const [priceCZK, setPriceCZK] = useState("");
   const [priceEUR, setPriceEUR] = useState("");
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
-  const [status, setStatus] = useState("DRAFT");
   const [formLoaded, setFormLoaded] = useState(false);
 
   const productQuery = useQuery({
@@ -771,13 +769,11 @@ export function ProductEditPage() {
       setSlugManual(true);
       setDescription(product.description ?? "");
       setShortDescription(product.shortDescription ?? "");
-      setProductType(product.productType);
       setPriceCZK(product.prices.CZK != null ? String(product.prices.CZK) : "");
       setPriceEUR(product.prices.EUR != null ? String(product.prices.EUR) : "");
       setCategoryIds(product.categories?.map((c) => c.id) ?? []);
       setMetaTitle(product.metaTitle ?? "");
       setMetaDescription(product.metaDescription ?? "");
-      setStatus(product.status);
       setFormLoaded(true);
     }
   }, [product, formLoaded]);
@@ -788,7 +784,7 @@ export function ProductEditPage() {
   }, [queryClient, productId]);
 
   const updateMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: (status: string) => {
       const prices: Record<string, number> = {};
       if (priceCZK) prices.CZK = Number(priceCZK);
       if (priceEUR) prices.EUR = Number(priceEUR);
@@ -798,7 +794,7 @@ export function ProductEditPage() {
         slug,
         description: description || undefined,
         shortDescription: shortDescription || undefined,
-        productType,
+        productType: product!.productType,
         prices,
         categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
         metaTitle: metaTitle || undefined,
@@ -821,9 +817,13 @@ export function ProductEditPage() {
     setSlug(value);
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  function handleSaveAsDraft(event: React.FormEvent) {
     event.preventDefault();
-    updateMutation.mutate();
+    updateMutation.mutate("DRAFT");
+  }
+
+  function handlePublish() {
+    updateMutation.mutate("ACTIVE");
   }
 
   const categories: CategoryResponse[] = categoriesQuery.data?.data ?? [];
@@ -856,9 +856,14 @@ export function ProductEditPage() {
   const showFilesTab = product.productType === "EBOOK";
   const showMediaTab = product.productType === "AUDIO_VIDEO";
 
+  const typeLabel = PRODUCT_TYPES.find((t) => t.value === product.productType)?.label ?? product.productType;
+
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Upravit produkt</h2>
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold">Upravit produkt</h2>
+        <p className="text-sm text-[var(--muted-foreground)]">{typeLabel}</p>
+      </div>
 
       <Tabs defaultValue="info">
         <TabsList>
@@ -876,7 +881,7 @@ export function ProductEditPage() {
               <CardTitle>Údaje o produktu</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSaveAsDraft} className="space-y-4">
                 <div>
                   <Label htmlFor="title">Název</Label>
                   <Input
@@ -919,38 +924,6 @@ export function ProductEditPage() {
                     onChange={(e) => setShortDescription(e.target.value)}
                     disabled={isPending}
                   />
-                </div>
-
-                <div>
-                  <Label htmlFor="productType">Typ produktu</Label>
-                  <select
-                    id="productType"
-                    value={productType}
-                    onChange={(e) => setProductType(e.target.value as ProductType)}
-                    disabled={isPending}
-                    className={selectClassName}
-                  >
-                    {PRODUCT_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="status">Stav</Label>
-                  <select
-                    id="status"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    disabled={isPending}
-                    className={selectClassName}
-                  >
-                    <option value="DRAFT">Koncept</option>
-                    <option value="ACTIVE">Aktivní</option>
-                    <option value="ARCHIVED">Archivováno</option>
-                  </select>
                 </div>
 
                 <div>
@@ -1021,8 +994,15 @@ export function ProductEditPage() {
                 )}
 
                 <div className="flex gap-2">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? "Ukládání..." : "Uložit změny"}
+                  <Button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={isPending}
+                  >
+                    {isPending ? "Ukládám..." : "Publikovat"}
+                  </Button>
+                  <Button type="submit" variant="outline" disabled={isPending}>
+                    Uložit jako draft
                   </Button>
                   <Button
                     type="button"

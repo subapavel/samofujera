@@ -309,6 +309,7 @@ export interface CreateProductRequest {
   variants?: CreateVariantRequest[];
   event?: CreateEventRequest;
   occurrences?: CreateOccurrenceRequest[];
+  status?: string;
 }
 
 export interface UpdateProductRequest extends CreateProductRequest {
