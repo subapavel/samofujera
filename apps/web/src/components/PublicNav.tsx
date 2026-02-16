@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { ChevronDown, ShoppingBag } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -80,30 +81,30 @@ export function PublicNav({ currentPath }: PublicNavProps) {
           {/* Logo */}
           <a
             href="/"
-            className="text-[21px] font-light text-white whitespace-nowrap"
+            className="text-[21px] font-light text-white whitespace-nowrap ml-[78px]"
           >
             Sámo Fujera
           </a>
 
           {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center">
             {navItems.map((item, index) => (
               <div key={item.label} className="relative">
                 {item.children ? (
                   <button
                     type="button"
                     onClick={() => toggleDropdown(item.label)}
-                    className={`nav-link px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
                       isActive(item) ? "active" : ""
                     } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
                     {item.label}
-                    <span className="ml-1 text-[10px]">&#9662;</span>
+                    <ChevronDown className="inline size-3 ml-0.5" />
                   </button>
                 ) : (
                   <a
                     href={item.href}
-                    className={`nav-link px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
                       isActive(item) ? "active" : ""
                     } ${index < navItems.length - 1 ? "nav-separator" : ""}`}
                   >
@@ -129,26 +130,13 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             ))}
 
             {/* Separator + Košík */}
-            <span className="text-white/30 mx-2">|</span>
+            <span className="relative mx-4 h-[34px] w-px bg-white/35" />
             <a
               href="/kosik"
-              className="nav-link px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
+              className="nav-link px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors flex items-center gap-1.5"
             >
               Košík
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                />
-              </svg>
+              <ShoppingBag className="size-4" strokeWidth={1.5} />
             </a>
           </div>
 
@@ -196,14 +184,12 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                     <button
                       type="button"
                       onClick={() => toggleDropdown(item.label)}
-                      className={`nav-link w-full text-left px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                      className={`nav-link w-full text-left px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
                         isActive(item) ? "active" : ""
                       }`}
                     >
                       {item.label}
-                      <span className="ml-1 text-[10px]">
-                        {openDropdown === item.label ? "&#9652;" : "&#9662;"}
-                      </span>
+                      <ChevronDown className={`inline size-3 ml-0.5 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
                     </button>
                     {openDropdown === item.label && (
                       <div className="pl-6 space-y-1">
@@ -222,7 +208,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                 ) : (
                   <a
                     href={item.href}
-                    className={`nav-link block px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
+                    className={`nav-link block px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors ${
                       isActive(item) ? "active" : ""
                     }`}
                   >
@@ -234,7 +220,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
             <div className="border-t border-white/10 pt-2 mt-2">
               <a
                 href="/kosik"
-                className="nav-link block px-3 py-2 text-[15px] font-light uppercase tracking-wide transition-colors"
+                className="nav-link block px-[10px] py-2 text-[15px] font-light uppercase tracking-wide transition-colors"
               >
                 Košík
               </a>
