@@ -9,14 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -222,93 +221,6 @@ class CatalogProductIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.items[?(@.slug == '%s')]".formatted(slug2)).exists())
             .andExpect(jsonPath("$.data.items[?(@.slug == '%s')]".formatted(slug1)).doesNotExist());
-    }
-
-    // --- Image tests ---
-
-    @Test
-    void uploadAndDeleteImage() throws Exception {
-        when(r2StorageService.generatePresignedUrl(anyString(), any()))
-            .thenReturn("https://example.com/presigned");
-
-        String slug = "img-product-" + UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProduct("Image Product", slug, "EBOOK");
-
-        var file = new MockMultipartFile(
-            "file", "photo.jpg", "image/jpeg", "JPEG content".getBytes());
-
-        // Upload image
-        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/images", productId)
-                .file(file)
-                .with(user(adminPrincipal())))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.id").exists())
-            .andExpect(jsonPath("$.data.fileName").value("photo.jpg"))
-            .andExpect(jsonPath("$.data.sortOrder").value(0))
-            .andReturn();
-
-        var imageId = com.jayway.jsonpath.JsonPath.read(
-            uploadResult.getResponse().getContentAsString(), "$.data.id").toString();
-
-        // Verify product detail includes images
-        mockMvc.perform(get("/api/admin/products/{id}", productId)
-                .with(user(adminPrincipal())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.images").isArray())
-            .andExpect(jsonPath("$.data.images.length()").value(1))
-            .andExpect(jsonPath("$.data.images[0].fileName").value("photo.jpg"));
-
-        // Delete image
-        mockMvc.perform(delete("/api/admin/products/{productId}/images/{imageId}", productId, imageId)
-                .with(user(adminPrincipal())))
-            .andExpect(status().isNoContent());
-
-        // Verify empty
-        mockMvc.perform(get("/api/admin/products/{id}", productId)
-                .with(user(adminPrincipal())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.images.length()").value(0));
-    }
-
-    @Test
-    void reorderImages() throws Exception {
-        when(r2StorageService.generatePresignedUrl(anyString(), any()))
-            .thenReturn("https://example.com/presigned");
-
-        String slug = "reorder-img-" + UUID.randomUUID().toString().substring(0, 8);
-        var productId = createProduct("Reorder Product", slug, "EBOOK");
-
-        // Upload two images
-        var file1 = new MockMultipartFile("file", "first.jpg", "image/jpeg", "img1".getBytes());
-        var file2 = new MockMultipartFile("file", "second.jpg", "image/jpeg", "img2".getBytes());
-
-        var r1 = mockMvc.perform(multipart("/api/admin/products/{productId}/images", productId)
-                .file(file1).with(user(adminPrincipal())))
-            .andExpect(status().isCreated())
-            .andReturn();
-        var id1 = com.jayway.jsonpath.JsonPath.read(r1.getResponse().getContentAsString(), "$.data.id").toString();
-
-        var r2 = mockMvc.perform(multipart("/api/admin/products/{productId}/images", productId)
-                .file(file2).with(user(adminPrincipal())))
-            .andExpect(status().isCreated())
-            .andReturn();
-        var id2 = com.jayway.jsonpath.JsonPath.read(r2.getResponse().getContentAsString(), "$.data.id").toString();
-
-        // Reorder: swap them
-        mockMvc.perform(put("/api/admin/products/{productId}/images/reorder", productId)
-                .with(user(adminPrincipal()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"imageIds": ["%s", "%s"]}
-                    """.formatted(id2, id1)))
-            .andExpect(status().isOk());
-
-        // Verify new order
-        mockMvc.perform(get("/api/admin/products/{id}", productId)
-                .with(user(adminPrincipal())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.images[0].fileName").value("second.jpg"))
-            .andExpect(jsonPath("$.data.images[1].fileName").value("first.jpg"));
     }
 
     // --- Variant CRUD tests ---

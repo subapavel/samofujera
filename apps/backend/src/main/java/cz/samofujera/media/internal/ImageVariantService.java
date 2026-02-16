@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
-class ImageVariantService {
+public class ImageVariantService {
 
     public record VariantResult(byte[] data, String contentType, int width, int height) {}
 

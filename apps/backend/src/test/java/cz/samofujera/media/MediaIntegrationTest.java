@@ -2,6 +2,7 @@ package cz.samofujera.media;
 
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
+import cz.samofujera.media.internal.ImageVariantService;
 import cz.samofujera.shared.storage.StorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -36,89 +37,17 @@ class MediaIntegrationTest {
     @MockitoBean
     private StorageService storageService;
 
+    @MockitoBean
+    private ImageVariantService imageVariantService;
+
     private UserPrincipal adminPrincipal() {
         return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
     }
 
-    @Test
-    void createFolder_returns201() throws Exception {
-        mockMvc.perform(post("/api/admin/media/folders")
-                .with(user(adminPrincipal()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"name": "Photos", "slug": "photos"}
-                    """))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.name").value("Photos"))
-            .andExpect(jsonPath("$.data.slug").value("photos"))
-            .andExpect(jsonPath("$.data.id").exists());
-    }
-
-    @Test
-    void getFolder_afterCreate_returnsList() throws Exception {
-        var admin = adminPrincipal();
-
-        mockMvc.perform(post("/api/admin/media/folders")
-                .with(user(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"name": "Videos", "slug": "videos-list-test"}
-                    """))
-            .andExpect(status().isCreated());
-
-        mockMvc.perform(get("/api/admin/media/folders")
-                .with(user(admin)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.data[?(@.slug == 'videos-list-test')]").exists());
-    }
-
-    @Test
-    void renameFolder_returns200() throws Exception {
-        var admin = adminPrincipal();
-
-        var createResult = mockMvc.perform(post("/api/admin/media/folders")
-                .with(user(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"name": "Old Folder", "slug": "old-folder-rename"}
-                    """))
-            .andExpect(status().isCreated())
-            .andReturn();
-
-        var id = com.jayway.jsonpath.JsonPath.read(
-            createResult.getResponse().getContentAsString(), "$.data.id").toString();
-
-        mockMvc.perform(put("/api/admin/media/folders/" + id)
-                .with(user(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"name": "New Folder", "slug": "new-folder-rename"}
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.name").value("New Folder"))
-            .andExpect(jsonPath("$.data.slug").value("new-folder-rename"));
-    }
-
-    @Test
-    void deleteEmptyFolder_returns204() throws Exception {
-        var admin = adminPrincipal();
-
-        var createResult = mockMvc.perform(post("/api/admin/media/folders")
-                .with(user(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"name": "To Delete", "slug": "folder-delete-test"}
-                    """))
-            .andExpect(status().isCreated())
-            .andReturn();
-
-        var id = com.jayway.jsonpath.JsonPath.read(
-            createResult.getResponse().getContentAsString(), "$.data.id").toString();
-
-        mockMvc.perform(delete("/api/admin/media/folders/" + id)
-                .with(user(admin)))
-            .andExpect(status().isNoContent());
+    private void setupStorageMocks() {
+        doNothing().when(storageService).upload(anyString(), any(byte[].class), anyString());
+        when(storageService.generatePresignedUrl(anyString(), any(Duration.class)))
+            .thenReturn("https://fake-r2.example.com/media/file.jpg");
     }
 
     @Test
@@ -132,66 +61,73 @@ class MediaIntegrationTest {
     }
 
     @Test
-    void uploadTemp_returns201() throws Exception {
-        doNothing().when(storageService).upload(anyString(), any(), anyLong(), anyString());
-        when(storageService.generatePresignedUrl(anyString(), any(Duration.class)))
-            .thenReturn("https://fake-r2.example.com/temp/preview.jpg");
+    void getItems_withSourceFilter_returnsOk() throws Exception {
+        mockMvc.perform(get("/api/admin/media")
+                .param("source", "unlinked")
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.items").isArray());
+    }
+
+    @Test
+    void upload_returns201() throws Exception {
+        setupStorageMocks();
+        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
+            .thenReturn(Map.of());
 
         var file = new MockMultipartFile("file", "test-image.jpg",
             "image/jpeg", "fake image content".getBytes());
 
-        mockMvc.perform(multipart("/api/admin/media/upload-temp")
+        mockMvc.perform(multipart("/api/admin/media/upload")
                 .file(file)
+                .param("altText", "A test image")
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.tempKey").exists())
-            .andExpect(jsonPath("$.data.previewUrl").value("https://fake-r2.example.com/temp/preview.jpg"));
+            .andExpect(jsonPath("$.data.id").exists())
+            .andExpect(jsonPath("$.data.originalFilename").value("test-image.jpg"))
+            .andExpect(jsonPath("$.data.mimeType").value("image/jpeg"))
+            .andExpect(jsonPath("$.data.originalUrl").exists());
     }
 
     @Test
-    void createItemFromTemp_returns201() throws Exception {
-        doNothing().when(storageService).copy(anyString(), anyString());
-        doNothing().when(storageService).delete(anyString());
-        when(storageService.generatePresignedUrl(anyString(), any(Duration.class)))
-            .thenReturn("https://fake-r2.example.com/media/item.jpg");
+    void upload_nonImage_returns201() throws Exception {
+        setupStorageMocks();
+        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
+            .thenReturn(Map.of());
 
-        mockMvc.perform(post("/api/admin/media")
-                .with(user(adminPrincipal()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"tempKey": "temp/abc123.jpg", "originalFilename": "photo.jpg",
-                     "mimeType": "image/jpeg", "fileSizeBytes": 12345}
-                    """))
+        var file = new MockMultipartFile("file", "document.pdf",
+            "application/pdf", "fake pdf content".getBytes());
+
+        mockMvc.perform(multipart("/api/admin/media/upload")
+                .file(file)
+                .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.id").exists())
-            .andExpect(jsonPath("$.data.originalFilename").value("photo.jpg"))
-            .andExpect(jsonPath("$.data.mimeType").value("image/jpeg"))
-            .andExpect(jsonPath("$.data.fileSizeBytes").value(12345))
-            .andExpect(jsonPath("$.data.url").value("https://fake-r2.example.com/media/item.jpg"));
+            .andExpect(jsonPath("$.data.originalFilename").value("document.pdf"))
+            .andExpect(jsonPath("$.data.mimeType").value("application/pdf"))
+            .andExpect(jsonPath("$.data.thumbUrl").doesNotExist());
     }
 
     @Test
     void updateItem_returns200() throws Exception {
-        doNothing().when(storageService).copy(anyString(), anyString());
-        doNothing().when(storageService).delete(anyString());
-        when(storageService.generatePresignedUrl(anyString(), any(Duration.class)))
-            .thenReturn("https://fake-r2.example.com/media/item.jpg");
+        setupStorageMocks();
+        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
+            .thenReturn(Map.of());
 
-        // Create item first
-        var createResult = mockMvc.perform(post("/api/admin/media")
-                .with(user(adminPrincipal()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"tempKey": "temp/update-test.jpg", "originalFilename": "update-test.jpg",
-                     "mimeType": "image/jpeg", "fileSizeBytes": 5000}
-                    """))
+        // Create item first via upload
+        var file = new MockMultipartFile("file", "update-test.jpg",
+            "image/jpeg", "fake image content".getBytes());
+
+        var createResult = mockMvc.perform(multipart("/api/admin/media/upload")
+                .file(file)
+                .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andReturn();
 
         var id = com.jayway.jsonpath.JsonPath.read(
             createResult.getResponse().getContentAsString(), "$.data.id").toString();
 
-        // Update
+        // Update alt text
         mockMvc.perform(patch("/api/admin/media/" + id)
                 .with(user(adminPrincipal()))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -204,19 +140,18 @@ class MediaIntegrationTest {
 
     @Test
     void deleteItem_returns204() throws Exception {
-        doNothing().when(storageService).copy(anyString(), anyString());
-        doNothing().when(storageService).delete(anyString());
-        when(storageService.generatePresignedUrl(anyString(), any(Duration.class)))
-            .thenReturn("https://fake-r2.example.com/media/item.jpg");
+        setupStorageMocks();
+        doNothing().when(storageService).deleteByPrefix(anyString());
+        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
+            .thenReturn(Map.of());
 
-        // Create item first
-        var createResult = mockMvc.perform(post("/api/admin/media")
-                .with(user(adminPrincipal()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"tempKey": "temp/delete-test.jpg", "originalFilename": "delete-test.jpg",
-                     "mimeType": "image/jpeg", "fileSizeBytes": 3000}
-                    """))
+        // Create item first via upload
+        var file = new MockMultipartFile("file", "delete-test.jpg",
+            "image/jpeg", "fake image content".getBytes());
+
+        var createResult = mockMvc.perform(multipart("/api/admin/media/upload")
+                .file(file)
+                .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andReturn();
 
@@ -227,5 +162,32 @@ class MediaIntegrationTest {
         mockMvc.perform(delete("/api/admin/media/" + id)
                 .with(user(adminPrincipal())))
             .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getItem_returns200() throws Exception {
+        setupStorageMocks();
+        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
+            .thenReturn(Map.of());
+
+        // Create item first via upload
+        var file = new MockMultipartFile("file", "get-test.jpg",
+            "image/jpeg", "fake image content".getBytes());
+
+        var createResult = mockMvc.perform(multipart("/api/admin/media/upload")
+                .file(file)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isCreated())
+            .andReturn();
+
+        var id = com.jayway.jsonpath.JsonPath.read(
+            createResult.getResponse().getContentAsString(), "$.data.id").toString();
+
+        // Get by ID
+        mockMvc.perform(get("/api/admin/media/" + id)
+                .with(user(adminPrincipal())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id").value(id))
+            .andExpect(jsonPath("$.data.originalFilename").value("get-test.jpg"));
     }
 }

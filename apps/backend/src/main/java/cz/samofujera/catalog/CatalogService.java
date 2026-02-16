@@ -21,7 +21,6 @@ public class CatalogService {
     private final VariantPriceRepository variantPriceRepository;
     private final ProductFileRepository productFileRepository;
     private final ProductMediaRepository productMediaRepository;
-    private final ProductImageRepository productImageRepository;
     private final EventRepository eventRepository;
     private final EventOccurrenceRepository eventOccurrenceRepository;
     private final R2StorageService r2StorageService;
@@ -34,7 +33,6 @@ public class CatalogService {
                    VariantPriceRepository variantPriceRepository,
                    ProductFileRepository productFileRepository,
                    ProductMediaRepository productMediaRepository,
-                   ProductImageRepository productImageRepository,
                    EventRepository eventRepository,
                    EventOccurrenceRepository eventOccurrenceRepository,
                    R2StorageService r2StorageService,
@@ -47,7 +45,6 @@ public class CatalogService {
         this.variantPriceRepository = variantPriceRepository;
         this.productFileRepository = productFileRepository;
         this.productMediaRepository = productMediaRepository;
-        this.productImageRepository = productImageRepository;
         this.eventRepository = eventRepository;
         this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.r2StorageService = r2StorageService;
@@ -391,60 +388,6 @@ public class CatalogService {
         productVariantRepository.decrementStock(variantId, quantity);
     }
 
-    // --- Image methods ---
-
-    @Transactional
-    public CatalogDtos.ImageResponse uploadImage(UUID productId, String fileName, String contentType,
-                                                  long fileSize, InputStream inputStream) {
-        productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Product not found"));
-
-        var fileKey = "images/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
-        var sortOrder = productImageRepository.countByProductId(productId);
-
-        r2StorageService.upload(fileKey, inputStream, fileSize, contentType);
-
-        var imageId = productImageRepository.create(productId, fileKey, fileName, fileSize, contentType, null, sortOrder);
-        var created = productImageRepository.findById(imageId)
-            .orElseThrow(() -> new NotFoundException("Image not found"));
-
-        return toImageResponse(created);
-    }
-
-    @Transactional
-    public void deleteImage(UUID productId, UUID imageId) {
-        var image = productImageRepository.findById(imageId)
-            .orElseThrow(() -> new NotFoundException("Image not found"));
-        if (!image.productId().equals(productId)) {
-            throw new IllegalArgumentException("Image does not belong to product");
-        }
-        r2StorageService.delete(image.fileKey());
-        productImageRepository.delete(imageId);
-    }
-
-    @Transactional
-    public void reorderImages(UUID productId, List<UUID> imageIds) {
-        productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Product not found"));
-        productImageRepository.reorder(imageIds);
-    }
-
-    @Transactional
-    public void updateImageAltText(UUID productId, UUID imageId, String altText) {
-        var image = productImageRepository.findById(imageId)
-            .orElseThrow(() -> new NotFoundException("Image not found"));
-        if (!image.productId().equals(productId)) {
-            throw new IllegalArgumentException("Image does not belong to product");
-        }
-        productImageRepository.updateAltText(imageId, altText);
-    }
-
-    public List<CatalogDtos.ImageResponse> getImagesForProduct(UUID productId) {
-        return productImageRepository.findByProductId(productId).stream()
-            .map(this::toImageResponse)
-            .toList();
-    }
-
     // --- Variant CRUD methods ---
 
     @Transactional
@@ -590,7 +533,8 @@ public class CatalogService {
         var categories = assignmentRepository.findCategoriesForProduct(product.id()).stream()
             .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
             .toList();
-        var images = getImagesForProduct(product.id());
+        // TODO: Replace with product_gallery lookup in Task #44
+        List<CatalogDtos.ImageResponse> images = List.of();
         var variants = "PHYSICAL".equals(product.productType()) ? getVariantsForProduct(product.id()) : null;
         var files = "EBOOK".equals(product.productType()) ? getFilesForProduct(product.id()) : null;
         var media = "AUDIO_VIDEO".equals(product.productType()) ? getMediaForProduct(product.id()) : null;
@@ -625,13 +569,6 @@ public class CatalogService {
             row.productType(), prices, row.status(), row.thumbnailUrl(),
             row.metaTitle(), row.metaDescription(), categories,
             row.createdAt(), row.updatedAt()
-        );
-    }
-
-    private CatalogDtos.ImageResponse toImageResponse(ProductImageRepository.ImageRow row) {
-        var url = r2StorageService.generatePresignedUrl(row.fileKey(), Duration.ofHours(1));
-        return new CatalogDtos.ImageResponse(
-            row.id(), row.fileName(), url, row.altText(), row.sortOrder()
         );
     }
 
