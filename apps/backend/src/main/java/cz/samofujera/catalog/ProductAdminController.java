@@ -36,6 +36,13 @@ public class ProductAdminController {
         return ResponseEntity.ok(ApiResponse.ok(detail));
     }
 
+    @PostMapping("/draft")
+    public ResponseEntity<ApiResponse<CatalogDtos.ProductDetailResponse>> createDraft(
+            @Valid @RequestBody CatalogDtos.CreateDraftRequest request) {
+        var product = catalogService.createDraft(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(product));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<CatalogDtos.ProductResponse>> createProduct(
             @Valid @RequestBody CatalogDtos.CreateProductRequest request) {

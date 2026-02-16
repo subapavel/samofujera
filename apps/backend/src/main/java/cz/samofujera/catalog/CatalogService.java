@@ -180,6 +180,18 @@ public class CatalogService {
     }
 
     @Transactional
+    public CatalogDtos.ProductDetailResponse createDraft(CatalogDtos.CreateDraftRequest request) {
+        var slug = "draft-" + UUID.randomUUID().toString().substring(0, 8);
+        var id = productRepository.create(
+            "Nový produkt", slug, null, null,
+            request.productType(), null, null, null
+        );
+        var product = productRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
+        return buildDetailResponse(product);
+    }
+
+    @Transactional
     public CatalogDtos.ProductResponse createProduct(CatalogDtos.CreateProductRequest request) {
         if (productRepository.existsBySlug(request.slug())) {
             throw new IllegalArgumentException("Product with slug '" + request.slug() + "' already exists");

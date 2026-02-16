@@ -73,6 +73,8 @@ public final class CatalogDtos {
         OffsetDateTime createdAt, OffsetDateTime updatedAt
     ) {}
 
+    public record CreateDraftRequest(@NotBlank String productType) {}
+
     public record CreateProductRequest(
         @NotBlank @Size(max = 255) String title,
         @NotBlank @Size(max = 255) String slug,
