@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { authApi } from "@samofujera/api-client";
+import { Button } from "@samofujera/ui";
 
 const navItems = [
   { label: "Dashboard", to: "/" as const },
@@ -63,13 +64,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <span className="text-sm font-medium text-[var(--muted-foreground)]">
             Samo Fujera — Administrace
           </span>
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="sm"
             onClick={() => void handleLogout()}
-            className="rounded-md bg-[var(--secondary)] px-3 py-1.5 text-sm font-medium text-[var(--secondary-foreground)] transition-colors hover:bg-[var(--secondary)]/80"
           >
             Odhlásit se
-          </button>
+          </Button>
         </header>
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
