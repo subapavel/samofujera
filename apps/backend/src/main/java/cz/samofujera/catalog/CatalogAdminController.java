@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -16,6 +17,11 @@ public class CatalogAdminController {
 
     CatalogAdminController(CatalogService catalogService) {
         this.catalogService = catalogService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CatalogDtos.CategoryResponse>> getCategory(@PathVariable UUID id) {
+        return ResponseEntity.ok(ApiResponse.ok(catalogService.getCategoryById(id)));
     }
 
     @PostMapping
@@ -31,6 +37,13 @@ public class CatalogAdminController {
             @Valid @RequestBody CatalogDtos.UpdateCategoryRequest request) {
         var category = catalogService.updateCategory(id, request);
         return ResponseEntity.ok(ApiResponse.ok(category));
+    }
+
+    @PutMapping("/reorder")
+    public ResponseEntity<Void> reorderCategories(
+            @Valid @RequestBody CatalogDtos.ReorderCategoriesRequest request) {
+        catalogService.reorderCategories(request.categoryIds());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

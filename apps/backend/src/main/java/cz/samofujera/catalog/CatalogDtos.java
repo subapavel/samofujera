@@ -19,7 +19,8 @@ public final class CatalogDtos {
 
     public record CategoryResponse(
         UUID id, String name, String slug, String description,
-        UUID imageMediaId, String metaTitle, String metaDescription, int sortOrder
+        UUID imageMediaId, String imageUrl,
+        String metaTitle, String metaDescription, int sortOrder
     ) {}
 
     public record CreateCategoryRequest(
@@ -27,8 +28,7 @@ public final class CatalogDtos {
         @NotBlank @Size(max = 255) String slug,
         String description, UUID imageMediaId,
         @Size(max = 255) String metaTitle,
-        @Size(max = 500) String metaDescription,
-        int sortOrder
+        @Size(max = 500) String metaDescription
     ) {}
 
     public record UpdateCategoryRequest(
@@ -36,8 +36,11 @@ public final class CatalogDtos {
         @NotBlank @Size(max = 255) String slug,
         String description, UUID imageMediaId,
         @Size(max = 255) String metaTitle,
-        @Size(max = 500) String metaDescription,
-        int sortOrder
+        @Size(max = 500) String metaDescription
+    ) {}
+
+    public record ReorderCategoriesRequest(
+        @NotNull List<UUID> categoryIds
     ) {}
 
     public record CategorySummary(UUID id, String name, String slug) {}

@@ -1,6 +1,7 @@
 package cz.samofujera.catalog;
 
 import cz.samofujera.catalog.internal.*;
+import cz.samofujera.media.MediaService;
 import cz.samofujera.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class CatalogService {
     private final EventOccurrenceRepository eventOccurrenceRepository;
     private final R2StorageService r2StorageService;
     private final ProductCategoryAssignmentRepository assignmentRepository;
+    private final MediaService mediaService;
 
     CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
                    ProductPriceRepository productPriceRepository,
@@ -36,7 +38,8 @@ public class CatalogService {
                    EventRepository eventRepository,
                    EventOccurrenceRepository eventOccurrenceRepository,
                    R2StorageService r2StorageService,
-                   ProductCategoryAssignmentRepository assignmentRepository) {
+                   ProductCategoryAssignmentRepository assignmentRepository,
+                   MediaService mediaService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.productPriceRepository = productPriceRepository;
@@ -49,6 +52,7 @@ public class CatalogService {
         this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.r2StorageService = r2StorageService;
         this.assignmentRepository = assignmentRepository;
+        this.mediaService = mediaService;
     }
 
     // --- Category methods ---
@@ -59,10 +63,28 @@ public class CatalogService {
             .toList();
     }
 
+    public CatalogDtos.CategoryResponse getCategoryById(UUID id) {
+        var row = categoryRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Category not found"));
+        return toCategoryResponse(row);
+    }
+
+    @Transactional
+    public void reorderCategories(List<UUID> categoryIds) {
+        categoryRepository.updateSortOrders(categoryIds);
+    }
+
     private CatalogDtos.CategoryResponse toCategoryResponse(CategoryRepository.CategoryRow row) {
+        String imageUrl = null;
+        if (row.imageMediaId() != null) {
+            try {
+                imageUrl = mediaService.getUrl(row.imageMediaId());
+            } catch (Exception ignored) {}
+        }
         return new CatalogDtos.CategoryResponse(
             row.id(), row.name(), row.slug(), row.description(),
-            row.imageMediaId(), row.metaTitle(), row.metaDescription(), row.sortOrder()
+            row.imageMediaId(), imageUrl,
+            row.metaTitle(), row.metaDescription(), row.sortOrder()
         );
     }
 
@@ -71,9 +93,10 @@ public class CatalogService {
         if (categoryRepository.existsBySlug(request.slug())) {
             throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
         }
+        var sortOrder = categoryRepository.findNextSortOrder();
         var id = categoryRepository.create(
             request.name(), request.slug(), request.description(), request.imageMediaId(),
-            request.metaTitle(), request.metaDescription(), request.sortOrder()
+            request.metaTitle(), request.metaDescription(), sortOrder
         );
         var created = categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));
@@ -89,7 +112,7 @@ public class CatalogService {
         }
         categoryRepository.update(
             id, request.name(), request.slug(), request.description(), request.imageMediaId(),
-            request.metaTitle(), request.metaDescription(), request.sortOrder()
+            request.metaTitle(), request.metaDescription()
         );
         var updated = categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));

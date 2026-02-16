@@ -99,7 +99,7 @@ public class CategoryRepository {
     }
 
     public void update(UUID id, String name, String slug, String description, UUID imageMediaId,
-                       String metaTitle, String metaDescription, int sortOrder) {
+                       String metaTitle, String metaDescription) {
         dsl.update(PRODUCT_CATEGORIES)
             .set(PRODUCT_CATEGORIES.NAME, name)
             .set(PRODUCT_CATEGORIES.SLUG, slug)
@@ -107,7 +107,6 @@ public class CategoryRepository {
             .set(PRODUCT_CATEGORIES.IMAGE_MEDIA_ID, imageMediaId)
             .set(PRODUCT_CATEGORIES.META_TITLE, metaTitle)
             .set(PRODUCT_CATEGORIES.META_DESCRIPTION, metaDescription)
-            .set(PRODUCT_CATEGORIES.SORT_ORDER, sortOrder)
             .set(PRODUCT_CATEGORIES.UPDATED_AT, OffsetDateTime.now())
             .where(PRODUCT_CATEGORIES.ID.eq(id))
             .execute();
@@ -131,5 +130,21 @@ public class CategoryRepository {
             dsl.selectFrom(PRODUCT_CATEGORIES)
                .where(PRODUCT_CATEGORIES.SLUG.eq(slug))
         );
+    }
+
+    public void updateSortOrders(List<UUID> orderedIds) {
+        for (int i = 0; i < orderedIds.size(); i++) {
+            dsl.update(PRODUCT_CATEGORIES)
+                .set(PRODUCT_CATEGORIES.SORT_ORDER, i)
+                .where(PRODUCT_CATEGORIES.ID.eq(orderedIds.get(i)))
+                .execute();
+        }
+    }
+
+    public int findNextSortOrder() {
+        var max = dsl.select(org.jooq.impl.DSL.max(PRODUCT_CATEGORIES.SORT_ORDER))
+            .from(PRODUCT_CATEGORIES)
+            .fetchOne(0, Integer.class);
+        return (max != null ? max : -1) + 1;
     }
 }
