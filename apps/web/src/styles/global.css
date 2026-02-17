@@ -42,7 +42,7 @@
   font-weight: 300;
   line-height: 1.2;
   letter-spacing: -0.015em;
-  color: rgba(0, 0, 0, 0.9);
+  color: rgb(6, 93, 77);
 }
 
 .public-h2 {
@@ -51,7 +51,7 @@
   font-weight: 300;
   line-height: 1.35;
   letter-spacing: -0.015em;
-  color: rgba(0, 0, 0, 0.9);
+  color: rgb(6, 93, 77);
 }
 
 .public-h2-sm {
@@ -60,7 +60,7 @@
   font-weight: 300;
   line-height: 1.35;
   letter-spacing: -0.015em;
-  color: rgba(0, 0, 0, 0.9);
+  color: rgb(6, 93, 77);
 }
 
 .public-h3 {
