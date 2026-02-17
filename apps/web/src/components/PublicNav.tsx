@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronDown, ShoppingBag } from "lucide-react";
+import { ChevronDown, ChevronRight, Info, Mail, Phone, ShoppingBag, X } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -35,14 +35,10 @@ const moreChildren: NavItem[] = [
   { label: "Kontakt", href: "/kontakt" },
 ];
 
-// All items for mobile menu (flat list)
-const allNavItems: NavItem[] = [
+// All items for mobile menu (flat list — no "Více" wrapper)
+const mobileNavItems: NavItem[] = [
   ...mainNavItems,
-  {
-    label: "Více",
-    href: "#",
-    children: moreChildren,
-  },
+  ...moreChildren,
 ];
 
 interface PublicNavProps {
@@ -296,57 +292,104 @@ export function PublicNav({ currentPath }: PublicNavProps) {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile slide-out menu */}
       {mobileOpen && (
-        <div className="nav:hidden bg-[var(--primary)]/95 backdrop-blur-sm border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-            {allNavItems.map((item) => (
-              <div key={item.label}>
-                {item.children ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => toggleDropdown(item.label)}
-                      className={`nav-link w-full text-left px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
-                        isActive(item) ? "active" : ""
+        <div className="nav:hidden fixed inset-0 z-50">
+          {/* Overlay — dimmed background */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileOpen(false)}
+          />
+          {/* Panel */}
+          <div className="absolute top-0 right-0 bottom-0 w-[80%] bg-white shadow-xl overflow-y-auto">
+            {/* Close button — centered between top edge and first border */}
+            <div className="flex justify-end items-center h-[74px] pr-[16px]">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="text-[#c0c0c0] hover:text-gray-500 transition-colors"
+                aria-label="Zavřít menu"
+              >
+                <X className="size-[18px]" strokeWidth={2.5} />
+              </button>
+            </div>
+            {/* Menu items */}
+            <nav className="px-[20px]">
+              {mobileNavItems.map((item) => (
+                <div key={item.label} className="border-t border-gray-200 pl-[8px]">
+                  {item.children ? (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <a
+                          href={item.href}
+                          className={`flex-1 py-[13px] text-[14px] font-light uppercase tracking-wider transition-colors ${
+                            isActive(item) || openDropdown === item.label ? "text-[#e6bc91]" : "text-gray-400"
+                          }`}
+                        >
+                          {item.label}
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => toggleDropdown(item.label)}
+                          className="py-[13px] pl-[10px] pr-[8px]"
+                          aria-label={`Rozbalit ${item.label}`}
+                        >
+                          {openDropdown === item.label ? (
+                            <ChevronDown className="size-[18px] text-gray-500 pointer-events-none" strokeWidth={1.5} />
+                          ) : (
+                            <ChevronRight className="size-[18px] text-gray-500 pointer-events-none" strokeWidth={1.5} />
+                          )}
+                        </button>
+                      </div>
+                      {openDropdown === item.label && (
+                        <div className="-ml-[8px]">
+                          {item.children.map((child) => (
+                            <a
+                              key={child.href}
+                              href={child.href}
+                              className="block border-t border-gray-200 py-[13px] pl-[16px] text-[14px] font-light uppercase tracking-wider text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                              {child.label}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className={`block py-[13px] text-[14px] font-light uppercase tracking-wider transition-colors ${
+                        isActive(item) ? "text-[#e6bc91]" : "text-gray-400"
                       }`}
                     >
                       {item.label}
-                      <ChevronDown className={`inline size-3 ml-0.5 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
-                    </button>
-                    {openDropdown === item.label && (
-                      <div className="pl-6 space-y-1">
-                        {item.children.map((child) => (
-                          <a
-                            key={child.href}
-                            href={child.href}
-                            className="nav-link block px-3 py-1.5 text-sm transition-colors"
-                          >
-                            {child.label}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <a
-                    href={item.href}
-                    className={`nav-link block px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors ${
-                      isActive(item) ? "active" : ""
-                    }`}
-                  >
-                    {item.label}
-                  </a>
-                )}
-              </div>
-            ))}
-            <div className="border-t border-white/10 pt-2 mt-2">
+                    </a>
+                  )}
+                </div>
+              ))}
+              {/* Bottom border after last item */}
+              <div className="border-t border-gray-200" />
+            </nav>
+            {/* Contact info (hidden in topbar on mobile) */}
+            <div className="px-[20px] pt-8 pb-6 space-y-6">
               <a
-                href="/kosik"
-                className="nav-link block px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors"
+                href="mailto:info@samfujera.cz"
+                className="flex items-center gap-3 text-[14px] text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)] underline-offset-4"
               >
-                Košík
+                <Mail className="size-[18px] text-gray-300" strokeWidth={1.5} />
+                info@samfujera.cz
               </a>
+              <a
+                href="tel:+420728137626"
+                className="flex items-center gap-3 text-[14px] text-[rgb(230,188,145)] hover:text-[rgb(245,210,170)] transition-colors underline decoration-[rgba(230,188,145,0.5)] underline-offset-4"
+              >
+                <Phone className="size-[18px] text-gray-300" strokeWidth={1.5} />
+                + 420 728 137 626
+              </a>
+              <span className="flex items-center gap-3 text-[14px] text-gray-400">
+                <Info className="size-[18px] text-gray-300" strokeWidth={1.5} />
+                Volejte pondělí-pátek 10.00-17.00 hodin
+              </span>
             </div>
           </div>
         </div>
