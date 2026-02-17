@@ -54,6 +54,15 @@
   color: rgb(6, 93, 77);
 }
 
+.public-h2-lg {
+  font-family: var(--font-heading);
+  font-size: 3.09rem; /* ~49.5px, 110% variant */
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: rgb(6, 93, 77);
+}
+
 .public-h2-sm {
   font-family: var(--font-heading);
   font-size: 2.53rem; /* ~40.5px, 90% variant */
@@ -74,10 +83,29 @@
 /* Body text */
 .public-body {
   font-family: var(--font-body);
-  font-size: 1.075rem; /* 17.2px */
+  font-size: 1.075rem; /* 17.2px — base 100% */
   font-weight: 200;
   line-height: 1.8;
-  color: rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.01em;
+  color: #000;
+}
+
+.public-body-110 {
+  font-family: var(--font-body);
+  font-size: 1.1825rem; /* 17.2px × 1.1 = ~18.9px */
+  font-weight: 200;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  color: #000;
+}
+
+.public-body-120 {
+  font-family: var(--font-body);
+  font-size: 1.3125rem; /* ~21px, 120% variant */
+  font-weight: 200;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  color: #000;
 }
 
 .public-lead {
@@ -113,39 +141,69 @@
   color: rgb(44, 91, 45);
 }
 
-/* Inline: strong inside body */
-.public-body strong {
+/* Inline: strong inside body — always 120% size */
+.public-body strong,
+.public-body-110 strong,
+.public-body-120 strong {
   font-weight: 500;
+  font-size: 1.3125rem; /* 120% = ~21px */
+  letter-spacing: 0.004em;
   color: rgba(0, 0, 0, 0.9);
 }
 
 /* Inline: em inside body */
-.public-body em {
+.public-body em,
+.public-body-110 em,
+.public-body-120 em {
   font-weight: 200;
   font-style: italic;
 }
 
 /* Inline: links inside body */
-.public-body a {
+.public-body a,
+.public-body-110 a,
+.public-body-120 a {
   font-weight: 500;
   font-style: italic;
   text-decoration: underline;
   color: rgba(0, 0, 0, 0.9);
 }
 
+/* Lists with arrow markers */
+.public-list {
+  list-style: none;
+  padding-left: 2.5rem;
+  margin-left: 20px;
+}
+.public-list li::before {
+  content: "›";
+  display: inline-block;
+  width: 2.5rem;
+  margin-left: -2.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
 /* CTA buttons (outline style, matches original) */
 .public-cta {
-  display: inline-block;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(230, 188, 145);
+  border-radius: 5px;
   color: rgba(0, 0, 0, 0.9);
   font-family: var(--font-heading);
-  font-size: 0.75rem; /* 12px */
+  font-size: 1rem; /* 16px */
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 0.625rem 1.5rem;
+  padding: 1.3rem 2rem 1.2rem; /* ~21px 32px 19px */
+  line-height: 1;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  min-width: 260px;
+  text-align: center;
   transition: background-color 0.2s;
 }
 .public-cta:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.9);
 }
