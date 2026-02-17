@@ -54,6 +54,7 @@ export function PublicNav({ currentPath }: PublicNavProps) {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const moreRef = useRef<HTMLDivElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -121,6 +122,20 @@ export function PublicNav({ currentPath }: PublicNavProps) {
     setOpenDropdown((prev) => (prev === label ? null : label));
   }
 
+  function handleDropdownEnter(label: string) {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setOpenDropdown(label);
+  }
+
+  function handleDropdownLeave() {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150);
+  }
+
   // Visible items in the nav bar
   const visibleItems = mainNavItems.slice(0, visibleCount);
   // Overflow items that go into "Více"
@@ -156,20 +171,50 @@ export function PublicNav({ currentPath }: PublicNavProps) {
               <div
                 key={item.label}
                 ref={(el) => { itemRefs.current[index] = el; }}
-                className={`relative shrink-0 ${index >= visibleCount ? "invisible absolute" : ""}`}
+                className={`flex items-center shrink-0 ${index >= visibleCount ? "invisible absolute" : ""}`}
                 style={index >= visibleCount ? { pointerEvents: "none", position: "absolute", opacity: 0 } : undefined}
               >
                 {item.children ? (
-                  <button
-                    type="button"
-                    onClick={() => toggleDropdown(item.label)}
-                    className={`nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center whitespace-nowrap ${
-                      isActive(item) ? "active" : ""
-                    } nav-separator`}
-                  >
-                    {item.label}
-                    <ChevronDown className="size-3.5 ml-[3px] relative -top-px" strokeWidth={2.5} />
-                  </button>
+                  <>
+                    {/* Relative wrapper just for button + dropdown (no separator) */}
+                    <div
+                      className="relative"
+                      onMouseEnter={() => handleDropdownEnter(item.label)}
+                      onMouseLeave={handleDropdownLeave}
+                    >
+                      {/* Invisible hover zone — extends around button and bridges to dropdown */}
+                      <div className="absolute -inset-x-3 -top-2 -bottom-2 z-40" />
+                      <a
+                        href={item.href}
+                        className={`relative z-40 nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center whitespace-nowrap ${
+                          isActive(item) ? "active" : ""
+                        }`}
+                      >
+                        {item.label}
+                        <ChevronDown className="size-3.5 ml-[3px] relative -top-px" strokeWidth={2.5} />
+                      </a>
+
+                      {/* Dropdown */}
+                      {index < visibleCount && openDropdown === item.label && (
+                        <div className="absolute top-full left-[calc(50%-15px)] mt-[1px] z-50">
+                          <div className="absolute top-0 left-[15px] -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-b-[5px] border-l-transparent border-r-transparent border-b-[#222]" />
+                          <div className="bg-[#222] py-3 px-5 min-w-48 mt-[5px]">
+                            {item.children.map((child) => (
+                              <a
+                                key={child.href}
+                                href={child.href}
+                                className="block py-2 text-[14px] font-light uppercase tracking-wider text-white/80 hover:text-[#e6bc91] transition-colors whitespace-nowrap"
+                              >
+                                {child.label}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {/* Separator outside the relative wrapper */}
+                    <span className="nav-separator-after" />
+                  </>
                 ) : (
                   <a
                     href={item.href}
@@ -180,63 +225,59 @@ export function PublicNav({ currentPath }: PublicNavProps) {
                     {item.label}
                   </a>
                 )}
-
-                {/* Dropdown for items with children (only visible ones) */}
-                {index < visibleCount && item.children && openDropdown === item.label && (
-                  <div className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg py-2 min-w-48 z-50">
-                    {item.children.map((child) => (
-                      <a
-                        key={child.href}
-                        href={child.href}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                      >
-                        {child.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
 
             {/* "Více" overflow menu — always visible */}
-            <div ref={moreRef} className="relative shrink-0">
+            <div
+              ref={moreRef}
+              className="relative shrink-0"
+              onMouseEnter={() => handleDropdownEnter("__more__")}
+              onMouseLeave={handleDropdownLeave}
+            >
+              {/* Invisible hover zone */}
+              <div className="absolute -inset-x-3 -top-2 -bottom-2 z-40" />
               <button
                 type="button"
                 onClick={() => toggleDropdown("__more__")}
-                className="nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center whitespace-nowrap"
+                className="relative z-40 nav-link px-0 py-2 text-[15.5px] font-light uppercase tracking-wide transition-colors flex items-center whitespace-nowrap"
               >
                 Více
                 <ChevronDown className="size-3.5 ml-[3px] relative -top-px" strokeWidth={2.5} />
               </button>
 
               {openDropdown === "__more__" && (
-                <div className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg py-2 min-w-48 z-50">
-                  {moreDropdownItems.map((item) =>
-                    item.children ? (
-                      <div key={item.label}>
-                        <span className="block px-4 py-2 text-sm font-medium text-gray-900">
+                <div className="absolute top-full left-[calc(50%-15px)] mt-[1px] z-50">
+                  {/* Arrow — 15px from left edge = centered on nav item */}
+                  <div className="absolute top-0 left-[15px] -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-b-[5px] border-l-transparent border-r-transparent border-b-[#222]" />
+                  <div className="bg-[#222] py-3 px-5 min-w-48 mt-[5px]">
+                    {moreDropdownItems.map((item) =>
+                      item.children ? (
+                        <div key={item.label}>
+                          <span className="block py-1.5 text-[14px] font-light uppercase tracking-wider text-white">
+                            {item.label}
+                          </span>
+                          {item.children.map((child) => (
+                            <a
+                              key={child.href}
+                              href={child.href}
+                              className="block py-1 pl-4 text-[14px] font-light uppercase tracking-wider text-white/80 hover:text-[#e6bc91] transition-colors whitespace-nowrap"
+                            >
+                              {child.label}
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          className="block py-2 text-[14px] font-light uppercase tracking-wider text-white/80 hover:text-[#e6bc91] transition-colors whitespace-nowrap"
+                        >
                           {item.label}
-                        </span>
-                        {item.children.map((child) => (
-                          <a
-                            key={child.href}
-                            href={child.href}
-                            className="block px-6 py-1.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                          >
-                            {child.label}
-                          </a>
-                        ))}
-                      </div>
-                    ) : (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                      >
-                        {item.label}
-                      </a>
-                    )
-                  )}
+                        </a>
+                      )
+                    )}
+                  </div>
                 </div>
               )}
             </div>

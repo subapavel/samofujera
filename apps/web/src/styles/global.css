@@ -21,7 +21,8 @@
   color: rgb(230, 188, 145);
 }
 
-.nav-separator::after {
+.nav-separator::after,
+.nav-separator-after::after {
   content: "/";
   color: rgba(255, 255, 255, 0.8);
   margin-left: 0.625rem;
