@@ -28,3 +28,124 @@
   margin-left: 0.625rem;
   margin-right: 0.625rem;
 }
+
+/* ========================================
+   Public content typography
+   Matches samofujera.cz 1:1
+   DO NOT apply to nav/topbar (already migrated)
+   ======================================== */
+
+/* Headings */
+.public-h1 {
+  font-family: var(--font-heading);
+  font-size: 3.44rem; /* 55px */
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.public-h2 {
+  font-family: var(--font-heading);
+  font-size: 2.81rem; /* 45px */
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.public-h2-sm {
+  font-family: var(--font-heading);
+  font-size: 2.53rem; /* ~40.5px, 90% variant */
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.public-h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem; /* 20px */
+  font-weight: 300;
+  line-height: 1.55;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* Body text */
+.public-body {
+  font-family: var(--font-body);
+  font-size: 1.075rem; /* 17.2px */
+  font-weight: 200;
+  line-height: 1.8;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.public-lead {
+  font-family: var(--font-body);
+  font-size: 1.18rem; /* 18.9px */
+  font-weight: 200;
+  line-height: 1.8;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* Blockquote */
+.public-blockquote {
+  font-family: var(--font-body);
+  font-size: 1.375rem; /* 22px */
+  font-weight: 300;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+}
+
+/* Footer text */
+.public-footer-text {
+  font-family: var(--font-body);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 200;
+  line-height: 1.6;
+}
+
+/* Inline: strong inside headings */
+.public-h1 strong,
+.public-h2 strong {
+  font-weight: 600;
+  color: rgb(44, 91, 45);
+}
+
+/* Inline: strong inside body */
+.public-body strong {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* Inline: em inside body */
+.public-body em {
+  font-weight: 200;
+  font-style: italic;
+}
+
+/* Inline: links inside body */
+.public-body a {
+  font-weight: 500;
+  font-style: italic;
+  text-decoration: underline;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* CTA buttons (outline style, matches original) */
+.public-cta {
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.9);
+  font-family: var(--font-heading);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.625rem 1.5rem;
+  transition: background-color 0.2s;
+}
+.public-cta:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
