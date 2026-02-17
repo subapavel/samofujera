@@ -19,7 +19,9 @@
 
   /* Typography */
   --font-sans: "Inter", sans-serif;
-  --font-heading: "Playfair Display", serif;
+  --font-heading: "Josefin Sans", sans-serif;
+  --font-body: "Merriweather", serif;
+  --font-ui: "Open Sans", sans-serif;
 
   /* Custom breakpoints */
   --breakpoint-nav: 900px;
