@@ -140,12 +140,12 @@ export function PublicNav({ currentPath }: PublicNavProps) {
         fontFamily: "'Josefin Sans', sans-serif",
       }}
     >
-      <div className="max-w-[1108px] mx-auto px-4 nav:px-8">
-        <div className="flex items-center gap-[138px] nav:gap-[40px] py-[25px] nav:py-[21px]">
+      <div className="max-w-[1128px] mx-auto px-4 min-[600px]:px-[31px] nav:px-[42px]">
+        <div className="flex items-center gap-[138px] nav:gap-[40px] py-[24px] min-[600px]:py-[23px] nav:py-[21px]">
           {/* Logo */}
           <a
             href="/"
-            className="text-[16px] nav:text-[21px] font-light text-white whitespace-nowrap -ml-[6px] nav:ml-[-8px] tracking-tight nav:tracking-normal"
+            className="text-[16px] min-[600px]:text-[18px] nav:text-[21px] font-light text-white whitespace-nowrap -ml-[6px] nav:ml-[-8px] tracking-tight nav:tracking-normal"
           >
             Sámo Fujera
           </a>
