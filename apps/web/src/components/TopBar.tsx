@@ -42,7 +42,7 @@ export function TopBar() {
 
   return (
     <div
-      className="relative bg-repeat text-white text-[13px] font-medium py-2.5"
+      className="relative bg-repeat text-white text-[13px] font-medium py-[10.5px]"
       style={{ backgroundImage: "url('/images/bg-pattern-green.jpg')" }}
     >
       <div className="max-w-7xl mx-auto px-4 nav:px-8 flex items-center justify-between">
