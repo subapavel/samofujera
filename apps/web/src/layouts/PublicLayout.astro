@@ -42,27 +42,31 @@ const currentPath = Astro.url.pathname;
       <slot />
     </main>
 
-    <footer
-      class="bg-cover bg-center text-white"
-      style="background-image: url('/images/bg-pattern-green.jpg');"
-    >
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
-        <p class="public-footer-text mb-6 opacity-90">
-          Tento prostor vznikl jako místo pro klidné zkoumání života, těla a&nbsp;souvislostí, které běžně zůstávají stranou.
-        </p>
-        <p class="public-footer-text font-medium mb-6">
-          Sámo Fujera &ndash; živá setkání, přednášky, konzultace a&nbsp;autorská tvorba.
-        </p>
-        <nav class="flex flex-wrap items-center justify-center gap-4 text-xs uppercase tracking-wider mb-6">
-          <a href="/muj-ucet" class="hover:underline">Vstup pro členy</a>
-          <a href="/kontakt" class="hover:underline">Kontakt</a>
-          <a href="/zasady-ochrany-osobnich-udaju" class="hover:underline">Zásady ochrany osobních údajů</a>
-          <a href="/obchodni-podminky" class="hover:underline">Obchodní podmínky</a>
-        </nav>
-        <p class="public-footer-text text-xs opacity-70">
-          &copy; {new Date().getFullYear()} Sámo Fujera
-        </p>
-      </div>
-    </footer>
+    <div class="px-2 pb-2 nav:px-4 nav:pb-4">
+      <footer
+        class="bg-repeat"
+        style="background-image: url('/images/bg-pattern-green.jpg');"
+      >
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-[hsla(0,0%,100%,.7)] font-extralight" style="font-family: var(--font-body);">
+          <p class="text-[1.075rem] leading-[1.8] mb-6">
+            Tento prostor vznikl jako místo pro klidné zkoumání života, těla a&nbsp;souvislostí, které běžně zůstávají stranou.
+          </p>
+          <p class="text-[1.075rem] leading-[1.8] mb-8">
+            Sámo Fujera &ndash; živá setkání, přednášky, konzultace a&nbsp;autorská tvorba.
+          </p>
+          <nav class="flex flex-col items-center gap-3 mb-8">
+            <a href="/muj-ucet" class="text-[1.14rem] font-normal underline decoration-[0.5px] underline-offset-2 hover:opacity-80">Vstoupit do členské části</a>
+            <a href="/kontakt" class="text-[1.14rem] font-normal underline decoration-[0.5px] underline-offset-2 hover:opacity-80">Kontakt</a>
+            <a href="/zasady-ochrany-osobnich-udaju" class="text-sm underline decoration-[0.5px] underline-offset-2 hover:opacity-80">Zásady ochrany osobních údajů</a>
+            <a href="/obchodni-podminky" class="text-sm underline decoration-[0.5px] underline-offset-2 hover:opacity-80">Obchodní podmínky</a>
+          </nav>
+          <p class="text-sm opacity-70">
+            &copy; {new Date().getFullYear()} Sámo Fujera
+            <span class="mx-2">·</span>
+            <a href="#" class="underline decoration-[0.5px] underline-offset-2 hover:opacity-80">Cookies</a>
+          </p>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>
