@@ -45,7 +45,7 @@ export function TopBar() {
       className="relative bg-repeat text-white text-[13px] font-medium py-[10.5px]"
       style={{ backgroundImage: "url('/images/bg-pattern-green.jpg')" }}
     >
-      <div className="max-w-7xl mx-auto px-4 nav:px-8 flex items-center justify-between">
+      <div className="max-w-[1128px] mx-auto px-4 nav:pl-[12px] nav:pr-[32px] flex items-center justify-between">
         <div className="hidden nav:flex items-center gap-4">
           <a
             href="tel:+420728137626"
