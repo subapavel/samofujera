@@ -6,6 +6,9 @@ import { $insertNodes, $getSelection, $isRangeSelection, $createParagraphNode } 
 import { $createImageNode } from "../nodes/ImageNode";
 import { $createCTAButtonNode } from "../nodes/CTAButtonNode";
 import { $createSeparatorNode } from "../nodes/SeparatorNode";
+import { $createColumnsNode } from "../nodes/ColumnsNode";
+import { $createGalleryNode } from "../nodes/GalleryNode";
+import { $createContactFormNode } from "../nodes/ContactFormNode";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -49,6 +52,36 @@ export function InsertBlockPlugin() {
       insert: () => {
         editor.update(() => {
           const node = $createSeparatorNode();
+          $insertNodes([node, $createParagraphNode()]);
+        });
+      },
+    },
+    {
+      label: "Sloupce",
+      description: "2 nebo 3 sloupce vedle sebe",
+      insert: () => {
+        editor.update(() => {
+          const node = $createColumnsNode();
+          $insertNodes([node, $createParagraphNode()]);
+        });
+      },
+    },
+    {
+      label: "Galerie",
+      description: "Mrizka obrazku",
+      insert: () => {
+        editor.update(() => {
+          const node = $createGalleryNode();
+          $insertNodes([node, $createParagraphNode()]);
+        });
+      },
+    },
+    {
+      label: "Kontaktni formular",
+      description: "Formular pro odesilani zprav",
+      insert: () => {
+        editor.update(() => {
+          const node = $createContactFormNode();
           $insertNodes([node, $createParagraphNode()]);
         });
       },
