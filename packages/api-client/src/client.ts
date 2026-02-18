@@ -1,6 +1,13 @@
-export const BASE_URL =
-  (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) ||
-  "http://localhost:8080";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+function getBaseUrl(): string {
+  if (typeof process !== "undefined" && process.env?.["NEXT_PUBLIC_API_URL"]) {
+    return process.env["NEXT_PUBLIC_API_URL"] as string;
+  }
+  return "http://localhost:8080";
+}
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */
+
+export const BASE_URL = getBaseUrl();
 
 export class ApiError extends Error {
   constructor(
