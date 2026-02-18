@@ -26,7 +26,7 @@ import java.util.List;
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 2592000) // 30 days
 class SecurityConfig {
 
-    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:4321,http://localhost:5173}")
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private List<String> corsAllowedOrigins;
 
     @Bean
