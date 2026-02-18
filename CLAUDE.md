@@ -16,7 +16,7 @@ event flows, deployment config, design system, and roadmap.
 
 | Layer          | Technology                                              |
 |----------------|---------------------------------------------------------|
-| Frontend       | Astro, React 19, TanStack Router, TanStack Query        |
+| Frontend       | Next.js 16 (App Router), React 19, TanStack Query       |
 | UI Components  | shadcn/ui (customized brand theme)                      |
 | Styling        | Tailwind CSS 4 (CSS-based config, `@theme` directive)   |
 | i18n           | Lingui (ICU MessageFormat, cs/sk plurals)               |
@@ -26,7 +26,7 @@ event flows, deployment config, design system, and roadmap.
 | Payments       | Stripe (one-time + subscriptions)                       |
 | Storage        | Cloudflare R2 (files), Cloudflare Stream (video)        |
 | Email          | React Email templates, Resend (prod), Mailpit (dev)     |
-| Hosting        | Fly.io FRA (backend + Postgres + Redis), CF Pages (FE)  |
+| Hosting        | Fly.io FRA (backend + Postgres + Redis), CF Workers (FE) |
 | Monorepo       | Turborepo + pnpm                                        |
 | CI/CD          | GitHub Actions                                          |
 
@@ -60,9 +60,9 @@ Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
 
 Scopes (warning-level — flexible):
 - `backend`    — Spring Boot application
-- `web`        — Astro public site
-- `admin`      — Admin section (/admin, React SPA inside Astro)
-- `customer`   — Customer dashboard (/muj-ucet, React SPA inside Astro)
+- `web`        — Next.js frontend app
+- `admin`      — Admin section (/admin)
+- `customer`   — Customer dashboard (/muj-ucet)
 - `ui`         — Shared shadcn/ui components
 - `api-client` — Shared typed API client
 - `emails`     — React Email templates
@@ -93,17 +93,15 @@ All database access through JOOQ generated classes. Type-safe queries only.
 ### 9. pnpm only
 Use pnpm for all frontend/monorepo operations. No npm, no yarn.
 
-### 10. SPA catch-all routes must use `prerender = false`
-The admin (`/admin`) and customer (`/muj-ucet`) sections are React SPAs served
-from Astro `[...all].astro` catch-all pages. These MUST have `export const prerender = false`
-— never `prerender = true` with `getStaticPaths`. With `prerender = true`, only
-explicitly listed paths work; direct browser navigation to any sub-route (e.g.
-`/admin/media`) returns Astro 404. With `prerender = false`, Astro serves the
-SPA shell for every sub-path and TanStack Router handles client-side routing.
+### 10. Next.js App Router conventions
+The frontend uses Next.js 16 App Router with route groups:
+- `(public)` — marketing/SEO pages (server components)
+- `(auth)` — login, register, password reset pages
+- `(dashboard)` — admin + customer sections (client components with TanStack Query)
 
-Reference files:
-- `apps/web/src/pages/admin/[...all].astro`
-- `apps/web/src/pages/muj-ucet/[...all].astro`
+Middleware (`src/middleware.ts`) protects `/admin` and `/muj-ucet` by checking
+the `SESSION` cookie. `AuthGuard` component validates the session client-side
+and checks roles for admin access.
 
 ## Code Conventions
 
@@ -119,9 +117,11 @@ Reference files:
 ### Frontend (TypeScript/React)
 - Strict TypeScript — no `any`, no `// @ts-ignore`
 - React 19 functional components only
-- TanStack Query for all server state
-- TanStack Router for SPA routing (admin, customer dashboard)
-- Astro pages for public/SEO content
+- Next.js App Router for all routing (file-based)
+- TanStack Query for client-side server state (dashboard sections)
+- Server components for public/SEO pages, client components for interactive dashboard
+- `useRouter()` / `usePathname()` / `useParams()` from `next/navigation`
+- `Link` from `next/link` for all internal navigation
 - shadcn/ui components from shared `packages/ui/`
 - Named exports, barrel files via `index.ts`
 
@@ -173,7 +173,7 @@ samofujera/
 ├── docs/plans/                  # Design docs and implementation plans
 ├── .claude/skills/              # Custom project skills
 ├── apps/
-│   ├── web/                     # Astro app (public + /admin + /muj-ucet React SPAs)
+│   ├── web/                     # Next.js 16 app (public + /admin + /muj-ucet)
 │   └── backend/                 # Spring Boot 4 + Modulith
 ├── packages/
 │   ├── ui/                      # Shared shadcn/ui components
@@ -201,8 +201,7 @@ samofujera/
 - `stripe-webhook` — Add Stripe webhook handler
 
 **Frontend Generators:**
-- `astro-page` — Astro page with layout, i18n, SEO
-- `tanstack-route` — TanStack Router route with loader and type-safe params
+- `nextjs-page` — Next.js App Router page with metadata, layout, i18n
 - `tanstack-query-hook` — TanStack Query hook (query + mutation + optimistic updates)
 - `react-component` — React 19 component following project patterns
 - `shadcn-component` — Customize/extend shadcn/ui component for project theme
