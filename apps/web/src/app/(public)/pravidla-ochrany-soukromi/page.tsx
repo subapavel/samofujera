@@ -1,0 +1,144 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pravidla ochrany soukromí",
+  description: "Jaká jsou pravidla ochrany soukromí.",
+};
+
+export default function PravidlaOchranySoukromiPage() {
+  return (
+    <section
+      className="bg-repeat px-6 sm:px-12 lg:px-16 pt-[81px] sm:pt-[97px] pb-12 sm:pb-16 text-center"
+      style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
+    >
+      <div className="max-w-[935px] mx-auto px-5">
+        <section>
+          <h2 className="public-h2-sm pb-3.5">
+            Zásady ochrany osobních údajů
+          </h2>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">
+            1. Správce osobních údajů
+          </h2>
+          <div className="space-y-4 public-body-110 text-justify">
+            <p>
+              Správcem osobních údajů je Sámo Fujera, web www.samofujera.cz.
+              Objednávky a&nbsp;administrativu vyřizuje paní Marcelka. Nejsem
+              plátce DPH. Neposkytuji zdravotnické služby.
+            </p>
+          </div>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">
+            2. Jaké osobní údaje zpracováváme
+          </h2>
+          <div className="space-y-4 public-body-110 text-justify">
+            <p>
+              Zpracováváme pouze údaje, které nám dobrovolně poskytnete
+              prostřednictvím:
+            </p>
+            <ul className="public-list space-y-1 mt-4">
+              <li>Kontaktních formulářů</li>
+              <li>Přihlášek na akce</li>
+              <li>Registrace do uzavřeného obsahu</li>
+              <li>E-mailové komunikace</li>
+            </ul>
+            <p>
+              Typy údajů: jméno, příjmení, e-mailová adresa, telefonní číslo
+              a&nbsp;poznámky z&nbsp;formulářů.
+            </p>
+          </div>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">3. Účel zpracování</h2>
+          <div className="space-y-4 public-body-110 text-justify">
+            <p>Osobní údaje používáme výhradně pro:</p>
+            <ul className="public-list space-y-1 mt-4">
+              <li>Odpovědi na dotazy a&nbsp;přihlášky</li>
+              <li>Komunikaci ohledně služeb a&nbsp;akcí</li>
+              <li>Zasílání organizačních informací</li>
+              <li>
+                Informování registrovaných uživatelů o&nbsp;plánovaných
+                aktivitách
+              </li>
+            </ul>
+            <p>
+              Údaje{" "}
+              <strong>nepoužíváme k&nbsp;nevyžádanému marketingu</strong>{" "}
+              a&nbsp;
+              <strong>nepředáváme je třetím stranám</strong>.
+            </p>
+          </div>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">4. Doba uchování údajů</h2>
+          <p className="public-body-110 text-justify">
+            Údaje uchováváme pouze po dobu nezbytnou pro vyřízení požadavků,
+            vedení registrací nebo plnění zákonných povinností. Poté jsou
+            bezpečně smazány.
+          </p>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">5. Ochrana údajů</h2>
+          <p className="public-body-110 text-justify">
+            Osobní údaje jsou chráněny technickými a&nbsp;organizačními
+            opatřeními, která brání jejich zneužití, ztrátě nebo
+            neoprávněnému přístupu.
+          </p>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">6. Práva uživatelů</h2>
+          <div className="space-y-4 public-body-110 text-justify">
+            <p>Podle GDPR máte právo:</p>
+            <ul className="public-list space-y-1 mt-4">
+              <li>Požádat o&nbsp;informace o&nbsp;zpracovávaných údajích</li>
+              <li>Požádat o&nbsp;opravu údajů</li>
+              <li>Požádat o&nbsp;výmaz údajů</li>
+              <li>Vznést námitku proti zpracování</li>
+              <li>Kdykoli odvolat souhlas</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">7. Souhlas</h2>
+          <p className="public-body-110 text-justify">
+            Odesláním formuláře potvrzujete, že jste se seznámili s&nbsp;těmito
+            zásadami a&nbsp;souhlasíte se zpracováním údajů.
+          </p>
+        </section>
+
+        <hr className="border-black/20 -mx-20 mt-5 mb-5" />
+
+        <section>
+          <h2 className="public-h2-sm pb-3.5">8. Závěrečné ustanovení</h2>
+          <p className="public-body-110 text-justify">
+            Tyto zásady jsou platné od data zveřejnění a&nbsp;mohou být průběžně
+            aktualizovány v&nbsp;souladu s&nbsp;právními požadavky.
+          </p>
+        </section>
+      </div>
+    </section>
+  );
+}
