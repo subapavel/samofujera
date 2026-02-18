@@ -42,10 +42,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo build
         env:
-          PUBLIC_API_URL: https://samofujera-api.fly.dev
-      - name: deploy
+          NEXT_PUBLIC_API_URL: https://samofujera-api.fly.dev
+      - name: Build for Cloudflare
+        run: cd apps/web && npx opennextjs-cloudflare build
+      - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy apps/web/dist --project-name=samofujera
+          workingDirectory: apps/web
+          command: deploy
