@@ -39,5 +39,8 @@ coverage/
 test-results/
 playwright-report/
 
+# Worktrees
+.worktrees/
+
 # Misc
 *.log
