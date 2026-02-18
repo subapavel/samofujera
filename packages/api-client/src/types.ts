@@ -365,3 +365,56 @@ export interface MediaItemListResponse {
 export interface UpdateMediaItemRequest {
   altText?: string;
 }
+
+// Pages
+
+export interface PageResponse {
+  id: string;
+  slug: string;
+  title: string;
+  status: string;
+  pageType: string;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  ogImageId: string | null;
+  sortOrder: number;
+  showInNav: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+}
+
+export interface PageDetailResponse extends PageResponse {
+  content: Record<string, unknown> | null;
+}
+
+export interface PageListResponse {
+  items: PageResponse[];
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface CreatePageRequest {
+  slug: string;
+  title: string;
+  pageType?: string;
+}
+
+export interface UpdatePageRequest {
+  slug: string;
+  title: string;
+  content: Record<string, unknown> | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  ogImageId?: string | null;
+}
+
+export interface PublicPageResponse {
+  slug: string;
+  title: string;
+  content: Record<string, unknown> | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+}
