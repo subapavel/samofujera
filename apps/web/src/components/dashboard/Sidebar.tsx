@@ -8,6 +8,7 @@ const adminNavItems = [
   { label: "Users", href: "/admin/users" },
   { label: "Produkty", href: "/admin/produkty" },
   { label: "Kategorie", href: "/admin/produkty/kategorie" },
+  { label: "Stranky", href: "/admin/stranky" },
   { label: "Media", href: "/admin/media" },
   { label: "Objednavky", href: "/admin/objednavky" },
 ];
