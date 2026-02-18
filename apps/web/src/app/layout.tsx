@@ -18,7 +18,7 @@ const josefinSans = Josefin_Sans({
 
 const merriweather = Merriweather({
   subsets: ["latin", "latin-ext"],
-  weight: ["200", "300", "400", "500"],
+  weight: ["300", "400", "700"],
   style: ["normal", "italic"],
   variable: "--font-body",
   display: "swap",

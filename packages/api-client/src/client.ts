@@ -1,4 +1,6 @@
-const BASE_URL = import.meta.env?.PUBLIC_API_URL ?? "http://localhost:8080";
+export const BASE_URL =
+  (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) ||
+  "http://localhost:8080";
 
 export class ApiError extends Error {
   constructor(

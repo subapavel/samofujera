@@ -1,12 +1,10 @@
-import { apiFetch } from "./client";
+import { apiFetch, BASE_URL } from "./client";
 import type {
   ApiResponse,
   MediaItemResponse,
   MediaItemListResponse,
   UpdateMediaItemRequest,
 } from "./types";
-
-const BASE_URL = import.meta.env?.PUBLIC_API_URL ?? "http://localhost:8080";
 
 export const mediaApi = {
   getItems: (params?: {
