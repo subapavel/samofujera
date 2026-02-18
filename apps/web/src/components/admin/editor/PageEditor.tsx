@@ -15,6 +15,10 @@ import type { EditorState, SerializedEditorState } from "lexical";
 
 import { editorTheme } from "./theme";
 import { ToolbarPlugin } from "./plugins/ToolbarPlugin";
+import { InsertBlockPlugin } from "./plugins/InsertBlockPlugin";
+import { ImageNode } from "./nodes/ImageNode";
+import { CTAButtonNode } from "./nodes/CTAButtonNode";
+import { SeparatorNode } from "./nodes/SeparatorNode";
 
 interface PageEditorProps {
   initialContent: SerializedEditorState | null;
@@ -25,7 +29,15 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
   const initialConfig = {
     namespace: "PageEditor",
     theme: editorTheme,
-    nodes: [HeadingNode, ListNode, ListItemNode, LinkNode],
+    nodes: [
+      HeadingNode,
+      ListNode,
+      ListItemNode,
+      LinkNode,
+      ImageNode,
+      CTAButtonNode,
+      SeparatorNode,
+    ],
     editorState: initialContent ? JSON.stringify(initialContent) : undefined,
     onError: (error: Error) => console.error("Lexical error:", error),
   };
@@ -49,6 +61,7 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
               }
               ErrorBoundary={LexicalErrorBoundary}
             />
+            <InsertBlockPlugin />
           </div>
         </div>
         <HistoryPlugin />
