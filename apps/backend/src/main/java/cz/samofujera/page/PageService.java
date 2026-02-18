@@ -2,6 +2,8 @@ package cz.samofujera.page;
 
 import cz.samofujera.page.internal.PageRepository;
 import cz.samofujera.shared.exception.NotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
@@ -12,12 +14,12 @@ import java.util.UUID;
 @Service
 public class PageService {
 
-    private final PageRepository pageRepository;
-    private final ObjectMapper objectMapper;
+    private static final ObjectMapper JSON = new ObjectMapper();
 
-    PageService(PageRepository pageRepository, ObjectMapper objectMapper) {
+    private final PageRepository pageRepository;
+
+    PageService(PageRepository pageRepository) {
         this.pageRepository = pageRepository;
-        this.objectMapper = objectMapper;
     }
 
     public PageDtos.PageListResponse getPages(String status, String type, String search, int page, int limit) {
@@ -111,16 +113,16 @@ public class PageService {
     private Object parseContent(JSONB jsonb) {
         if (jsonb == null || jsonb.data() == null) return null;
         try {
-            return objectMapper.readTree(jsonb.data());
-        } catch (Exception e) {
+            return JSON.readTree(jsonb.data());
+        } catch (JsonProcessingException e) {
             return null;
         }
     }
 
     private String toJsonString(Object content) {
         try {
-            return objectMapper.writeValueAsString(content);
-        } catch (Exception e) {
+            return JSON.writeValueAsString(content);
+        } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid content JSON");
         }
     }
