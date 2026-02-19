@@ -49,6 +49,15 @@ public class PageService {
         );
     }
 
+    public PageDtos.PublicPageResponse getPageBySlug(String slug) {
+        var row = pageRepository.findBySlug(slug)
+            .orElseThrow(() -> new NotFoundException("Page not found"));
+        return new PageDtos.PublicPageResponse(
+            row.slug(), row.title(), rawContent(row.content()),
+            row.metaTitle(), row.metaDescription()
+        );
+    }
+
     @Transactional
     public PageDtos.PageDetailResponse createPage(PageDtos.CreatePageRequest request, UUID createdBy) {
         var pageType = request.pageType() != null ? request.pageType() : "CUSTOM";

@@ -11,6 +11,9 @@ import { SectionList, type SectionListHandle } from "./SectionList";
 import type { SectionEditorHandle } from "./PageEditor";
 import type { PageSection, SectionPageContent, TextBlock } from "./types";
 import { createEmptySection, createTextBlock } from "./types";
+import { TopBar } from "../../../components/nav/TopBar";
+import { PublicNav } from "../../../components/nav/PublicNav";
+import { Footer } from "../../../components/nav/Footer";
 
 /** Parse content into sections (with backward compat for old formats). */
 function parseSections(content: Record<string, unknown> | null): PageSection[] {
@@ -228,6 +231,7 @@ export function FullPageEditor() {
       <div className="fixed inset-0 z-50 flex flex-col bg-white">
         {/* Toolbar */}
         <EditorToolbar
+          slug={slug}
           title={title}
           onTitleChange={setTitle}
           status={status}
@@ -245,20 +249,36 @@ export function FullPageEditor() {
           onSettingsToggle={() => setShowSettings(!showSettings)}
         />
 
-        {/* Editor content area — scrollable, mimics public page */}
-        <div
-          className="flex-1 overflow-y-auto overflow-x-hidden bg-repeat pt-12"
-          style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
-        >
-          <div className="pt-8 pb-12">
-            <SectionList
-              ref={sectionListRef}
-              sections={sections}
-              onSectionsChange={setSections}
-              onUndoRedoChange={handleSectionListUndoRedoChange}
-              onFocusedSectionChange={setFocusedSectionIndex}
-              textEditorRefs={textEditorRefs}
-            />
+        {/* Editor content area — scrollable, mimics public layout exactly */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-12">
+          <div className="flex flex-col min-h-full">
+            {/* Header preview (non-interactive, matches public layout) */}
+            <div className="pointer-events-none select-none opacity-90">
+              <TopBar />
+              <div className="px-2 mt-2 nav:mt-4 nav:px-4">
+                <PublicNav />
+              </div>
+            </div>
+
+            {/* Main content area — matches public layout */}
+            <main
+              className="flex-1 px-2 py-2 nav:px-4 nav:py-4 bg-repeat"
+              style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
+            >
+              <SectionList
+                ref={sectionListRef}
+                sections={sections}
+                onSectionsChange={setSections}
+                onUndoRedoChange={handleSectionListUndoRedoChange}
+                onFocusedSectionChange={setFocusedSectionIndex}
+                textEditorRefs={textEditorRefs}
+              />
+            </main>
+
+            {/* Footer preview (non-interactive) */}
+            <div className="pointer-events-none select-none opacity-90">
+              <Footer />
+            </div>
           </div>
         </div>
       </div>

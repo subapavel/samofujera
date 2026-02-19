@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { Button, Input } from "@samofujera/ui";
-import { ArrowLeft, Undo2, Redo2, Settings, Save } from "lucide-react";
+import { ArrowLeft, Undo2, Redo2, Settings, Save, Eye } from "lucide-react";
 import { PublishSplitButton } from "./PublishSplitButton";
 
 interface EditorToolbarProps {
+  slug: string;
   title: string;
   onTitleChange: (title: string) => void;
   status: string;
@@ -24,6 +25,7 @@ interface EditorToolbarProps {
 }
 
 export function EditorToolbar({
+  slug,
   title,
   onTitleChange,
   status,
@@ -88,6 +90,13 @@ export function EditorToolbar({
 
       {/* Divider */}
       <div className="h-6 w-px bg-[var(--border)]" />
+
+      {/* Preview */}
+      <Button variant="ghost" size="icon" asChild>
+        <Link href={`/pages/${slug}?preview=true`} target="_blank" title="Náhled">
+          <Eye className="h-4 w-4" />
+        </Link>
+      </Button>
 
       {/* Settings */}
       <Button variant="ghost" size="icon" onClick={onSettingsToggle}>
