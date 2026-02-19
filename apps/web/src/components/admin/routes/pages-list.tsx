@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FileText } from "lucide-react";
 import { pageAdminApi } from "@samofujera/api-client";
 import {
   Button,
@@ -49,6 +50,7 @@ export function PagesListPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSlug, setNewSlug] = useState("");
+  const [step, setStep] = useState<"template" | "title">("template");
 
   const pagesQuery = useQuery({
     queryKey: ["admin", "pages", { page, status: statusFilter, search }],
@@ -62,16 +64,62 @@ export function PagesListPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      pageAdminApi.createPage({
-        slug: newSlug,
+    mutationFn: async () => {
+      const response = await pageAdminApi.createPage({
+        slug: newSlug || slugify(newTitle),
         title: newTitle,
-      }),
+      });
+      // Set default section content with heading + placeholder text
+      const defaultContent = {
+        version: 1,
+        sections: [{
+          id: crypto.randomUUID(),
+          content: {
+            root: {
+              children: [
+                {
+                  type: "heading",
+                  tag: "h2",
+                  children: [{ type: "text", text: newTitle, format: 0, mode: "normal", style: "", detail: 0, version: 1 }],
+                  direction: "ltr",
+                  format: "",
+                  indent: 0,
+                  version: 1,
+                },
+                {
+                  type: "paragraph",
+                  children: [{ type: "text", text: "Vložte svůj text...", format: 0, mode: "normal", style: "", detail: 0, version: 1 }],
+                  direction: "ltr",
+                  format: "",
+                  indent: 0,
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "root",
+              version: 1,
+            },
+          },
+        }],
+      };
+      await pageAdminApi.updatePage(response.data.id, {
+        slug: newSlug || slugify(newTitle),
+        title: newTitle,
+        content: defaultContent as unknown as Record<string, unknown>,
+        metaTitle: null,
+        metaDescription: null,
+        ogImageId: null,
+      });
+      return response;
+    },
     onSuccess: (response) => {
       setShowCreateDialog(false);
       setNewTitle("");
       setNewSlug("");
-      router.push(`/admin/stranky/${response.data.id}`);
+      setStep("template");
+      router.push(`/admin/stranky/${response.data.id}/edit`);
     },
   });
 
@@ -93,13 +141,20 @@ export function PagesListPage() {
     setNewSlug(slugify(value));
   }
 
+  function handleOpenCreateDialog() {
+    setStep("template");
+    setNewTitle("");
+    setNewSlug("");
+    setShowCreateDialog(true);
+  }
+
   const data = pagesQuery.data?.data;
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Stránky</h2>
-        <Button onClick={() => setShowCreateDialog(true)}>Nová stránka</Button>
+        <Button onClick={handleOpenCreateDialog}>Nová stránka</Button>
       </div>
 
       {/* Filters */}
@@ -163,7 +218,7 @@ export function PagesListPage() {
                     <tr key={p.id} className="border-b border-[var(--border)] last:border-b-0">
                       <td className="px-4 py-3 font-medium">
                         <Link
-                          href={`/admin/stranky/${p.id}`}
+                          href={`/admin/stranky/${p.id}/edit`}
                           className="text-[var(--primary)] hover:underline"
                         >
                           {p.title}
@@ -182,7 +237,7 @@ export function PagesListPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <Link href={`/admin/stranky/${p.id}`}>
+                          <Link href={`/admin/stranky/${p.id}/edit`}>
                             <Button variant="outline" size="sm">
                               Upravit
                             </Button>
@@ -235,40 +290,48 @@ export function PagesListPage() {
 
       {/* Create Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Nová stránka</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium">Název</label>
+        {step === "template" ? (
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Nová stránka</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-4 py-4">
+              <button
+                type="button"
+                className="flex flex-col items-center gap-3 rounded-xl border-2 border-[var(--border)] p-6 transition-colors hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5"
+                onClick={() => setStep("title")}
+              >
+                <FileText className="h-10 w-10 text-[var(--muted-foreground)]" />
+                <span className="font-medium">Prázdná stránka</span>
+              </button>
+            </div>
+          </DialogContent>
+        ) : (
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Název stránky</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
               <Input
                 value={newTitle}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="Název stránky"
+                placeholder="Zadejte název stránky"
+                autoFocus
               />
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">Slug</label>
-              <Input
-                value={newSlug}
-                onChange={(e) => setNewSlug(e.target.value)}
-                placeholder="url-stranky"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-              Zrušit
-            </Button>
-            <Button
-              disabled={!newTitle.trim() || !newSlug.trim() || createMutation.isPending}
-              onClick={() => createMutation.mutate()}
-            >
-              Vytvořit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setStep("template")}>
+                Zpět
+              </Button>
+              <Button
+                disabled={!newTitle.trim() || createMutation.isPending}
+                onClick={() => createMutation.mutate()}
+              >
+                Vytvořit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
       </Dialog>
     </div>
   );

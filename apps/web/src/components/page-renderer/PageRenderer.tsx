@@ -19,6 +19,11 @@ interface SerializedNode {
   separatorStyle?: string;
 }
 
+interface SectionContent {
+  id: string;
+  content: Record<string, unknown> | null;
+}
+
 // Block-level node types that cannot be inside <p> tags
 const BLOCK_TYPES = new Set([
   "image", "cta-button", "separator",
@@ -46,6 +51,30 @@ function sectionType(node: SerializedNode): string {
 }
 
 export function PageRenderer({ content }: PageRendererProps) {
+  // Check for new section format
+  const c = content as Record<string, unknown>;
+  if (c?.version === 1 && Array.isArray(c?.sections)) {
+    const sections = c.sections as SectionContent[];
+    return (
+      <>
+        {sections.map((section) => {
+          const root = (section.content as Record<string, unknown>)?.root as { children: SerializedNode[] } | undefined;
+          if (!root?.children) return null;
+          return (
+            <div key={section.id}>
+              {root.children.map((node, i) => (
+                <section key={i} className={`page-block page-block--${sectionType(node)}`}>
+                  {renderNode(node, i)}
+                </section>
+              ))}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+
+  // Old single-state format (backward compat)
   const root = content?.root as { children: SerializedNode[] } | undefined;
   if (!root?.children) return null;
   return (
@@ -226,4 +255,3 @@ function SeparatorRenderer({ node }: { node: SerializedNode }) {
   }
   return <hr className="my-8 border-t border-[var(--border)]" />;
 }
-
