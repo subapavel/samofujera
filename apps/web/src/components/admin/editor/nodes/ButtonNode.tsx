@@ -12,18 +12,18 @@ import {
   $getNodeByKey,
 } from "lexical";
 
-export type CTAVariant = "primary" | "secondary";
+export type ButtonVariant = "primary" | "secondary";
 
-export type SerializedCTAButtonNode = Spread<
+export type SerializedButtonNode = Spread<
   {
     text: string;
     url: string;
-    variant: CTAVariant;
+    variant: ButtonVariant;
   },
   SerializedLexicalNode
 >;
 
-function CTAButtonComponent({
+function ButtonComponent({
   text,
   url,
   variant,
@@ -32,7 +32,7 @@ function CTAButtonComponent({
 }: {
   text: string;
   url: string;
-  variant: CTAVariant;
+  variant: ButtonVariant;
   nodeKey: NodeKey;
   editor: LexicalEditor;
 }) {
@@ -44,7 +44,7 @@ function CTAButtonComponent({
   function handleSave() {
     editor.update(() => {
       const node = $getNodeByKey(nodeKey);
-      if ($isCTAButtonNode(node)) {
+      if ($isButtonNode(node)) {
         node.setText(editText);
         node.setUrl(editUrl);
         node.setVariant(editVariant);
@@ -53,7 +53,7 @@ function CTAButtonComponent({
     setIsEditing(false);
   }
 
-  const variantClasses: Record<CTAVariant, string> = {
+  const variantClasses: Record<ButtonVariant, string> = {
     primary:
       "bg-[rgb(6,93,77)] text-white hover:bg-[rgb(5,78,64)] px-8 py-3 rounded-lg font-semibold text-lg inline-block",
     secondary:
@@ -117,23 +117,23 @@ function CTAButtonComponent({
   );
 }
 
-export class CTAButtonNode extends DecoratorNode<JSX.Element> {
+export class ButtonNode extends DecoratorNode<JSX.Element> {
   __text: string;
   __url: string;
-  __variant: CTAVariant;
+  __variant: ButtonVariant;
 
   static getType(): string {
     return "cta-button";
   }
 
-  static clone(node: CTAButtonNode): CTAButtonNode {
-    return new CTAButtonNode(node.__text, node.__url, node.__variant, node.__key);
+  static clone(node: ButtonNode): ButtonNode {
+    return new ButtonNode(node.__text, node.__url, node.__variant, node.__key);
   }
 
   constructor(
     text: string = "Zjistit vice",
     url: string = "#",
-    variant: CTAVariant = "primary",
+    variant: ButtonVariant = "primary",
     key?: NodeKey,
   ) {
     super(key);
@@ -161,20 +161,20 @@ export class CTAButtonNode extends DecoratorNode<JSX.Element> {
     writable.__url = url;
   }
 
-  setVariant(variant: CTAVariant): void {
+  setVariant(variant: ButtonVariant): void {
     const writable = this.getWritable();
     writable.__variant = variant;
   }
 
-  static importJSON(serializedNode: SerializedCTAButtonNode): CTAButtonNode {
-    return $createCTAButtonNode(
+  static importJSON(serializedNode: SerializedButtonNode): ButtonNode {
+    return $createButtonNode(
       serializedNode.text,
       serializedNode.url,
       serializedNode.variant,
     );
   }
 
-  exportJSON(): SerializedCTAButtonNode {
+  exportJSON(): SerializedButtonNode {
     return {
       type: "cta-button",
       version: 1,
@@ -186,7 +186,7 @@ export class CTAButtonNode extends DecoratorNode<JSX.Element> {
 
   decorate(editor: LexicalEditor): JSX.Element {
     return (
-      <CTAButtonComponent
+      <ButtonComponent
         text={this.__text}
         url={this.__url}
         variant={this.__variant}
@@ -197,16 +197,16 @@ export class CTAButtonNode extends DecoratorNode<JSX.Element> {
   }
 }
 
-export function $createCTAButtonNode(
+export function $createButtonNode(
   text: string = "Zjistit vice",
   url: string = "#",
-  variant: CTAVariant = "primary",
-): CTAButtonNode {
-  return new CTAButtonNode(text, url, variant);
+  variant: ButtonVariant = "primary",
+): ButtonNode {
+  return new ButtonNode(text, url, variant);
 }
 
-export function $isCTAButtonNode(
+export function $isButtonNode(
   node: LexicalNode | null | undefined,
-): node is CTAButtonNode {
-  return node instanceof CTAButtonNode;
+): node is ButtonNode {
+  return node instanceof ButtonNode;
 }

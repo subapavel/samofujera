@@ -9,7 +9,7 @@ import {
   type NodeKey,
 } from "lexical";
 import { $createImageNode } from "../nodes/ImageNode";
-import { $createCTAButtonNode } from "../nodes/CTAButtonNode";
+import { $createButtonNode } from "../nodes/ButtonNode";
 import { $createSeparatorNode } from "../nodes/SeparatorNode";
 import { Popover, PopoverTrigger, PopoverContent } from "@samofujera/ui";
 import { Type, ImageIcon, Minus, MousePointerClick, Plus } from "lucide-react";
@@ -153,7 +153,7 @@ export function InsertBlockPlugin() {
     {
       label: "Tla\u010d\u00edtko",
       icon: MousePointerClick,
-      insert: (afterKey) => insertNode(afterKey, () => $createCTAButtonNode()),
+      insert: (afterKey) => insertNode(afterKey, () => $createButtonNode()),
     },
   ];
 

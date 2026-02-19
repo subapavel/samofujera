@@ -17,7 +17,7 @@ import { editorTheme } from "./theme";
 import { ToolbarPlugin } from "./plugins/ToolbarPlugin";
 import { InsertBlockPlugin } from "./plugins/InsertBlockPlugin";
 import { ImageNode } from "./nodes/ImageNode";
-import { CTAButtonNode } from "./nodes/CTAButtonNode";
+import { ButtonNode } from "./nodes/ButtonNode";
 import { SeparatorNode } from "./nodes/SeparatorNode";
 import { ColumnsNode } from "./nodes/ColumnsNode";
 import { GalleryNode } from "./nodes/GalleryNode";
@@ -47,7 +47,7 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
       ListItemNode,
       LinkNode,
       ImageNode,
-      CTAButtonNode,
+      ButtonNode,
       SeparatorNode,
       ColumnsNode,
       GalleryNode,

@@ -14,6 +14,7 @@ interface SerializedNode {
   src?: string;
   altText?: string;
   alignment?: string;
+  mediaItemId?: string;
   variant?: string;
   separatorStyle?: string;
   columnCount?: number;
@@ -22,6 +23,11 @@ interface SerializedNode {
   columns?: number;
   formTitle?: string;
 }
+
+// Block-level node types that cannot be inside <p> tags
+const BLOCK_TYPES = new Set([
+  "image", "cta-button", "separator", "columns", "gallery", "contact-form",
+]);
 
 interface PageRendererProps {
   content: Record<string, unknown>;
@@ -48,7 +54,7 @@ function renderNode(node: SerializedNode, key: number): ReactNode {
     case "image":
       return <ImageRenderer key={key} node={node} />;
     case "cta-button":
-      return <CTARenderer key={key} node={node} />;
+      return <ButtonRenderer key={key} node={node} />;
     case "separator":
       return <SeparatorRenderer key={key} node={node} />;
     case "columns":
@@ -82,7 +88,45 @@ function TextRenderer({ node }: { node: SerializedNode }) {
 }
 
 function ParagraphRenderer({ node }: { node: SerializedNode }) {
-  return <p className="public-body-110 mb-4">{renderChildren(node)}</p>;
+  if (!node.children || node.children.length === 0) {
+    return <p className="public-body-110 mb-4" />;
+  }
+
+  // Split children into groups: inline runs go into <p>, block nodes render standalone
+  const groups: { type: "inline" | "block"; nodes: SerializedNode[] }[] = [];
+  for (const child of node.children) {
+    if (BLOCK_TYPES.has(child.type)) {
+      groups.push({ type: "block", nodes: [child] });
+    } else {
+      const last = groups[groups.length - 1];
+      if (last && last.type === "inline") {
+        last.nodes.push(child);
+      } else {
+        groups.push({ type: "inline", nodes: [child] });
+      }
+    }
+  }
+
+  // If no block nodes, render normally
+  if (groups.length === 1 && groups[0].type === "inline") {
+    return <p className="public-body-110 mb-4">{renderChildren(node)}</p>;
+  }
+
+  // Mixed content: render inline runs in <p>, block nodes standalone
+  return (
+    <>
+      {groups.map((group, gi) => {
+        if (group.type === "inline") {
+          return (
+            <p key={gi} className="public-body-110 mb-4">
+              {group.nodes.map((n, ni) => renderNode(n, ni))}
+            </p>
+          );
+        }
+        return group.nodes.map((n, ni) => renderNode(n, gi * 100 + ni));
+      })}
+    </>
+  );
 }
 
 function HeadingRenderer({ node }: { node: SerializedNode }) {
@@ -130,10 +174,18 @@ function ImageRenderer({ node }: { node: SerializedNode }) {
     full: "w-full",
   };
   const alignment = node.alignment ?? "center";
+
+  // Use media API to get a fresh URL if mediaItemId is available
+  const imgSrc = node.mediaItemId
+    ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/media/${node.mediaItemId}/file`
+    : node.src;
+
+  if (!imgSrc) return null;
+
   return (
     <div className="my-4">
       <img
-        src={node.src}
+        src={imgSrc}
         alt={node.altText ?? ""}
         className={`max-w-full rounded ${alignClasses[alignment] ?? "mx-auto"}`}
         style={{ display: "block" }}
@@ -142,7 +194,7 @@ function ImageRenderer({ node }: { node: SerializedNode }) {
   );
 }
 
-function CTARenderer({ node }: { node: SerializedNode }) {
+function ButtonRenderer({ node }: { node: SerializedNode }) {
   const variant = node.variant ?? "primary";
   const className =
     variant === "primary"
