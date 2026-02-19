@@ -29,12 +29,13 @@ export const mediaApi = {
   getItem: (id: string) =>
     apiFetch<ApiResponse<MediaItemResponse>>(`/api/admin/media/${id}`),
 
-  uploadDirect: (file: File, altText?: string) => {
+  uploadDirect: (file: File, altText?: string, isPublic?: boolean) => {
     const formData = new FormData();
     formData.append("file", file);
     if (altText) formData.append("altText", altText);
+    const qs = isPublic ? "?public=true" : "";
     return apiFetch<ApiResponse<MediaItemResponse>>(
-      "/api/admin/media/upload",
+      `/api/admin/media/upload${qs}`,
       { method: "POST", body: formData },
     );
   },
@@ -52,6 +53,7 @@ export const mediaApi = {
     file: File,
     onProgress: (percent: number) => void,
     altText?: string,
+    isPublic?: boolean,
   ): { promise: Promise<ApiResponse<MediaItemResponse>>; abort: () => void } => {
     const xhr = new XMLHttpRequest();
     const promise = new Promise<ApiResponse<MediaItemResponse>>(
@@ -79,7 +81,8 @@ export const mediaApi = {
         xhr.addEventListener("error", () => reject(new Error("Upload failed")));
         xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
 
-        xhr.open("POST", `${BASE_URL}/api/admin/media/upload`);
+        const qs = isPublic ? "?public=true" : "";
+        xhr.open("POST", `${BASE_URL}/api/admin/media/upload${qs}`);
         xhr.withCredentials = true;
         xhr.send(formData);
       },

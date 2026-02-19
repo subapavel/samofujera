@@ -68,7 +68,53 @@ public class MediaService {
         return toMediaItemResponse(created);
     }
 
+    @Transactional
+    public MediaDtos.MediaItemResponse uploadPublicAndCreate(InputStream inputStream, String filename,
+                                                              String contentType, long size,
+                                                              String altText) throws IOException {
+        var newId = UUID.randomUUID();
+        var ext = extractExtension(filename);
+        var prefix = "public/media/" + newId + "/";
+        var originalKey = prefix + "original" + ext;
+
+        var originalData = inputStream.readAllBytes();
+
+        storageService.upload(originalKey, originalData, contentType);
+
+        var variants = imageVariantService.generateVariants(originalData, contentType);
+        for (var entry : variants.entrySet()) {
+            var variantKey = prefix + entry.getKey() + ".webp";
+            storageService.upload(variantKey, entry.getValue().data(), entry.getValue().contentType());
+        }
+
+        Integer width = null;
+        Integer height = null;
+        if (contentType != null && contentType.startsWith("image/")) {
+            var image = ImageIO.read(new ByteArrayInputStream(originalData));
+            if (image != null) {
+                width = image.getWidth();
+                height = image.getHeight();
+            }
+        }
+
+        var id = itemRepository.create(filename, originalKey, contentType, size, width, height, altText);
+
+        var created = itemRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Media item not found"));
+        return toMediaItemResponse(created);
+    }
+
     // --- Item methods ---
+
+    public String getUrl(UUID id) {
+        var item = itemRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Media item not found"));
+        var storageKey = item.storageKey();
+        if (storageKey.startsWith("public/")) {
+            return storageService.getPublicUrl(storageKey);
+        }
+        return storageService.generatePresignedUrl(storageKey, Duration.ofHours(1));
+    }
 
     public MediaDtos.MediaItemListResponse getItems(String source, String type, String search,
                                                      int page, int limit) {
@@ -90,12 +136,6 @@ public class MediaService {
         var item = itemRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Media item not found"));
         return toMediaItemResponse(item);
-    }
-
-    public String getUrl(UUID id) {
-        var item = itemRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Media item not found"));
-        return storageService.generatePresignedUrl(item.storageKey(), Duration.ofHours(1));
     }
 
     @Transactional
@@ -128,14 +168,25 @@ public class MediaService {
     private MediaDtos.MediaItemResponse toMediaItemResponse(MediaItemRepository.MediaItemRow row) {
         var storageKey = row.storageKey();
         var prefix = storageKey.substring(0, storageKey.lastIndexOf('/') + 1);
-        var originalUrl = storageService.generatePresignedUrl(storageKey, Duration.ofHours(1));
+        var isPublic = storageKey.startsWith("public/");
+
+        var originalUrl = isPublic
+            ? storageService.getPublicUrl(storageKey)
+            : storageService.generatePresignedUrl(storageKey, Duration.ofHours(1));
 
         String thumbUrl = null, mediumUrl = null, largeUrl = null, ogUrl = null;
         if (row.mimeType() != null && row.mimeType().startsWith("image/")) {
-            thumbUrl = storageService.generatePresignedUrl(prefix + "thumb.webp", Duration.ofHours(1));
-            mediumUrl = storageService.generatePresignedUrl(prefix + "medium.webp", Duration.ofHours(1));
-            largeUrl = storageService.generatePresignedUrl(prefix + "large.webp", Duration.ofHours(1));
-            ogUrl = storageService.generatePresignedUrl(prefix + "og.webp", Duration.ofHours(1));
+            if (isPublic) {
+                thumbUrl = storageService.getPublicUrl(prefix + "thumb.webp");
+                mediumUrl = storageService.getPublicUrl(prefix + "medium.webp");
+                largeUrl = storageService.getPublicUrl(prefix + "large.webp");
+                ogUrl = storageService.getPublicUrl(prefix + "og.webp");
+            } else {
+                thumbUrl = storageService.generatePresignedUrl(prefix + "thumb.webp", Duration.ofHours(1));
+                mediumUrl = storageService.generatePresignedUrl(prefix + "medium.webp", Duration.ofHours(1));
+                largeUrl = storageService.generatePresignedUrl(prefix + "large.webp", Duration.ofHours(1));
+                ogUrl = storageService.generatePresignedUrl(prefix + "og.webp", Duration.ofHours(1));
+            }
         }
 
         return new MediaDtos.MediaItemResponse(

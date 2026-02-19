@@ -39,6 +39,9 @@ public class StorageService {
     @Value("${r2.bucket}")
     private String bucket;
 
+    @Value("${r2.public-url}")
+    private String publicUrl;
+
     private S3Client s3Client;
     private S3Presigner presigner;
 
@@ -135,6 +138,10 @@ public class StorageService {
             .build();
 
         return presigner.presignGetObject(presignRequest).url().toExternalForm();
+    }
+
+    public String getPublicUrl(String key) {
+        return publicUrl + "/" + key;
     }
 
     public List<String> listKeys(String prefix) {

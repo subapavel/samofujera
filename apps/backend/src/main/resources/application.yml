@@ -34,3 +34,4 @@ r2:
   access-key: ${R2_ACCESS_KEY:minioadmin}
   secret-key: ${R2_SECRET_KEY:minioadmin}
   bucket: ${R2_BUCKET:samofujera-assets}
+  public-url: ${R2_PUBLIC_URL:http://localhost:9000/samofujera-assets}

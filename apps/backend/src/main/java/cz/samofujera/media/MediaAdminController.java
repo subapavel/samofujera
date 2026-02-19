@@ -41,14 +41,19 @@ public class MediaAdminController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<MediaDtos.MediaItemResponse>> uploadAndCreate(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(required = false) String altText) throws IOException {
-        var response = mediaService.uploadAndCreate(
-            file.getInputStream(),
-            file.getOriginalFilename(),
-            file.getContentType(),
-            file.getSize(),
-            altText
-        );
+            @RequestParam(required = false) String altText,
+            @RequestParam(name = "public", required = false, defaultValue = "false") boolean isPublic)
+            throws IOException {
+        MediaDtos.MediaItemResponse response;
+        if (isPublic) {
+            response = mediaService.uploadPublicAndCreate(
+                file.getInputStream(), file.getOriginalFilename(),
+                file.getContentType(), file.getSize(), altText);
+        } else {
+            response = mediaService.uploadAndCreate(
+                file.getInputStream(), file.getOriginalFilename(),
+                file.getContentType(), file.getSize(), altText);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(response));
     }
 
