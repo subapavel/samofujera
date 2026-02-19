@@ -41,4 +41,5 @@ export {
   DropdownMenuGroup,
   DropdownMenuSeparator,
 } from "./components/dropdown-menu";
+export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor } from "./components/popover";
 export { cn } from "./lib/utils";
