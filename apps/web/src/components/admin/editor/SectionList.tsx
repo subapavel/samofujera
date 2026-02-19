@@ -195,7 +195,7 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
     }), [undo, redo]);
 
     return (
-      <div className="space-y-2">
+      <div>
         {sections.map((section, sectionIndex) => (
           <SectionWrapper
             key={section.id}
@@ -204,7 +204,7 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
             onAddBefore={() => handleAddSection(sectionIndex - 1)}
             onAddAfter={() => handleAddSection(sectionIndex)}
           >
-            <div className="space-y-2">
+            <div>
               {section.blocks.map((block, blockIndex) => (
                 <BlockWrapper
                   key={block.id}

@@ -77,33 +77,11 @@ interface PageRendererProps {
   content: Record<string, unknown>;
 }
 
-function sectionType(node: SerializedNode): string {
-  switch (node.type) {
-    case "paragraph":
-    case "heading":
-    case "list":
-    case "quote":
-      return "text";
-    case "image":
-      return "image";
-    case "cta-button":
-      return "button";
-    case "separator":
-      return "separator";
-    default:
-      return "text";
-  }
-}
-
 function renderLexicalContent(lexicalState: Record<string, unknown> | null | undefined) {
   if (!lexicalState) return null;
   const root = (lexicalState as Record<string, unknown>).root as { children: SerializedNode[] } | undefined;
   if (!root?.children) return null;
-  return root.children.map((node, i) => (
-    <section key={i} className={`page-block page-block--${sectionType(node)}`}>
-      {renderNode(node, i)}
-    </section>
-  ));
+  return root.children.map((node, i) => renderNode(node, i));
 }
 
 // ── V3 block rendering ──

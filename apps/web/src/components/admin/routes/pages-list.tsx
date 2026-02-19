@@ -69,43 +69,60 @@ export function PagesListPage() {
         slug: newSlug || slugify(newTitle),
         title: newTitle,
       });
-      // Set default section content with H1 bold heading + placeholder text (v3 block format)
+      // Set default section content: two text blocks (heading + body text)
       const defaultContent = {
         version: 3,
         sections: [{
           id: crypto.randomUUID(),
-          blocks: [{
-            id: crypto.randomUUID(),
-            type: "text",
-            content: {
-              root: {
-                children: [
-                  {
-                    type: "heading",
-                    tag: "h1",
-                    children: [{ type: "text", text: newTitle, format: 1, mode: "normal", style: "", detail: 0, version: 1 }],
-                    direction: "ltr",
-                    format: "",
-                    indent: 0,
-                    version: 1,
-                  },
-                  {
-                    type: "paragraph",
-                    children: [{ type: "text", text: "Váš text začíná právě zde. Klikněte a můžete začít psát. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem.", format: 0, mode: "normal", style: "", detail: 0, version: 1 }],
-                    direction: "ltr",
-                    format: "",
-                    indent: 0,
-                    version: 1,
-                  },
-                ],
-                direction: "ltr",
-                format: "",
-                indent: 0,
-                type: "root",
-                version: 1,
+          blocks: [
+            {
+              id: crypto.randomUUID(),
+              type: "text",
+              content: {
+                root: {
+                  children: [
+                    {
+                      type: "heading",
+                      tag: "h1",
+                      children: [{ type: "text", text: newTitle, format: 1, mode: "normal", style: "", detail: 0, version: 1 }],
+                      direction: "ltr",
+                      format: "",
+                      indent: 0,
+                      version: 1,
+                    },
+                  ],
+                  direction: "ltr",
+                  format: "",
+                  indent: 0,
+                  type: "root",
+                  version: 1,
+                },
               },
             },
-          }],
+            {
+              id: crypto.randomUUID(),
+              type: "text",
+              content: {
+                root: {
+                  children: [
+                    {
+                      type: "paragraph",
+                      children: [{ type: "text", text: "Váš text začíná právě zde. Klikněte a můžete začít psát. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem.", format: 0, mode: "normal", style: "", detail: 0, version: 1 }],
+                      direction: "ltr",
+                      format: "",
+                      indent: 0,
+                      version: 1,
+                    },
+                  ],
+                  direction: "ltr",
+                  format: "",
+                  indent: 0,
+                  type: "root",
+                  version: 1,
+                },
+              },
+            },
+          ],
         }],
       };
       await pageAdminApi.updatePage(response.data.id, {
