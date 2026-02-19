@@ -60,7 +60,7 @@ function SeparatorComponent({
       )}
       {isSelected && (
         <p className="mt-1 text-center text-xs text-[var(--muted-foreground)]">
-          Dvakrat klikni pro zmenu stylu
+          Dvakrát klikni pro změnu stylu
         </p>
       )}
     </div>

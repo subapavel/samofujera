@@ -16,27 +16,27 @@ import {
 } from "@samofujera/ui";
 
 const PRODUCT_TYPE_LABELS: Record<string, string> = {
-  PHYSICAL: "Fyzicky",
+  PHYSICAL: "Fyzický",
   EBOOK: "E-book",
   AUDIO_VIDEO: "Audio/Video",
-  ONLINE_EVENT: "Online udalost",
-  RECURRING_EVENT: "Opakovana udalost",
-  OFFLINE_EVENT: "Offline udalost",
+  ONLINE_EVENT: "Online událost",
+  RECURRING_EVENT: "Opakovaná událost",
+  OFFLINE_EVENT: "Offline událost",
 };
 
 const PRODUCT_TYPES: Array<{ value: ProductType; label: string }> = [
-  { value: "PHYSICAL", label: "Fyzicky produkt" },
+  { value: "PHYSICAL", label: "Fyzický produkt" },
   { value: "EBOOK", label: "E-book" },
   { value: "AUDIO_VIDEO", label: "Audio/Video" },
-  { value: "ONLINE_EVENT", label: "Online udalost" },
-  { value: "RECURRING_EVENT", label: "Opakovana udalost" },
-  { value: "OFFLINE_EVENT", label: "Offline udalost" },
+  { value: "ONLINE_EVENT", label: "Online událost" },
+  { value: "RECURRING_EVENT", label: "Opakovaná událost" },
+  { value: "OFFLINE_EVENT", label: "Offline událost" },
 ];
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: "Draft",
-  ACTIVE: "Publikovano",
-  ARCHIVED: "Archivovano",
+  ACTIVE: "Publikováno",
+  ARCHIVED: "Archivováno",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -99,7 +99,7 @@ export function ProductsPage() {
         <h2 className="text-2xl font-bold">Produkty</h2>
         <div className="flex">
           <Link href="/admin/produkty/novy">
-            <Button className="rounded-r-none">Novy produkt</Button>
+            <Button className="rounded-r-none">Nový produkt</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -143,9 +143,9 @@ export function ProductsPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Vsechny stavy</option>
+          <option value="">Všechny stavy</option>
           <option value="DRAFT">Draft</option>
-          <option value="ACTIVE">Publikovano</option>
+          <option value="ACTIVE">Publikováno</option>
         </select>
         <select
           value={typeFilter}
@@ -155,24 +155,24 @@ export function ProductsPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Vsechny typy</option>
-          <option value="PHYSICAL">Fyzicky</option>
+          <option value="">Všechny typy</option>
+          <option value="PHYSICAL">Fyzický</option>
           <option value="EBOOK">E-book</option>
           <option value="AUDIO_VIDEO">Audio/Video</option>
-          <option value="ONLINE_EVENT">Online udalost</option>
-          <option value="RECURRING_EVENT">Opakovana udalost</option>
-          <option value="OFFLINE_EVENT">Offline udalost</option>
+          <option value="ONLINE_EVENT">Online událost</option>
+          <option value="RECURRING_EVENT">Opakovaná událost</option>
+          <option value="OFFLINE_EVENT">Offline událost</option>
         </select>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {productsQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Nacitani produktu...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">Načítání produktů...</p>
         )}
 
         {productsQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodarilo se nacist produkty. Zkuste to prosim znovu.
+            Nepodařilo se načíst produkty. Zkuste to prosim znovu.
           </p>
         )}
 
@@ -181,7 +181,7 @@ export function ProductsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)]">
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Nazev</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Název</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Typ</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Stav</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Cena</th>
@@ -192,7 +192,7 @@ export function ProductsPage() {
                 {data && data.items.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-[var(--muted-foreground)]" colSpan={5}>
-                      Zadne produkty.
+                      Žádné produkty.
                     </td>
                   </tr>
                 ) : (
@@ -241,7 +241,7 @@ export function ProductsPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stranka {data.page} z {data.totalPages} ({data.totalItems} produktu)
+                  Stranka {data.page} z {data.totalPages} ({data.totalItems} produktů)
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -250,7 +250,7 @@ export function ProductsPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Predchozi
+                    Předchozí
                   </Button>
                   <Button
                     variant="outline"
@@ -258,7 +258,7 @@ export function ProductsPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Dalsi
+                    Další
                   </Button>
                 </div>
               </div>

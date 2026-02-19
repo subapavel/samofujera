@@ -17,8 +17,8 @@ import {
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: "Koncept",
-  PUBLISHED: "Publikovano",
-  ARCHIVED: "Archivovano",
+  PUBLISHED: "Publikováno",
+  ARCHIVED: "Archivováno",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -83,7 +83,7 @@ export function PagesListPage() {
   });
 
   function handleDelete(id: string, title: string) {
-    if (window.confirm(`Opravdu chcete smazat stranku "${title}"?`)) {
+    if (window.confirm(`Opravdu chcete smazat stránku "${title}"?`)) {
       deleteMutation.mutate(id);
     }
   }
@@ -98,8 +98,8 @@ export function PagesListPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Stranky</h2>
-        <Button onClick={() => setShowCreateDialog(true)}>Nova stranka</Button>
+        <h2 className="text-2xl font-bold">Stránky</h2>
+        <Button onClick={() => setShowCreateDialog(true)}>Nová stránka</Button>
       </div>
 
       {/* Filters */}
@@ -121,21 +121,21 @@ export function PagesListPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Vsechny stavy</option>
+          <option value="">Všechny stavy</option>
           <option value="DRAFT">Koncept</option>
-          <option value="PUBLISHED">Publikovano</option>
-          <option value="ARCHIVED">Archivovano</option>
+          <option value="PUBLISHED">Publikováno</option>
+          <option value="ARCHIVED">Archivováno</option>
         </select>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {pagesQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Nacitani stranek...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">Načítání stránek...</p>
         )}
 
         {pagesQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodarilo se nacist stranky. Zkuste to prosim znovu.
+            Nepodařilo se načíst stránky. Zkuste to prosím znovu.
           </p>
         )}
 
@@ -144,10 +144,10 @@ export function PagesListPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)]">
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Nazev</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Název</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Slug</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Stav</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Aktualizovano</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Aktualizováno</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Akce</th>
                 </tr>
               </thead>
@@ -155,7 +155,7 @@ export function PagesListPage() {
                 {data && data.items.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-[var(--muted-foreground)]" colSpan={5}>
-                      Zadne stranky.
+                      Žádné stránky.
                     </td>
                   </tr>
                 ) : (
@@ -207,7 +207,7 @@ export function PagesListPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stranka {data.page} z {data.totalPages} ({data.totalItems} stranek)
+                  Stranka {data.page} z {data.totalPages} ({data.totalItems} stránek)
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -216,7 +216,7 @@ export function PagesListPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Predchozi
+                    Předchozí
                   </Button>
                   <Button
                     variant="outline"
@@ -224,7 +224,7 @@ export function PagesListPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Dalsi
+                    Další
                   </Button>
                 </div>
               </div>
@@ -237,15 +237,15 @@ export function PagesListPage() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nova stranka</DialogTitle>
+            <DialogTitle>Nová stránka</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="mb-1 block text-sm font-medium">Nazev</label>
+              <label className="mb-1 block text-sm font-medium">Název</label>
               <Input
                 value={newTitle}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="Nazev stranky"
+                placeholder="Název stránky"
               />
             </div>
             <div>
@@ -259,13 +259,13 @@ export function PagesListPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-              Zrusit
+              Zrušit
             </Button>
             <Button
               disabled={!newTitle.trim() || !newSlug.trim() || createMutation.isPending}
               onClick={() => createMutation.mutate()}
             >
-              Vytvorit
+              Vytvořit
             </Button>
           </DialogFooter>
         </DialogContent>

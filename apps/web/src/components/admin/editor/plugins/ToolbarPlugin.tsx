@@ -36,7 +36,7 @@ const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   h2: "Nadpis 2",
   h3: "Nadpis 3",
   ul: "Seznam",
-  ol: "Cislovany seznam",
+  ol: "Číslovaný seznam",
 };
 
 export function ToolbarPlugin() {

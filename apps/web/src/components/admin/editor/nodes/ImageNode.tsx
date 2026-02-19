@@ -156,7 +156,7 @@ function ImageComponent({
                     handlePickerOpen();
                   }}
                 >
-                  Zmenit
+                  Změnit
                 </button>
               </div>
             )}
@@ -169,7 +169,7 @@ function ImageComponent({
               handlePickerOpen();
             }}
           >
-            <span className="text-[var(--muted-foreground)]">Klikni pro vlozeni obrazku</span>
+            <span className="text-[var(--muted-foreground)]">Klikni pro vložení obrázku</span>
           </div>
         )}
       </div>
@@ -177,12 +177,12 @@ function ImageComponent({
       <Dialog open={showPicker} onOpenChange={setShowPicker}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Vybrat obrazek</DialogTitle>
+            <DialogTitle>Vybrat obrázek</DialogTitle>
           </DialogHeader>
 
           <div>
             <Input
-              placeholder="Hledat podle nazvu..."
+              placeholder="Hledat podle názvu..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -191,7 +191,7 @@ function ImageComponent({
           <div className="min-h-[300px] max-h-[50vh] overflow-y-auto">
             {itemsQuery.isLoading && (
               <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-                Nacitani...
+                Načítání...
               </p>
             )}
             {itemsQuery.isSuccess && (
@@ -230,7 +230,7 @@ function ImageComponent({
                 onClick={() => fileInputRef.current?.click()}
                 disabled={multiUpload.isUploading}
               >
-                {multiUpload.isUploading ? "Nahravam..." : "Nahrat obrazky"}
+                {multiUpload.isUploading ? "Nahrávám..." : "Nahrát obrázky"}
               </Button>
             </div>
             <div className="flex gap-2">
@@ -240,7 +240,7 @@ function ImageComponent({
                 size="sm"
                 onClick={() => setShowPicker(false)}
               >
-                Zrusit
+                Zrušit
               </Button>
               <Button
                 type="button"

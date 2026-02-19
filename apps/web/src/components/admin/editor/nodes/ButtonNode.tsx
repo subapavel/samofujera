@@ -67,7 +67,7 @@ function ButtonComponent({
           <input
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
-            placeholder="Text tlacitka"
+            placeholder="Text tlačítka"
             className="w-full rounded border border-[var(--border)] px-3 py-1.5 text-sm"
           />
           <input
@@ -81,13 +81,13 @@ function ButtonComponent({
               className={`flex-1 rounded px-2 py-1 text-xs ${editVariant === "primary" ? "bg-[rgb(6,93,77)] text-white" : "border"}`}
               onClick={() => setEditVariant("primary")}
             >
-              Primarni
+              Primární
             </button>
             <button
               className={`flex-1 rounded px-2 py-1 text-xs ${editVariant === "secondary" ? "bg-[rgb(6,93,77)] text-white" : "border"}`}
               onClick={() => setEditVariant("secondary")}
             >
-              Sekundarni
+              Sekundární
             </button>
           </div>
           <div className="flex justify-end gap-2">
@@ -95,13 +95,13 @@ function ButtonComponent({
               className="rounded px-3 py-1 text-xs text-[var(--muted-foreground)]"
               onClick={() => setIsEditing(false)}
             >
-              Zrusit
+              Zrušit
             </button>
             <button
               className="rounded bg-[rgb(6,93,77)] px-3 py-1 text-xs text-white"
               onClick={handleSave}
             >
-              Ulozit
+              Uložit
             </button>
           </div>
         </div>
@@ -110,7 +110,7 @@ function ButtonComponent({
           className={`cursor-pointer ${variantClasses[variant]}`}
           onClick={() => setIsEditing(true)}
         >
-          {text || "Klikni pro upravu tlacitka"}
+          {text || "Klikni pro úpravu tlačítka"}
         </span>
       )}
     </div>
@@ -131,7 +131,7 @@ export class ButtonNode extends DecoratorNode<JSX.Element> {
   }
 
   constructor(
-    text: string = "Zjistit vice",
+    text: string = "Zjistit více",
     url: string = "#",
     variant: ButtonVariant = "primary",
     key?: NodeKey,
@@ -198,7 +198,7 @@ export class ButtonNode extends DecoratorNode<JSX.Element> {
 }
 
 export function $createButtonNode(
-  text: string = "Zjistit vice",
+  text: string = "Zjistit více",
   url: string = "#",
   variant: ButtonVariant = "primary",
 ): ButtonNode {

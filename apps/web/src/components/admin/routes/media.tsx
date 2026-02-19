@@ -16,7 +16,7 @@ const SOURCES = [
   { label: "Vse", value: undefined },
   { label: "Produkty", value: "products" },
   { label: "Kategorie", value: "product_categories" },
-  { label: "Neprirazeno", value: "unlinked" },
+  { label: "Nepřiřazeno", value: "unlinked" },
 ] as const;
 
 const VARIANT_LABELS: { key: keyof Pick<MediaItemResponse, "thumbUrl" | "mediumUrl" | "largeUrl" | "ogUrl">; label: string }[] = [
@@ -124,7 +124,7 @@ export function MediaPage() {
             onClick={() => fileInputRef.current?.click()}
             disabled={multiUpload.isUploading}
           >
-            {multiUpload.isUploading ? "Nahravam..." : "Nahrat soubory"}
+            {multiUpload.isUploading ? "Nahrávám..." : "Nahrát soubory"}
           </Button>
         </div>
       </div>
@@ -176,8 +176,8 @@ export function MediaPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Vsechny typy</option>
-          <option value="IMAGE">Obrazky</option>
+          <option value="">Všechny typy</option>
+          <option value="IMAGE">Obrázky</option>
           <option value="DOCUMENT">Dokumenty</option>
           <option value="AUDIO">Audio</option>
           <option value="VIDEO">Video</option>
@@ -189,13 +189,13 @@ export function MediaPage() {
         <div className="flex-1">
           {itemsQuery.isLoading && (
             <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-              Nacitani...
+              Načítání...
             </p>
           )}
 
           {itemsQuery.isError && (
             <p className="py-8 text-center text-sm text-[var(--destructive)]">
-              Nepodarilo se nacist soubory. Zkuste to prosim znovu.
+              Nepodařilo se načíst soubory. Zkuste to prosím znovu.
             </p>
           )}
 
@@ -212,7 +212,7 @@ export function MediaPage() {
                 <div className="mt-4 flex items-center justify-between">
                   <p className="text-sm text-[var(--muted-foreground)]">
                     Stranka {data.page} z {data.totalPages} (
-                    {data.totalItems} souboru)
+                    {data.totalItems} souborů)
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -221,7 +221,7 @@ export function MediaPage() {
                       disabled={page <= 1}
                       onClick={() => setPage((p) => p - 1)}
                     >
-                      Predchozi
+                      Předchozí
                     </Button>
                     <Button
                       variant="outline"
@@ -229,7 +229,7 @@ export function MediaPage() {
                       disabled={page >= data.totalPages}
                       onClick={() => setPage((p) => p + 1)}
                     >
-                      Dalsi
+                      Další
                     </Button>
                   </div>
                 </div>
@@ -308,8 +308,8 @@ export function MediaPage() {
                 }
               >
                 {updateAltTextMutation.isPending
-                  ? "Ukladam..."
-                  : "Ulozit alt text"}
+                  ? "Ukládám..."
+                  : "Uložit alt text"}
               </Button>
             </div>
 
@@ -321,7 +321,7 @@ export function MediaPage() {
               onClick={handleDeleteItem}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? "Mazani..." : "Smazat soubor"}
+              {deleteMutation.isPending ? "Mazání..." : "Smazat soubor"}
             </Button>
           </div>
         )}

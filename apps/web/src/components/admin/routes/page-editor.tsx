@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useParams } from "next/navigation";
 import { pageAdminApi } from "@samofujera/api-client";
@@ -36,9 +36,13 @@ export function PageEditorPage() {
   const [slug, setSlug] = useState("");
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
-  const [content, setContent] = useState<SerializedEditorState | null>(null);
   const [showSeoDialog, setShowSeoDialog] = useState(false);
-  const formLoaded = useRef(false);
+
+  // Track editor content separately via ref (avoids re-renders on every keystroke)
+  const contentRef = useRef<SerializedEditorState | null>(null);
+
+  // Track whether we've initialized the form from query data
+  const [formReady, setFormReady] = useState(isNew);
 
   const pageQuery = useQuery({
     queryKey: ["admin", "pages", pageId],
@@ -46,25 +50,26 @@ export function PageEditorPage() {
     enabled: Boolean(pageId),
   });
 
-  // Populate form from query data
-  useEffect(() => {
-    if (pageQuery.data && !formLoaded.current) {
-      const page = pageQuery.data.data;
-      setTitle(page.title);
-      setSlug(page.slug);
-      setMetaTitle(page.metaTitle ?? "");
-      setMetaDescription(page.metaDescription ?? "");
-      setContent(page.content as SerializedEditorState | null);
-      formLoaded.current = true;
-    }
-  }, [pageQuery.data]);
+  // Derive initial content from query — only used once for PageEditor mount
+  const initialContent = pageQuery.data?.data?.content as SerializedEditorState | null ?? null;
+
+  // Populate form fields once query succeeds
+  if (pageQuery.data && !formReady) {
+    const page = pageQuery.data.data;
+    setTitle(page.title);
+    setSlug(page.slug);
+    setMetaTitle(page.metaTitle ?? "");
+    setMetaDescription(page.metaDescription ?? "");
+    contentRef.current = initialContent;
+    setFormReady(true);
+  }
 
   const saveMutation = useMutation({
     mutationFn: () =>
       pageAdminApi.updatePage(pageId!, {
         slug,
         title,
-        content: content as Record<string, unknown> | null,
+        content: contentRef.current as Record<string, unknown> | null,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
         ogImageId: null,
@@ -89,18 +94,31 @@ export function PageEditorPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      pageAdminApi.createPage({
+    mutationFn: async () => {
+      const response = await pageAdminApi.createPage({
         slug: slug || slugify(title),
         title,
-      }),
+      });
+      // Immediately save content if any was entered
+      if (contentRef.current) {
+        await pageAdminApi.updatePage(response.data.id, {
+          slug: slug || slugify(title),
+          title,
+          content: contentRef.current as Record<string, unknown>,
+          metaTitle: metaTitle || null,
+          metaDescription: metaDescription || null,
+          ogImageId: null,
+        });
+      }
+      return response;
+    },
     onSuccess: (response) => {
       router.replace(`/admin/stranky/${response.data.id}`);
     },
   });
 
   const handleContentChange = useCallback((state: SerializedEditorState) => {
-    setContent(state);
+    contentRef.current = state;
   }, []);
 
   function handleSave() {
@@ -113,7 +131,6 @@ export function PageEditorPage() {
 
   function handlePublish() {
     if (!isNew) {
-      // Save first, then publish
       saveMutation.mutate(undefined, {
         onSuccess: () => {
           publishMutation.mutate();
@@ -135,7 +152,7 @@ export function PageEditorPage() {
   if (pageId && pageQuery.isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-[var(--muted-foreground)]">Nacitani stranky...</p>
+        <p className="text-[var(--muted-foreground)]">Načítání stránky...</p>
       </div>
     );
   }
@@ -143,7 +160,16 @@ export function PageEditorPage() {
   if (pageId && pageQuery.isError) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-[var(--destructive)]">Stranka nenalezena.</p>
+        <p className="text-[var(--destructive)]">Stránka nenalezena.</p>
+      </div>
+    );
+  }
+
+  // Don't render the editor until form is populated from query data
+  if (!formReady) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-[var(--muted-foreground)]">Načítání stránky...</p>
       </div>
     );
   }
@@ -157,7 +183,7 @@ export function PageEditorPage() {
           size="sm"
           onClick={() => router.push("/admin/stranky")}
         >
-          &larr; Zpet
+          &larr; Zpět
         </Button>
 
         <Input
@@ -166,7 +192,7 @@ export function PageEditorPage() {
             setTitle(e.target.value);
             if (isNew) setSlug(slugify(e.target.value));
           }}
-          placeholder="Nazev stranky"
+          placeholder="Název stránky"
           className="max-w-sm font-semibold"
         />
 
@@ -188,7 +214,7 @@ export function PageEditorPage() {
               : "bg-gray-100 text-gray-700"
           }`}
         >
-          {status === "PUBLISHED" ? "Publikovano" : "Koncept"}
+          {status === "PUBLISHED" ? "Publikováno" : "Koncept"}
         </span>
 
         <Button
@@ -205,7 +231,7 @@ export function PageEditorPage() {
           disabled={isSaving || !title.trim()}
           onClick={handleSave}
         >
-          {isSaving ? "Ukladani..." : "Ulozit"}
+          {isSaving ? "Ukládání..." : "Uložit"}
         </Button>
 
         {!isNew && status !== "PUBLISHED" && (
@@ -225,7 +251,7 @@ export function PageEditorPage() {
             disabled={unpublishMutation.isPending}
             onClick={handleUnpublish}
           >
-            Zrusit publikaci
+            Zrušit publikaci
           </Button>
         )}
       </div>
@@ -234,7 +260,7 @@ export function PageEditorPage() {
       <div className="flex-1">
         <PageEditor
           key={pageId ?? "new"}
-          initialContent={content}
+          initialContent={initialContent}
           onChange={handleContentChange}
         />
       </div>
@@ -243,7 +269,7 @@ export function PageEditorPage() {
       <Dialog open={showSeoDialog} onOpenChange={setShowSeoDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>SEO nastaveni</DialogTitle>
+            <DialogTitle>SEO nastavení</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -251,10 +277,10 @@ export function PageEditorPage() {
               <Input
                 value={metaTitle}
                 onChange={(e) => setMetaTitle(e.target.value)}
-                placeholder="Titulek stranky pro vyhledavace"
+                placeholder="Titulek stránky pro vyhledávače"
               />
               <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                {metaTitle.length}/200 znaku
+                {metaTitle.length}/200 znaků
               </p>
             </div>
             <div>
@@ -262,12 +288,12 @@ export function PageEditorPage() {
               <textarea
                 value={metaDescription}
                 onChange={(e) => setMetaDescription(e.target.value)}
-                placeholder="Kratky popis stranky pro vyhledavace"
+                placeholder="Krátký popis stránky pro vyhledávače"
                 rows={3}
                 className="flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
               />
               <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                {metaDescription.length}/500 znaku
+                {metaDescription.length}/500 znaků
               </p>
             </div>
           </div>

@@ -8,25 +8,25 @@ const adminNavItems = [
   { label: "Users", href: "/admin/users" },
   { label: "Produkty", href: "/admin/produkty" },
   { label: "Kategorie", href: "/admin/produkty/kategorie" },
-  { label: "Stranky", href: "/admin/stranky" },
+  { label: "Stránky", href: "/admin/stranky" },
   { label: "Media", href: "/admin/media" },
-  { label: "Objednavky", href: "/admin/objednavky" },
+  { label: "Objednávky", href: "/admin/objednavky" },
 ];
 
 const customerNavItems = [
   { label: "Dashboard", href: "/muj-ucet" },
   { label: "Knihovna", href: "/muj-ucet/knihovna" },
-  { label: "Objednavky", href: "/muj-ucet/objednavky" },
+  { label: "Objednávky", href: "/muj-ucet/objednavky" },
   { label: "Profil", href: "/muj-ucet/profile" },
-  { label: "Aktivni sezeni", href: "/muj-ucet/sessions" },
-  { label: "Smazat ucet", href: "/muj-ucet/delete-account" },
+  { label: "Aktivní sezení", href: "/muj-ucet/sessions" },
+  { label: "Smazat účet", href: "/muj-ucet/delete-account" },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
   const navItems = isAdmin ? adminNavItems : customerNavItems;
-  const sectionLabel = isAdmin ? "Administrace" : "Muj ucet";
+  const sectionLabel = isAdmin ? "Administrace" : "Můj účet";
 
   function isActive(href: string) {
     const basePath = isAdmin ? "/admin" : "/muj-ucet";

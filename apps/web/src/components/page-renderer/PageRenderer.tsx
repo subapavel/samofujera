@@ -217,7 +217,7 @@ function ButtonRenderer({ node }: { node: SerializedNode }) {
   return (
     <div className="my-6 text-center">
       <a href={node.url ?? "#"} className={className}>
-        {node.text ?? "Zjistit vice"}
+        {node.text ?? "Zjistit více"}
       </a>
     </div>
   );
