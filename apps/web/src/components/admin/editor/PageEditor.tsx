@@ -19,9 +19,6 @@ import { InsertBlockPlugin } from "./plugins/InsertBlockPlugin";
 import { ImageNode } from "./nodes/ImageNode";
 import { ButtonNode } from "./nodes/ButtonNode";
 import { SeparatorNode } from "./nodes/SeparatorNode";
-import { ColumnsNode } from "./nodes/ColumnsNode";
-import { GalleryNode } from "./nodes/GalleryNode";
-import { ContactFormNode } from "./nodes/ContactFormNode";
 
 interface PageEditorProps {
   initialContent: SerializedEditorState | null;
@@ -49,9 +46,6 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
       ImageNode,
       ButtonNode,
       SeparatorNode,
-      ColumnsNode,
-      GalleryNode,
-      ContactFormNode,
     ],
     editorState: validContent ? JSON.stringify(validContent) : undefined,
     onError: (error: Error) => console.error("Lexical error:", error),

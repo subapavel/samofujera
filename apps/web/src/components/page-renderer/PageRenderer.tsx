@@ -17,16 +17,11 @@ interface SerializedNode {
   mediaItemId?: string;
   variant?: string;
   separatorStyle?: string;
-  columnCount?: number;
-  columnContents?: string[];
-  images?: Array<{ src: string; altText: string }>;
-  columns?: number;
-  formTitle?: string;
 }
 
 // Block-level node types that cannot be inside <p> tags
 const BLOCK_TYPES = new Set([
-  "image", "cta-button", "separator", "columns", "gallery", "contact-form",
+  "image", "cta-button", "separator",
 ]);
 
 interface PageRendererProps {
@@ -57,12 +52,6 @@ function renderNode(node: SerializedNode, key: number): ReactNode {
       return <ButtonRenderer key={key} node={node} />;
     case "separator":
       return <SeparatorRenderer key={key} node={node} />;
-    case "columns":
-      return <ColumnsRenderer key={key} node={node} />;
-    case "gallery":
-      return <GalleryRenderer key={key} node={node} />;
-    case "contact-form":
-      return <ContactFormRenderer key={key} node={node} />;
     case "text":
       return <TextRenderer key={key} node={node} />;
     case "linebreak":
@@ -222,81 +211,3 @@ function SeparatorRenderer({ node }: { node: SerializedNode }) {
   return <hr className="my-8 border-t border-[var(--border)]" />;
 }
 
-function ColumnsRenderer({ node }: { node: SerializedNode }) {
-  const count = node.columnCount ?? 2;
-  const contents = node.columnContents ?? [];
-  const gridClass = count === 2 ? "grid-cols-2" : "grid-cols-3";
-  return (
-    <div className={`my-6 grid ${gridClass} gap-4`}>
-      {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="public-body-110">
-          {contents[i] ?? ""}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function GalleryRenderer({ node }: { node: SerializedNode }) {
-  const images = node.images ?? [];
-  const cols = node.columns ?? 3;
-  const gridClass =
-    cols === 2 ? "grid-cols-2" : cols === 3 ? "grid-cols-3" : "grid-cols-4";
-  if (images.length === 0) return null;
-  return (
-    <div className={`my-6 grid ${gridClass} gap-2`}>
-      {images.map((img, i) => (
-        <div key={i} className="aspect-square overflow-hidden rounded">
-          <img
-            src={img.src}
-            alt={img.altText ?? ""}
-            className="h-full w-full object-cover"
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ContactFormRenderer({ node }: { node: SerializedNode }) {
-  return (
-    <div className="my-8 rounded-lg border border-[var(--border)] bg-white/80 p-6">
-      <h3 className="public-h3 mb-4 pb-2">{node.formTitle ?? "Napiste mi"}</h3>
-      <form className="space-y-3" action="/api/contact" method="POST">
-        <div>
-          <label className="mb-1 block text-sm font-medium">Jmeno</label>
-          <input
-            type="text"
-            name="name"
-            required
-            className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            name="email"
-            required
-            className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Zprava</label>
-          <textarea
-            name="message"
-            required
-            rows={4}
-            className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
-          />
-        </div>
-        <button
-          type="submit"
-          className="rounded bg-[rgb(6,93,77)] px-6 py-2 text-white hover:bg-[rgb(5,78,64)]"
-        >
-          Odeslat
-        </button>
-      </form>
-    </div>
-  );
-}

@@ -1,17 +1,30 @@
 "use client";
 
-import { type JSX, useState } from "react";
+import { type JSX, useState, useRef } from "react";
 import {
   DecoratorNode,
-  type DOMConversionMap,
-  type DOMExportOutput,
   type EditorConfig,
   type LexicalEditor,
   type LexicalNode,
   type NodeKey,
   type SerializedLexicalNode,
   type Spread,
+  $getNodeByKey,
 } from "lexical";
+import { useQuery } from "@tanstack/react-query";
+import { mediaApi } from "@samofujera/api-client";
+import type { MediaItemResponse } from "@samofujera/api-client";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Input,
+} from "@samofujera/ui";
+import { MediaGrid } from "../../media/MediaGrid";
+import { UploadProgress } from "../../media/UploadProgress";
+import { useMultiUpload } from "../../media/useMultiUpload";
 
 export type ImageAlignment = "left" | "center" | "right" | "full";
 
@@ -39,6 +52,22 @@ function ImageComponent({
   editor: LexicalEditor;
 }) {
   const [isSelected, setIsSelected] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const multiUpload = useMultiUpload();
+
+  const itemsQuery = useQuery({
+    queryKey: ["media", "items", { search, pickerOpen: showPicker }],
+    queryFn: () =>
+      mediaApi.getItems({
+        search: search || undefined,
+        limit: 50,
+      }),
+    enabled: showPicker,
+  });
 
   const alignClasses: Record<ImageAlignment, string> = {
     left: "mr-auto",
@@ -46,6 +75,11 @@ function ImageComponent({
     right: "ml-auto",
     full: "w-full",
   };
+
+  // Filter to show only images from the results
+  const imageItems = (itemsQuery.data?.data?.items ?? []).filter((item) =>
+    item.mimeType.startsWith("image/"),
+  );
 
   function handleAlignmentChange(newAlignment: ImageAlignment) {
     editor.update(() => {
@@ -56,47 +90,173 @@ function ImageComponent({
     });
   }
 
+  function handlePickerOpen() {
+    setShowPicker(true);
+    setSelectedItem(null);
+    setSearch("");
+  }
+
+  function handleUpload() {
+    const files = fileInputRef.current?.files;
+    if (files && files.length > 0) {
+      multiUpload.addFiles(files);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  function handleConfirmSelect() {
+    if (selectedItem) {
+      const imageUrl = selectedItem.originalUrl;
+      const alt = selectedItem.altText ?? selectedItem.originalFilename;
+      editor.update(() => {
+        const node = $getNodeByKey(nodeKey);
+        if ($isImageNode(node)) {
+          node.setSrc(imageUrl);
+          node.setAltText(alt);
+          node.setMediaItemId(selectedItem.id);
+        }
+      });
+      setShowPicker(false);
+      setSelectedItem(null);
+    }
+  }
+
   return (
-    <div
-      className={`relative my-4 ${isSelected ? "ring-2 ring-[rgb(6,93,77)] ring-offset-2 rounded" : ""}`}
-      onClick={() => setIsSelected(!isSelected)}
-    >
-      {src ? (
-        <img
-          src={src}
-          alt={altText}
-          className={`max-w-full rounded ${alignClasses[alignment]}`}
-          style={{ display: "block" }}
-        />
-      ) : (
-        <div
-          className={`flex h-48 items-center justify-center rounded border-2 border-dashed border-[var(--border)] bg-[var(--muted)] ${alignClasses[alignment]}`}
-        >
-          <span className="text-[var(--muted-foreground)]">Klikni pro vlozeni obrazku</span>
-        </div>
-      )}
-      {isSelected && (
-        <div className="absolute -top-10 left-1/2 flex -translate-x-1/2 gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
-          {(["left", "center", "right", "full"] as ImageAlignment[]).map((a) => (
-            <button
-              key={a}
-              className={`rounded px-2 py-1 text-xs ${alignment === a ? "bg-[rgb(6,93,77)] text-white" : "hover:bg-[var(--accent)]"}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAlignmentChange(a);
-              }}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <div
+        className={`relative my-4 ${isSelected ? "ring-2 ring-[rgb(6,93,77)] ring-offset-2 rounded" : ""}`}
+        onClick={() => setIsSelected(!isSelected)}
+      >
+        {src ? (
+          <>
+            <img
+              src={src}
+              alt={altText}
+              className={`max-w-full rounded ${alignClasses[alignment]}`}
+              style={{ display: "block" }}
+            />
+            {isSelected && (
+              <div className="absolute -top-10 left-1/2 flex -translate-x-1/2 gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
+                {(["left", "center", "right", "full"] as ImageAlignment[]).map((a) => (
+                  <button
+                    key={a}
+                    className={`rounded px-2 py-1 text-xs ${alignment === a ? "bg-[rgb(6,93,77)] text-white" : "hover:bg-[var(--accent)]"}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAlignmentChange(a);
+                    }}
+                  >
+                    {a}
+                  </button>
+                ))}
+                <button
+                  className="rounded px-2 py-1 text-xs hover:bg-[var(--accent)]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePickerOpen();
+                  }}
+                >
+                  Zmenit
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div
+            className={`flex h-48 cursor-pointer items-center justify-center rounded border-2 border-dashed border-[var(--border)] bg-[var(--muted)] hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5 ${alignClasses[alignment]}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePickerOpen();
+            }}
+          >
+            <span className="text-[var(--muted-foreground)]">Klikni pro vlozeni obrazku</span>
+          </div>
+        )}
+      </div>
+
+      <Dialog open={showPicker} onOpenChange={setShowPicker}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Vybrat obrazek</DialogTitle>
+          </DialogHeader>
+
+          <div>
+            <Input
+              placeholder="Hledat podle nazvu..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="min-h-[300px] max-h-[50vh] overflow-y-auto">
+            {itemsQuery.isLoading && (
+              <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
+                Nacitani...
+              </p>
+            )}
+            {itemsQuery.isSuccess && (
+              <MediaGrid
+                items={imageItems}
+                selectedId={selectedItem?.id}
+                onSelect={setSelectedItem}
+              />
+            )}
+          </div>
+
+          {multiUpload.uploads.length > 0 && (
+            <div className="border-t border-[var(--border)] pt-3">
+              <UploadProgress
+                uploads={multiUpload.uploads}
+                onCancel={multiUpload.cancelUpload}
+                onClearDone={multiUpload.clearDone}
+              />
+            </div>
+          )}
+
+          <div className="flex items-center justify-between border-t border-[var(--border)] pt-4">
+            <div className="flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleUpload}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={multiUpload.isUploading}
+              >
+                {multiUpload.isUploading ? "Nahravam..." : "Nahrat obrazky"}
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPicker(false)}
+              >
+                Zrusit
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleConfirmSelect}
+                disabled={!selectedItem}
+              >
+                Vybrat
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
-// Import this separately since it depends on Lexical internals
-import { $getNodeByKey } from "lexical";
 
 export class ImageNode extends DecoratorNode<JSX.Element> {
   __src: string;
