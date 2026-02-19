@@ -16,6 +16,7 @@ import type { EditorState, SerializedEditorState } from "lexical";
 import { editorTheme } from "./theme";
 import { ToolbarPlugin } from "./plugins/ToolbarPlugin";
 import { InsertBlockPlugin } from "./plugins/InsertBlockPlugin";
+import { DeleteBlockPlugin } from "./plugins/DeleteBlockPlugin";
 import { ImageNode } from "./nodes/ImageNode";
 import { ButtonNode } from "./nodes/ButtonNode";
 import { SeparatorNode } from "./nodes/SeparatorNode";
@@ -28,7 +29,7 @@ interface PageEditorProps {
 function isValidEditorState(content: SerializedEditorState | null): content is SerializedEditorState {
   if (!content) return false;
   // Must have a root with children to be a valid Lexical state
-  const root = (content as Record<string, unknown>).root;
+  const root = (content as unknown as Record<string, unknown>).root;
   return root != null && typeof root === "object";
 }
 
@@ -74,6 +75,7 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
           </div>
         </div>
         <HistoryPlugin />
+        <DeleteBlockPlugin />
         <ListPlugin />
         <LinkPlugin />
         <OnChangePlugin onChange={handleChange} ignoreSelectionChange />

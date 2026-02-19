@@ -25,6 +25,7 @@ import {
 import { MediaGrid } from "../../media/MediaGrid";
 import { UploadProgress } from "../../media/UploadProgress";
 import { useMultiUpload } from "../../media/useMultiUpload";
+import { BlockWrapper } from "./BlockWrapper";
 
 export type ImageAlignment = "left" | "center" | "right" | "full";
 
@@ -57,7 +58,7 @@ function ImageComponent({
   const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const multiUpload = useMultiUpload();
+  const multiUpload = useMultiUpload({ isPublic: true });
 
   const itemsQuery = useQuery({
     queryKey: ["media", "items", { search, pickerOpen: showPicker }],
@@ -106,7 +107,7 @@ function ImageComponent({
 
   function handleConfirmSelect() {
     if (selectedItem) {
-      const imageUrl = selectedItem.originalUrl;
+      const imageUrl = selectedItem.largeUrl ?? selectedItem.originalUrl;
       const alt = selectedItem.altText ?? selectedItem.originalFilename;
       editor.update(() => {
         const node = $getNodeByKey(nodeKey);
@@ -123,9 +124,12 @@ function ImageComponent({
 
   return (
     <>
-      <div
-        className={`relative my-4 ${isSelected ? "ring-2 ring-[rgb(6,93,77)] ring-offset-2 rounded" : ""}`}
-        onClick={() => setIsSelected(!isSelected)}
+      <BlockWrapper
+        nodeKey={nodeKey}
+        editor={editor}
+        isSelected={isSelected}
+        onSelect={() => setIsSelected(!isSelected)}
+        className="relative my-4"
       >
         {src ? (
           <>
@@ -172,7 +176,7 @@ function ImageComponent({
             <span className="text-[var(--muted-foreground)]">Klikni pro vložení obrázku</span>
           </div>
         )}
-      </div>
+      </BlockWrapper>
 
       <Dialog open={showPicker} onOpenChange={setShowPicker}>
         <DialogContent className="max-w-4xl">

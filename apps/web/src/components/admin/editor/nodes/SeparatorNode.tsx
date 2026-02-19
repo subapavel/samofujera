@@ -11,6 +11,7 @@ import {
   type Spread,
   $getNodeByKey,
 } from "lexical";
+import { BlockWrapper } from "./BlockWrapper";
 
 export type SeparatorStyle = "simple" | "ornamental";
 
@@ -44,26 +45,30 @@ function SeparatorComponent({
   }
 
   return (
-    <div
-      className={`my-8 cursor-pointer ${isSelected ? "ring-2 ring-[rgb(6,93,77)] ring-offset-4 rounded" : ""}`}
-      onClick={() => setIsSelected(!isSelected)}
-      onDoubleClick={toggleStyle}
+    <BlockWrapper
+      nodeKey={nodeKey}
+      editor={editor}
+      isSelected={isSelected}
+      onSelect={() => setIsSelected(!isSelected)}
+      className="my-8 cursor-pointer"
     >
-      {separatorStyle === "simple" ? (
-        <hr className="border-t border-[var(--border)]" />
-      ) : (
-        <div className="flex items-center justify-center gap-3">
-          <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
-          <span className="text-[rgb(6,93,77)]">&#10043;</span>
-          <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
-        </div>
-      )}
-      {isSelected && (
-        <p className="mt-1 text-center text-xs text-[var(--muted-foreground)]">
-          Dvakrát klikni pro změnu stylu
-        </p>
-      )}
-    </div>
+      <div onDoubleClick={toggleStyle}>
+        {separatorStyle === "simple" ? (
+          <hr className="border-t border-[var(--border)]" />
+        ) : (
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
+            <span className="text-[rgb(6,93,77)]">&#10043;</span>
+            <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
+          </div>
+        )}
+        {isSelected && (
+          <p className="mt-1 text-center text-xs text-[var(--muted-foreground)]">
+            Dvakrát klikni pro změnu stylu
+          </p>
+        )}
+      </div>
+    </BlockWrapper>
   );
 }
 

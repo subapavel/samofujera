@@ -15,9 +15,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@samofujera/ui";
 import { Type, ImageIcon, Minus, MousePointerClick, Plus } from "lucide-react";
 
 interface GapPosition {
-  /** Key of the node above the gap, or null if gap is before the first child */
   afterKey: NodeKey | null;
-  /** Y offset relative to the overlay container */
   top: number;
 }
 
@@ -44,25 +42,25 @@ export function InsertBlockPlugin() {
       const newGaps: GapPosition[] = [];
 
       if (children.length === 0) {
-        // Single gap at top when editor is empty
-        newGaps.push({ afterKey: null, top: 0 });
+        newGaps.push({ afterKey: null, top: 16 });
         setGaps(newGaps);
         return;
       }
 
       for (let i = 0; i <= children.length; i++) {
         if (i === 0) {
-          // Gap before first child
-          const firstEl = editor.getElementByKey(children[0].__key);
-          if (firstEl) {
-            const rect = firstEl.getBoundingClientRect();
-            newGaps.push({
-              afterKey: null,
-              top: rect.top - overlayRect.top,
-            });
+          // Only show gap before first child when there are multiple children
+          if (children.length > 1) {
+            const firstEl = editor.getElementByKey(children[0].__key);
+            if (firstEl) {
+              const rect = firstEl.getBoundingClientRect();
+              newGaps.push({
+                afterKey: null,
+                top: rect.top - overlayRect.top,
+              });
+            }
           }
         } else {
-          // Gap after children[i-1]
           const prevEl = editor.getElementByKey(children[i - 1].__key);
           if (prevEl) {
             const prevRect = prevEl.getBoundingClientRect();
@@ -78,10 +76,9 @@ export function InsertBlockPlugin() {
                 });
               }
             } else {
-              // Gap after last child
               newGaps.push({
                 afterKey: children[i - 1].__key,
-                top: prevRect.bottom - overlayRect.top,
+                top: prevRect.bottom - overlayRect.top + 8,
               });
             }
           }
@@ -94,31 +91,30 @@ export function InsertBlockPlugin() {
 
   useEffect(() => {
     return editor.registerUpdateListener(() => {
-      // Defer to next frame so DOM is updated
       requestAnimationFrame(computeGaps);
     });
   }, [editor, computeGaps]);
 
-  // Also recompute on window resize
   useEffect(() => {
     window.addEventListener("resize", computeGaps);
     return () => window.removeEventListener("resize", computeGaps);
   }, [computeGaps]);
 
   const insertNode = useCallback(
-    (afterKey: NodeKey | null, createNode: () => LexicalNode) => {
+    (afterKey: NodeKey | null, createNode: () => LexicalNode, focusNew = false) => {
       editor.update(() => {
         const root = $getRoot();
         const newNode = createNode();
-        const trailingParagraph = $createParagraphNode();
+        const isDecorator = newNode.getType() !== "paragraph"
+          && newNode.getType() !== "heading"
+          && newNode.getType() !== "list";
 
         if (afterKey === null) {
           const firstChild = root.getFirstChild();
           if (firstChild) {
             firstChild.insertBefore(newNode);
-            newNode.insertAfter(trailingParagraph);
           } else {
-            root.append(newNode, trailingParagraph);
+            root.append(newNode);
           }
         } else {
           const afterNode = root
@@ -126,8 +122,17 @@ export function InsertBlockPlugin() {
             .find((child) => child.__key === afterKey);
           if (afterNode) {
             afterNode.insertAfter(newNode);
-            newNode.insertAfter(trailingParagraph);
           }
+        }
+
+        // Decorator nodes need a trailing paragraph for cursor placement
+        if (isDecorator) {
+          newNode.insertAfter($createParagraphNode());
+        }
+
+        // Focus the new paragraph node
+        if (focusNew) {
+          newNode.selectStart();
         }
       });
     },
@@ -138,20 +143,20 @@ export function InsertBlockPlugin() {
     {
       label: "Text",
       icon: Type,
-      insert: (afterKey) => insertNode(afterKey, () => $createParagraphNode()),
+      insert: (afterKey) => insertNode(afterKey, () => $createParagraphNode(), true),
     },
     {
-      label: "Obr\u00e1zek",
+      label: "Obrázek",
       icon: ImageIcon,
       insert: (afterKey) => insertNode(afterKey, () => $createImageNode()),
     },
     {
-      label: "D\u011blic\u00ed \u010d\u00e1ra",
+      label: "Dělicí čára",
       icon: Minus,
       insert: (afterKey) => insertNode(afterKey, () => $createSeparatorNode()),
     },
     {
-      label: "Tla\u010d\u00edtko",
+      label: "Tlačítko",
       icon: MousePointerClick,
       insert: (afterKey) => insertNode(afterKey, () => $createButtonNode()),
     },
@@ -184,35 +189,35 @@ function GapHandle({
   const [hovered, setHovered] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
-  const visible = hovered || popoverOpen;
+  const active = hovered || popoverOpen;
 
   return (
     <div
-      className="pointer-events-auto absolute left-0 right-0 flex items-center justify-center"
+      className="absolute left-0 right-0 flex items-center justify-center"
       style={{ top: gap.top - 12, height: 24 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      {/* Horizontal line */}
+      {/* Horizontal line — only visible on hover */}
       <div
-        className="absolute inset-x-4 top-1/2 h-px -translate-y-1/2 bg-[rgb(6,93,77)]/40 transition-opacity duration-150"
-        style={{ opacity: visible ? 1 : 0 }}
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[rgb(6,93,77)]/40 transition-opacity duration-150"
+        style={{ opacity: active ? 1 : 0 }}
       />
 
-      {/* + button with popover */}
+      {/* + button — always slightly visible, pointer-events-auto so it's hoverable */}
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
           <button
-            className="relative z-10 flex h-6 w-6 items-center justify-center rounded-full border border-[rgb(6,93,77)] bg-white text-[rgb(6,93,77)] transition-all duration-150 hover:bg-[rgb(6,93,77)] hover:text-white"
-            style={{ opacity: visible ? 1 : 0 }}
+            className="pointer-events-auto relative z-10 flex h-6 w-6 items-center justify-center rounded-full border border-[rgb(6,93,77)] bg-white text-[rgb(6,93,77)] transition-all duration-150 hover:bg-[rgb(6,93,77)] hover:text-white"
+            style={{ opacity: active ? 1 : 0.25 }}
             type="button"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-64 p-3" side="bottom" align="center">
           <p className="mb-2 text-sm font-semibold">
-            P&#x159;idat obsah
+            Přidat obsah
           </p>
           <div className="grid grid-cols-2 gap-2">
             {blockOptions.map((option) => (

@@ -14,12 +14,15 @@ export interface UploadItem {
 
 interface UseMultiUploadOptions {
   onAllDone?: () => void;
+  isPublic?: boolean;
 }
 
 export function useMultiUpload(options?: UseMultiUploadOptions) {
   const queryClient = useQueryClient();
   const [uploads, setUploads] = useState<UploadItem[]>([]);
   const abortFns = useRef<Map<string, () => void>>(new Map());
+  const isPublic = options?.isPublic ?? false;
+  const onAllDone = options?.onAllDone;
 
   const updateUpload = useCallback(
     (id: string, patch: Partial<UploadItem>) => {
@@ -35,6 +38,8 @@ export function useMultiUpload(options?: UseMultiUploadOptions) {
       const { promise, abort } = mediaApi.uploadWithProgress(
         item.file,
         (progress) => updateUpload(item.id, { progress, status: "uploading" }),
+        undefined,
+        isPublic,
       );
 
       abortFns.current.set(item.id, abort);
@@ -52,7 +57,7 @@ export function useMultiUpload(options?: UseMultiUploadOptions) {
           abortFns.current.delete(item.id);
         });
     },
-    [updateUpload, queryClient],
+    [updateUpload, queryClient, isPublic],
   );
 
   const addFiles = useCallback(
@@ -84,8 +89,8 @@ export function useMultiUpload(options?: UseMultiUploadOptions) {
 
   const clearDone = useCallback(() => {
     setUploads((prev) => prev.filter((u) => u.status !== "done"));
-    options?.onAllDone?.();
-  }, [options]);
+    onAllDone?.();
+  }, [onAllDone]);
 
   const isUploading = uploads.some(
     (u) => u.status === "pending" || u.status === "uploading",

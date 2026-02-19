@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useParams } from "next/navigation";
 import { pageAdminApi } from "@samofujera/api-client";
@@ -54,22 +54,24 @@ export function PageEditorPage() {
   const initialContent = pageQuery.data?.data?.content as SerializedEditorState | null ?? null;
 
   // Populate form fields once query succeeds
-  if (pageQuery.data && !formReady) {
-    const page = pageQuery.data.data;
-    setTitle(page.title);
-    setSlug(page.slug);
-    setMetaTitle(page.metaTitle ?? "");
-    setMetaDescription(page.metaDescription ?? "");
-    contentRef.current = initialContent;
-    setFormReady(true);
-  }
+  useEffect(() => {
+    if (pageQuery.data && !formReady) {
+      const page = pageQuery.data.data;
+      setTitle(page.title);
+      setSlug(page.slug);
+      setMetaTitle(page.metaTitle ?? "");
+      setMetaDescription(page.metaDescription ?? "");
+      contentRef.current = initialContent;
+      setFormReady(true);
+    }
+  }, [pageQuery.data, formReady, initialContent]);
 
   const saveMutation = useMutation({
     mutationFn: () =>
       pageAdminApi.updatePage(pageId!, {
         slug,
         title,
-        content: contentRef.current as Record<string, unknown> | null,
+        content: contentRef.current as unknown as Record<string, unknown> | null,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
         ogImageId: null,
@@ -104,7 +106,7 @@ export function PageEditorPage() {
         await pageAdminApi.updatePage(response.data.id, {
           slug: slug || slugify(title),
           title,
-          content: contentRef.current as Record<string, unknown>,
+          content: contentRef.current as unknown as Record<string, unknown>,
           metaTitle: metaTitle || null,
           metaDescription: metaDescription || null,
           ogImageId: null,

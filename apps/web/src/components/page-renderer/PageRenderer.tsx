@@ -181,6 +181,7 @@ function LinkRenderer({ node }: { node: SerializedNode }) {
 }
 
 function ImageRenderer({ node }: { node: SerializedNode }) {
+  if (!node.src) return null;
   const alignClasses: Record<string, string> = {
     left: "mr-auto",
     center: "mx-auto",
@@ -188,23 +189,13 @@ function ImageRenderer({ node }: { node: SerializedNode }) {
     full: "w-full",
   };
   const alignment = node.alignment ?? "center";
-
-  // Use media API to get a fresh URL if mediaItemId is available
-  const imgSrc = node.mediaItemId
-    ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/media/${node.mediaItemId}/file`
-    : node.src;
-
-  if (!imgSrc) return null;
-
   return (
-    <div className="my-4">
-      <img
-        src={imgSrc}
-        alt={node.altText ?? ""}
-        className={`max-w-full rounded ${alignClasses[alignment] ?? "mx-auto"}`}
-        style={{ display: "block" }}
-      />
-    </div>
+    <img
+      src={node.src}
+      alt={node.altText ?? ""}
+      className={`max-w-full rounded ${alignClasses[alignment] ?? "mx-auto"}`}
+      style={{ display: "block" }}
+    />
   );
 }
 

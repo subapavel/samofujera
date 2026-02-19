@@ -11,6 +11,7 @@ import {
   type Spread,
   $getNodeByKey,
 } from "lexical";
+import { BlockWrapper } from "./BlockWrapper";
 
 export type ButtonVariant = "primary" | "secondary";
 
@@ -37,6 +38,7 @@ function ButtonComponent({
   editor: LexicalEditor;
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [editText, setEditText] = useState(text);
   const [editUrl, setEditUrl] = useState(url);
   const [editVariant, setEditVariant] = useState(variant);
@@ -61,7 +63,17 @@ function ButtonComponent({
   };
 
   return (
-    <div className="my-6 text-center">
+    <BlockWrapper
+      nodeKey={nodeKey}
+      editor={editor}
+      isSelected={isHovered && !isEditing}
+      onSelect={() => {}}
+      className="my-6 text-center"
+    >
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
       {isEditing ? (
         <div className="mx-auto max-w-sm space-y-2 rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
           <input
@@ -113,7 +125,8 @@ function ButtonComponent({
           {text || "Klikni pro úpravu tlačítka"}
         </span>
       )}
-    </div>
+      </div>
+    </BlockWrapper>
   );
 }
 
