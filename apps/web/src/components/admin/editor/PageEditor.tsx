@@ -34,6 +34,7 @@ import type { EditorState, SerializedEditorState } from "lexical";
 
 import { editorTheme } from "./theme";
 import { ToolbarPlugin } from "./plugins/ToolbarPlugin";
+import { LinkEditorPlugin } from "./plugins/LinkEditorPlugin";
 
 export interface SectionEditorHandle {
   undo: () => void;
@@ -222,8 +223,9 @@ export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
 
     return (
       <LexicalComposer initialConfig={initialConfig}>
-        <div data-text-block-wrapper="">
+        <div data-text-block-wrapper="" className="relative">
           <ToolbarPlugin />
+          <LinkEditorPlugin />
           <RichTextPlugin
             contentEditable={
               <ContentEditable

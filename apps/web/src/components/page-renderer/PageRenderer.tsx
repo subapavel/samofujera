@@ -7,9 +7,12 @@ interface SerializedNode {
   children?: SerializedNode[];
   text?: string;
   format?: number;
+  style?: string;
   tag?: string;
   listType?: string;
   url?: string;
+  target?: string;
+  indent?: number;
   // Custom node fields (legacy v2 compat)
   src?: string;
   altText?: string;
@@ -255,39 +258,67 @@ function renderChildren(node: SerializedNode): ReactNode {
   return <>{node.children.map((child, i) => renderNode(child, i))}</>;
 }
 
+function parseStyleString(style: string | undefined): React.CSSProperties | undefined {
+  if (!style) return undefined;
+  const result: Record<string, string> = {};
+  for (const part of style.split(";")) {
+    const colonIdx = part.indexOf(":");
+    if (colonIdx === -1) continue;
+    const key = part.slice(0, colonIdx).trim();
+    const value = part.slice(colonIdx + 1).trim();
+    if (!key || !value) continue;
+    // Convert CSS property to camelCase
+    const camelKey = key.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+    result[camelKey] = value;
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
 function TextRenderer({ node }: { node: SerializedNode }) {
   let element: ReactNode = <>{node.text}</>;
   const format = node.format ?? 0;
   if (format & 1) element = <strong>{element}</strong>;
   if (format & 2) element = <em>{element}</em>;
   if (format & 8) element = <u>{element}</u>;
+  const inlineStyle = parseStyleString(node.style);
+  if (inlineStyle) {
+    element = <span style={inlineStyle}>{element}</span>;
+  }
   return element;
+}
+
+function getIndentStyle(indent: number | undefined): React.CSSProperties | undefined {
+  if (!indent || indent <= 0) return undefined;
+  return { paddingInlineStart: `${indent * 2}rem` };
 }
 
 function ParagraphRenderer({ node }: { node: SerializedNode }) {
   const align = getAlignmentClass(node.format);
+  const indentStyle = getIndentStyle(node.indent);
   if (!node.children || node.children.length === 0) {
-    return <p className={`public-body-110 mb-4 ${align}`} />;
+    return <p className={`public-body-110 mb-4 ${align}`} style={indentStyle} />;
   }
-  return <p className={`public-body-110 mb-4 ${align}`}>{renderChildren(node)}</p>;
+  return <p className={`public-body-110 mb-4 ${align}`} style={indentStyle}>{renderChildren(node)}</p>;
 }
 
 function HeadingRenderer({ node }: { node: SerializedNode }) {
   const tag = node.tag;
   const align = getAlignmentClass(node.format);
-  if (tag === "h1") return <h1 className={`public-h1 pb-4 ${align}`}>{renderChildren(node)}</h1>;
-  if (tag === "h2") return <h2 className={`public-h2-sm pb-3.5 ${align}`}>{renderChildren(node)}</h2>;
-  if (tag === "h3") return <h3 className={`public-h3 pb-2 ${align}`}>{renderChildren(node)}</h3>;
-  if (tag === "h4") return <h4 className={`text-lg font-semibold pb-2 ${align}`}>{renderChildren(node)}</h4>;
-  if (tag === "h5") return <h5 className={`text-base font-semibold pb-1.5 ${align}`}>{renderChildren(node)}</h5>;
-  if (tag === "h6") return <h6 className={`text-sm font-semibold pb-1 ${align}`}>{renderChildren(node)}</h6>;
-  return <h2 className={`public-h2-sm pb-3.5 ${align}`}>{renderChildren(node)}</h2>;
+  const indentStyle = getIndentStyle(node.indent);
+  if (tag === "h1") return <h1 className={`public-h1 pb-4 ${align}`} style={indentStyle}>{renderChildren(node)}</h1>;
+  if (tag === "h2") return <h2 className={`public-h2-sm pb-3.5 ${align}`} style={indentStyle}>{renderChildren(node)}</h2>;
+  if (tag === "h3") return <h3 className={`public-h3 pb-2 ${align}`} style={indentStyle}>{renderChildren(node)}</h3>;
+  if (tag === "h4") return <h4 className={`text-lg font-semibold pb-2 ${align}`} style={indentStyle}>{renderChildren(node)}</h4>;
+  if (tag === "h5") return <h5 className={`text-base font-semibold pb-1.5 ${align}`} style={indentStyle}>{renderChildren(node)}</h5>;
+  if (tag === "h6") return <h6 className={`text-sm font-semibold pb-1 ${align}`} style={indentStyle}>{renderChildren(node)}</h6>;
+  return <h2 className={`public-h2-sm pb-3.5 ${align}`} style={indentStyle}>{renderChildren(node)}</h2>;
 }
 
 function QuoteRenderer({ node }: { node: SerializedNode }) {
   const align = getAlignmentClass(node.format);
+  const indentStyle = getIndentStyle(node.indent);
   return (
-    <blockquote className={`border-l-4 border-[rgb(6,93,77)]/30 pl-4 italic text-[var(--muted-foreground)] mb-4 ${align}`}>
+    <blockquote className={`border-l-4 border-[#065d4d] pl-4 italic text-black mb-4 ${align}`} style={indentStyle}>
       {renderChildren(node)}
     </blockquote>
   );
@@ -307,12 +338,13 @@ function ListItemRenderer({ node }: { node: SerializedNode }) {
 }
 
 function LinkRenderer({ node }: { node: SerializedNode }) {
+  const isExternal = node.target === "_blank" || (!node.target && node.url?.startsWith("http"));
   return (
     <a
       href={node.url ?? "#"}
       className="text-[rgb(6,93,77)] underline hover:no-underline"
-      target={node.url?.startsWith("http") ? "_blank" : undefined}
-      rel={node.url?.startsWith("http") ? "noopener noreferrer" : undefined}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
     >
       {renderChildren(node)}
     </a>

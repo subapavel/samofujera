@@ -11,6 +11,8 @@ import {
   SELECTION_CHANGE_COMMAND,
   COMMAND_PRIORITY_LOW,
   $createParagraphNode,
+  INDENT_CONTENT_COMMAND,
+  OUTDENT_CONTENT_COMMAND,
   type ElementFormatType,
 } from "lexical";
 import { $isHeadingNode, $createHeadingNode, type HeadingTagType, $createQuoteNode, $isQuoteNode } from "@lexical/rich-text";
@@ -20,9 +22,11 @@ import {
   $isListNode,
   ListNode,
 } from "@lexical/list";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import { $isLinkNode } from "@lexical/link";
+import { OPEN_LINK_EDITOR_COMMAND } from "./LinkEditorPlugin";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import { $setBlocksType } from "@lexical/selection";
+import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import {
   AlignLeft,
   AlignCenter,
@@ -34,7 +38,10 @@ import {
   List,
   ListOrdered,
   ChevronDown,
+  ChevronRight,
   TextQuote,
+  Indent,
+  Outdent,
 } from "lucide-react";
 import {
   Button,
@@ -42,6 +49,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@samofujera/ui";
 
 type BlockType = "paragraph" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "quote" | "ul" | "ol";
@@ -78,6 +88,42 @@ const ALIGNMENT_ICON: Record<string, typeof AlignLeft> = {
   justify: AlignJustify,
 };
 
+// Color palette matching the screenshot — 8 columns, 6 rows
+const COLOR_PALETTE = [
+  // Row 1: grayscale
+  null, "#000000", "#1a1a1a", "#333333", "#666666", "#999999", "#cccccc", "#ffffff",
+  // Row 2: warm vivid
+  "#e63946", "#f4845f", "#f9c74f", "#57a773", "#2ec4b6", "#4361ee", "#6c7ae0", "#c77dff",
+  // Row 3: warm medium
+  "#c1121f", "#e76f51", "#e9c46a", "#43aa8b", "#20c997", "#3a86ff", "#5c6eb8", "#b5179e",
+  // Row 4: warm dark
+  "#9b2226", "#d45d2a", "#d4a017", "#2d6a4f", "#17a589", "#2563eb", "#4c5a99", "#9b2d8e",
+  // Row 5: deep
+  "#780000", "#ae3c00", "#b28900", "#1b4332", "#0f766e", "#1d4ed8", "#3b4880", "#7b2d8e",
+  // Row 6: darkest
+  "#590000", "#8b2f00", "#8b6f00", "#0d3320", "#115e59", "#1e40af", "#2e3a6e", "#5b1f6e",
+];
+
+// Default text colors by block type
+const BRAND_COLOR = "#065d4d";
+const DEFAULT_BLOCK_COLORS: Partial<Record<BlockType, string>> = {
+  h1: BRAND_COLOR,
+  h2: BRAND_COLOR,
+  h3: BRAND_COLOR,
+  h4: BRAND_COLOR,
+  h5: BRAND_COLOR,
+  h6: BRAND_COLOR,
+  paragraph: "#000000",
+  quote: "#000000",
+  ul: "#000000",
+  ol: "#000000",
+};
+
+// Font size steps (percentages)
+const FONT_SIZE_OPTIONS = [
+  "50%", "62.5%", "75%", "87.5%", "100%", "112.5%", "125%", "150%", "175%", "200%", "250%", "300%",
+];
+
 export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -90,6 +136,9 @@ export function ToolbarPlugin() {
   const [elementFormat, setElementFormat] = useState<ElementFormatType>("");
   const [isList, setIsList] = useState(false);
   const [listType, setListType] = useState<"ul" | "ol">("ul");
+  const [showExtras, setShowExtras] = useState(false);
+  const [fontColor, setFontColor] = useState<string>("");
+  const [fontSize, setFontSize] = useState<string>("");
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -100,6 +149,10 @@ export function ToolbarPlugin() {
 
     setIsBold(selection.hasFormat("bold"));
     setIsItalic(selection.hasFormat("italic"));
+
+    // Read inline styles
+    setFontColor($getSelectionStyleValueForProperty(selection, "color", ""));
+    setFontSize($getSelectionStyleValueForProperty(selection, "font-size", ""));
 
     const anchorNode = selection.anchor.getNode();
     let element =
@@ -180,10 +233,10 @@ export function ToolbarPlugin() {
       const relatedTarget = e.relatedTarget as Node | null;
       // If focus moved to toolbar, stay visible
       if (relatedTarget && toolbarRef.current?.contains(relatedTarget)) return;
-      // If focus moved to a Radix portal (dropdown menu), stay visible
+      // If focus moved to a Radix portal (dropdown menu, popover), stay visible
       if (relatedTarget instanceof HTMLElement) {
         const portal = relatedTarget.closest(
-          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content]",
+          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content], [data-radix-popover-content]",
         );
         if (portal) return;
       }
@@ -218,14 +271,45 @@ export function ToolbarPlugin() {
   }
 
   function insertLink() {
-    if (isLink) {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-    } else {
-      const url = window.prompt("URL:");
-      if (url) {
-        editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
+    editor.dispatchCommand(OPEN_LINK_EDITOR_COMMAND, undefined);
+  }
+
+  function applyFontColor(color: string | null) {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $patchStyleText(selection, { color });
       }
-    }
+    });
+  }
+
+  function applyFontSize(size: string | null) {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $patchStyleText(selection, { "font-size": size });
+      }
+    });
+  }
+
+  function adjustFontSize(direction: "up" | "down") {
+    editor.update(() => {
+      const selection = $getSelection();
+      if (!$isRangeSelection(selection)) return;
+      const current = $getSelectionStyleValueForProperty(selection, "font-size", "");
+      let pct = 100;
+      if (current) {
+        if (current.endsWith("%")) {
+          pct = parseFloat(current);
+        } else if (current.endsWith("px")) {
+          // Approximate: 16px = 100%
+          pct = (parseFloat(current) / 16) * 100;
+        }
+      }
+      const newPct = direction === "up" ? Math.round(pct + 10) : Math.round(pct - 10);
+      const clamped = Math.max(25, Math.min(400, newPct));
+      $patchStyleText(selection, { "font-size": `${clamped}%` });
+    });
   }
 
   if (!showToolbar) return null;
@@ -237,160 +321,306 @@ export function ToolbarPlugin() {
   // Block type label (only for non-list types in dropdown)
   const dropdownLabel = isList ? BLOCK_TYPE_LABELS[blockType] : BLOCK_TYPE_LABELS[blockType];
 
+  // Effective color: explicit inline color > default for block type > black
+  const effectiveColor = fontColor || DEFAULT_BLOCK_COLORS[blockType] || "#000000";
+
+  // Font size display
+  let fontSizeDisplay = "100 %";
+  if (fontSize) {
+    if (fontSize.endsWith("%")) {
+      fontSizeDisplay = `${Math.round(parseFloat(fontSize))} %`;
+    } else if (fontSize.endsWith("px")) {
+      fontSizeDisplay = `${Math.round((parseFloat(fontSize) / 16) * 100)} %`;
+    }
+  }
+
   return (
     <div
       ref={toolbarRef}
-      className="absolute z-50 flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg"
+      className="absolute z-50 flex flex-col items-center gap-1"
       style={{
         top: `${toolbarPosition.top}px`,
         left: `${toolbarPosition.left}px`,
         transform: "translateX(-50%)",
       }}
     >
-      {/* Block type dropdown — H1-H6, Odstavec, Citace */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs">
-            {dropdownLabel}
-            <ChevronDown className="h-3 w-3 opacity-50" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {BLOCK_TYPE_OPTIONS.map(({ type, label }) => (
-            <DropdownMenuItem key={type} onClick={() => formatBlock(type)}>
-              {type === "quote" && <TextQuote className="mr-2 h-4 w-4" />}
-              {label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Main toolbar row */}
+      <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
+        {/* Block type dropdown — H1-H6, Odstavec, Citace */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs">
+              {dropdownLabel}
+              <ChevronDown className="h-3 w-3 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {BLOCK_TYPE_OPTIONS.map(({ type, label }) => (
+              <DropdownMenuItem key={type} onClick={() => formatBlock(type)}>
+                {type === "quote" && <TextQuote className="mr-2 h-4 w-4" />}
+                {label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
 
-      {/* Bold */}
-      <Button
-        variant={isBold ? "default" : "ghost"}
-        size="sm"
-        className="h-8 w-8 p-0"
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
-        title="Tučné"
-      >
-        <Bold className="h-4 w-4" />
-      </Button>
+        {/* Bold */}
+        <Button
+          variant={isBold ? "default" : "ghost"}
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
+          title="Tučné"
+        >
+          <Bold className="h-4 w-4" />
+        </Button>
 
-      {/* Italic */}
-      <Button
-        variant={isItalic ? "default" : "ghost"}
-        size="sm"
-        className="h-8 w-8 p-0"
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
-        title="Kurzíva"
-      >
-        <Italic className="h-4 w-4" />
-      </Button>
+        {/* Italic */}
+        <Button
+          variant={isItalic ? "default" : "ghost"}
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
+          title="Kurzíva"
+        >
+          <Italic className="h-4 w-4" />
+        </Button>
 
-      <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
 
-      {/* Alignment dropdown — one icon with arrow */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        {/* Alignment dropdown — one icon with arrow */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={elementFormat && elementFormat !== "left" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 gap-0.5 px-1.5"
+              title="Zarovnání"
+            >
+              <CurrentAlignIcon className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
+            <Button
+              variant={elementFormat === "" || elementFormat === "left" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => formatAlignment("left")}
+              title="Vlevo"
+            >
+              <AlignLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={elementFormat === "center" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => formatAlignment("center")}
+              title="Na střed"
+            >
+              <AlignCenter className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={elementFormat === "right" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => formatAlignment("right")}
+              title="Vpravo"
+            >
+              <AlignRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={elementFormat === "justify" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => formatAlignment("justify")}
+              title="Do bloku"
+            >
+              <AlignJustify className="h-4 w-4" />
+            </Button>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* List dropdown — one icon with arrow */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={isList ? "default" : "ghost"}
+              size="sm"
+              className="h-8 gap-0.5 px-1.5"
+              title="Seznam"
+            >
+              <CurrentListIcon className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
+            <Button
+              variant={isList && listType === "ul" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => formatBlock("ul")}
+              title="Seznam"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={isList && listType === "ol" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => formatBlock("ol")}
+              title="Číslovaný seznam"
+            >
+              <ListOrdered className="h-4 w-4" />
+            </Button>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+
+        {/* Link */}
+        <Button
+          variant={isLink ? "default" : "ghost"}
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={insertLink}
+          title="Odkaz"
+        >
+          <Link className="h-4 w-4" />
+        </Button>
+
+        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+
+        {/* Toggle extras arrow */}
+        <Button
+          variant={showExtras ? "default" : "ghost"}
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => setShowExtras(!showExtras)}
+          title="Další možnosti"
+        >
+          <ChevronRight className={`h-4 w-4 transition-transform ${showExtras ? "rotate-90" : ""}`} />
+        </Button>
+      </div>
+
+      {/* Extras row — font color, font size, indent */}
+      {showExtras && (
+        <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
+          {/* Font color — "A" with color indicator + dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-0.5 px-1.5"
+                title="Barva písma"
+              >
+                <span className="relative flex flex-col items-center">
+                  <span className="text-sm font-bold leading-none" style={{ color: effectiveColor }}>A</span>
+                  <span
+                    className="mt-0.5 h-0.5 w-3.5 rounded-full"
+                    style={{ backgroundColor: effectiveColor }}
+                  />
+                </span>
+                <ChevronDown className="h-3 w-3 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-3" side="bottom" align="start">
+              <div className="grid grid-cols-8 gap-1">
+                {COLOR_PALETTE.map((color, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`h-6 w-6 rounded border transition-transform hover:scale-110 ${
+                      color === null
+                        ? `relative overflow-hidden border-gray-300 bg-white${!fontColor ? " border-2 !border-[rgb(6,93,77)] ring-1 ring-[rgb(6,93,77)]" : ""}`
+                        : fontColor === color
+                          ? "border-2 border-[rgb(6,93,77)] ring-1 ring-[rgb(6,93,77)]"
+                          : "border-gray-200"
+                    }`}
+                    style={color ? { backgroundColor: color } : undefined}
+                    onClick={() => applyFontColor(color)}
+                    title={color ?? "Výchozí barva"}
+                  >
+                    {color === null && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="h-[141%] w-px rotate-45 bg-red-500" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+
+          {/* Font size: A- | percentage dropdown | A+ */}
           <Button
-            variant={elementFormat && elementFormat !== "left" ? "default" : "ghost"}
-            size="sm"
-            className="h-8 gap-0.5 px-1.5"
-            title="Zarovnání"
-          >
-            <CurrentAlignIcon className="h-4 w-4" />
-            <ChevronDown className="h-3 w-3 opacity-50" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
-          <Button
-            variant={elementFormat === "" || elementFormat === "left" ? "default" : "ghost"}
+            variant="ghost"
             size="sm"
             className="h-8 w-8 p-0"
-            onClick={() => formatAlignment("left")}
-            title="Vlevo"
+            onClick={() => adjustFontSize("down")}
+            title="Zmenšit písmo"
           >
-            <AlignLeft className="h-4 w-4" />
+            <span className="text-xs font-bold">A-</span>
           </Button>
-          <Button
-            variant={elementFormat === "center" ? "default" : "ghost"}
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => formatAlignment("center")}
-            title="Na střed"
-          >
-            <AlignCenter className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={elementFormat === "right" ? "default" : "ghost"}
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => formatAlignment("right")}
-            title="Vpravo"
-          >
-            <AlignRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={elementFormat === "justify" ? "default" : "ghost"}
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => formatAlignment("justify")}
-            title="Do bloku"
-          >
-            <AlignJustify className="h-4 w-4" />
-          </Button>
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      {/* List dropdown — one icon with arrow */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 gap-0.5 px-1.5 text-xs">
+                {fontSizeDisplay}
+                <ChevronDown className="h-3 w-3 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="max-h-60 overflow-y-auto">
+              <DropdownMenuItem onClick={() => applyFontSize(null)}>
+                Výchozí
+              </DropdownMenuItem>
+              {FONT_SIZE_OPTIONS.map((size) => (
+                <DropdownMenuItem key={size} onClick={() => applyFontSize(size)}>
+                  {size}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Button
-            variant={isList ? "default" : "ghost"}
-            size="sm"
-            className="h-8 gap-0.5 px-1.5"
-            title="Seznam"
-          >
-            <CurrentListIcon className="h-4 w-4" />
-            <ChevronDown className="h-3 w-3 opacity-50" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
-          <Button
-            variant={isList && listType === "ul" ? "default" : "ghost"}
+            variant="ghost"
             size="sm"
             className="h-8 w-8 p-0"
-            onClick={() => formatBlock("ul")}
-            title="Seznam"
+            onClick={() => adjustFontSize("up")}
+            title="Zvětšit písmo"
           >
-            <List className="h-4 w-4" />
+            <span className="text-xs font-bold">A+</span>
           </Button>
+
+          <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+
+          {/* Indent / Outdent */}
           <Button
-            variant={isList && listType === "ol" ? "default" : "ghost"}
+            variant="ghost"
             size="sm"
             className="h-8 w-8 p-0"
-            onClick={() => formatBlock("ol")}
-            title="Číslovaný seznam"
+            onClick={() => editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)}
+            title="Zmenšit odsazení"
           >
-            <ListOrdered className="h-4 w-4" />
+            <Outdent className="h-4 w-4" />
           </Button>
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
-
-      {/* Link */}
-      <Button
-        variant={isLink ? "default" : "ghost"}
-        size="sm"
-        className="h-8 w-8 p-0"
-        onClick={insertLink}
-        title="Odkaz"
-      >
-        <Link className="h-4 w-4" />
-      </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)}
+            title="Zvětšit odsazení"
+          >
+            <Indent className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
