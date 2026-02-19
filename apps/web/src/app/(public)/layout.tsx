@@ -13,7 +13,7 @@ export default function PublicLayout({
       <div className="px-2 mt-2 nav:mt-4 nav:px-4">
         <PublicNav />
       </div>
-      <main className="flex-1 px-2 py-2 nav:px-4 nav:py-4">{children}</main>
+      <main className="page-content flex-1 px-2 py-2 nav:px-4 nav:py-4">{children}</main>
       <Footer />
     </div>
   );
