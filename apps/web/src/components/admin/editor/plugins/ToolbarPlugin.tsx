@@ -5,13 +5,15 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $getSelection,
   $isRangeSelection,
+  $isElementNode,
   FORMAT_TEXT_COMMAND,
+  FORMAT_ELEMENT_COMMAND,
   SELECTION_CHANGE_COMMAND,
   COMMAND_PRIORITY_LOW,
-  $isRootOrShadowRoot,
   $createParagraphNode,
+  type ElementFormatType,
 } from "lexical";
-import { $isHeadingNode, $createHeadingNode, type HeadingTagType } from "@lexical/rich-text";
+import { $isHeadingNode, $createHeadingNode, type HeadingTagType, $createQuoteNode, $isQuoteNode } from "@lexical/rich-text";
 import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
@@ -22,6 +24,19 @@ import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import { $setBlocksType } from "@lexical/selection";
 import {
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Bold,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+  ChevronDown,
+  TextQuote,
+} from "lucide-react";
+import {
   Button,
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,14 +44,38 @@ import {
   DropdownMenuItem,
 } from "@samofujera/ui";
 
-type BlockType = "paragraph" | "h2" | "h3" | "ul" | "ol";
+type BlockType = "paragraph" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "quote" | "ul" | "ol";
+
+const BLOCK_TYPE_OPTIONS: Array<{ type: BlockType; label: string }> = [
+  { type: "h1", label: "Nadpis 1" },
+  { type: "h2", label: "Nadpis 2" },
+  { type: "h3", label: "Nadpis 3" },
+  { type: "h4", label: "Nadpis 4" },
+  { type: "h5", label: "Nadpis 5" },
+  { type: "h6", label: "Nadpis 6" },
+  { type: "paragraph", label: "Odstavec" },
+  { type: "quote", label: "Citace" },
+];
 
 const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   paragraph: "Odstavec",
+  h1: "Nadpis 1",
   h2: "Nadpis 2",
   h3: "Nadpis 3",
+  h4: "Nadpis 4",
+  h5: "Nadpis 5",
+  h6: "Nadpis 6",
+  quote: "Citace",
   ul: "Seznam",
   ol: "Číslovaný seznam",
+};
+
+const ALIGNMENT_ICON: Record<string, typeof AlignLeft> = {
+  "": AlignLeft,
+  left: AlignLeft,
+  center: AlignCenter,
+  right: AlignRight,
+  justify: AlignJustify,
 };
 
 export function ToolbarPlugin() {
@@ -48,6 +87,9 @@ export function ToolbarPlugin() {
   const [isItalic, setIsItalic] = useState(false);
   const [isLink, setIsLink] = useState(false);
   const [blockType, setBlockType] = useState<BlockType>("paragraph");
+  const [elementFormat, setElementFormat] = useState<ElementFormatType>("");
+  const [isList, setIsList] = useState(false);
+  const [listType, setListType] = useState<"ul" | "ol">("ul");
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -72,10 +114,22 @@ export function ToolbarPlugin() {
       if ($isListNode(element)) {
         const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
         const type = parentList ? parentList.getListType() : element.getListType();
-        setBlockType(type === "number" ? "ol" : "ul");
+        const lt = type === "number" ? "ol" : "ul";
+        setBlockType(lt);
+        setIsList(true);
+        setListType(lt as "ul" | "ol");
+      } else if ($isQuoteNode(element)) {
+        setBlockType("quote");
+        setIsList(false);
       } else {
         const type = $isHeadingNode(element) ? element.getTag() : "paragraph";
         setBlockType(type as BlockType);
+        setIsList(false);
+      }
+
+      // Read element alignment
+      if ($isElementNode(element)) {
+        setElementFormat(element.getFormatType());
       }
     }
 
@@ -84,20 +138,15 @@ export function ToolbarPlugin() {
     const parent = node.getParent();
     setIsLink($isLinkNode(parent) || $isLinkNode(node));
 
-    // Position toolbar
-    const nativeSelection = window.getSelection();
-    if (nativeSelection && !nativeSelection.isCollapsed && nativeSelection.rangeCount > 0) {
-      const range = nativeSelection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const editorRoot = editor.getRootElement();
-      if (editorRoot) {
-        const editorRect = editorRoot.getBoundingClientRect();
-        setToolbarPosition({
-          top: rect.top - editorRect.top - 50,
-          left: rect.left - editorRect.left + rect.width / 2,
-        });
-        setShowToolbar(true);
-      }
+    // Position toolbar — centered above the entire editor block
+    const editorRoot = editor.getRootElement();
+    if (editorRoot) {
+      const editorRect = editorRoot.getBoundingClientRect();
+      setToolbarPosition({
+        top: -50,
+        left: editorRect.width / 2,
+      });
+      setShowToolbar(true);
     } else {
       setShowToolbar(false);
     }
@@ -122,6 +171,29 @@ export function ToolbarPlugin() {
     });
   }, [editor, updateToolbar]);
 
+  // Hide toolbar when focus leaves the editor entirely
+  useEffect(() => {
+    const rootElement = editor.getRootElement();
+    if (!rootElement) return;
+
+    function handleBlur(e: FocusEvent) {
+      const relatedTarget = e.relatedTarget as Node | null;
+      // If focus moved to toolbar, stay visible
+      if (relatedTarget && toolbarRef.current?.contains(relatedTarget)) return;
+      // If focus moved to a Radix portal (dropdown menu), stay visible
+      if (relatedTarget instanceof HTMLElement) {
+        const portal = relatedTarget.closest(
+          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content]",
+        );
+        if (portal) return;
+      }
+      setShowToolbar(false);
+    }
+
+    rootElement.addEventListener("focusout", handleBlur);
+    return () => rootElement.removeEventListener("focusout", handleBlur);
+  }, [editor]);
+
   function formatBlock(type: BlockType) {
     editor.update(() => {
       const selection = $getSelection();
@@ -129,7 +201,9 @@ export function ToolbarPlugin() {
 
       if (type === "paragraph") {
         $setBlocksType(selection, () => $createParagraphNode());
-      } else if (type === "h2" || type === "h3") {
+      } else if (type === "quote") {
+        $setBlocksType(selection, () => $createQuoteNode());
+      } else if (type === "h1" || type === "h2" || type === "h3" || type === "h4" || type === "h5" || type === "h6") {
         $setBlocksType(selection, () => $createHeadingNode(type as HeadingTagType));
       } else if (type === "ul") {
         editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
@@ -137,6 +211,10 @@ export function ToolbarPlugin() {
         editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
       }
     });
+  }
+
+  function formatAlignment(alignment: ElementFormatType) {
+    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment);
   }
 
   function insertLink() {
@@ -152,66 +230,166 @@ export function ToolbarPlugin() {
 
   if (!showToolbar) return null;
 
+  // Current alignment icon
+  const CurrentAlignIcon = ALIGNMENT_ICON[elementFormat] ?? AlignLeft;
+  // Current list icon
+  const CurrentListIcon = listType === "ol" ? ListOrdered : List;
+  // Block type label (only for non-list types in dropdown)
+  const dropdownLabel = isList ? BLOCK_TYPE_LABELS[blockType] : BLOCK_TYPE_LABELS[blockType];
+
   return (
     <div
       ref={toolbarRef}
-      className="absolute z-50 flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg"
+      className="absolute z-50 flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg"
       style={{
         top: `${toolbarPosition.top}px`,
         left: `${toolbarPosition.left}px`,
         transform: "translateX(-50%)",
       }}
     >
-      {/* Block type dropdown */}
+      {/* Block type dropdown — H1-H6, Odstavec, Citace */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-            {BLOCK_TYPE_LABELS[blockType]}
+          <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs">
+            {dropdownLabel}
+            <ChevronDown className="h-3 w-3 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {(Object.entries(BLOCK_TYPE_LABELS) as Array<[BlockType, string]>).map(
-            ([type, label]) => (
-              <DropdownMenuItem key={type} onClick={() => formatBlock(type)}>
-                {label}
-              </DropdownMenuItem>
-            ),
-          )}
+          {BLOCK_TYPE_OPTIONS.map(({ type, label }) => (
+            <DropdownMenuItem key={type} onClick={() => formatBlock(type)}>
+              {type === "quote" && <TextQuote className="mr-2 h-4 w-4" />}
+              {label}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="mx-1 h-5 w-px bg-[var(--border)]" />
+      <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
 
       {/* Bold */}
       <Button
         variant={isBold ? "default" : "ghost"}
         size="sm"
-        className="h-8 w-8 p-0 font-bold"
+        className="h-8 w-8 p-0"
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
+        title="Tučné"
       >
-        B
+        <Bold className="h-4 w-4" />
       </Button>
 
       {/* Italic */}
       <Button
         variant={isItalic ? "default" : "ghost"}
         size="sm"
-        className="h-8 w-8 p-0 italic"
+        className="h-8 w-8 p-0"
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
+        title="Kurzíva"
       >
-        I
+        <Italic className="h-4 w-4" />
       </Button>
 
-      <div className="mx-1 h-5 w-px bg-[var(--border)]" />
+      <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+
+      {/* Alignment dropdown — one icon with arrow */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={elementFormat && elementFormat !== "left" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 gap-0.5 px-1.5"
+            title="Zarovnání"
+          >
+            <CurrentAlignIcon className="h-4 w-4" />
+            <ChevronDown className="h-3 w-3 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
+          <Button
+            variant={elementFormat === "" || elementFormat === "left" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => formatAlignment("left")}
+            title="Vlevo"
+          >
+            <AlignLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={elementFormat === "center" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => formatAlignment("center")}
+            title="Na střed"
+          >
+            <AlignCenter className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={elementFormat === "right" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => formatAlignment("right")}
+            title="Vpravo"
+          >
+            <AlignRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={elementFormat === "justify" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => formatAlignment("justify")}
+            title="Do bloku"
+          >
+            <AlignJustify className="h-4 w-4" />
+          </Button>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* List dropdown — one icon with arrow */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={isList ? "default" : "ghost"}
+            size="sm"
+            className="h-8 gap-0.5 px-1.5"
+            title="Seznam"
+          >
+            <CurrentListIcon className="h-4 w-4" />
+            <ChevronDown className="h-3 w-3 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
+          <Button
+            variant={isList && listType === "ul" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => formatBlock("ul")}
+            title="Seznam"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={isList && listType === "ol" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => formatBlock("ol")}
+            title="Číslovaný seznam"
+          >
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
 
       {/* Link */}
       <Button
         variant={isLink ? "default" : "ghost"}
         size="sm"
-        className="h-8 px-2 text-xs"
+        className="h-8 w-8 p-0"
         onClick={insertLink}
+        title="Odkaz"
       >
-        Link
+        <Link className="h-4 w-4" />
       </Button>
     </div>
   );

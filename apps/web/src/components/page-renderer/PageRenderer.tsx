@@ -10,7 +10,7 @@ interface SerializedNode {
   tag?: string;
   listType?: string;
   url?: string;
-  // Custom node fields
+  // Custom node fields (legacy v2 compat)
   src?: string;
   altText?: string;
   alignment?: string;
@@ -19,15 +19,56 @@ interface SerializedNode {
   separatorStyle?: string;
 }
 
-interface SectionContent {
+// ── V3 block types ──
+
+interface BlockBase {
   id: string;
+  type: string;
+}
+
+interface TextBlockData extends BlockBase {
+  type: "text";
   content: Record<string, unknown> | null;
 }
 
-// Block-level node types that cannot be inside <p> tags
-const BLOCK_TYPES = new Set([
-  "image", "cta-button", "separator",
-]);
+interface ImageBlockData extends BlockBase {
+  type: "image";
+  src: string;
+  altText: string;
+  alignment: string;
+}
+
+interface SeparatorBlockData extends BlockBase {
+  type: "separator";
+  separatorStyle: string;
+}
+
+interface ButtonBlockData extends BlockBase {
+  type: "button";
+  text: string;
+  url: string;
+  variant: string;
+}
+
+type BlockData = TextBlockData | ImageBlockData | SeparatorBlockData | ButtonBlockData;
+
+interface SectionData {
+  id: string;
+  blocks?: BlockData[];
+  // v2 compat
+  slots?: { id: string; content: Record<string, unknown> | null }[];
+  // v1 compat
+  content?: Record<string, unknown> | null;
+}
+
+// Lexical element format: ""=left(default), "left", "center", "right", "justify"
+function getAlignmentClass(format: string | number | undefined): string {
+  if (!format) return "";
+  if (format === "center" || format === 2) return "text-center";
+  if (format === "right" || format === 3) return "text-right";
+  if (format === "justify" || format === 4) return "text-justify";
+  return "";
+}
 
 interface PageRendererProps {
   content: Record<string, unknown>;
@@ -38,6 +79,7 @@ function sectionType(node: SerializedNode): string {
     case "paragraph":
     case "heading":
     case "list":
+    case "quote":
       return "text";
     case "image":
       return "image";
@@ -50,42 +92,133 @@ function sectionType(node: SerializedNode): string {
   }
 }
 
+function renderLexicalContent(lexicalState: Record<string, unknown> | null | undefined) {
+  if (!lexicalState) return null;
+  const root = (lexicalState as Record<string, unknown>).root as { children: SerializedNode[] } | undefined;
+  if (!root?.children) return null;
+  return root.children.map((node, i) => (
+    <section key={i} className={`page-block page-block--${sectionType(node)}`}>
+      {renderNode(node, i)}
+    </section>
+  ));
+}
+
+// ── V3 block rendering ──
+
+function renderBlock(block: BlockData): ReactNode {
+  switch (block.type) {
+    case "text":
+      return renderLexicalContent(block.content);
+    case "image":
+      return <ImageBlockRenderer block={block} />;
+    case "separator":
+      return <SeparatorBlockRenderer block={block} />;
+    case "button":
+      return <ButtonBlockRenderer block={block} />;
+    default:
+      return null;
+  }
+}
+
+function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
+  if (!block.src) return null;
+  const alignClasses: Record<string, string> = {
+    left: "mr-auto",
+    center: "mx-auto",
+    right: "ml-auto",
+    full: "w-full",
+  };
+  return (
+    <img
+      src={block.src}
+      alt={block.altText ?? ""}
+      className={`max-w-full rounded ${alignClasses[block.alignment] ?? "mx-auto"}`}
+      style={{ display: "block" }}
+    />
+  );
+}
+
+function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
+  if (block.separatorStyle === "ornamental") {
+    return (
+      <div className="my-8 flex items-center justify-center gap-3">
+        <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
+        <span className="text-[rgb(6,93,77)]">&#10043;</span>
+        <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
+      </div>
+    );
+  }
+  return <hr className="my-8 border-t border-[var(--border)]" />;
+}
+
+function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {
+  const variant = block.variant ?? "primary";
+  const className =
+    variant === "primary"
+      ? "bg-[rgb(6,93,77)] text-white hover:bg-[rgb(5,78,64)] px-8 py-3 rounded-lg font-semibold text-lg inline-block"
+      : "border-2 border-[rgb(6,93,77)] text-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)] hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block";
+  return (
+    <div className="my-6 text-center">
+      <a href={block.url ?? "#"} className={className}>
+        {block.text ?? "Zjistit více"}
+      </a>
+    </div>
+  );
+}
+
 export function PageRenderer({ content }: PageRendererProps) {
-  // Check for new section format
   const c = content as Record<string, unknown>;
-  if (c?.version === 1 && Array.isArray(c?.sections)) {
-    const sections = c.sections as SectionContent[];
+
+  // Version 3: block-based section format
+  if (c?.version === 3 && Array.isArray(c?.sections)) {
+    const sections = c.sections as SectionData[];
     return (
       <>
-        {sections.map((section) => {
-          const root = (section.content as Record<string, unknown>)?.root as { children: SerializedNode[] } | undefined;
-          if (!root?.children) return null;
-          return (
-            <div key={section.id}>
-              {root.children.map((node, i) => (
-                <section key={i} className={`page-block page-block--${sectionType(node)}`}>
-                  {renderNode(node, i)}
-                </section>
-              ))}
-            </div>
-          );
-        })}
+        {sections.map((section) => (
+          <div key={section.id}>
+            {section.blocks?.map((block) => (
+              <div key={block.id}>{renderBlock(block)}</div>
+            ))}
+          </div>
+        ))}
       </>
     );
   }
 
-  // Old single-state format (backward compat)
-  const root = content?.root as { children: SerializedNode[] } | undefined;
-  if (!root?.children) return null;
-  return (
-    <>
-      {root.children.map((node, i) => (
-        <section key={i} className={`page-block page-block--${sectionType(node)}`}>
-          {renderNode(node, i)}
-        </section>
-      ))}
-    </>
-  );
+  // Version 2: slot-based section format
+  if (c?.version === 2 && Array.isArray(c?.sections)) {
+    const sections = c.sections as SectionData[];
+    return (
+      <>
+        {sections.map((section) => (
+          <div key={section.id}>
+            {section.slots?.map((slot) => (
+              <div key={slot.id}>
+                {renderLexicalContent(slot.content)}
+              </div>
+            ))}
+          </div>
+        ))}
+      </>
+    );
+  }
+
+  // Version 1: old section format (content directly on section)
+  if (c?.version === 1 && Array.isArray(c?.sections)) {
+    const sections = c.sections as SectionData[];
+    return (
+      <>
+        {sections.map((section) => (
+          <div key={section.id}>
+            {renderLexicalContent(section.content)}
+          </div>
+        ))}
+      </>
+    );
+  }
+
+  // Legacy: single Lexical state
+  return <>{renderLexicalContent(content)}</>;
 }
 
 function renderNode(node: SerializedNode, key: number): ReactNode {
@@ -94,6 +227,8 @@ function renderNode(node: SerializedNode, key: number): ReactNode {
       return <ParagraphRenderer key={key} node={node} />;
     case "heading":
       return <HeadingRenderer key={key} node={node} />;
+    case "quote":
+      return <QuoteRenderer key={key} node={node} />;
     case "list":
       return <ListRenderer key={key} node={node} />;
     case "listitem":
@@ -101,11 +236,11 @@ function renderNode(node: SerializedNode, key: number): ReactNode {
     case "link":
       return <LinkRenderer key={key} node={node} />;
     case "image":
-      return <ImageRenderer key={key} node={node} />;
+      return <LegacyImageRenderer key={key} node={node} />;
     case "cta-button":
-      return <ButtonRenderer key={key} node={node} />;
+      return <LegacyButtonRenderer key={key} node={node} />;
     case "separator":
-      return <SeparatorRenderer key={key} node={node} />;
+      return <LegacySeparatorRenderer key={key} node={node} />;
     case "text":
       return <TextRenderer key={key} node={node} />;
     case "linebreak":
@@ -123,7 +258,6 @@ function renderChildren(node: SerializedNode): ReactNode {
 function TextRenderer({ node }: { node: SerializedNode }) {
   let element: ReactNode = <>{node.text}</>;
   const format = node.format ?? 0;
-  // Lexical format flags: 1=bold, 2=italic, 4=strikethrough, 8=underline
   if (format & 1) element = <strong>{element}</strong>;
   if (format & 2) element = <em>{element}</em>;
   if (format & 8) element = <u>{element}</u>;
@@ -131,56 +265,32 @@ function TextRenderer({ node }: { node: SerializedNode }) {
 }
 
 function ParagraphRenderer({ node }: { node: SerializedNode }) {
+  const align = getAlignmentClass(node.format);
   if (!node.children || node.children.length === 0) {
-    return <p className="public-body-110 mb-4" />;
+    return <p className={`public-body-110 mb-4 ${align}`} />;
   }
-
-  // Split children into groups: inline runs go into <p>, block nodes render standalone
-  const groups: { type: "inline" | "block"; nodes: SerializedNode[] }[] = [];
-  for (const child of node.children) {
-    if (BLOCK_TYPES.has(child.type)) {
-      groups.push({ type: "block", nodes: [child] });
-    } else {
-      const last = groups[groups.length - 1];
-      if (last && last.type === "inline") {
-        last.nodes.push(child);
-      } else {
-        groups.push({ type: "inline", nodes: [child] });
-      }
-    }
-  }
-
-  // If no block nodes, render normally
-  if (groups.length === 1 && groups[0].type === "inline") {
-    return <p className="public-body-110 mb-4">{renderChildren(node)}</p>;
-  }
-
-  // Mixed content: render inline runs in <p>, block nodes standalone
-  return (
-    <>
-      {groups.map((group, gi) => {
-        if (group.type === "inline") {
-          return (
-            <p key={gi} className="public-body-110 mb-4">
-              {group.nodes.map((n, ni) => renderNode(n, ni))}
-            </p>
-          );
-        }
-        return group.nodes.map((n, ni) => renderNode(n, gi * 100 + ni));
-      })}
-    </>
-  );
+  return <p className={`public-body-110 mb-4 ${align}`}>{renderChildren(node)}</p>;
 }
 
 function HeadingRenderer({ node }: { node: SerializedNode }) {
   const tag = node.tag;
-  if (tag === "h2") {
-    return <h2 className="public-h2-sm pb-3.5">{renderChildren(node)}</h2>;
-  }
-  if (tag === "h3") {
-    return <h3 className="public-h3 pb-2">{renderChildren(node)}</h3>;
-  }
-  return <h2 className="public-h2-sm pb-3.5">{renderChildren(node)}</h2>;
+  const align = getAlignmentClass(node.format);
+  if (tag === "h1") return <h1 className={`public-h1 pb-4 ${align}`}>{renderChildren(node)}</h1>;
+  if (tag === "h2") return <h2 className={`public-h2-sm pb-3.5 ${align}`}>{renderChildren(node)}</h2>;
+  if (tag === "h3") return <h3 className={`public-h3 pb-2 ${align}`}>{renderChildren(node)}</h3>;
+  if (tag === "h4") return <h4 className={`text-lg font-semibold pb-2 ${align}`}>{renderChildren(node)}</h4>;
+  if (tag === "h5") return <h5 className={`text-base font-semibold pb-1.5 ${align}`}>{renderChildren(node)}</h5>;
+  if (tag === "h6") return <h6 className={`text-sm font-semibold pb-1 ${align}`}>{renderChildren(node)}</h6>;
+  return <h2 className={`public-h2-sm pb-3.5 ${align}`}>{renderChildren(node)}</h2>;
+}
+
+function QuoteRenderer({ node }: { node: SerializedNode }) {
+  const align = getAlignmentClass(node.format);
+  return (
+    <blockquote className={`border-l-4 border-[rgb(6,93,77)]/30 pl-4 italic text-[var(--muted-foreground)] mb-4 ${align}`}>
+      {renderChildren(node)}
+    </blockquote>
+  );
 }
 
 function ListRenderer({ node }: { node: SerializedNode }) {
@@ -209,13 +319,11 @@ function LinkRenderer({ node }: { node: SerializedNode }) {
   );
 }
 
-function ImageRenderer({ node }: { node: SerializedNode }) {
+// Legacy renderers for v2 Lexical node types
+function LegacyImageRenderer({ node }: { node: SerializedNode }) {
   if (!node.src) return null;
   const alignClasses: Record<string, string> = {
-    left: "mr-auto",
-    center: "mx-auto",
-    right: "ml-auto",
-    full: "w-full",
+    left: "mr-auto", center: "mx-auto", right: "ml-auto", full: "w-full",
   };
   const alignment = node.alignment ?? "center";
   return (
@@ -228,7 +336,7 @@ function ImageRenderer({ node }: { node: SerializedNode }) {
   );
 }
 
-function ButtonRenderer({ node }: { node: SerializedNode }) {
+function LegacyButtonRenderer({ node }: { node: SerializedNode }) {
   const variant = node.variant ?? "primary";
   const className =
     variant === "primary"
@@ -243,7 +351,7 @@ function ButtonRenderer({ node }: { node: SerializedNode }) {
   );
 }
 
-function SeparatorRenderer({ node }: { node: SerializedNode }) {
+function LegacySeparatorRenderer({ node }: { node: SerializedNode }) {
   if (node.separatorStyle === "ornamental") {
     return (
       <div className="my-8 flex items-center justify-center gap-3">

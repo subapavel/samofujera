@@ -1,5 +1,7 @@
 "use client";
 
+import { FullPageEditor } from "@/components/admin/editor/FullPageEditor";
+
 export default function EditPageRoute() {
-  return <div>Editor loading...</div>;
+  return <FullPageEditor />;
 }

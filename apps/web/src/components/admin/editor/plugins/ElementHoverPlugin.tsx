@@ -147,20 +147,6 @@ export function ElementHoverPlugin() {
 
   return createPortal(
     <>
-      {/* Dashed border around hovered element */}
-      {hoveredRect && hoveredKey && !pickerOpen && (
-        <div
-          className="pointer-events-none fixed rounded border-2 border-dashed border-[rgb(6,93,77)]/40"
-          style={{
-            top: hoveredRect.top - 2,
-            left: hoveredRect.left - 2,
-            width: hoveredRect.width + 4,
-            height: hoveredRect.height + 4,
-            zIndex: 40,
-          }}
-        />
-      )}
-
       {/* Top edge: dashed line + small + button */}
       {hoveredRect && edgePosition === "top" && !pickerOpen && (
         <div
