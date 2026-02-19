@@ -36,7 +36,11 @@
    line-height, letter-spacing, and color.
    ======================================== */
 
-.page-content {
+.page-content,
+.page-content p,
+.page-content li,
+.page-content blockquote,
+.page-content span {
   font-family: var(--font-body);
   font-weight: 200;
   line-height: 1.8;

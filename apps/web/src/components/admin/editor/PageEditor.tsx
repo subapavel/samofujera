@@ -27,6 +27,9 @@ import {
   CAN_REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   COMMAND_PRIORITY_LOW,
+  KEY_ENTER_COMMAND,
+  COMMAND_PRIORITY_HIGH,
+  INSERT_LINE_BREAK_COMMAND,
   $getSelection,
   $isRangeSelection,
 } from "lexical";
@@ -104,6 +107,26 @@ function UndoRedoPlugin({
       unregisterRedo();
     };
   }, [editor, onCanUndoChange, onCanRedoChange]);
+
+  return null;
+}
+
+/** Enter inserts a line break instead of a new paragraph. */
+function LineBreakOnEnterPlugin() {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    return editor.registerCommand(
+      KEY_ENTER_COMMAND,
+      (event: KeyboardEvent | null) => {
+        if (event?.shiftKey) return false;
+        event?.preventDefault();
+        editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND, false);
+        return true;
+      },
+      COMMAND_PRIORITY_HIGH,
+    );
+  }, [editor]);
 
   return null;
 }
@@ -237,6 +260,7 @@ export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
           <HistoryPlugin />
           <ListPlugin />
           <LinkPlugin />
+          <LineBreakOnEnterPlugin />
           <OnChangePlugin onChange={handleChange} ignoreSelectionChange />
           <UndoRedoPlugin
             onCanUndoChange={handleCanUndoChange}
