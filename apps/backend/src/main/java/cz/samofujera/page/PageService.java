@@ -3,7 +3,6 @@ package cz.samofujera.page;
 import cz.samofujera.page.internal.PageRepository;
 import cz.samofujera.shared.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,7 @@ public class PageService {
             throw new NotFoundException("Page not found");
         }
         return new PageDtos.PublicPageResponse(
-            row.slug(), row.title(), parseContent(row.content()),
+            row.slug(), row.title(), rawContent(row.content()),
             row.metaTitle(), row.metaDescription()
         );
     }
@@ -104,19 +103,19 @@ public class PageService {
     private PageDtos.PageDetailResponse toDetailResponse(PageRepository.PageRow row) {
         return new PageDtos.PageDetailResponse(
             row.id(), row.slug(), row.title(), row.status(), row.pageType(),
-            parseContent(row.content()), row.metaTitle(), row.metaDescription(),
+            rawContent(row.content()), row.metaTitle(), row.metaDescription(),
             row.ogImageId(), row.sortOrder(), row.showInNav(),
             row.createdAt(), row.updatedAt(), row.publishedAt()
         );
     }
 
-    private Object parseContent(JSONB jsonb) {
+    /**
+     * Returns the raw JSON string from JSONB — used with @JsonRawValue in DTOs
+     * so it's embedded directly in the response without double-encoding.
+     */
+    private String rawContent(JSONB jsonb) {
         if (jsonb == null || jsonb.data() == null) return null;
-        try {
-            return JSON.readTree(jsonb.data());
-        } catch (JsonProcessingException e) {
-            return null;
-        }
+        return jsonb.data();
     }
 
     private String toJsonString(Object content) {

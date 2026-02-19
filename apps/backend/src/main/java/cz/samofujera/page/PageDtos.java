@@ -1,5 +1,6 @@
 package cz.samofujera.page;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
@@ -18,7 +19,7 @@ public final class PageDtos {
 
     public record PageDetailResponse(
         UUID id, String slug, String title, String status, String pageType,
-        Object content, String metaTitle, String metaDescription, UUID ogImageId,
+        @JsonRawValue String content, String metaTitle, String metaDescription, UUID ogImageId,
         int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt
     ) {}
@@ -34,6 +35,7 @@ public final class PageDtos {
         String pageType
     ) {}
 
+    // Content comes as raw JSON from frontend — use Object so Jackson deserializes it as a Map/tree
     public record UpdatePageRequest(
         @NotBlank @Size(max = 255) String slug,
         @NotBlank @Size(max = 500) String title,
@@ -44,7 +46,7 @@ public final class PageDtos {
     ) {}
 
     public record PublicPageResponse(
-        String slug, String title, Object content,
+        String slug, String title, @JsonRawValue String content,
         String metaTitle, String metaDescription
     ) {}
 }
