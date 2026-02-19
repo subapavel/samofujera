@@ -27,13 +27,15 @@ public class PageRepository {
         JSONB content, String metaTitle, String metaDescription,
         UUID ogImageId, int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt,
-        OffsetDateTime publishedAt, UUID createdBy
+        OffsetDateTime publishedAt, UUID createdBy,
+        OffsetDateTime scheduledPublishAt
     ) {}
 
     public record PageListRow(
         UUID id, String slug, String title, String status, String pageType,
         int sortOrder, boolean showInNav,
-        OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt
+        OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt,
+        OffsetDateTime scheduledPublishAt
     ) {}
 
     public Optional<PageRow> findById(UUID id) {
@@ -41,7 +43,8 @@ public class PageRepository {
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
                 PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
                 PAGES.OG_IMAGE_ID, PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
-                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY)
+                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
+                PAGES.SCHEDULED_PUBLISH_AT)
             .from(PAGES)
             .where(PAGES.ID.eq(id))
             .fetchOptional(r -> new PageRow(
@@ -50,7 +53,8 @@ public class PageRepository {
                 r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
                 r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
-                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY)
+                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
+                r.get(PAGES.SCHEDULED_PUBLISH_AT)
             ));
     }
 
@@ -59,7 +63,8 @@ public class PageRepository {
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
                 PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
                 PAGES.OG_IMAGE_ID, PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
-                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY)
+                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
+                PAGES.SCHEDULED_PUBLISH_AT)
             .from(PAGES)
             .where(PAGES.SLUG.eq(slug))
             .fetchOptional(r -> new PageRow(
@@ -68,7 +73,8 @@ public class PageRepository {
                 r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
                 r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
-                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY)
+                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
+                r.get(PAGES.SCHEDULED_PUBLISH_AT)
             ));
     }
 
@@ -77,7 +83,8 @@ public class PageRepository {
         return dsl.select(
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
-                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT)
+                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT,
+                PAGES.SCHEDULED_PUBLISH_AT)
             .from(PAGES)
             .where(condition)
             .orderBy(PAGES.UPDATED_AT.desc())
@@ -87,7 +94,8 @@ public class PageRepository {
                 r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
                 r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
                 r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
-                r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT), r.get(PAGES.PUBLISHED_AT)
+                r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT), r.get(PAGES.PUBLISHED_AT),
+                r.get(PAGES.SCHEDULED_PUBLISH_AT)
             ));
     }
 
@@ -134,6 +142,43 @@ public class PageRepository {
             update = update.set(PAGES.PUBLISHED_AT, OffsetDateTime.now());
         }
         update.where(PAGES.ID.eq(id)).execute();
+    }
+
+    public void updateScheduledPublishAt(UUID id, OffsetDateTime scheduledAt) {
+        dsl.update(PAGES)
+            .set(PAGES.SCHEDULED_PUBLISH_AT, scheduledAt)
+            .set(PAGES.UPDATED_AT, OffsetDateTime.now())
+            .where(PAGES.ID.eq(id))
+            .execute();
+    }
+
+    public void clearScheduledPublishAt(UUID id) {
+        dsl.update(PAGES)
+            .setNull(PAGES.SCHEDULED_PUBLISH_AT)
+            .set(PAGES.UPDATED_AT, OffsetDateTime.now())
+            .where(PAGES.ID.eq(id))
+            .execute();
+    }
+
+    public List<PageRow> findDueForPublish(OffsetDateTime now) {
+        return dsl.select(
+                PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
+                PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
+                PAGES.OG_IMAGE_ID, PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
+                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
+                PAGES.SCHEDULED_PUBLISH_AT)
+            .from(PAGES)
+            .where(PAGES.SCHEDULED_PUBLISH_AT.le(now))
+            .and(PAGES.STATUS.eq("DRAFT"))
+            .fetch(r -> new PageRow(
+                r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
+                r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
+                r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
+                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
+                r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
+                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
+                r.get(PAGES.SCHEDULED_PUBLISH_AT)
+            ));
     }
 
     public void delete(UUID id) {

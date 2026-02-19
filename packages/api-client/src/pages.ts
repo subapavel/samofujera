@@ -5,6 +5,7 @@ import type {
   PageDetailResponse,
   CreatePageRequest,
   UpdatePageRequest,
+  SchedulePublishRequest,
   PublicPageResponse,
 } from "./types";
 
@@ -48,6 +49,15 @@ export const pageAdminApi = {
 
   unpublishPage: (id: string) =>
     apiFetch<void>(`/api/admin/pages/${id}/unpublish`, { method: "PUT" }),
+
+  schedulePage: (id: string, data: SchedulePublishRequest) =>
+    apiFetch<void>(`/api/admin/pages/${id}/schedule`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  cancelSchedule: (id: string) =>
+    apiFetch<void>(`/api/admin/pages/${id}/schedule/cancel`, { method: "PUT" }),
 
   deletePage: (id: string) =>
     apiFetch<void>(`/api/admin/pages/${id}`, { method: "DELETE" }),

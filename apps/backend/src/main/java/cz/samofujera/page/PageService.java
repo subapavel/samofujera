@@ -8,6 +8,9 @@ import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
@@ -73,6 +76,7 @@ public class PageService {
         pageRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Page not found"));
         pageRepository.updateStatus(id, "PUBLISHED");
+        pageRepository.clearScheduledPublishAt(id);
     }
 
     @Transactional
@@ -92,11 +96,35 @@ public class PageService {
         pageRepository.delete(id);
     }
 
+    @Transactional
+    public void schedulePublish(UUID id, Instant scheduledAt) {
+        pageRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Page not found"));
+        pageRepository.updateScheduledPublishAt(id, scheduledAt.atOffset(ZoneOffset.UTC));
+    }
+
+    @Transactional
+    public void cancelScheduledPublish(UUID id) {
+        pageRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Page not found"));
+        pageRepository.clearScheduledPublishAt(id);
+    }
+
+    @Transactional
+    public void publishDuePages() {
+        var duePages = pageRepository.findDueForPublish(OffsetDateTime.now());
+        for (var page : duePages) {
+            pageRepository.updateStatus(page.id(), "PUBLISHED");
+            pageRepository.clearScheduledPublishAt(page.id());
+        }
+    }
+
     private PageDtos.PageResponse toPageResponse(PageRepository.PageListRow row) {
         return new PageDtos.PageResponse(
             row.id(), row.slug(), row.title(), row.status(), row.pageType(),
             null, null, null, row.sortOrder(), row.showInNav(),
-            row.createdAt(), row.updatedAt(), row.publishedAt()
+            row.createdAt(), row.updatedAt(), row.publishedAt(),
+            row.scheduledPublishAt()
         );
     }
 
@@ -105,7 +133,8 @@ public class PageService {
             row.id(), row.slug(), row.title(), row.status(), row.pageType(),
             rawContent(row.content()), row.metaTitle(), row.metaDescription(),
             row.ogImageId(), row.sortOrder(), row.showInNav(),
-            row.createdAt(), row.updatedAt(), row.publishedAt()
+            row.createdAt(), row.updatedAt(), row.publishedAt(),
+            row.scheduledPublishAt()
         );
     }
 

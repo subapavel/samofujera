@@ -2,7 +2,9 @@ package cz.samofujera.page;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -14,14 +16,16 @@ public final class PageDtos {
         UUID id, String slug, String title, String status, String pageType,
         String metaTitle, String metaDescription, UUID ogImageId,
         int sortOrder, boolean showInNav,
-        OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt
+        OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt,
+        OffsetDateTime scheduledPublishAt
     ) {}
 
     public record PageDetailResponse(
         UUID id, String slug, String title, String status, String pageType,
         @JsonRawValue String content, String metaTitle, String metaDescription, UUID ogImageId,
         int sortOrder, boolean showInNav,
-        OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt
+        OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt,
+        OffsetDateTime scheduledPublishAt
     ) {}
 
     public record PageListResponse(
@@ -44,6 +48,8 @@ public final class PageDtos {
         @Size(max = 500) String metaDescription,
         UUID ogImageId
     ) {}
+
+    public record SchedulePublishRequest(@NotNull Instant scheduledPublishAt) {}
 
     public record PublicPageResponse(
         String slug, String title, @JsonRawValue String content,

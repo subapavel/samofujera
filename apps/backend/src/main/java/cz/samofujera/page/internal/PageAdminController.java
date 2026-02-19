@@ -64,6 +64,20 @@ class PageAdminController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/schedule")
+    ResponseEntity<Void> schedulePublish(
+            @PathVariable UUID id,
+            @Valid @RequestBody PageDtos.SchedulePublishRequest request) {
+        pageService.schedulePublish(id, request.scheduledPublishAt());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/schedule/cancel")
+    ResponseEntity<Void> cancelScheduledPublish(@PathVariable UUID id) {
+        pageService.cancelScheduledPublish(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deletePage(@PathVariable UUID id) {
         pageService.deletePage(id);

@@ -382,6 +382,7 @@ export interface PageResponse {
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
+  scheduledPublishAt: string | null;
 }
 
 export interface PageDetailResponse extends PageResponse {
@@ -409,6 +410,10 @@ export interface UpdatePageRequest {
   metaTitle?: string | null;
   metaDescription?: string | null;
   ogImageId?: string | null;
+}
+
+export interface SchedulePublishRequest {
+  scheduledPublishAt: string;
 }
 
 export interface PublicPageResponse {
