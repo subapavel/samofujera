@@ -28,7 +28,16 @@ interface PageEditorProps {
   onChange: (state: SerializedEditorState) => void;
 }
 
+function isValidEditorState(content: SerializedEditorState | null): content is SerializedEditorState {
+  if (!content) return false;
+  // Must have a root with children to be a valid Lexical state
+  const root = (content as Record<string, unknown>).root;
+  return root != null && typeof root === "object";
+}
+
 export function PageEditor({ initialContent, onChange }: PageEditorProps) {
+  const validContent = isValidEditorState(initialContent) ? initialContent : null;
+
   const initialConfig = {
     namespace: "PageEditor",
     theme: editorTheme,
@@ -44,7 +53,7 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
       GalleryNode,
       ContactFormNode,
     ],
-    editorState: initialContent ? JSON.stringify(initialContent) : undefined,
+    editorState: validContent ? JSON.stringify(validContent) : undefined,
     onError: (error: Error) => console.error("Lexical error:", error),
   };
 
@@ -60,7 +69,7 @@ export function PageEditor({ initialContent, onChange }: PageEditorProps) {
           className="bg-repeat px-6 sm:px-12 lg:px-16 pt-8 pb-12 min-h-[60vh]"
           style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
         >
-          <div className="max-w-[935px] mx-auto px-5">
+          <div className="relative max-w-[935px] mx-auto px-5">
             <RichTextPlugin
               contentEditable={
                 <ContentEditable className="outline-none focus:outline-none" />
