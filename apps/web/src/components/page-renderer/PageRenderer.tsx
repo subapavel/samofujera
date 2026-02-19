@@ -274,29 +274,29 @@ function ParagraphRenderer({ node }: { node: SerializedNode }) {
   const align = getAlignmentClass(node.format);
   const indentStyle = getIndentStyle(node.indent);
   if (!node.children || node.children.length === 0) {
-    return <p className={`mb-4 ${align}`} style={indentStyle} />;
+    return <p className={align || undefined} style={indentStyle} />;
   }
-  return <p className={`mb-4 ${align}`} style={indentStyle}>{renderChildren(node)}</p>;
+  return <p className={align || undefined} style={indentStyle}>{renderChildren(node)}</p>;
 }
 
 function HeadingRenderer({ node }: { node: SerializedNode }) {
   const tag = node.tag;
   const align = getAlignmentClass(node.format);
   const indentStyle = getIndentStyle(node.indent);
-  if (tag === "h1") return <h1 className={`pb-4 ${align}`} style={indentStyle}>{renderChildren(node)}</h1>;
-  if (tag === "h2") return <h2 className={`pb-3.5 ${align}`} style={indentStyle}>{renderChildren(node)}</h2>;
-  if (tag === "h3") return <h3 className={`pb-2 ${align}`} style={indentStyle}>{renderChildren(node)}</h3>;
-  if (tag === "h4") return <h4 className={`pb-2 ${align}`} style={indentStyle}>{renderChildren(node)}</h4>;
-  if (tag === "h5") return <h5 className={`pb-1.5 ${align}`} style={indentStyle}>{renderChildren(node)}</h5>;
-  if (tag === "h6") return <h6 className={`pb-1 ${align}`} style={indentStyle}>{renderChildren(node)}</h6>;
-  return <h2 className={`pb-3.5 ${align}`} style={indentStyle}>{renderChildren(node)}</h2>;
+  if (tag === "h1") return <h1 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h1>;
+  if (tag === "h2") return <h2 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h2>;
+  if (tag === "h3") return <h3 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h3>;
+  if (tag === "h4") return <h4 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h4>;
+  if (tag === "h5") return <h5 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h5>;
+  if (tag === "h6") return <h6 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h6>;
+  return <h2 className={align || undefined} style={indentStyle}>{renderChildren(node)}</h2>;
 }
 
 function QuoteRenderer({ node }: { node: SerializedNode }) {
   const align = getAlignmentClass(node.format);
   const indentStyle = getIndentStyle(node.indent);
   return (
-    <blockquote className={`border-l-4 border-[#065d4d] pl-4 italic text-black mb-4 ${align}`} style={indentStyle}>
+    <blockquote className={`border-l-4 border-[#065d4d] pl-4 italic text-black ${align}`} style={indentStyle}>
       {renderChildren(node)}
     </blockquote>
   );
@@ -306,8 +306,8 @@ function ListRenderer({ node }: { node: SerializedNode }) {
   const isOrdered = node.listType === "number";
   const Tag = isOrdered ? "ol" : "ul";
   const className = isOrdered
-    ? "list-decimal pl-6 mb-4"
-    : "list-disc pl-6 mb-4";
+    ? "list-decimal pl-6"
+    : "list-disc pl-6";
   return <Tag className={className}>{renderChildren(node)}</Tag>;
 }
 
