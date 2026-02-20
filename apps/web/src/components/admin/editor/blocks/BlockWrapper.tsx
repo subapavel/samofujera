@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, type ReactNode } from "react";
-import { Check, Plus, Trash2, X } from "lucide-react";
+import { Check, MapPinPlusInside, Trash2, X } from "lucide-react";
 import {
   ElementPickerPopover,
   type ElementType,
@@ -146,18 +146,18 @@ export function BlockWrapper({
         </div>
       )}
 
-      {/* Top edge: line + plus button (line only when not active/editing) */}
+      {/* Top edge: pin icon + dashed line (line only when not active/editing) */}
       {isHovered && edgePosition === "top" && !pickerOpen && (
         <div
           className="absolute inset-x-0 top-0 flex -translate-y-1/2 items-center"
         >
           <button
             type="button"
-            className="z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
-            style={{ marginLeft: "-1rem" }}
+            className="z-10 flex shrink-0 items-center justify-center text-black/60 transition-colors hover:text-black"
+            style={{ marginLeft: "-2rem" }}
             onClick={() => handlePlusClick("top")}
           >
-            <Plus className="h-3 w-3" />
+            <MapPinPlusInside className="h-8 w-8 -rotate-90" strokeWidth={0.5} />
           </button>
           {!isActive && (
             <div className="h-px flex-1 border-t border-dashed border-black/60" />
@@ -165,18 +165,18 @@ export function BlockWrapper({
         </div>
       )}
 
-      {/* Bottom edge: line + plus button (line only when not active/editing) */}
+      {/* Bottom edge: pin icon + dashed line (line only when not active/editing) */}
       {isHovered && edgePosition === "bottom" && !pickerOpen && (
         <div
           className="absolute inset-x-0 bottom-0 flex translate-y-1/2 items-center"
         >
           <button
             type="button"
-            className="z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
-            style={{ marginLeft: "-1rem" }}
+            className="z-10 flex shrink-0 items-center justify-center text-black/60 transition-colors hover:text-black"
+            style={{ marginLeft: "-2rem" }}
             onClick={() => handlePlusClick("bottom")}
           >
-            <Plus className="h-3 w-3" />
+            <MapPinPlusInside className="h-8 w-8 -rotate-90" strokeWidth={0.5} />
           </button>
           {!isActive && (
             <div className="h-px flex-1 border-t border-dashed border-black/60" />
