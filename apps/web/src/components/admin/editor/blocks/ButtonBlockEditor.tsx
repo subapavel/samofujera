@@ -180,7 +180,7 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
   return (
     <div
       ref={wrapperRef}
-      className="relative cursor-pointer py-4"
+      className="relative cursor-pointer" style={{ paddingTop: "1.875rem", paddingBottom: "1.875rem" }}
       onClick={() => {
         const next = !showToolbar;
         setShowToolbar(next);
