@@ -345,18 +345,18 @@ export function ToolbarPlugin() {
       }}
     >
       {/* Main toolbar row */}
-      <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
+      <div className="flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
         {/* Block type dropdown — H1-H6, Odstavec, Citace */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs">
+            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-white/90 hover:bg-white/10 hover:text-white">
               {dropdownLabel}
-              <ChevronDown className="h-3 w-3 opacity-50" />
+              <ChevronDown className="h-3 w-3 text-white/50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="border-gray-700 bg-gray-800">
             {BLOCK_TYPE_OPTIONS.map(({ type, label }) => (
-              <DropdownMenuItem key={type} onClick={() => formatBlock(type)}>
+              <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" key={type} onClick={() => formatBlock(type)}>
                 {type === "quote" && <TextQuote className="mr-2 h-4 w-4" />}
                 {label}
               </DropdownMenuItem>
@@ -364,13 +364,13 @@ export function ToolbarPlugin() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+        <div className="mx-0.5 h-4 w-px bg-white/20" />
 
         {/* Bold */}
         <Button
-          variant={isBold ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isBold ? "bg-white/20" : ""}`}
           onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
           title="Tučné"
         >
@@ -379,62 +379,62 @@ export function ToolbarPlugin() {
 
         {/* Italic */}
         <Button
-          variant={isItalic ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isItalic ? "bg-white/20" : ""}`}
           onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
           title="Kurzíva"
         >
           <Italic className="h-4 w-4" />
         </Button>
 
-        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+        <div className="mx-0.5 h-4 w-px bg-white/20" />
 
         {/* Alignment dropdown — one icon with arrow */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant={elementFormat && elementFormat !== "left" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 gap-0.5 px-1.5"
+              className={`h-8 gap-0.5 px-1.5 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat && elementFormat !== "left" ? "bg-white/20" : ""}`}
               title="Zarovnání"
             >
               <CurrentAlignIcon className="h-4 w-4" />
-              <ChevronDown className="h-3 w-3 opacity-50" />
+              <ChevronDown className="h-3 w-3 text-white/50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
+          <DropdownMenuContent className="flex min-w-0 gap-1 border-gray-700 bg-gray-800 p-1">
             <Button
-              variant={elementFormat === "" || elementFormat === "left" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "" || elementFormat === "left" ? "bg-white/20" : ""}`}
               onClick={() => formatAlignment("left")}
               title="Vlevo"
             >
               <AlignLeft className="h-4 w-4" />
             </Button>
             <Button
-              variant={elementFormat === "center" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "center" ? "bg-white/20" : ""}`}
               onClick={() => formatAlignment("center")}
               title="Na střed"
             >
               <AlignCenter className="h-4 w-4" />
             </Button>
             <Button
-              variant={elementFormat === "right" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "right" ? "bg-white/20" : ""}`}
               onClick={() => formatAlignment("right")}
               title="Vpravo"
             >
               <AlignRight className="h-4 w-4" />
             </Button>
             <Button
-              variant={elementFormat === "justify" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "justify" ? "bg-white/20" : ""}`}
               onClick={() => formatAlignment("justify")}
               title="Do bloku"
             >
@@ -447,29 +447,29 @@ export function ToolbarPlugin() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant={isList ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 gap-0.5 px-1.5"
+              className={`h-8 gap-0.5 px-1.5 text-white/90 hover:bg-white/10 hover:text-white ${isList ? "bg-white/20" : ""}`}
               title="Seznam"
             >
               <CurrentListIcon className="h-4 w-4" />
-              <ChevronDown className="h-3 w-3 opacity-50" />
+              <ChevronDown className="h-3 w-3 text-white/50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="flex min-w-0 gap-1 p-1">
+          <DropdownMenuContent className="flex min-w-0 gap-1 border-gray-700 bg-gray-800 p-1">
             <Button
-              variant={isList && listType === "ul" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isList && listType === "ul" ? "bg-white/20" : ""}`}
               onClick={() => formatBlock("ul")}
               title="Seznam"
             >
               <List className="h-4 w-4" />
             </Button>
             <Button
-              variant={isList && listType === "ol" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isList && listType === "ol" ? "bg-white/20" : ""}`}
               onClick={() => formatBlock("ol")}
               title="Číslovaný seznam"
             >
@@ -478,26 +478,26 @@ export function ToolbarPlugin() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+        <div className="mx-0.5 h-4 w-px bg-white/20" />
 
         {/* Link */}
         <Button
-          variant={isLink ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isLink ? "bg-white/20" : ""}`}
           onClick={insertLink}
           title="Odkaz"
         >
           <Link className="h-4 w-4" />
         </Button>
 
-        <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+        <div className="mx-0.5 h-4 w-px bg-white/20" />
 
         {/* Toggle extras arrow */}
         <Button
-          variant={showExtras ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${showExtras ? "bg-white/20" : ""}`}
           onClick={() => setShowExtras(!showExtras)}
           title="Další možnosti"
         >
@@ -507,14 +507,14 @@ export function ToolbarPlugin() {
 
       {/* Extras row — font color, font size, indent */}
       {showExtras && (
-        <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
+        <div className="flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
           {/* Font color — "A" with color indicator + dropdown */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-0.5 px-1.5"
+                className="h-8 gap-0.5 px-1.5 text-white/90 hover:bg-white/10 hover:text-white"
                 title="Barva písma"
               >
                 <span className="relative flex flex-col items-center">
@@ -524,7 +524,7 @@ export function ToolbarPlugin() {
                     style={{ backgroundColor: effectiveColor }}
                   />
                 </span>
-                <ChevronDown className="h-3 w-3 opacity-50" />
+                <ChevronDown className="h-3 w-3 text-white/50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-3" side="bottom" align="start">
@@ -555,32 +555,32 @@ export function ToolbarPlugin() {
             </PopoverContent>
           </Popover>
 
-          <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+          <div className="mx-0.5 h-4 w-px bg-white/20" />
 
           {/* Font size: A- | percentage dropdown | A+ */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
             onClick={() => adjustFontSize("down")}
             title="Zmenšit písmo"
           >
-            <span className="text-xs font-bold">A-</span>
+            <span style={{ fontSize: "12px", fontWeight: "bold", color: "inherit" }}>A-</span>
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 gap-0.5 px-1.5 text-xs">
+              <Button variant="ghost" size="sm" className="h-8 gap-0.5 px-1.5 text-xs text-white/90 hover:bg-white/10 hover:text-white">
                 {fontSizeDisplay}
-                <ChevronDown className="h-3 w-3 opacity-50" />
+                <ChevronDown className="h-3 w-3 text-white/50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-60 overflow-y-auto">
-              <DropdownMenuItem onClick={() => applyFontSize(null)}>
+            <DropdownMenuContent className="max-h-60 overflow-y-auto border-gray-700 bg-gray-800">
+              <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" onClick={() => applyFontSize(null)}>
                 Výchozí
               </DropdownMenuItem>
               {FONT_SIZE_OPTIONS.map((size) => (
-                <DropdownMenuItem key={size} onClick={() => applyFontSize(size)}>
+                <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" key={size} onClick={() => applyFontSize(size)}>
                   {size}
                 </DropdownMenuItem>
               ))}
@@ -590,20 +590,20 @@ export function ToolbarPlugin() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
             onClick={() => adjustFontSize("up")}
             title="Zvětšit písmo"
           >
-            <span className="text-xs font-bold">A+</span>
+            <span style={{ fontSize: "12px", fontWeight: "bold", color: "inherit" }}>A+</span>
           </Button>
 
-          <div className="mx-0.5 h-5 w-px bg-[var(--border)]" />
+          <div className="mx-0.5 h-4 w-px bg-white/20" />
 
           {/* Indent / Outdent */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
             onClick={() => editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)}
             title="Zmenšit odsazení"
           >
@@ -613,7 +613,7 @@ export function ToolbarPlugin() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
             onClick={() => editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)}
             title="Zvětšit odsazení"
           >

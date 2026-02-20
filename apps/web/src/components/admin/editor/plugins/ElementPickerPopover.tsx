@@ -18,9 +18,9 @@ const ELEMENT_OPTIONS: {
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
   { type: "paragraph", label: "Text", icon: Type },
-  { type: "image", label: "Obr\u00e1zek", icon: ImageIcon },
-  { type: "separator", label: "D\u011blic\u00ed \u010d\u00e1ra", icon: Minus },
-  { type: "button", label: "Tla\u010d\u00edtko", icon: MousePointerClick },
+  { type: "image", label: "Obrázek", icon: ImageIcon },
+  { type: "separator", label: "Dělicí čára", icon: Minus },
+  { type: "button", label: "Tlačítko", icon: MousePointerClick },
 ];
 
 export function ElementPickerPopover({
@@ -34,20 +34,21 @@ export function ElementPickerPopover({
       <PopoverAnchor asChild>
         <div style={{ position: "fixed", ...anchorStyle }} />
       </PopoverAnchor>
-      <PopoverContent className="w-56 p-3" side="bottom" align="start">
-        <p className="mb-2 text-sm font-semibold">P\u0159idat obsah</p>
+      <PopoverContent className="w-56 border-gray-700 bg-gray-800 p-3 shadow-lg" side="bottom" align="start">
+        <p className="mb-2 text-sm font-semibold" style={{ color: "white" }}>Přidat obsah</p>
         <div className="grid grid-cols-2 gap-2">
           {ELEMENT_OPTIONS.map((option) => (
             <button
               key={option.type}
               type="button"
-              className="flex flex-col items-center gap-1.5 rounded-lg border border-[var(--border)] p-3 text-xs font-medium transition-colors hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5"
+              className="flex flex-col items-center gap-1.5 rounded-lg border border-gray-600 p-3 text-xs font-medium transition-colors hover:border-white/40 hover:bg-white/10"
+              style={{ color: "white" }}
               onClick={() => {
                 onSelect(option.type);
                 onOpenChange(false);
               }}
             >
-              <option.icon className="h-5 w-5 text-[var(--muted-foreground)]" />
+              <option.icon className="h-5 w-5 text-white/60" />
               {option.label}
             </button>
           ))}
