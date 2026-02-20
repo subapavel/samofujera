@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { SeparatorBlock, SeparatorMargin } from "../types";
 
 interface SeparatorBlockEditorProps {
   block: SeparatorBlock;
   onChange: (block: SeparatorBlock) => void;
-  onDelete: () => void;
 }
 
 const MARGIN_OPTIONS: { value: SeparatorMargin; label: string }[] = [
@@ -15,13 +14,13 @@ const MARGIN_OPTIONS: { value: SeparatorMargin; label: string }[] = [
   { value: "minimal", label: "Minimální" },
 ];
 
-export function SeparatorBlockEditor({ block, onChange, onDelete }: SeparatorBlockEditorProps) {
+export function SeparatorBlockEditor({ block, onChange }: SeparatorBlockEditorProps) {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const toolbarRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const marginClass = block.marginHeight === "minimal" ? "my-2" : "my-8";
+  const paddingClass = block.marginHeight === "minimal" ? "py-[0.625rem]" : "py-8";
 
   // Close toolbar when clicking outside
   useEffect(() => {
@@ -41,51 +40,53 @@ export function SeparatorBlockEditor({ block, onChange, onDelete }: SeparatorBlo
     setShowDropdown(false);
   }
 
+  const showOutline = isHovered || showToolbar;
+  const outlineShadow = showToolbar
+    ? "inset 0 0 0 2px rgba(6,93,77,0.6)"
+    : "inset 0 0 0 2px rgba(6,93,77,0.4)";
+
   return (
-    <div ref={wrapperRef} className="relative">
+    <div
+      ref={wrapperRef}
+      className={`relative rounded-md cursor-pointer ${paddingClass}`}
+      style={{
+        width: "calc(100% + 10rem)",
+        marginLeft: "-5rem",
+        paddingLeft: "5rem",
+        paddingRight: "5rem",
+        boxShadow: showOutline ? outlineShadow : undefined,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        if (!showToolbar) {
+          setShowDropdown(false);
+        }
+      }}
+      onClick={() => setShowToolbar(!showToolbar)}
+    >
       {/* Separator line */}
-      <div
-        className={`${marginClass} cursor-pointer`}
-        onClick={() => setShowToolbar(!showToolbar)}
-      >
-        <hr className="border-t border-[var(--border)]" />
-      </div>
+      <hr />
 
       {/* Floating toolbar */}
       {showToolbar && (
-        <div
-          ref={toolbarRef}
-          className="absolute left-1/2 -translate-x-1/2 -top-10 z-30 flex items-center gap-1 rounded-lg bg-gray-800 px-2 py-1.5 shadow-lg"
-        >
-          {/* Delete button */}
-          <button
-            type="button"
-            className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-white/90 transition-colors hover:bg-white/10"
-            onClick={() => {
-              setShowToolbar(false);
-              onDelete();
-            }}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            Odstranit
-          </button>
-
-          {/* Divider */}
-          <div className="mx-0.5 h-5 w-px bg-white/20" />
-
+        <div className="absolute left-1/2 -translate-x-1/2 -top-10 z-50 flex items-center gap-1 rounded-lg bg-gray-800 px-2 py-1.5 shadow-lg">
           {/* Margin height dropdown */}
           <div className="relative">
             <button
               type="button"
               className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/90 transition-colors hover:bg-white/10"
-              onClick={() => setShowDropdown(!showDropdown)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDropdown(!showDropdown);
+              }}
             >
               Výška okraje
               <ChevronDown className="h-3 w-3" />
             </button>
 
             {showDropdown && (
-              <div className="absolute left-0 top-full mt-1 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+              <div className="absolute left-0 top-full mt-1 z-50 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
                 {MARGIN_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
@@ -95,7 +96,10 @@ export function SeparatorBlockEditor({ block, onChange, onDelete }: SeparatorBlo
                         ? "text-white font-medium"
                         : "text-white/70"
                     }`}
-                    onClick={() => handleMarginChange(opt.value)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMarginChange(opt.value);
+                    }}
                   >
                     {block.marginHeight === opt.value && (
                       <span className="mr-2">✓</span>

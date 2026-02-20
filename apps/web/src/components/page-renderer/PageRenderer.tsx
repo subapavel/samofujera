@@ -131,8 +131,12 @@ function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
       </div>
     );
   }
-  const marginClass = block.marginHeight === "minimal" ? "my-2" : "my-8";
-  return <hr className={`${marginClass} border-t border-[var(--border)]`} />;
+  const paddingClass = block.marginHeight === "minimal" ? "py-[0.625rem]" : "py-8";
+  return (
+    <div className={paddingClass}>
+      <hr />
+    </div>
+  );
 }
 
 function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {

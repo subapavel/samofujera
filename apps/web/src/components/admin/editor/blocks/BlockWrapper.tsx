@@ -84,16 +84,24 @@ export function BlockWrapper({
   // Active (editing) → always solid outline. Hover at edge → hide dashed outline (line replaces it).
   const showEdge = isHovered && edgePosition !== null && !pickerOpen;
   const showOutline = isActive || (isHovered && !showEdge);
-  const outlineClass = isActive
-    ? "outline-2 outline-solid outline-[rgb(6,93,77)]/60"
-    : "outline-2 outline-dashed outline-[rgb(6,93,77)]/40";
+  const widerStyle = {
+    width: "calc(100% + 10rem)",
+    marginLeft: "-5rem",
+    paddingLeft: "5rem",
+    paddingRight: "5rem",
+  };
+  const outlineShadow = isActive
+    ? "inset 0 0 0 2px rgba(6,93,77,0.6)"
+    : "inset 0 0 0 2px rgba(6,93,77,0.4)";
 
   return (
     <div
       ref={wrapperRef}
-      className={`relative rounded-md ${
-        showOutline ? outlineClass : ""
-      }`}
+      className="relative rounded-md"
+      style={{
+        ...widerStyle,
+        boxShadow: showOutline ? outlineShadow : undefined,
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}

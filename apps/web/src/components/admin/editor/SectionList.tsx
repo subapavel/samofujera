@@ -260,7 +260,6 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                     <SeparatorBlockEditor
                       block={block}
                       onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
-                      onDelete={() => handleDeleteBlock(sectionIndex, blockIndex)}
                     />
                   )}
                   {block.type === "button" && (
