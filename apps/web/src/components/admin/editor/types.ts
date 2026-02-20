@@ -3,7 +3,7 @@ import type { SerializedEditorState } from "lexical";
 // ── Block types ──
 
 export type ImageAlignment = "left" | "center" | "right" | "full";
-export type SeparatorStyle = "simple" | "ornamental";
+export type SeparatorMargin = "standard" | "minimal";
 export type ButtonVariant = "primary" | "secondary";
 
 interface BlockBase {
@@ -26,7 +26,7 @@ export interface ImageBlock extends BlockBase {
 
 export interface SeparatorBlock extends BlockBase {
   type: "separator";
-  separatorStyle: SeparatorStyle;
+  marginHeight: SeparatorMargin;
 }
 
 export interface ButtonBlock extends BlockBase {
@@ -69,7 +69,7 @@ export function createImageBlock(): ImageBlock {
 }
 
 export function createSeparatorBlock(): SeparatorBlock {
-  return { id: crypto.randomUUID(), type: "separator", separatorStyle: "simple" };
+  return { id: crypto.randomUUID(), type: "separator", marginHeight: "standard" };
 }
 
 export function createButtonBlock(): ButtonBlock {

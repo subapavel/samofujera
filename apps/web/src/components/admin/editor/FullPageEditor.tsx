@@ -260,19 +260,22 @@ export function FullPageEditor() {
               </div>
             </div>
 
-            {/* Main content area */}
-            <main
-              className="page-content flex-1 bg-repeat pt-12 pb-12 sm:pb-16"
-              style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
-            >
-              <SectionList
-                ref={sectionListRef}
-                sections={sections}
-                onSectionsChange={setSections}
-                onUndoRedoChange={handleSectionListUndoRedoChange}
-                onFocusedSectionChange={setFocusedSectionIndex}
-                textEditorRefs={textEditorRefs}
-              />
+            {/* Main — no padding so section lines stay full-width */}
+            <main className="page-content flex-1">
+              {/* Textured area with margin for white gaps (matches public layout spacing) */}
+              <div
+                className="mx-2 my-2 nav:mx-4 nav:my-4 bg-repeat pt-12 pb-12 sm:pb-16"
+                style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
+              >
+                <SectionList
+                  ref={sectionListRef}
+                  sections={sections}
+                  onSectionsChange={setSections}
+                  onUndoRedoChange={handleSectionListUndoRedoChange}
+                  onFocusedSectionChange={setFocusedSectionIndex}
+                  textEditorRefs={textEditorRefs}
+                />
+              </div>
             </main>
 
             {/* Footer preview (non-interactive) */}

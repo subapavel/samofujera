@@ -153,7 +153,7 @@ export function SectionWrapper({
         {/* Top edge: full-width thick line + big + button with popover */}
         {showEdgeUI && (edge === "top" || popoverEdge === "top") && (
           <div className="absolute top-0 inset-x-0 flex items-center justify-center z-30 -translate-y-1/2">
-            <div className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-[rgb(6,93,77)]" />
+            <div className="absolute -left-2 -right-2 nav:-left-4 nav:-right-4 top-1/2 h-0.5 -translate-y-1/2 bg-[rgb(6,93,77)]" />
             <Popover
               open={popoverEdge === "top"}
               onOpenChange={(open) => handlePopoverChange(open, "top")}
@@ -185,7 +185,7 @@ export function SectionWrapper({
         {/* Bottom edge: full-width thick line + big + button with popover */}
         {showEdgeUI && (edge === "bottom" || popoverEdge === "bottom") && (
           <div className="absolute bottom-0 inset-x-0 flex items-center justify-center z-30 translate-y-1/2">
-            <div className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-[rgb(6,93,77)]" />
+            <div className="absolute -left-2 -right-2 nav:-left-4 nav:-right-4 top-1/2 h-0.5 -translate-y-1/2 bg-[rgb(6,93,77)]" />
             <Popover
               open={popoverEdge === "bottom"}
               onOpenChange={(open) => handlePopoverChange(open, "bottom")}

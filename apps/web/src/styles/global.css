@@ -46,6 +46,8 @@
   font-weight: 200;
   line-height: 1.8;
   letter-spacing: 0.02em;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
   color: #000;
 }
 
@@ -71,6 +73,7 @@
   font-size: 2.8125rem;
   line-height: 1.35;
   letter-spacing: -0.015em;
+  padding-bottom: 0.875rem;
 }
 
 @media (min-width: 600px) {

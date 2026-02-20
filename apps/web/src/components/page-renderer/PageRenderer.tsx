@@ -43,7 +43,8 @@ interface ImageBlockData extends BlockBase {
 
 interface SeparatorBlockData extends BlockBase {
   type: "separator";
-  separatorStyle: string;
+  marginHeight?: string;
+  separatorStyle?: string; // legacy v3 compat
 }
 
 interface ButtonBlockData extends BlockBase {
@@ -120,6 +121,7 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
 }
 
 function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
+  // Legacy ornamental style support
   if (block.separatorStyle === "ornamental") {
     return (
       <div className="my-8 flex items-center justify-center gap-3">
@@ -129,7 +131,8 @@ function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
       </div>
     );
   }
-  return <hr className="my-8 border-t border-[var(--border)]" />;
+  const marginClass = block.marginHeight === "minimal" ? "my-2" : "my-8";
+  return <hr className={`${marginClass} border-t border-[var(--border)]`} />;
 }
 
 function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {
