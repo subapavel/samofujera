@@ -153,14 +153,14 @@ export function BlockWrapper({
         >
           <button
             type="button"
-            className="z-10 flex shrink-0 items-center justify-center text-black/60 transition-colors hover:text-black"
-            style={{ marginLeft: "-2rem" }}
+            className="peer z-10 flex shrink-0 items-center justify-center transition-colors"
+            style={{ marginLeft: "-2rem", marginRight: "-0.5rem" }}
             onClick={() => handlePlusClick("top")}
           >
-            <MapPinPlusInside className="h-8 w-8 -rotate-90" strokeWidth={0.5} />
+            <MapPinPlusInside className="h-8 w-8 -rotate-90 fill-white stroke-black/60 transition-colors hover:fill-black hover:stroke-white" strokeWidth={0.5} />
           </button>
           {!isActive && (
-            <div className="h-px flex-1 border-t border-dashed border-black/60" />
+            <div className="h-px flex-1 border-t border-dashed border-black/60 transition-all peer-hover:border-t-[3px] peer-hover:border-solid peer-hover:border-black" />
           )}
         </div>
       )}
@@ -172,14 +172,14 @@ export function BlockWrapper({
         >
           <button
             type="button"
-            className="z-10 flex shrink-0 items-center justify-center text-black/60 transition-colors hover:text-black"
-            style={{ marginLeft: "-2rem" }}
+            className="peer z-10 flex shrink-0 items-center justify-center transition-colors"
+            style={{ marginLeft: "-2rem", marginRight: "-0.5rem" }}
             onClick={() => handlePlusClick("bottom")}
           >
-            <MapPinPlusInside className="h-8 w-8 -rotate-90" strokeWidth={0.5} />
+            <MapPinPlusInside className="h-8 w-8 -rotate-90 fill-white stroke-black/60 transition-colors hover:fill-black hover:stroke-white" strokeWidth={0.5} />
           </button>
           {!isActive && (
-            <div className="h-px flex-1 border-t border-dashed border-black/60" />
+            <div className="h-px flex-1 border-t border-dashed border-black/60 transition-all peer-hover:border-t-[3px] peer-hover:border-solid peer-hover:border-black" />
           )}
         </div>
       )}
