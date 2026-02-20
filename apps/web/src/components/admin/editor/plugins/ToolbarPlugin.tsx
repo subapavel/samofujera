@@ -42,6 +42,9 @@ import {
   TextQuote,
   Indent,
   Outdent,
+  Trash2,
+  EllipsisVertical,
+  Copy,
 } from "lucide-react";
 import {
   Button,
@@ -124,7 +127,12 @@ const FONT_SIZE_OPTIONS = [
   "50%", "62.5%", "75%", "87.5%", "100%", "112.5%", "125%", "150%", "175%", "200%", "250%", "300%",
 ];
 
-export function ToolbarPlugin() {
+interface ToolbarPluginProps {
+  onDelete?: () => void;
+  onCopy?: () => void;
+}
+
+export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [showToolbar, setShowToolbar] = useState(false);
@@ -502,6 +510,39 @@ export function ToolbarPlugin() {
         >
           <ChevronRight className={`h-4 w-4 transition-transform ${showExtras ? "rotate-90" : ""}`} />
         </Button>
+
+        <div className="mx-0.5 h-4 w-px bg-white/20" />
+
+        {/* Delete */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+          onClick={() => { onDelete?.(); requestAnimationFrame(() => setShowToolbar(false)); }}
+          title="Odstranit"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+
+        {/* More options (three dots) */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+              title="Více možností"
+            >
+              <EllipsisVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="border-gray-700 bg-gray-800">
+            <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" onClick={onCopy}>
+              <Copy className="mr-2 h-4 w-4" />
+              Zkopírovat
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* Arrow pointer — only when extras row is closed */}
         {!showExtras && (

@@ -9,10 +9,12 @@ interface TextBlockEditorProps {
   onChange: (content: SerializedEditorState) => void;
   onFocus?: () => void;
   onActiveChange?: (active: boolean) => void;
+  onDelete?: () => void;
+  onCopy?: () => void;
 }
 
 export const TextBlockEditor = forwardRef<SectionEditorHandle, TextBlockEditorProps>(
-  function TextBlockEditor({ content, onChange, onFocus, onActiveChange }, ref) {
+  function TextBlockEditor({ content, onChange, onFocus, onActiveChange, onDelete, onCopy }, ref) {
     return (
       <PageEditor
         ref={ref}
@@ -20,6 +22,8 @@ export const TextBlockEditor = forwardRef<SectionEditorHandle, TextBlockEditorPr
         onChange={onChange}
         onFocus={onFocus}
         onActiveChange={onActiveChange}
+        onDelete={onDelete}
+        onCopy={onCopy}
       />
     );
   },

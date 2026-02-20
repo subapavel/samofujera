@@ -51,6 +51,8 @@ interface PageEditorProps {
   onChange: (state: SerializedEditorState) => void;
   onFocus?: () => void;
   onActiveChange?: (active: boolean) => void;
+  onDelete?: () => void;
+  onCopy?: () => void;
 }
 
 function isValidEditorState(
@@ -185,7 +187,7 @@ function FocusPlugin({
 }
 
 export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
-  function PageEditor({ initialContent, onChange, onFocus, onActiveChange }, ref) {
+  function PageEditor({ initialContent, onChange, onFocus, onActiveChange, onDelete, onCopy }, ref) {
     const validContent = isValidEditorState(initialContent)
       ? initialContent
       : null;
@@ -247,7 +249,7 @@ export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
     return (
       <LexicalComposer initialConfig={initialConfig}>
         <div data-text-block-wrapper="" className="page-content">
-          <ToolbarPlugin />
+          <ToolbarPlugin onDelete={onDelete} onCopy={onCopy} />
           <LinkEditorPlugin />
           <RichTextPlugin
             contentEditable={

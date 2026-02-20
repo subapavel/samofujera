@@ -183,6 +183,23 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
       [sections, onSectionsChange, pushUndo],
     );
 
+    const handleCopyBlock = useCallback(
+      (sectionIndex: number, blockIndex: number) => {
+        pushUndo(sections);
+        const newSections = sections.map((section, si) => {
+          if (si !== sectionIndex) return section;
+          const original = section.blocks[blockIndex];
+          const copy = JSON.parse(JSON.stringify(original)) as ContentBlock;
+          copy.id = crypto.randomUUID();
+          const newBlocks = [...section.blocks];
+          newBlocks.splice(blockIndex + 1, 0, copy);
+          return { ...section, blocks: newBlocks };
+        });
+        onSectionsChange(newSections);
+      },
+      [sections, onSectionsChange, pushUndo],
+    );
+
     // ── Undo / Redo ──
 
     const undo = useCallback(() => {
@@ -250,6 +267,8 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                               setActiveBlockId(null);
                             }
                           }}
+                          onDelete={requestDelete}
+                          onCopy={() => handleCopyBlock(sectionIndex, blockIndex)}
                         />
                       )}
                       {block.type === "image" && (
