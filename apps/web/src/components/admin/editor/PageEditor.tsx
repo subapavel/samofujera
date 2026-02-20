@@ -246,7 +246,7 @@ export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
 
     return (
       <LexicalComposer initialConfig={initialConfig}>
-        <div data-text-block-wrapper="" className="page-content relative">
+        <div data-text-block-wrapper="" className="page-content">
           <ToolbarPlugin />
           <LinkEditorPlugin />
           <RichTextPlugin

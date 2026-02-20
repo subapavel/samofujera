@@ -128,7 +128,7 @@ export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [showToolbar, setShowToolbar] = useState(false);
-  const [toolbarPosition, setToolbarPosition] = useState({ top: 0, left: 0 });
+  const [toolbarPosition, setToolbarPosition] = useState({ left: 0 });
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isLink, setIsLink] = useState(false);
@@ -196,7 +196,6 @@ export function ToolbarPlugin() {
     if (editorRoot) {
       const editorRect = editorRoot.getBoundingClientRect();
       setToolbarPosition({
-        top: -50,
         left: editorRect.width / 2,
       });
       setShowToolbar(true);
@@ -339,13 +338,13 @@ export function ToolbarPlugin() {
       ref={toolbarRef}
       className="absolute z-50 flex flex-col items-center gap-1"
       style={{
-        top: `${toolbarPosition.top}px`,
-        left: `${toolbarPosition.left}px`,
+        bottom: "calc(100% + 6px)",
+        left: "50%",
         transform: "translateX(-50%)",
       }}
     >
       {/* Main toolbar row */}
-      <div className="flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
+      <div className="relative flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
         {/* Block type dropdown — H1-H6, Odstavec, Citace */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -503,11 +502,16 @@ export function ToolbarPlugin() {
         >
           <ChevronRight className={`h-4 w-4 transition-transform ${showExtras ? "rotate-90" : ""}`} />
         </Button>
+
+        {/* Arrow pointer — only when extras row is closed */}
+        {!showExtras && (
+          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+        )}
       </div>
 
       {/* Extras row — font color, font size, indent */}
       {showExtras && (
-        <div className="flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
+        <div className="relative flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
           {/* Font color — "A" with color indicator + dropdown */}
           <Popover>
             <PopoverTrigger asChild>
@@ -619,6 +623,9 @@ export function ToolbarPlugin() {
           >
             <Indent className="h-4 w-4" />
           </Button>
+
+          {/* Arrow pointer */}
+          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
         </div>
       )}
     </div>
