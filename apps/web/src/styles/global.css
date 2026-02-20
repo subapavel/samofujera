@@ -45,7 +45,7 @@
   font-size: 1.075rem;
   font-weight: 200;
   line-height: 1.8;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   color: #000;
 }
 
@@ -73,6 +73,12 @@
   letter-spacing: -0.015em;
 }
 
+@media (min-width: 600px) {
+  .page-content h2 {
+    margin-top: 1rem;
+  }
+}
+
 .page-content h3 {
   font-size: 1.25rem;
   line-height: 1.55;
@@ -84,8 +90,41 @@
   line-height: 1.4;
 }
 
+/* Children inside headings must inherit heading styles,
+   not the body defaults from .page-content span above. */
+.page-content h1 span,
+.page-content h2 span,
+.page-content h3 span,
+.page-content h4 span,
+.page-content h5 span,
+.page-content h6 span,
+.page-content h1 strong,
+.page-content h2 strong,
+.page-content h3 strong,
+.page-content h4 strong,
+.page-content h5 strong,
+.page-content h6 strong,
+.page-content h1 em,
+.page-content h2 em,
+.page-content h3 em,
+.page-content h4 em,
+.page-content h5 em,
+.page-content h6 em {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+.page-content p {
+  padding-bottom: 1rem;
+}
+
 .page-content strong {
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .page-content em {

@@ -116,9 +116,11 @@ export function SectionWrapper({
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove}
       >
-        {/* Content constrained to container width */}
-        <div className="mx-auto max-w-[935px] px-5">
-          {children}
+        {/* Content constrained — matches public page route */}
+        <div className="px-6 sm:px-12 lg:px-16">
+          <div className="mx-auto max-w-[935px] px-5">
+            {children}
+          </div>
         </div>
 
         {/* Settings gear — top right corner of the section, far right */}

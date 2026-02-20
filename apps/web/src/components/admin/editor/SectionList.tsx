@@ -137,6 +137,22 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
       [sections, onSectionsChange],
     );
 
+    const handleDeleteBlock = useCallback(
+      (sectionIndex: number, blockIndex: number) => {
+        pushUndo(sections);
+        const newSections = sections.map((section, si) => {
+          if (si !== sectionIndex) return section;
+          const newBlocks = section.blocks.filter((_, bi) => bi !== blockIndex);
+          if (newBlocks.length === 0) {
+            newBlocks.push(createTextBlock());
+          }
+          return { ...section, blocks: newBlocks };
+        });
+        onSectionsChange(newSections);
+      },
+      [sections, onSectionsChange, pushUndo],
+    );
+
     const handleAddBlock = useCallback(
       (sectionIndex: number, afterBlockIndex: number, type: ElementType) => {
         pushUndo(sections);
@@ -209,6 +225,7 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                 <BlockWrapper
                   key={block.id}
                   isActive={activeBlockId === block.id}
+                  onDelete={() => handleDeleteBlock(sectionIndex, blockIndex)}
                   onAddBefore={(type) => handleAddBlockBefore(sectionIndex, blockIndex, type)}
                   onAddAfter={(type) => handleAddBlock(sectionIndex, blockIndex, type)}
                 >

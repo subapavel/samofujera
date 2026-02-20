@@ -260,9 +260,9 @@ export function FullPageEditor() {
               </div>
             </div>
 
-            {/* Main content area — matches public layout */}
+            {/* Main content area */}
             <main
-              className="flex-1 px-2 py-2 nav:px-4 nav:py-4 bg-repeat"
+              className="page-content flex-1 bg-repeat pt-12 pb-12 sm:pb-16"
               style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
             >
               <SectionList
