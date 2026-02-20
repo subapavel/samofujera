@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, type ReactNode } from "react";
-import { Check, MapPinPlusInside, Trash2, X } from "lucide-react";
+import { MapPinPlusInside } from "lucide-react";
 import {
   ElementPickerPopover,
   type ElementType,
 } from "../plugins/ElementPickerPopover";
 
 interface BlockWrapperProps {
-  children: ReactNode;
+  children: ReactNode | ((requestDelete: () => void) => ReactNode);
   isActive?: boolean;
   onDelete: () => void;
   onAddBefore: (type: ElementType) => void;
@@ -90,11 +90,15 @@ export function BlockWrapper({
     paddingLeft: "6rem",
     paddingRight: "6rem",
   };
-  const borderStyle = showOutline
-    ? isActive
-      ? "1px solid rgba(0,0,0,0.6)"
-      : "1px dashed rgba(0,0,0,0.4)"
-    : "1px solid transparent";
+  const borderStyle = confirmingDelete
+    ? "1px solid rgba(239,68,68,0.8)"
+    : showOutline
+      ? isActive
+        ? "1px solid rgba(0,0,0,0.6)"
+        : "1px dashed rgba(0,0,0,0.4)"
+      : "1px solid transparent";
+
+  const requestDelete = useCallback(() => setConfirmingDelete(true), []);
 
   return (
     <div
@@ -108,41 +112,24 @@ export function BlockWrapper({
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
     >
-      {children}
+      {typeof children === "function" ? children(requestDelete) : children}
 
-      {/* Delete button with inline confirmation — top right */}
-      {(isActive || isHovered) && !confirmingDelete && (
-        <button
-          type="button"
-          className="absolute -top-3 -right-3 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-red-300 bg-white text-red-500 transition-colors hover:bg-red-500 hover:text-white"
-          onClick={() => setConfirmingDelete(true)}
-          title="Odstranit blok"
-        >
-          <Trash2 className="h-3 w-3" />
-        </button>
-      )}
+      {/* Delete confirmation popup — centered above block */}
       {confirmingDelete && (
-        <div className="absolute -top-4 -right-3 z-20 flex items-center gap-1 rounded-full border border-red-300 bg-white px-2 py-1 shadow-md">
-          <span className="text-xs font-medium text-red-600">Smazat?</span>
+        <div className="absolute left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-0.5 rounded-md bg-gray-800 px-2 py-1.5 shadow-lg" style={{ bottom: "calc(100% + 4px)" }}>
+          <span style={{ color: "white", fontSize: "10px" }}>Opravdu smazat?</span>
           <button
             type="button"
-            className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-700"
+            className="rounded bg-red-400 px-3 py-0.5 font-medium text-white transition-colors hover:bg-red-500"
+            style={{ fontSize: "10px" }}
             onClick={() => {
               setConfirmingDelete(false);
               onDelete();
             }}
-            title="Potvrdit smazání"
           >
-            <Check className="h-3 w-3" />
+            Odstranit
           </button>
-          <button
-            type="button"
-            className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 transition-colors hover:bg-gray-100"
-            onClick={() => setConfirmingDelete(false)}
-            title="Zrušit"
-          >
-            <X className="h-3 w-3" />
-          </button>
+          <div className="absolute left-1/2 -bottom-1 -translate-x-1/2 h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-gray-800" />
         </div>
       )}
 

@@ -229,44 +229,56 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                   onAddBefore={(type) => handleAddBlockBefore(sectionIndex, blockIndex, type)}
                   onAddAfter={(type) => handleAddBlock(sectionIndex, blockIndex, type)}
                 >
-                  {block.type === "text" && (
-                    <TextBlockEditor
-                      ref={(handle) => {
-                        if (handle) {
-                          textEditorRefs.current?.set(block.id, handle);
-                        } else {
-                          textEditorRefs.current?.delete(block.id);
-                        }
-                      }}
-                      content={block.content}
-                      onChange={(content) => handleTextBlockChange(sectionIndex, block.id, content)}
-                      onFocus={() => onFocusedSectionChange?.(sectionIndex)}
-                      onActiveChange={(active) => {
-                        if (active) {
-                          setActiveBlockId(block.id);
-                        } else if (activeBlockId === block.id) {
-                          setActiveBlockId(null);
-                        }
-                      }}
-                    />
-                  )}
-                  {block.type === "image" && (
-                    <ImageBlockEditor
-                      block={block}
-                      onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
-                    />
-                  )}
-                  {block.type === "separator" && (
-                    <SeparatorBlockEditor
-                      block={block}
-                      onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
-                    />
-                  )}
-                  {block.type === "button" && (
-                    <ButtonBlockEditor
-                      block={block}
-                      onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
-                    />
+                  {(requestDelete) => (
+                    <>
+                      {block.type === "text" && (
+                        <TextBlockEditor
+                          ref={(handle) => {
+                            if (handle) {
+                              textEditorRefs.current?.set(block.id, handle);
+                            } else {
+                              textEditorRefs.current?.delete(block.id);
+                            }
+                          }}
+                          content={block.content}
+                          onChange={(content) => handleTextBlockChange(sectionIndex, block.id, content)}
+                          onFocus={() => onFocusedSectionChange?.(sectionIndex)}
+                          onActiveChange={(active) => {
+                            if (active) {
+                              setActiveBlockId(block.id);
+                            } else if (activeBlockId === block.id) {
+                              setActiveBlockId(null);
+                            }
+                          }}
+                        />
+                      )}
+                      {block.type === "image" && (
+                        <ImageBlockEditor
+                          block={block}
+                          onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
+                        />
+                      )}
+                      {block.type === "separator" && (
+                        <SeparatorBlockEditor
+                          block={block}
+                          onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
+                          onDelete={requestDelete}
+                          onActiveChange={(active) => {
+                            if (active) {
+                              setActiveBlockId(block.id);
+                            } else if (activeBlockId === block.id) {
+                              setActiveBlockId(null);
+                            }
+                          }}
+                        />
+                      )}
+                      {block.type === "button" && (
+                        <ButtonBlockEditor
+                          block={block}
+                          onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
+                        />
+                      )}
+                    </>
                   )}
                 </BlockWrapper>
               ))}

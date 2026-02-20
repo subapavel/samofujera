@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
 import type { SeparatorBlock, SeparatorMargin } from "../types";
 
 interface SeparatorBlockEditorProps {
   block: SeparatorBlock;
   onChange: (block: SeparatorBlock) => void;
+  onDelete: () => void;
+  onActiveChange?: (active: boolean) => void;
 }
 
 const MARGIN_OPTIONS: { value: SeparatorMargin; label: string }[] = [
@@ -14,10 +16,9 @@ const MARGIN_OPTIONS: { value: SeparatorMargin; label: string }[] = [
   { value: "minimal", label: "Minimální" },
 ];
 
-export function SeparatorBlockEditor({ block, onChange }: SeparatorBlockEditorProps) {
+export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange }: SeparatorBlockEditorProps) {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const paddingClass = block.marginHeight === "minimal" ? "py-[0.625rem]" : "py-8";
@@ -29,6 +30,7 @@ export function SeparatorBlockEditor({ block, onChange }: SeparatorBlockEditorPr
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setShowToolbar(false);
         setShowDropdown(false);
+        onActiveChange?.(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -40,39 +42,37 @@ export function SeparatorBlockEditor({ block, onChange }: SeparatorBlockEditorPr
     setShowDropdown(false);
   }
 
-  const showOutline = isHovered || showToolbar;
-  const borderStyle = showOutline
-    ? showToolbar
-      ? "1px solid rgba(0,0,0,0.6)"
-      : "1px dashed rgba(0,0,0,0.4)"
-    : "1px solid transparent";
-
   return (
     <div
       ref={wrapperRef}
       className={`relative cursor-pointer ${paddingClass}`}
-      style={{
-        width: "calc(100% + 12rem)",
-        marginLeft: "-6rem",
-        paddingLeft: "6rem",
-        paddingRight: "6rem",
-        border: borderStyle,
+      onClick={() => {
+        const next = !showToolbar;
+        setShowToolbar(next);
+        onActiveChange?.(next);
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        if (!showToolbar) {
-          setShowDropdown(false);
-        }
-      }}
-      onClick={() => setShowToolbar(!showToolbar)}
     >
       {/* Separator line */}
       <hr />
 
       {/* Floating toolbar */}
       {showToolbar && (
-        <div className="absolute left-1/2 -translate-x-1/2 -top-10 z-50 flex items-center gap-1 rounded-lg bg-gray-800 px-2 py-1.5 shadow-lg">
+        <div className="absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg bg-gray-800 px-1 py-1.5 shadow-lg" style={{ bottom: "calc(100% + 8px)" }}>
+          {/* Delete button */}
+          <button
+            type="button"
+            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/90 transition-colors hover:bg-white/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowToolbar(false);
+              setShowDropdown(false);
+              onDelete();
+            }}
+          >
+            <Trash2 className="h-3 w-3" />
+            Odstranit
+          </button>
+          <div className="mx-0.5 h-4 w-px bg-white/20" />
           {/* Margin height dropdown */}
           <div className="relative">
             <button
