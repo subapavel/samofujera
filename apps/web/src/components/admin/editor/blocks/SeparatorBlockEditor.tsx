@@ -50,10 +50,10 @@ export function SeparatorBlockEditor({ block, onChange }: SeparatorBlockEditorPr
       ref={wrapperRef}
       className={`relative rounded-md cursor-pointer ${paddingClass}`}
       style={{
-        width: "calc(100% + 10rem)",
-        marginLeft: "-5rem",
-        paddingLeft: "5rem",
-        paddingRight: "5rem",
+        width: "calc(100% + 12rem)",
+        marginLeft: "-6rem",
+        paddingLeft: "6rem",
+        paddingRight: "6rem",
         boxShadow: showOutline ? outlineShadow : undefined,
       }}
       onMouseEnter={() => setIsHovered(true)}

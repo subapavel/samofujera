@@ -85,10 +85,10 @@ export function BlockWrapper({
   const showEdge = isHovered && edgePosition !== null && !pickerOpen;
   const showOutline = isActive || (isHovered && !showEdge);
   const widerStyle = {
-    width: "calc(100% + 10rem)",
-    marginLeft: "-5rem",
-    paddingLeft: "5rem",
-    paddingRight: "5rem",
+    width: "calc(100% + 12rem)",
+    marginLeft: "-6rem",
+    paddingLeft: "6rem",
+    paddingRight: "6rem",
   };
   const outlineShadow = isActive
     ? "inset 0 0 0 2px rgba(6,93,77,0.6)"
