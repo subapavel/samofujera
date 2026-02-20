@@ -41,20 +41,22 @@ export function SeparatorBlockEditor({ block, onChange }: SeparatorBlockEditorPr
   }
 
   const showOutline = isHovered || showToolbar;
-  const outlineShadow = showToolbar
-    ? "inset 0 0 0 2px rgba(6,93,77,0.6)"
-    : "inset 0 0 0 2px rgba(6,93,77,0.4)";
+  const borderStyle = showOutline
+    ? showToolbar
+      ? "1px solid rgba(0,0,0,0.6)"
+      : "1px dashed rgba(0,0,0,0.4)"
+    : "1px solid transparent";
 
   return (
     <div
       ref={wrapperRef}
-      className={`relative rounded-md cursor-pointer ${paddingClass}`}
+      className={`relative cursor-pointer ${paddingClass}`}
       style={{
         width: "calc(100% + 12rem)",
         marginLeft: "-6rem",
         paddingLeft: "6rem",
         paddingRight: "6rem",
-        boxShadow: showOutline ? outlineShadow : undefined,
+        border: borderStyle,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {

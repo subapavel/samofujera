@@ -153,7 +153,7 @@ export function SectionWrapper({
         {/* Top edge: full-width thick line + big + button with popover */}
         {showEdgeUI && (edge === "top" || popoverEdge === "top") && (
           <div className="absolute top-0 inset-x-0 flex items-center justify-center z-30 -translate-y-1/2">
-            <div className="absolute -left-2 -right-2 nav:-left-4 nav:-right-4 top-1/2 h-0.5 -translate-y-1/2 bg-[rgb(6,93,77)]" />
+            <div className="absolute -left-2 -right-2 nav:-left-4 nav:-right-4 top-1/2 h-0.5 -translate-y-1/2 bg-black" />
             <Popover
               open={popoverEdge === "top"}
               onOpenChange={(open) => handlePopoverChange(open, "top")}
@@ -161,7 +161,7 @@ export function SectionWrapper({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[rgb(6,93,77)] bg-white text-[rgb(6,93,77)] transition-colors hover:bg-[rgb(6,93,77)] hover:text-white"
+                  className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
                   title="Přidat sekci nad"
                 >
                   <Plus className="h-4 w-4" />
@@ -171,7 +171,7 @@ export function SectionWrapper({
                 <p className="mb-2 text-sm font-semibold">Přidat sekci</p>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 rounded-lg border border-[var(--border)] p-3 text-sm font-medium transition-colors hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5"
+                  className="flex w-full items-center gap-3 rounded-lg border border-[var(--border)] p-3 text-sm font-medium transition-colors hover:border-black hover:bg-black/5"
                   onClick={() => handleAdd("top")}
                 >
                   <LayoutTemplate className="h-5 w-5 text-[var(--muted-foreground)]" />
@@ -185,7 +185,7 @@ export function SectionWrapper({
         {/* Bottom edge: full-width thick line + big + button with popover */}
         {showEdgeUI && (edge === "bottom" || popoverEdge === "bottom") && (
           <div className="absolute bottom-0 inset-x-0 flex items-center justify-center z-30 translate-y-1/2">
-            <div className="absolute -left-2 -right-2 nav:-left-4 nav:-right-4 top-1/2 h-0.5 -translate-y-1/2 bg-[rgb(6,93,77)]" />
+            <div className="absolute -left-2 -right-2 nav:-left-4 nav:-right-4 top-1/2 h-0.5 -translate-y-1/2 bg-black" />
             <Popover
               open={popoverEdge === "bottom"}
               onOpenChange={(open) => handlePopoverChange(open, "bottom")}
@@ -193,7 +193,7 @@ export function SectionWrapper({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[rgb(6,93,77)] bg-white text-[rgb(6,93,77)] transition-colors hover:bg-[rgb(6,93,77)] hover:text-white"
+                  className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
                   title="Přidat sekci pod"
                 >
                   <Plus className="h-4 w-4" />
@@ -203,7 +203,7 @@ export function SectionWrapper({
                 <p className="mb-2 text-sm font-semibold">Přidat sekci</p>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 rounded-lg border border-[var(--border)] p-3 text-sm font-medium transition-colors hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5"
+                  className="flex w-full items-center gap-3 rounded-lg border border-[var(--border)] p-3 text-sm font-medium transition-colors hover:border-black hover:bg-black/5"
                   onClick={() => handleAdd("bottom")}
                 >
                   <LayoutTemplate className="h-5 w-5 text-[var(--muted-foreground)]" />

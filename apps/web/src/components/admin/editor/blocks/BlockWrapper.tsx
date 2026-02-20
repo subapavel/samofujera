@@ -90,17 +90,19 @@ export function BlockWrapper({
     paddingLeft: "6rem",
     paddingRight: "6rem",
   };
-  const outlineShadow = isActive
-    ? "inset 0 0 0 2px rgba(6,93,77,0.6)"
-    : "inset 0 0 0 2px rgba(6,93,77,0.4)";
+  const borderStyle = showOutline
+    ? isActive
+      ? "1px solid rgba(0,0,0,0.6)"
+      : "1px dashed rgba(0,0,0,0.4)"
+    : "1px solid transparent";
 
   return (
     <div
       ref={wrapperRef}
-      className="relative rounded-md"
+      className="relative"
       style={{
         ...widerStyle,
-        boxShadow: showOutline ? outlineShadow : undefined,
+        border: borderStyle,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
@@ -146,32 +148,38 @@ export function BlockWrapper({
 
       {/* Top edge: line + plus button (line only when not active/editing) */}
       {isHovered && edgePosition === "top" && !pickerOpen && (
-        <div className="absolute left-0 right-0 top-0 flex -translate-y-1/2 items-center px-2">
+        <div
+          className="absolute inset-x-0 top-0 flex -translate-y-1/2 items-center"
+        >
           <button
             type="button"
-            className="z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[rgb(6,93,77)] bg-white text-[rgb(6,93,77)] transition-colors hover:bg-[rgb(6,93,77)] hover:text-white"
+            className="z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
+            style={{ marginLeft: "-1rem" }}
             onClick={() => handlePlusClick("top")}
           >
             <Plus className="h-3 w-3" />
           </button>
           {!isActive && (
-            <div className="h-px flex-1 border-t border-dashed border-[rgb(6,93,77)]/60" />
+            <div className="h-px flex-1 border-t border-dashed border-black/60" />
           )}
         </div>
       )}
 
       {/* Bottom edge: line + plus button (line only when not active/editing) */}
       {isHovered && edgePosition === "bottom" && !pickerOpen && (
-        <div className="absolute bottom-0 left-0 right-0 flex translate-y-1/2 items-center px-2">
+        <div
+          className="absolute inset-x-0 bottom-0 flex translate-y-1/2 items-center"
+        >
           <button
             type="button"
-            className="z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[rgb(6,93,77)] bg-white text-[rgb(6,93,77)] transition-colors hover:bg-[rgb(6,93,77)] hover:text-white"
+            className="z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
+            style={{ marginLeft: "-1rem" }}
             onClick={() => handlePlusClick("bottom")}
           >
             <Plus className="h-3 w-3" />
           </button>
           {!isActive && (
-            <div className="h-px flex-1 border-t border-dashed border-[rgb(6,93,77)]/60" />
+            <div className="h-px flex-1 border-t border-dashed border-black/60" />
           )}
         </div>
       )}
