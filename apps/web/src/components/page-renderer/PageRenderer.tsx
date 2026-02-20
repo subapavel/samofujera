@@ -52,6 +52,8 @@ interface ButtonBlockData extends BlockBase {
   text: string;
   url: string;
   variant: string;
+  alignment?: string;
+  openInNewTab?: boolean;
 }
 
 type BlockData = TextBlockData | ImageBlockData | SeparatorBlockData | ButtonBlockData;
@@ -143,16 +145,29 @@ function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
   );
 }
 
+const BUTTON_VARIANT_CLASSES: Record<string, string> = {
+  style1: "btn-style1",
+  style2: "btn-style2",
+  style3: "btn-style3",
+  style4: "btn-style4",
+  style5: "btn-style5",
+  // Legacy fallbacks
+  primary: "bg-[rgb(6,93,77)] text-white hover:bg-[rgb(5,78,64)] px-8 py-3 rounded-lg font-semibold text-lg inline-block",
+  secondary: "border-2 border-[rgb(6,93,77)] text-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)] hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block",
+};
+
 function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {
-  const variant = block.variant ?? "primary";
-  const className =
-    variant === "primary"
-      ? "bg-[rgb(6,93,77)] text-white hover:bg-[rgb(5,78,64)] px-8 py-3 rounded-lg font-semibold text-lg inline-block"
-      : "border-2 border-[rgb(6,93,77)] text-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)] hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block";
+  const variant = block.variant ?? "style1";
+  const classes = BUTTON_VARIANT_CLASSES[variant] ?? BUTTON_VARIANT_CLASSES.style1;
+  const alignment = block.alignment ?? "center";
+  const alignClass = alignment === "left" ? "text-left" : alignment === "right" ? "text-right" : "text-center";
+  const isLink = variant === "style3";
+  const target = block.openInNewTab ? "_blank" : undefined;
+  const rel = block.openInNewTab ? "noopener noreferrer" : undefined;
   return (
-    <div className="my-6 text-center">
-      <a href={block.url ?? "#"} className={className}>
-        {block.text ?? "Zjistit více"}
+    <div className={`btn-block-wrapper ${alignClass}`}>
+      <a href={block.url ?? "#"} className={classes} target={target} rel={rel}>
+        {block.text ?? "Zjistit více"}{isLink ? " →" : ""}
       </a>
     </div>
   );

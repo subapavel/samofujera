@@ -11,11 +11,8 @@ import {
   createCommand,
 } from "lexical";
 import { $isLinkNode, LinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { pageAdminApi } from "@samofujera/api-client";
-import { ChevronDown, ExternalLink, Pencil, Trash2 } from "lucide-react";
-import { Button, Input } from "@samofujera/ui";
+import { ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { LinkEditorPanel } from "../shared/LinkEditorPanel";
 
 export const OPEN_LINK_EDITOR_COMMAND = createCommand<void>("OPEN_LINK_EDITOR");
 
@@ -29,23 +26,10 @@ interface LinkData {
 
 export function LinkEditorPlugin() {
   const [editor] = useLexicalComposerContext();
-  const params = useParams();
-  const currentPageId = params?.pageId as string | undefined;
   const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<Mode>("hidden");
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [linkData, setLinkData] = useState<LinkData | null>(null);
-  const [urlInput, setUrlInput] = useState("");
-  const [openInNewTab, setOpenInNewTab] = useState(false);
-  const [showPagePicker, setShowPagePicker] = useState(false);
-
-  // Fetch existing pages for the dropdown
-  const pagesQuery = useQuery({
-    queryKey: ["admin", "pages", { limit: 100 }],
-    queryFn: () => pageAdminApi.getPages({ limit: 100 }),
-    enabled: showPagePicker,
-  });
 
   const positionPopover = useCallback((anchorElement: HTMLElement) => {
     const editorRoot = editor.getRootElement();
@@ -84,7 +68,6 @@ export function LinkEditorPlugin() {
       () => {
         const existing = findLinkNode();
         if (existing) {
-          // Existing link — show view mode
           setLinkData({
             url: existing.node.getURL(),
             target: existing.node.getTarget(),
@@ -93,13 +76,8 @@ export function LinkEditorPlugin() {
           setMode("view");
           positionPopover(existing.element);
         } else {
-          // No link — show edit mode for new link
-          setUrlInput("");
-          setOpenInNewTab(false);
           setLinkData(null);
-          setShowPagePicker(false);
 
-          // Position from selection
           const nativeSelection = window.getSelection();
           if (nativeSelection && nativeSelection.rangeCount > 0) {
             const range = nativeSelection.getRangeAt(0);
@@ -114,7 +92,6 @@ export function LinkEditorPlugin() {
             }
           }
           setMode("edit");
-          setTimeout(() => inputRef.current?.focus(), 50);
         }
         return true;
       },
@@ -128,7 +105,6 @@ export function LinkEditorPlugin() {
       SELECTION_CHANGE_COMMAND,
       () => {
         if (mode === "hidden") return false;
-        // If user clicks elsewhere, close
         const existing = findLinkNode();
         if (!existing && mode === "view") {
           setMode("hidden");
@@ -145,7 +121,6 @@ export function LinkEditorPlugin() {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setMode("hidden");
-        setShowPagePicker(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -158,47 +133,35 @@ export function LinkEditorPlugin() {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setMode("hidden");
-        setShowPagePicker(false);
       }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [mode]);
 
-  function handleApplyLink() {
-    const url = urlInput.trim();
-    if (!url) return;
+  function handleApplyLink(url: string, openInNewTab: boolean) {
+    const trimmed = url.trim();
+    if (!trimmed) return;
     const target = openInNewTab ? "_blank" : null;
-    editor.dispatchCommand(TOGGLE_LINK_COMMAND, { url, target });
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, { url: trimmed, target });
     setMode("hidden");
-    setShowPagePicker(false);
   }
 
   function handleEditExisting() {
     if (linkData) {
-      setUrlInput(linkData.url);
-      setOpenInNewTab(linkData.target === "_blank");
-      setShowPagePicker(false);
       setMode("edit");
-      setTimeout(() => inputRef.current?.focus(), 50);
     }
   }
 
   function handleRemoveLink() {
     editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     setMode("hidden");
-    setShowPagePicker(false);
   }
 
   function handleVisitLink() {
     if (linkData) {
       window.open(linkData.url, "_blank");
     }
-  }
-
-  function handleSelectPage(slug: string) {
-    setUrlInput(`/pages/${slug}`);
-    setShowPagePicker(false);
   }
 
   if (mode === "hidden") return null;
@@ -215,124 +178,39 @@ export function LinkEditorPlugin() {
     >
       {/* Arrow */}
       <div className="flex justify-center">
-        <div className="h-0 w-0 border-x-8 border-b-8 border-x-transparent border-b-[var(--card)]" />
+        <div className="h-0 w-0 border-x-8 border-b-8 border-x-transparent border-b-gray-800" />
       </div>
 
       {mode === "view" && linkData && (
-        <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] p-1 shadow-lg">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1.5 px-3 text-xs"
-            onClick={handleVisitLink}
-          >
+        <div className="flex items-center gap-1 rounded-lg border border-gray-700 bg-gray-800 p-1 shadow-lg">
+          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-white/90 transition-colors hover:bg-white/10" onClick={handleVisitLink}>
             <ExternalLink className="h-3.5 w-3.5" />
             Přejít na odkaz
-          </Button>
-          <div className="h-5 w-px bg-[var(--border)]" />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1.5 px-3 text-xs"
-            onClick={handleEditExisting}
-          >
+          </button>
+          <div className="h-5 w-px bg-white/20" />
+          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-white/90 transition-colors hover:bg-white/10" onClick={handleEditExisting}>
             <Pencil className="h-3.5 w-3.5" />
             Upravit odkaz
-          </Button>
-          <div className="h-5 w-px bg-[var(--border)]" />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 gap-1.5 px-3 text-xs text-red-600 hover:text-red-700"
-            onClick={handleRemoveLink}
-          >
+          </button>
+          <div className="h-5 w-px bg-white/20" />
+          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-red-400 transition-colors hover:bg-white/10 hover:text-red-300" onClick={handleRemoveLink}>
             <Trash2 className="h-3.5 w-3.5" />
             Odstranit odkaz
-          </Button>
+          </button>
         </div>
       )}
 
       {mode === "edit" && (
-        <div className="w-80 rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 shadow-lg">
-          <p className="mb-2 text-sm font-semibold">Odkaz:</p>
-          <div className="relative mb-3">
-            <Input
-              ref={inputRef}
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleApplyLink();
-                }
-              }}
-              placeholder="např. www.google.cz"
-              className="pr-9"
-            />
-            <button
-              type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
-              onClick={() => setShowPagePicker(!showPagePicker)}
-              title="Vybrat stránku"
-            >
-              <ChevronDown className={`h-4 w-4 transition-transform ${showPagePicker ? "rotate-180" : ""}`} />
-            </button>
-          </div>
-
-          {/* Page picker dropdown */}
-          {showPagePicker && (
-            <div className="mb-3 max-h-40 overflow-y-auto rounded-md border border-[var(--border)] bg-[var(--background)]">
-              {pagesQuery.isLoading && (
-                <p className="p-2 text-xs text-[var(--muted-foreground)]">Načítání...</p>
-              )}
-              {pagesQuery.data?.data?.items
-                ?.filter((page) => page.id !== currentPageId)
-                .map((page) => (
-                <button
-                  key={page.id}
-                  type="button"
-                  className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--accent)]"
-                  onClick={() => handleSelectPage(page.slug)}
-                >
-                  <span className="truncate">{page.title}</span>
-                  <span className="shrink-0 text-xs text-[var(--muted-foreground)]">/{page.slug}</span>
-                </button>
-              ))}
-              {pagesQuery.data?.data?.items?.filter((p) => p.id !== currentPageId).length === 0 && (
-                <p className="p-2 text-xs text-[var(--muted-foreground)]">Žádné stránky</p>
-              )}
-            </div>
-          )}
-
-          <label className="mb-4 flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={openInNewTab}
-              onChange={(e) => setOpenInNewTab(e.target.checked)}
-              className="h-4 w-4 rounded border-[var(--border)]"
-            />
-            Otevřít v novém okně
-          </label>
-
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setMode("hidden");
-                setShowPagePicker(false);
-              }}
-            >
-              Zrušit
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleApplyLink}
-              disabled={!urlInput.trim()}
-            >
-              Použít
-            </Button>
-          </div>
+        <div className="w-80 rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-lg">
+          <p className="mb-2 text-sm font-semibold text-white">Odkaz:</p>
+          <LinkEditorPanel
+            initialUrl={linkData?.url}
+            initialOpenInNewTab={linkData?.target === "_blank"}
+            confirmLabel="Použít"
+            cancelLabel="Zrušit"
+            onConfirm={handleApplyLink}
+            onCancel={() => setMode("hidden")}
+          />
         </div>
       )}
     </div>

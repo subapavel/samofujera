@@ -159,3 +159,132 @@
   margin-left: -2.5rem;
   color: rgba(0, 0, 0, 0.6);
 }
+
+/* ========================================
+   Button block styles (style1–style5)
+   All share: heading font, weight 300,
+   uppercase, letter-spacing 0.04em.
+   ======================================== */
+
+/* Shared base for button styles — scoped inside .page-content
+   to beat the .page-content font-family inheritance */
+.btn-style1,
+.btn-style2,
+.btn-style3,
+.btn-style4,
+.btn-style5,
+.page-content .btn-style1,
+.page-content .btn-style2,
+.page-content .btn-style3,
+.page-content .btn-style4,
+.page-content .btn-style5 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+/* Button block vertical spacing on public pages */
+.page-content .btn-block-wrapper {
+  padding-top: 1.875rem;
+  padding-bottom: 1.875rem;
+}
+
+/* Style 1 — outline light */
+.btn-style1 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(209, 213, 219);
+  border-radius: 5px;
+  background: white;
+  color: rgba(0, 0, 0, 0.9);
+  padding: 1.3rem 2rem 1.2rem;
+  min-width: 260px;
+}
+.btn-style1:hover {
+  background: rgb(249, 250, 251);
+}
+
+/* Style 2 — solid dark */
+.btn-style2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: rgb(17, 24, 39);
+  color: white;
+  padding: 1.3rem 2rem 1.2rem;
+  min-width: 260px;
+}
+.btn-style2:hover {
+  background: rgb(31, 41, 55);
+}
+
+/* Style 3 — link arrow (no box) */
+.btn-style3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgb(230, 188, 145);
+}
+.btn-style3:hover {
+  color: rgb(210, 168, 125);
+}
+
+/* Style 4 — CTA golden border */
+.btn-style4 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(230, 188, 145);
+  border-radius: 5px;
+  color: rgba(0, 0, 0, 0.9);
+  padding: 1.3rem 2rem 1.2rem;
+  min-width: 260px;
+  text-align: center;
+}
+.btn-style4:hover {
+  border-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Style 5 — solid warm */
+.btn-style5 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: rgb(230, 188, 145);
+  color: rgba(0, 0, 0, 0.9);
+  padding: 1.3rem 2rem 1.2rem;
+  min-width: 260px;
+}
+.btn-style5:hover {
+  background: rgb(210, 168, 125);
+}
+
+/* Legacy alias for style4 */
+.public-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(230, 188, 145);
+  border-radius: 5px;
+  color: rgba(0, 0, 0, 0.9);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1.3rem 2rem 1.2rem;
+  line-height: 1;
+  min-width: 260px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.public-cta:hover {
+  border-color: rgba(0, 0, 0, 0.9);
+}

@@ -4,7 +4,8 @@ import type { SerializedEditorState } from "lexical";
 
 export type ImageAlignment = "left" | "center" | "right" | "full";
 export type SeparatorMargin = "standard" | "minimal";
-export type ButtonVariant = "primary" | "secondary";
+export type ButtonVariant = "style1" | "style2" | "style3" | "style4" | "style5";
+export type ButtonAlignment = "left" | "center" | "right";
 
 interface BlockBase {
   id: string;
@@ -34,6 +35,8 @@ export interface ButtonBlock extends BlockBase {
   text: string;
   url: string;
   variant: ButtonVariant;
+  alignment: ButtonAlignment;
+  openInNewTab: boolean;
 }
 
 export type ContentBlock = TextBlock | ImageBlock | SeparatorBlock | ButtonBlock;
@@ -76,9 +79,11 @@ export function createButtonBlock(): ButtonBlock {
   return {
     id: crypto.randomUUID(),
     type: "button",
-    text: "Zjistit více",
+    text: "",
     url: "",
-    variant: "primary",
+    variant: "style1",
+    alignment: "center",
+    openInNewTab: false,
   };
 }
 

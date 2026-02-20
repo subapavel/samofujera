@@ -295,6 +295,12 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                         <ButtonBlockEditor
                           block={block}
                           onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
+                          onDelete={requestDelete}
+                          onCopy={() => handleCopyBlock(sectionIndex, blockIndex)}
+                          onActiveChange={(active) => {
+                            if (active) setActiveBlockId(block.id);
+                            else if (activeBlockId === block.id) setActiveBlockId(null);
+                          }}
                         />
                       )}
                     </>
