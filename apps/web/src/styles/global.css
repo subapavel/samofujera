@@ -145,3 +145,17 @@
   width: calc(100% + 10rem);
   margin-left: -5rem;
 }
+
+.page-content ul {
+  list-style: none;
+  padding-left: 2.5rem;
+  margin-left: 20px;
+}
+
+.page-content ul li::before {
+  content: "›";
+  display: inline-block;
+  width: 2.5rem;
+  margin-left: -2.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}

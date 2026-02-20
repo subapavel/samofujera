@@ -89,8 +89,12 @@ function renderLexicalContent(lexicalState: Record<string, unknown> | null | und
 
 function renderBlock(block: BlockData): ReactNode {
   switch (block.type) {
-    case "text":
-      return renderLexicalContent(block.content);
+    case "text": {
+      const content = renderLexicalContent(block.content);
+      // Empty text block → render as visible spacer
+      if (!content) return <p><br /></p>;
+      return content;
+    }
     case "image":
       return <ImageBlockRenderer block={block} />;
     case "separator":
@@ -131,9 +135,9 @@ function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
       </div>
     );
   }
-  const paddingClass = block.marginHeight === "minimal" ? "py-[0.625rem]" : "py-8";
+  const padding = block.marginHeight === "minimal" ? "0.625rem" : "2rem";
   return (
-    <div className={paddingClass}>
+    <div style={{ paddingTop: padding, paddingBottom: padding }}>
       <hr />
     </div>
   );
@@ -163,11 +167,11 @@ export function PageRenderer({ content }: PageRendererProps) {
     return (
       <div className="page-content">
         {sections.map((section) => (
-          <div key={section.id}>
+          <section key={section.id} className="py-8">
             {section.blocks?.map((block) => (
               <div key={block.id}>{renderBlock(block)}</div>
             ))}
-          </div>
+          </section>
         ))}
       </div>
     );
@@ -281,7 +285,7 @@ function ParagraphRenderer({ node }: { node: SerializedNode }) {
   const align = getAlignmentClass(node.format);
   const indentStyle = getIndentStyle(node.indent);
   if (!node.children || node.children.length === 0) {
-    return <p className={align || undefined} style={indentStyle} />;
+    return <p className={align || undefined} style={indentStyle}><br /></p>;
   }
   return <p className={align || undefined} style={indentStyle}>{renderChildren(node)}</p>;
 }
