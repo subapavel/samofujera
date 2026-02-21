@@ -23,6 +23,10 @@ export interface ImageBlock extends BlockBase {
   altText: string;
   alignment: ImageAlignment;
   mediaItemId: string | null;
+  width: number | null;
+  height: number | null;
+  panX: number;
+  panY: number;
 }
 
 export interface SeparatorBlock extends BlockBase {
@@ -68,6 +72,10 @@ export function createImageBlock(): ImageBlock {
     altText: "",
     alignment: "center",
     mediaItemId: null,
+    width: null,
+    height: null,
+    panX: 50,
+    panY: 50,
   };
 }
 
