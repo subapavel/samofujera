@@ -242,6 +242,7 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                 <BlockWrapper
                   key={block.id}
                   isActive={activeBlockId === block.id}
+                  hideOutline={block.type === "image"}
                   onDelete={() => handleDeleteBlock(sectionIndex, blockIndex)}
                   onAddBefore={(type) => handleAddBlockBefore(sectionIndex, blockIndex, type)}
                   onAddAfter={(type) => handleAddBlock(sectionIndex, blockIndex, type)}

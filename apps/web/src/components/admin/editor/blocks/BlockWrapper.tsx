@@ -10,6 +10,7 @@ import {
 interface BlockWrapperProps {
   children: ReactNode | ((requestDelete: () => void) => ReactNode);
   isActive?: boolean;
+  hideOutline?: boolean;
   onDelete: () => void;
   onAddBefore: (type: ElementType) => void;
   onAddAfter: (type: ElementType) => void;
@@ -18,6 +19,7 @@ interface BlockWrapperProps {
 export function BlockWrapper({
   children,
   isActive,
+  hideOutline,
   onDelete,
   onAddBefore,
   onAddAfter,
@@ -92,11 +94,13 @@ export function BlockWrapper({
   };
   const borderStyle = confirmingDelete
     ? "1px solid rgba(239,68,68,0.8)"
-    : showOutline
-      ? isActive
-        ? "1px solid rgba(0,0,0,0.6)"
-        : "1px dashed rgba(0,0,0,0.4)"
-      : "1px solid transparent";
+    : hideOutline
+      ? "1px solid transparent"
+      : showOutline
+        ? isActive
+          ? "1px solid rgba(0,0,0,0.6)"
+          : "1px dashed rgba(0,0,0,0.4)"
+        : "1px solid transparent";
 
   const requestDelete = useCallback(() => setConfirmingDelete(true), []);
 

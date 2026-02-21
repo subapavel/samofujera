@@ -18,16 +18,12 @@ import {
   Trash2,
   MoreVertical,
   Copy,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Maximize2,
   RotateCcw,
 } from "lucide-react";
 import { MediaGrid } from "../../media/MediaGrid";
 import { UploadProgress } from "../../media/UploadProgress";
 import { useMultiUpload } from "../../media/useMultiUpload";
-import type { ImageBlock, ImageAlignment } from "../types";
+import type { ImageBlock } from "../types";
 
 interface ImageBlockEditorProps {
   block: ImageBlock;
@@ -36,26 +32,6 @@ interface ImageBlockEditorProps {
   onCopy: () => void;
   onActiveChange?: (active: boolean) => void;
 }
-
-// ── Alignment options ──
-
-const ALIGNMENT_OPTIONS: {
-  value: ImageAlignment;
-  label: string;
-  icon: typeof AlignLeft;
-}[] = [
-  { value: "left", label: "Vlevo", icon: AlignLeft },
-  { value: "center", label: "Na střed", icon: AlignCenter },
-  { value: "right", label: "Vpravo", icon: AlignRight },
-  { value: "full", label: "Celá šířka", icon: Maximize2 },
-];
-
-const alignClasses: Record<ImageAlignment, string> = {
-  left: "mr-auto",
-  center: "mx-auto",
-  right: "ml-auto",
-  full: "w-full",
-};
 
 // ── Resize handle types ──
 
@@ -190,8 +166,8 @@ export function ImageBlockEditor({
   onActiveChange,
 }: ImageBlockEditorProps) {
   const [isSelected, setIsSelected] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  const [showAlignDropdown, setShowAlignDropdown] = useState(false);
   const [showSizePopover, setShowSizePopover] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
@@ -229,7 +205,6 @@ export function ImageBlockEditor({
     function handleClickOutside(e: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setIsSelected(false);
-        setShowAlignDropdown(false);
         setShowSizePopover(false);
         setShowMoreMenu(false);
         onActiveChange?.(false);
@@ -240,7 +215,6 @@ export function ImageBlockEditor({
   }, [isSelected, onActiveChange]);
 
   function closeAllDropdowns() {
-    setShowAlignDropdown(false);
     setShowSizePopover(false);
     setShowMoreMenu(false);
   }
@@ -394,52 +368,6 @@ export function ImageBlockEditor({
 
                 <div className="mx-0.5 h-4 w-px bg-white/20" />
 
-                {/* Zarovnání */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
-                    onClick={() => {
-                      setShowAlignDropdown(!showAlignDropdown);
-                      setShowSizePopover(false);
-                      setShowMoreMenu(false);
-                    }}
-                  >
-                    Zarovnání
-                    <ChevronDown className="h-3 w-3" />
-                  </button>
-                  {showAlignDropdown && (
-                    <div className="absolute left-0 top-full mt-1 z-50 w-40 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
-                      {ALIGNMENT_OPTIONS.map((opt) => {
-                        const Icon = opt.icon;
-                        return (
-                          <button
-                            key={opt.value}
-                            type="button"
-                            className={`flex w-full items-center gap-2 px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
-                              block.alignment === opt.value
-                                ? "text-white font-medium"
-                                : "text-white/70"
-                            }`}
-                            onClick={() => {
-                              onChange({ ...block, alignment: opt.value });
-                              setShowAlignDropdown(false);
-                            }}
-                          >
-                            {block.alignment === opt.value && (
-                              <span className="mr-1">✓</span>
-                            )}
-                            <Icon className="h-3 w-3" />
-                            {opt.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mx-0.5 h-4 w-px bg-white/20" />
-
                 {/* Velikost */}
                 <div className="relative">
                   <button
@@ -447,7 +375,6 @@ export function ImageBlockEditor({
                     className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
                     onClick={() => {
                       setShowSizePopover(!showSizePopover);
-                      setShowAlignDropdown(false);
                       setShowMoreMenu(false);
                     }}
                   >
@@ -505,7 +432,6 @@ export function ImageBlockEditor({
                     className="flex items-center rounded px-1.5 py-1 text-white/90 transition-colors hover:bg-white/10"
                     onClick={() => {
                       setShowMoreMenu(!showMoreMenu);
-                      setShowAlignDropdown(false);
                       setShowSizePopover(false);
                     }}
                   >
@@ -535,156 +461,143 @@ export function ImageBlockEditor({
               </div>
             )}
 
-            {/* ── Image preview area (with optional crop container + sliders) ── */}
-            <div className="relative inline-block" style={{ maxWidth: "100%" }}>
-              {/* Vertical pan slider */}
-              {showVSlider && (
-                <div
-                  className="absolute top-0 bottom-0 flex items-center"
-                  style={{ left: "calc(100% + 6px)" }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={block.panY}
-                    onChange={(e) =>
-                      onChange({ ...block, panY: Number(e.target.value) })
-                    }
+            {/* ── Image preview area ── */}
+            <div className="text-center">
+              <div
+                className="relative inline-block"
+                style={{
+                  maxWidth: "100%",
+                  padding: "20px",
+                  border: isSelected
+                    ? "1px solid rgba(0,0,0,0.6)"
+                    : isHovered
+                      ? "1px dashed rgba(0,0,0,0.4)"
+                      : "1px solid transparent",
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                {/* Image (with or without crop) */}
+                {hasCrop ? (
+                  <div
                     style={{
-                      writingMode: "vertical-lr",
-                      direction: "rtl",
-                      height: block.height ? `${block.height}px` : "100%",
-                      accentColor: "#374151",
+                      width: block.width ? `${block.width}px` : undefined,
+                      height: block.height ? `${block.height}px` : undefined,
+                      overflow: "hidden",
                     }}
-                    className="cursor-pointer"
-                  />
-                </div>
-              )}
+                    className="relative"
+                  >
+                    <img
+                      ref={imgRef}
+                      src={block.src}
+                      alt={block.altText}
+                      onLoad={handleImageLoad}
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: `${block.panX}% ${block.panY}%`,
+                      }}
+                    />
 
-              {/* Image container (with or without crop) */}
-              {hasCrop ? (
-                <div
-                  style={{
-                    width: block.width ? `${block.width}px` : undefined,
-                    height: block.height ? `${block.height}px` : undefined,
-                    overflow: "hidden",
-                  }}
-                  className={`relative rounded ${alignClasses[block.alignment]}`}
-                >
-                  <img
-                    ref={imgRef}
-                    src={block.src}
-                    alt={block.altText}
-                    onLoad={handleImageLoad}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      objectPosition: `${block.panX}% ${block.panY}%`,
-                    }}
-                  />
-
-                  {/* Resize handles */}
-                  {isSelected &&
-                    naturalSize !== null &&
-                    HANDLE_DIRS.map((dir) => {
-                      const pos = HANDLE_POSITIONS[dir];
-                      return (
-                        <div
-                          key={dir}
+                    {/* Vertical pan slider (inside, right edge) */}
+                    {showVSlider && (
+                      <div
+                        className="absolute top-1 bottom-1 right-1 flex items-center"
+                        style={{ zIndex: 15 }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={block.panY}
+                          onChange={(e) =>
+                            onChange({ ...block, panY: Number(e.target.value) })
+                          }
                           style={{
-                            position: "absolute",
-                            top: pos.top,
-                            left: pos.left,
-                            transform: "translate(-50%, -50%)",
-                            width: "8px",
-                            height: "8px",
-                            background: "white",
-                            border: "1px solid #9ca3af",
-                            borderRadius: "1px",
-                            cursor: HANDLE_CURSORS[dir],
-                            zIndex: 10,
+                            writingMode: "vertical-lr",
+                            direction: "rtl",
+                            height: "100%",
+                            accentColor: "rgba(255,255,255,0.5)",
+                            opacity: 0.6,
                           }}
-                          onClick={(e) => e.stopPropagation()}
-                          onPointerDown={(e) => handlePointerDown(e, dir)}
-                          onPointerMove={handlePointerMove}
-                          onPointerUp={handlePointerUp}
+                          className="cursor-pointer hover:opacity-100 transition-opacity"
                         />
-                      );
-                    })}
-                </div>
-              ) : (
-                <div className={`relative inline-block rounded ${alignClasses[block.alignment]}`}>
+                      </div>
+                    )}
+
+                    {/* Horizontal pan slider (inside, bottom edge) */}
+                    {showHSlider && (
+                      <div
+                        className="absolute bottom-1 left-1 right-1 flex justify-center"
+                        style={{ zIndex: 15 }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={block.panX}
+                          onChange={(e) =>
+                            onChange({ ...block, panX: Number(e.target.value) })
+                          }
+                          style={{
+                            width: "100%",
+                            accentColor: "rgba(255,255,255,0.5)",
+                            opacity: 0.6,
+                          }}
+                          className="cursor-pointer hover:opacity-100 transition-opacity"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   <img
                     ref={imgRef}
                     src={block.src}
                     alt={block.altText}
                     onLoad={handleImageLoad}
-                    className="max-w-full rounded"
+                    className="max-w-full"
                     style={{ display: "block" }}
                   />
+                )}
 
-                  {/* Resize handles (no-crop state) */}
-                  {isSelected &&
-                    naturalSize !== null &&
-                    HANDLE_DIRS.map((dir) => {
-                      const pos = HANDLE_POSITIONS[dir];
-                      return (
-                        <div
-                          key={dir}
-                          style={{
-                            position: "absolute",
-                            top: pos.top,
-                            left: pos.left,
-                            transform: "translate(-50%, -50%)",
-                            width: "8px",
-                            height: "8px",
-                            background: "white",
-                            border: "1px solid #9ca3af",
-                            borderRadius: "1px",
-                            cursor: HANDLE_CURSORS[dir],
-                            zIndex: 10,
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          onPointerDown={(e) => handlePointerDown(e, dir)}
-                          onPointerMove={handlePointerMove}
-                          onPointerUp={handlePointerUp}
-                        />
-                      );
-                    })}
-                </div>
-              )}
-
-              {/* Horizontal pan slider */}
-              {showHSlider && (
-                <div
-                  className="mt-1.5 flex justify-center"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={block.panX}
-                    onChange={(e) =>
-                      onChange({ ...block, panX: Number(e.target.value) })
-                    }
-                    style={{
-                      width: block.width ? `${block.width}px` : "100%",
-                      accentColor: "#374151",
-                    }}
-                    className="cursor-pointer"
-                  />
-                </div>
-              )}
+                {/* Resize handles (on the outline border) */}
+                {isSelected &&
+                  naturalSize !== null &&
+                  HANDLE_DIRS.map((dir) => {
+                    const pos = HANDLE_POSITIONS[dir];
+                    return (
+                      <div
+                        key={dir}
+                        style={{
+                          position: "absolute",
+                          top: pos.top,
+                          left: pos.left,
+                          transform: "translate(-50%, -50%)",
+                          width: "8px",
+                          height: "8px",
+                          background: "white",
+                          border: "1px solid #9ca3af",
+                          borderRadius: "1px",
+                          cursor: HANDLE_CURSORS[dir],
+                          zIndex: 20,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => handlePointerDown(e, dir)}
+                        onPointerMove={handlePointerMove}
+                        onPointerUp={handlePointerUp}
+                      />
+                    );
+                  })}
+              </div>
             </div>
           </>
         ) : (
           <div
-            className={`flex h-48 cursor-pointer items-center justify-center rounded border-2 border-dashed border-[var(--border)] bg-[var(--muted)] hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5 ${alignClasses[block.alignment]}`}
+            className="flex h-48 cursor-pointer items-center justify-center rounded border-2 border-dashed border-[var(--border)] bg-[var(--muted)] hover:border-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)]/5 mx-auto"
             onClick={(e) => {
               e.stopPropagation();
               handlePickerOpen();

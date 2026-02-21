@@ -114,12 +114,6 @@ function renderBlock(block: BlockData): ReactNode {
 
 function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
   if (!block.src) return null;
-  const alignClasses: Record<string, string> = {
-    left: "mr-auto",
-    center: "mx-auto",
-    right: "ml-auto",
-    full: "w-full",
-  };
   const hasCrop = block.width != null || block.height != null;
 
   if (hasCrop) {
@@ -130,7 +124,7 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
           height: block.height ? `${block.height}px` : undefined,
           overflow: "hidden",
         }}
-        className={`rounded ${alignClasses[block.alignment] ?? "mx-auto"}`}
+        className="mx-auto"
       >
         <img
           src={block.src}
@@ -151,7 +145,7 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
     <img
       src={block.src}
       alt={block.altText ?? ""}
-      className={`max-w-full rounded ${alignClasses[block.alignment] ?? "mx-auto"}`}
+      className="max-w-full mx-auto"
       style={{ display: "block" }}
     />
   );
@@ -389,15 +383,11 @@ function LinkRenderer({ node }: { node: SerializedNode }) {
 // Legacy renderers for v2 Lexical node types
 function LegacyImageRenderer({ node }: { node: SerializedNode }) {
   if (!node.src) return null;
-  const alignClasses: Record<string, string> = {
-    left: "mr-auto", center: "mx-auto", right: "ml-auto", full: "w-full",
-  };
-  const alignment = node.alignment ?? "center";
   return (
     <img
       src={node.src}
       alt={node.altText ?? ""}
-      className={`max-w-full rounded ${alignClasses[alignment] ?? "mx-auto"}`}
+      className="max-w-full mx-auto"
       style={{ display: "block" }}
     />
   );
