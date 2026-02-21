@@ -39,6 +39,10 @@ interface ImageBlockData extends BlockBase {
   src: string;
   altText: string;
   alignment: string;
+  width?: number | null;
+  height?: number | null;
+  panX?: number;
+  panY?: number;
 }
 
 interface SeparatorBlockData extends BlockBase {
@@ -116,6 +120,33 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
     right: "ml-auto",
     full: "w-full",
   };
+  const hasCrop = block.width != null || block.height != null;
+
+  if (hasCrop) {
+    return (
+      <div
+        style={{
+          width: block.width ? `${block.width}px` : undefined,
+          height: block.height ? `${block.height}px` : undefined,
+          overflow: "hidden",
+        }}
+        className={`rounded ${alignClasses[block.alignment] ?? "mx-auto"}`}
+      >
+        <img
+          src={block.src}
+          alt={block.altText ?? ""}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: `${block.panX ?? 50}% ${block.panY ?? 50}%`,
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <img
       src={block.src}
