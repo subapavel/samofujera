@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Josefin_Sans, Merriweather, Open_Sans } from "next/font/google";
+import { Allura, Inter, Josefin_Sans, Merriweather, Open_Sans } from "next/font/google";
 import "@/styles/global.css";
 
 const inter = Inter({
@@ -31,6 +31,13 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
+const allura = Allura({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400"],
+  variable: "--font-decorative",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "Sámo Fujera",
@@ -49,7 +56,7 @@ export default function RootLayout({
   return (
     <html
       lang="cs"
-      className={`${inter.variable} ${josefinSans.variable} ${merriweather.variable} ${openSans.variable}`}
+      className={`${inter.variable} ${josefinSans.variable} ${merriweather.variable} ${openSans.variable} ${allura.variable}`}
     >
       <body className="min-h-screen bg-white text-[var(--foreground)] font-sans antialiased">
         {children}

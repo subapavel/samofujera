@@ -22,6 +22,7 @@
   --font-heading: "Josefin Sans", sans-serif;
   --font-body: "Merriweather", serif;
   --font-ui: "Open Sans", sans-serif;
+  --font-decorative: "Allura", cursive;
 
   /* Custom breakpoints */
   --breakpoint-nav: 900px;
