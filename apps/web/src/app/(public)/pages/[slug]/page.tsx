@@ -62,13 +62,11 @@ export default async function PublicPageRoute({
   if (!page) notFound();
 
   return (
-    <section
-      className="bg-repeat px-6 sm:px-12 lg:px-16 pt-[81px] sm:pt-[97px] pb-12 sm:pb-16"
+    <div
+      className="bg-repeat pt-[81px] sm:pt-[97px] pb-12 sm:pb-16"
       style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
     >
-      <div className="max-w-[935px] mx-auto px-5">
-        {page.content && <PageRenderer content={page.content} />}
-      </div>
-    </section>
+      {page.content && <PageRenderer content={page.content} />}
+    </div>
   );
 }
