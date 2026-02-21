@@ -211,10 +211,15 @@ export function PageRenderer({ content }: PageRendererProps) {
     return (
       <div className="page-content">
         {sections.map((section) => (
-          <section key={section.id} className="py-8">
-            {section.blocks?.map((block) => (
-              <div key={block.id}>{renderBlock(block)}</div>
-            ))}
+          <section key={section.id} className="section-container">
+            {section.blocks?.map((block) => {
+              if (block.type === "text") {
+                const content = renderLexicalContent((block as TextBlockData).content);
+                if (!content) return <div key={block.id} className="text-block"><p><br /></p></div>;
+                return <div key={block.id} className="text-block">{content}</div>;
+              }
+              return <div key={block.id}>{renderBlock(block)}</div>;
+            })}
           </section>
         ))}
       </div>
