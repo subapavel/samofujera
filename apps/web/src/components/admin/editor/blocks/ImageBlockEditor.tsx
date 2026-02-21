@@ -617,17 +617,45 @@ export function ImageBlockEditor({
                     })}
                 </div>
               ) : (
-                <img
-                  ref={imgRef}
-                  src={block.src}
-                  alt={block.altText}
-                  onLoad={handleImageLoad}
-                  className={`max-w-full rounded ${alignClasses[block.alignment]}`}
-                  style={{
-                    display: "block",
-                    objectPosition: `${block.panX}% ${block.panY}%`,
-                  }}
-                />
+                <div className={`relative inline-block rounded ${alignClasses[block.alignment]}`}>
+                  <img
+                    ref={imgRef}
+                    src={block.src}
+                    alt={block.altText}
+                    onLoad={handleImageLoad}
+                    className="max-w-full rounded"
+                    style={{ display: "block" }}
+                  />
+
+                  {/* Resize handles (no-crop state) */}
+                  {isSelected &&
+                    naturalSize !== null &&
+                    HANDLE_DIRS.map((dir) => {
+                      const pos = HANDLE_POSITIONS[dir];
+                      return (
+                        <div
+                          key={dir}
+                          style={{
+                            position: "absolute",
+                            top: pos.top,
+                            left: pos.left,
+                            transform: "translate(-50%, -50%)",
+                            width: "8px",
+                            height: "8px",
+                            background: "white",
+                            border: "1px solid #9ca3af",
+                            borderRadius: "1px",
+                            cursor: HANDLE_CURSORS[dir],
+                            zIndex: 10,
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          onPointerDown={(e) => handlePointerDown(e, dir)}
+                          onPointerMove={handlePointerMove}
+                          onPointerUp={handlePointerUp}
+                        />
+                      );
+                    })}
+                </div>
               )}
 
               {/* Horizontal pan slider */}
