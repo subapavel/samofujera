@@ -63,7 +63,7 @@ export default async function PublicPageRoute({
 
   return (
     <div
-      className="bg-repeat pt-[81px] sm:pt-[97px] pb-12 sm:pb-16"
+      className="bg-repeat pb-12 sm:pb-16"
       style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
     >
       {page.content && <PageRenderer content={page.content} />}
