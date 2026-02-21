@@ -113,16 +113,17 @@ function UndoRedoPlugin({
   return null;
 }
 
-/** Enter inserts a line break instead of a new paragraph. */
-function LineBreakOnEnterPlugin() {
+/** Shift+Enter inserts a line break (<br>) instead of a new paragraph.
+ *  Plain Enter uses Lexical defaults: new paragraph, new list item, etc. */
+function ShiftEnterLineBreakPlugin() {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
     return editor.registerCommand(
       KEY_ENTER_COMMAND,
       (event: KeyboardEvent | null) => {
-        if (event?.shiftKey) return false;
-        event?.preventDefault();
+        if (!event?.shiftKey) return false;
+        event.preventDefault();
         editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND, false);
         return true;
       },
@@ -262,7 +263,7 @@ export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
           <HistoryPlugin />
           <ListPlugin />
           <LinkPlugin />
-          <LineBreakOnEnterPlugin />
+          <ShiftEnterLineBreakPlugin />
           <OnChangePlugin onChange={handleChange} ignoreSelectionChange />
           <UndoRedoPlugin
             onCanUndoChange={handleCanUndoChange}
