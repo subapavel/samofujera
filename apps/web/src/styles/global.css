@@ -76,11 +76,6 @@
   padding-bottom: 0.875rem;
 }
 
-@media (min-width: 600px) {
-  .page-content h2 {
-    margin-top: 1rem;
-  }
-}
 
 .page-content h3 {
   font-size: 1.25rem;
@@ -120,6 +115,7 @@
   letter-spacing: inherit;
   color: inherit;
 }
+
 
 .page-content p {
   padding-bottom: 1rem;

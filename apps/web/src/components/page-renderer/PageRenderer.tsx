@@ -118,36 +118,40 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
 
   if (hasCrop) {
     return (
-      <div
-        style={{
-          width: block.width ? `${block.width}px` : undefined,
-          height: block.height ? `${block.height}px` : undefined,
-          overflow: "hidden",
-        }}
-        className="mx-auto"
-      >
-        <img
-          src={block.src}
-          alt={block.altText ?? ""}
+      <div style={{ paddingTop: "20px", paddingBottom: "20px" }} className="text-center">
+        <div
           style={{
-            display: "block",
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            objectPosition: `${block.panX ?? 50}% ${block.panY ?? 50}%`,
+            width: block.width ? `${block.width}px` : undefined,
+            height: block.height ? `${block.height}px` : undefined,
+            overflow: "hidden",
           }}
-        />
+          className="mx-auto inline-block"
+        >
+          <img
+            src={block.src}
+            alt={block.altText ?? ""}
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: `${block.panX ?? 50}% ${block.panY ?? 50}%`,
+            }}
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <img
-      src={block.src}
-      alt={block.altText ?? ""}
-      className="max-w-full mx-auto"
-      style={{ display: "block" }}
-    />
+    <div style={{ paddingTop: "20px", paddingBottom: "20px" }} className="text-center">
+      <img
+        src={block.src}
+        alt={block.altText ?? ""}
+        className="max-w-full mx-auto"
+        style={{ display: "block" }}
+      />
+    </div>
   );
 }
 

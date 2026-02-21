@@ -19,6 +19,8 @@ import {
   MoreVertical,
   Copy,
   RotateCcw,
+  Link,
+  Unlink,
 } from "lucide-react";
 import { MediaGrid } from "../../media/MediaGrid";
 import { UploadProgress } from "../../media/UploadProgress";
@@ -67,18 +69,22 @@ const HANDLE_POSITIONS: Record<HandleDir, { top: string; left: string }> = {
 function SizePopover({
   width,
   height,
-  aspectRatio,
+  naturalWidth,
+  naturalHeight,
   onSave,
   onClose,
 }: {
   width: number | null;
   height: number | null;
-  aspectRatio: number | null;
+  naturalWidth: number;
+  naturalHeight: number;
   onSave: (w: number | null, h: number | null) => void;
   onClose: () => void;
 }) {
-  const [w, setW] = useState(width ?? 0);
-  const [h, setH] = useState(height ?? 0);
+  const ar = naturalWidth / naturalHeight;
+  const [wStr, setWStr] = useState(String(width ?? naturalWidth));
+  const [hStr, setHStr] = useState(String(height ?? naturalHeight));
+  const [locked, setLocked] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,56 +97,76 @@ function SizePopover({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  function handleWidthChange(val: number) {
-    setW(val);
-    if (aspectRatio && val > 0) {
-      setH(Math.round(val / aspectRatio));
+  function handleWidthChange(raw: string) {
+    setWStr(raw);
+    if (locked) {
+      const val = Number(raw);
+      if (val > 0) setHStr(String(Math.round(val / ar)));
     }
   }
 
-  function handleHeightChange(val: number) {
-    setH(val);
-    if (aspectRatio && val > 0) {
-      setW(Math.round(val * aspectRatio));
+  function handleHeightChange(raw: string) {
+    setHStr(raw);
+    if (locked) {
+      const val = Number(raw);
+      if (val > 0) setWStr(String(Math.round(val * ar)));
     }
+  }
+
+  function handleSave() {
+    const w = Number(wStr);
+    const h = Number(hStr);
+    onSave(w > 0 ? w : null, h > 0 ? h : null);
   }
 
   return (
     <div
       ref={ref}
       className="absolute left-0 top-full mt-1 z-50 rounded-lg border border-gray-600 bg-gray-800 p-3 shadow-lg"
-      style={{ minWidth: "180px" }}
+      style={{ minWidth: "200px" }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="mb-2 flex flex-col gap-2">
-        <label className="flex items-center gap-2 text-xs text-white/80">
-          <span className="w-10 shrink-0">Šířka</span>
-          <input
-            type="number"
-            min={50}
-            value={w}
-            onChange={(e) => handleWidthChange(Number(e.target.value))}
-            className="w-20 rounded bg-gray-700 px-2 py-1 text-xs text-white outline-none"
-          />
-          <span className="text-white/40">px</span>
-        </label>
-        <label className="flex items-center gap-2 text-xs text-white/80">
-          <span className="w-10 shrink-0">Výška</span>
-          <input
-            type="number"
-            min={30}
-            value={h}
-            onChange={(e) => handleHeightChange(Number(e.target.value))}
-            className="w-20 rounded bg-gray-700 px-2 py-1 text-xs text-white outline-none"
-          />
-          <span className="text-white/40">px</span>
-        </label>
+      <div className="mb-2 flex items-center gap-2">
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-2 text-xs text-white/80">
+            <span className="w-10 shrink-0">Šířka</span>
+            <input
+              type="number"
+              min={1}
+              value={wStr}
+              onChange={(e) => handleWidthChange(e.target.value)}
+              onFocus={(e) => e.target.select()}
+              className="w-20 rounded bg-gray-700 px-2 py-1 text-xs text-white outline-none"
+            />
+            <span className="text-white/40">px</span>
+          </label>
+          <label className="flex items-center gap-2 text-xs text-white/80">
+            <span className="w-10 shrink-0">Výška</span>
+            <input
+              type="number"
+              min={1}
+              value={hStr}
+              onChange={(e) => handleHeightChange(e.target.value)}
+              onFocus={(e) => e.target.select()}
+              className="w-20 rounded bg-gray-700 px-2 py-1 text-xs text-white outline-none"
+            />
+            <span className="text-white/40">px</span>
+          </label>
+        </div>
+        <button
+          type="button"
+          className="ml-1 rounded p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white/90"
+          title={locked ? "Odemknout poměr stran" : "Zamknout poměr stran"}
+          onClick={() => setLocked(!locked)}
+        >
+          {locked ? <Link className="h-3.5 w-3.5" /> : <Unlink className="h-3.5 w-3.5" />}
+        </button>
       </div>
       <div className="flex gap-2">
         <button
           type="button"
           className="flex-1 rounded bg-white/10 px-2 py-1 text-xs text-white/80 hover:bg-white/20"
-          onClick={() => onSave(w > 0 ? w : null, h > 0 ? h : null)}
+          onClick={handleSave}
         >
           OK
         </button>
@@ -289,16 +315,18 @@ export function ImageBlockEditor({
       const ar = naturalSize ? naturalSize.w / naturalSize.h : startW / startH;
 
       const isCorner = dir.length === 2;
-      let newW = block.width;
-      let newH = block.height;
+      let newW: number;
+      let newH: number;
 
       if (isCorner) {
-        // Proportional resize — use horizontal drag distance
+        // Proportional resize — both dimensions scale together
         const rawW = Math.max(50, startW + (dir.includes("e") ? dx : -dx));
         newW = Math.round(rawW);
         newH = Math.round(rawW / ar);
       } else {
-        // Crop resize — change only the relevant dimension
+        // Edge resize — change only the dragged dimension, keep the other
+        newW = startW;
+        newH = startH;
         if (dir === "e") newW = Math.max(50, Math.round(startW + dx));
         if (dir === "w") newW = Math.max(50, Math.round(startW - dx));
         if (dir === "s") newH = Math.max(30, Math.round(startH + dy));
@@ -318,19 +346,21 @@ export function ImageBlockEditor({
   // ── Derived values ──
 
   const hasCrop = block.width !== null || block.height !== null;
-  const aspectRatio = naturalSize ? naturalSize.w / naturalSize.h : null;
 
+  // Sliders only show when the image is non-proportionally cropped in that dimension
   const showVSlider =
     isSelected &&
     naturalSize !== null &&
+    block.width !== null &&
     block.height !== null &&
-    block.height < naturalSize.h;
+    block.height < (block.width / naturalSize.w) * naturalSize.h - 1;
 
   const showHSlider =
     isSelected &&
     naturalSize !== null &&
     block.width !== null &&
-    block.width < naturalSize.w;
+    block.height !== null &&
+    block.width < (block.height / naturalSize.h) * naturalSize.w - 1;
 
   return (
     <>
@@ -381,11 +411,12 @@ export function ImageBlockEditor({
                     Velikost
                     <ChevronDown className="h-3 w-3" />
                   </button>
-                  {showSizePopover && (
+                  {showSizePopover && naturalSize && (
                     <SizePopover
                       width={block.width}
                       height={block.height}
-                      aspectRatio={aspectRatio}
+                      naturalWidth={naturalSize.w}
+                      naturalHeight={naturalSize.h}
                       onSave={(w, h) => {
                         onChange({ ...block, width: w, height: h });
                         setShowSizePopover(false);
