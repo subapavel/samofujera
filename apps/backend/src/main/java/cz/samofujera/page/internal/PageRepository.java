@@ -25,7 +25,9 @@ public class PageRepository {
     public record PageRow(
         UUID id, String slug, String title, String status, String pageType,
         JSONB content, String metaTitle, String metaDescription,
-        UUID ogImageId, int sortOrder, boolean showInNav,
+        UUID ogImageId, String metaKeywords, String ogTitle, String ogDescription,
+        boolean noindex, boolean nofollow,
+        int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt,
         OffsetDateTime publishedAt, UUID createdBy,
         OffsetDateTime scheduledPublishAt
@@ -42,7 +44,9 @@ public class PageRepository {
         return dsl.select(
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
                 PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
-                PAGES.OG_IMAGE_ID, PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
+                PAGES.OG_IMAGE_ID, PAGES.META_KEYWORDS, PAGES.OG_TITLE, PAGES.OG_DESCRIPTION,
+                PAGES.NOINDEX, PAGES.NOFOLLOW,
+                PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
                 PAGES.SCHEDULED_PUBLISH_AT)
             .from(PAGES)
@@ -51,7 +55,10 @@ public class PageRepository {
                 r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
                 r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
                 r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
-                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
+                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
+                r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
+                r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
+                r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
                 r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
                 r.get(PAGES.SCHEDULED_PUBLISH_AT)
@@ -62,7 +69,9 @@ public class PageRepository {
         return dsl.select(
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
                 PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
-                PAGES.OG_IMAGE_ID, PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
+                PAGES.OG_IMAGE_ID, PAGES.META_KEYWORDS, PAGES.OG_TITLE, PAGES.OG_DESCRIPTION,
+                PAGES.NOINDEX, PAGES.NOFOLLOW,
+                PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
                 PAGES.SCHEDULED_PUBLISH_AT)
             .from(PAGES)
@@ -71,7 +80,10 @@ public class PageRepository {
                 r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
                 r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
                 r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
-                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
+                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
+                r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
+                r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
+                r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
                 r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
                 r.get(PAGES.SCHEDULED_PUBLISH_AT)
@@ -121,7 +133,9 @@ public class PageRepository {
     }
 
     public void update(UUID id, String slug, String title, JSONB content,
-                       String metaTitle, String metaDescription, UUID ogImageId) {
+                       String metaTitle, String metaDescription, UUID ogImageId,
+                       boolean showInNav, String metaKeywords, String ogTitle,
+                       String ogDescription, boolean noindex, boolean nofollow) {
         dsl.update(PAGES)
             .set(PAGES.SLUG, slug)
             .set(PAGES.TITLE, title)
@@ -129,6 +143,12 @@ public class PageRepository {
             .set(PAGES.META_TITLE, metaTitle)
             .set(PAGES.META_DESCRIPTION, metaDescription)
             .set(PAGES.OG_IMAGE_ID, ogImageId)
+            .set(PAGES.SHOW_IN_NAV, showInNav)
+            .set(PAGES.META_KEYWORDS, metaKeywords)
+            .set(PAGES.OG_TITLE, ogTitle)
+            .set(PAGES.OG_DESCRIPTION, ogDescription)
+            .set(PAGES.NOINDEX, noindex)
+            .set(PAGES.NOFOLLOW, nofollow)
             .set(PAGES.UPDATED_AT, OffsetDateTime.now())
             .where(PAGES.ID.eq(id))
             .execute();
@@ -164,7 +184,9 @@ public class PageRepository {
         return dsl.select(
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
                 PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
-                PAGES.OG_IMAGE_ID, PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
+                PAGES.OG_IMAGE_ID, PAGES.META_KEYWORDS, PAGES.OG_TITLE, PAGES.OG_DESCRIPTION,
+                PAGES.NOINDEX, PAGES.NOFOLLOW,
+                PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
                 PAGES.SCHEDULED_PUBLISH_AT)
             .from(PAGES)
@@ -174,7 +196,10 @@ public class PageRepository {
                 r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
                 r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
                 r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
-                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
+                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
+                r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
+                r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
+                r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
                 r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
                 r.get(PAGES.SCHEDULED_PUBLISH_AT)
