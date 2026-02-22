@@ -45,6 +45,16 @@ export async function generateMetadata({
   return {
     title: page.metaTitle || `${page.title} | Samo Fujera`,
     description: page.metaDescription || undefined,
+    keywords: page.metaKeywords || undefined,
+    openGraph: {
+      title: page.ogTitle || page.metaTitle || page.title,
+      description: page.ogDescription || page.metaDescription || undefined,
+      images: page.ogImageUrl ? [{ url: page.ogImageUrl }] : undefined,
+    },
+    robots: {
+      index: !page.noindex,
+      follow: !page.nofollow,
+    },
   };
 }
 
