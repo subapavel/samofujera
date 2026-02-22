@@ -15,7 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -72,8 +71,6 @@ class MediaIntegrationTest {
     @Test
     void upload_returns201() throws Exception {
         setupStorageMocks();
-        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
-            .thenReturn(Map.of());
 
         var file = new MockMultipartFile("file", "test-image.jpg",
             "image/jpeg", "fake image content".getBytes());
@@ -92,8 +89,6 @@ class MediaIntegrationTest {
     @Test
     void upload_nonImage_returns201() throws Exception {
         setupStorageMocks();
-        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
-            .thenReturn(Map.of());
 
         var file = new MockMultipartFile("file", "document.pdf",
             "application/pdf", "fake pdf content".getBytes());
@@ -105,14 +100,12 @@ class MediaIntegrationTest {
             .andExpect(jsonPath("$.data.id").exists())
             .andExpect(jsonPath("$.data.originalFilename").value("document.pdf"))
             .andExpect(jsonPath("$.data.mimeType").value("application/pdf"))
-            .andExpect(jsonPath("$.data.thumbUrl").doesNotExist());
+            .andExpect(jsonPath("$.data.thumbUrl").isEmpty());
     }
 
     @Test
     void updateItem_returns200() throws Exception {
         setupStorageMocks();
-        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
-            .thenReturn(Map.of());
 
         // Create item first via upload
         var file = new MockMultipartFile("file", "update-test.jpg",
@@ -142,8 +135,6 @@ class MediaIntegrationTest {
     void deleteItem_returns204() throws Exception {
         setupStorageMocks();
         doNothing().when(storageService).deleteByPrefix(anyString());
-        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
-            .thenReturn(Map.of());
 
         // Create item first via upload
         var file = new MockMultipartFile("file", "delete-test.jpg",
@@ -165,30 +156,23 @@ class MediaIntegrationTest {
     }
 
     @Test
-    void upload_imageWithVariants_returnsVariantUrls() throws Exception {
+    void upload_image_returnsOriginalUrlOnly() throws Exception {
         setupStorageMocks();
-        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
-            .thenReturn(Map.of(
-                "thumb", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 150, 150),
-                "medium", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 600, 400),
-                "large", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 1200, 800),
-                "og", new cz.samofujera.media.internal.ImageVariantService.VariantResult(new byte[0], "image/webp", 1200, 630)
-            ));
 
         var file = new MockMultipartFile("file", "photo.jpg",
             "image/jpeg", "fake image content".getBytes());
 
         mockMvc.perform(multipart("/api/admin/media/upload")
                 .file(file)
-                .param("altText", "Photo with variants")
+                .param("altText", "Photo without variants")
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.id").exists())
             .andExpect(jsonPath("$.data.originalUrl").exists())
-            .andExpect(jsonPath("$.data.thumbUrl").exists())
-            .andExpect(jsonPath("$.data.mediumUrl").exists())
-            .andExpect(jsonPath("$.data.largeUrl").exists())
-            .andExpect(jsonPath("$.data.ogUrl").exists());
+            .andExpect(jsonPath("$.data.thumbUrl").isEmpty())
+            .andExpect(jsonPath("$.data.mediumUrl").isEmpty())
+            .andExpect(jsonPath("$.data.largeUrl").isEmpty())
+            .andExpect(jsonPath("$.data.ogUrl").isEmpty());
     }
 
     @Test
@@ -231,8 +215,6 @@ class MediaIntegrationTest {
     @Test
     void getItem_returns200() throws Exception {
         setupStorageMocks();
-        when(imageVariantService.generateVariants(any(byte[].class), anyString()))
-            .thenReturn(Map.of());
 
         // Create item first via upload
         var file = new MockMultipartFile("file", "get-test.jpg",
