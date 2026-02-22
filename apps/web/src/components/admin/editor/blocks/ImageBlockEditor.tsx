@@ -447,9 +447,7 @@ export function ImageBlockEditor({
                   type="button"
                   className="flex items-center rounded px-2 py-1 text-white/90 transition-colors hover:bg-white/10"
                   onClick={() => {
-                    setIsSelected(false);
                     closeAllDropdowns();
-                    onActiveChange?.(false);
                     onDelete();
                   }}
                 >
