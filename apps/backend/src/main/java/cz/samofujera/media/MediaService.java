@@ -102,7 +102,7 @@ public class MediaService {
     public MediaDtos.MediaItemListResponse getItems(String source, String type, String search,
                                                      int page, int limit) {
         int offset = Math.max(0, (page - 1) * limit);
-        String mimeTypePrefix = type != null && !type.isBlank() ? type + "/" : null;
+        String mimeTypePrefix = type != null && !type.isBlank() ? type.toLowerCase() + "/" : null;
 
         var items = itemRepository.findAll(source, mimeTypePrefix, search, offset, limit);
         long totalItems = itemRepository.count(source, mimeTypePrefix, search);
