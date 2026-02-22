@@ -11,6 +11,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@samofujera/ui";
+import { useQuery } from "@tanstack/react-query";
+import { mediaApi } from "@samofujera/api-client";
 import { MediaPicker } from "../media/MediaPicker";
 
 interface SettingsDrawerProps {
@@ -92,22 +94,40 @@ function SocialPreview({
   metaDescription,
   ogTitle,
   ogDescription,
+  ogImageId,
 }: {
   title: string;
   metaTitle: string;
   metaDescription: string;
   ogTitle: string;
   ogDescription: string;
+  ogImageId: string | null;
 }) {
   const effectiveTitle = ogTitle || metaTitle || title || "Samo Fujera";
   const effectiveDesc = ogDescription || metaDescription || "";
 
+  const imageQuery = useQuery({
+    queryKey: ["media", "item", ogImageId],
+    queryFn: () => mediaApi.getItem(ogImageId!),
+    enabled: Boolean(ogImageId),
+  });
+
+  const imageUrl = imageQuery.data?.data?.originalUrl;
+
   return (
     <div className="overflow-hidden rounded-lg border border-[var(--border)]">
-      <div className="flex h-[158px] items-center justify-center bg-[var(--muted)]">
-        <span className="text-xs text-[var(--muted-foreground)]">
-          1200 × 630
-        </span>
+      <div className="flex h-[158px] items-center justify-center bg-[var(--muted)] overflow-hidden">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt="OG preview"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span className="text-xs text-[var(--muted-foreground)]">
+            1200 × 630
+          </span>
+        )}
       </div>
       <div className="border-t border-[var(--border)] bg-[#f2f3f5] p-3">
         <p className="text-[10px] uppercase text-[#606770]">samofujera.cz</p>
@@ -317,6 +337,7 @@ export function SettingsDrawer({
                 metaDescription={metaDescription}
                 ogTitle={ogTitle}
                 ogDescription={ogDescription}
+                ogImageId={ogImageId}
               />
             </div>
 
