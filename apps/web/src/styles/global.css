@@ -108,7 +108,7 @@
     padding-left: 0.9375rem;
     padding-right: 0.9375rem;
     padding-top: 5.4375rem;
-    padding-bottom: 5.625rem;
+    padding-bottom: 0.625rem;
   }
 }
 
@@ -432,7 +432,7 @@
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  line-height: 1;
+  line-height: 1.6;
   transition: all 0.2s;
 }
 
@@ -451,7 +451,7 @@
   border-radius: 5px;
   background: white;
   color: rgba(0, 0, 0, 0.9);
-  padding: 1.3rem 2rem 1.2rem;
+  padding: 1.0625rem 2rem 0.6875rem;
   min-width: 260px;
 }
 .btn-style1:hover {
@@ -466,7 +466,7 @@
   border-radius: 5px;
   background: rgb(17, 24, 39);
   color: white;
-  padding: 1.3rem 2rem 1.2rem;
+  padding: 1.0625rem 2rem 0.6875rem;
   min-width: 260px;
 }
 .btn-style2:hover {
@@ -492,7 +492,7 @@
   border: 1px solid rgb(230, 188, 145);
   border-radius: 5px;
   color: rgba(0, 0, 0, 0.9);
-  padding: 1.3rem 2rem 1.2rem;
+  padding: 1.0625rem 2rem 0.6875rem;
   min-width: 260px;
   text-align: center;
 }
@@ -508,7 +508,7 @@
   border-radius: 5px;
   background: rgb(230, 188, 145);
   color: rgba(0, 0, 0, 0.9);
-  padding: 1.3rem 2rem 1.2rem;
+  padding: 1.0625rem 2rem 0.6875rem;
   min-width: 260px;
 }
 .btn-style5:hover {
@@ -528,7 +528,7 @@
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 1.3rem 2rem 1.2rem;
+  padding: 1.0625rem 2rem 0.6875rem;
   line-height: 1;
   min-width: 260px;
   text-align: center;

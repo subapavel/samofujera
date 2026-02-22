@@ -1,6 +1,5 @@
 package cz.samofujera.media;
 
-import cz.samofujera.media.internal.ImageVariantService;
 import cz.samofujera.media.internal.MediaItemRepository;
 import cz.samofujera.shared.exception.NotFoundException;
 import cz.samofujera.shared.storage.StorageService;
@@ -19,13 +18,10 @@ public class MediaService {
 
     private final MediaItemRepository itemRepository;
     private final StorageService storageService;
-    private final ImageVariantService imageVariantService;
 
-    MediaService(MediaItemRepository itemRepository, StorageService storageService,
-                 ImageVariantService imageVariantService) {
+    MediaService(MediaItemRepository itemRepository, StorageService storageService) {
         this.itemRepository = itemRepository;
         this.storageService = storageService;
-        this.imageVariantService = imageVariantService;
     }
 
     // --- Upload methods ---
@@ -42,13 +38,6 @@ public class MediaService {
         var originalData = inputStream.readAllBytes();
 
         storageService.upload(originalKey, originalData, contentType);
-
-        // Generate and upload image variants
-        var variants = imageVariantService.generateVariants(originalData, contentType);
-        for (var entry : variants.entrySet()) {
-            var variantKey = prefix + entry.getKey() + ".webp";
-            storageService.upload(variantKey, entry.getValue().data(), entry.getValue().contentType());
-        }
 
         // Read original image dimensions
         Integer width = null;
@@ -80,12 +69,6 @@ public class MediaService {
         var originalData = inputStream.readAllBytes();
 
         storageService.upload(originalKey, originalData, contentType);
-
-        var variants = imageVariantService.generateVariants(originalData, contentType);
-        for (var entry : variants.entrySet()) {
-            var variantKey = prefix + entry.getKey() + ".webp";
-            storageService.upload(variantKey, entry.getValue().data(), entry.getValue().contentType());
-        }
 
         Integer width = null;
         Integer height = null;
@@ -167,30 +150,14 @@ public class MediaService {
 
     private MediaDtos.MediaItemResponse toMediaItemResponse(MediaItemRepository.MediaItemRow row) {
         var storageKey = row.storageKey();
-        var prefix = storageKey.substring(0, storageKey.lastIndexOf('/') + 1);
         var isPublic = storageKey.startsWith("public/");
 
         var originalUrl = isPublic
             ? storageService.getPublicUrl(storageKey)
             : storageService.generatePresignedUrl(storageKey, Duration.ofHours(1));
 
-        String thumbUrl = null, mediumUrl = null, largeUrl = null, ogUrl = null;
-        if (row.mimeType() != null && row.mimeType().startsWith("image/")) {
-            if (isPublic) {
-                thumbUrl = storageService.getPublicUrl(prefix + "thumb.webp");
-                mediumUrl = storageService.getPublicUrl(prefix + "medium.webp");
-                largeUrl = storageService.getPublicUrl(prefix + "large.webp");
-                ogUrl = storageService.getPublicUrl(prefix + "og.webp");
-            } else {
-                thumbUrl = storageService.generatePresignedUrl(prefix + "thumb.webp", Duration.ofHours(1));
-                mediumUrl = storageService.generatePresignedUrl(prefix + "medium.webp", Duration.ofHours(1));
-                largeUrl = storageService.generatePresignedUrl(prefix + "large.webp", Duration.ofHours(1));
-                ogUrl = storageService.generatePresignedUrl(prefix + "og.webp", Duration.ofHours(1));
-            }
-        }
-
         return new MediaDtos.MediaItemResponse(
-            row.id(), row.originalFilename(), originalUrl, thumbUrl, mediumUrl, largeUrl, ogUrl,
+            row.id(), row.originalFilename(), originalUrl, null, null, null, null,
             row.mimeType(), row.fileSizeBytes(), row.width(), row.height(),
             row.altText(), row.createdAt());
     }

@@ -268,7 +268,7 @@ export function ImageBlockEditor({
     if (selectedItem) {
       onChange({
         ...block,
-        src: selectedItem.largeUrl ?? selectedItem.originalUrl,
+        src: selectedItem.originalUrl,
         altText: selectedItem.altText ?? selectedItem.originalFilename,
         mediaItemId: selectedItem.id,
         width: null,

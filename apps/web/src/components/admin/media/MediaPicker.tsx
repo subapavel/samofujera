@@ -76,7 +76,7 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
   const currentItem = currentItemQuery.data?.data;
   const isImage = currentItem?.mimeType.startsWith("image/");
   const previewUrl = currentItem
-    ? (currentItem.thumbUrl ?? currentItem.originalUrl)
+    ? currentItem.originalUrl
     : undefined;
 
   return (

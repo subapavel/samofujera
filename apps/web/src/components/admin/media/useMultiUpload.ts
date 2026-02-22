@@ -49,6 +49,7 @@ export function useMultiUpload(options?: UseMultiUploadOptions) {
           updateUpload(item.id, { progress: 100, status: "done" });
           abortFns.current.delete(item.id);
           void queryClient.invalidateQueries({ queryKey: ["media", "items"] });
+          void queryClient.invalidateQueries({ queryKey: ["media-items"] });
         })
         .catch((err: Error) => {
           if (err.message !== "Upload cancelled") {

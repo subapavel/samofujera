@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 interface SerializedNode {
@@ -121,19 +122,19 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
       <div style={{ paddingTop: "20px", paddingBottom: "20px" }} className="text-center">
         <div
           style={{
+            position: "relative",
             width: block.width ? `${block.width}px` : undefined,
             height: block.height ? `${block.height}px` : undefined,
             overflow: "hidden",
           }}
           className="mx-auto inline-block"
         >
-          <img
+          <Image
             src={block.src}
             alt={block.altText ?? ""}
+            fill
+            sizes="(max-width: 768px) 100vw, 800px"
             style={{
-              display: "block",
-              width: "100%",
-              height: "100%",
               objectFit: "cover",
               objectPosition: `${block.panX ?? 50}% ${block.panY ?? 50}%`,
             }}
@@ -145,11 +146,14 @@ function ImageBlockRenderer({ block }: { block: ImageBlockData }) {
 
   return (
     <div style={{ paddingTop: "20px", paddingBottom: "20px" }} className="text-center">
-      <img
+      <Image
         src={block.src}
         alt={block.altText ?? ""}
-        className="max-w-full mx-auto"
-        style={{ display: "block" }}
+        width={1200}
+        height={800}
+        sizes="(max-width: 768px) 100vw, 800px"
+        style={{ width: "100%", height: "auto", display: "block", maxWidth: "100%" }}
+        className="mx-auto"
       />
     </div>
   );
@@ -404,11 +408,14 @@ function LinkRenderer({ node }: { node: SerializedNode }) {
 function LegacyImageRenderer({ node }: { node: SerializedNode }) {
   if (!node.src) return null;
   return (
-    <img
+    <Image
       src={node.src}
       alt={node.altText ?? ""}
-      className="max-w-full mx-auto"
-      style={{ display: "block" }}
+      width={1200}
+      height={800}
+      sizes="(max-width: 768px) 100vw, 800px"
+      style={{ width: "100%", height: "auto", display: "block", maxWidth: "100%" }}
+      className="mx-auto"
     />
   );
 }
