@@ -32,17 +32,39 @@ event flows, deployment config, design system, and roadmap.
 
 ## Critical Rules
 
-### 1. Brainstorm before implementing
+### 1. Editor and public view MUST use identical CSS
+The admin page editor and the public PageRenderer MUST share the exact same CSS
+classes and rules. NEVER create separate styles, overrides, or Tailwind utility
+classes for one that don't apply to the other. Both render inside `.page-content`
+— use shared CSS classes defined in `global.css` for all visual elements
+(separators, buttons, typography, spacing). When adding or changing any visual
+style, update the shared CSS class and verify it applies in BOTH the editor
+component AND the PageRenderer. This is essential for template consistency.
+
+### 2. ALWAYS ask before taking action
+NEVER assume what the user wants. ALWAYS ask first, then act. This applies to
+ALL changes — CSS, code, file edits, architecture decisions. Present what you
+plan to do and wait for approval before making any change. The only exception
+is when the user explicitly tells you to "just do it" or gives a direct instruction
+with no ambiguity.
+
+### 3. Never implement bugs/fixes outside of a plan
+When working through an implementation plan, NEVER start implementing bug fixes
+or other changes that come up outside the plan. Always ask the user first how
+they want to handle it — add it to the current plan, create a separate task, or
+discuss the approach. This applies even for "obvious" fixes. Ask first, act second.
+
+### 4. Brainstorm before implementing
 Before starting any phase or major feature, ALWAYS brainstorm first using the
 brainstorming skill. The architecture in `architektura.md` is orientational — if a
 better approach is found, we take it. Explore intent, requirements, and alternatives.
 
-### 2. Use Context7 for documentation
+### 5. Use Context7 for documentation
 ALWAYS use the Context7 MCP tool to look up current library documentation before
 writing code. Never assume API signatures, configuration options, or best practices.
 Check first. This applies to ALL technologies in the stack.
 
-### 3. No untested code — ever
+### 6. No untested code — ever
 Every piece of code must be tested before delivery. Run tests, verify they pass,
 fix errors until green. No exceptions.
 
@@ -53,7 +75,7 @@ fix errors until green. No exceptions.
 - TDD workflow: red -> green -> refactor
 - Never claim code is done without running tests and showing green output
 
-### 4. Conventional commits (English, lowercase)
+### 7. Conventional commits (English, lowercase)
 Format: `<type>(<scope>): <description>`
 
 Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
@@ -73,27 +95,27 @@ Scopes (warning-level — flexible):
 
 Rules: lower-case subject, no period, max 100 chars, scope optional but encouraged.
 
-### 5. All strings through i18n
+### 8. All strings through i18n
 Every user-facing string goes through Lingui (frontend) or MessageSource (backend).
 Even if only Czech exists initially. ICU MessageFormat for plurals.
 
 Czech has 4 plural forms: one, few, many, other.
 Slovak has 3 plural forms: one, few, other.
 
-### 6. Feature flags from day one
+### 9. Feature flags from day one
 Every new feature behind a flag. DB-backed with Redis cache.
 
-### 7. Module boundaries are sacred
+### 10. Module boundaries are sacred
 Spring Modulith modules communicate only through public APIs and events.
 Never access another module's `internal/` package directly.
 
-### 8. JOOQ only — no JPA, no raw SQL
+### 11. JOOQ only — no JPA, no raw SQL
 All database access through JOOQ generated classes. Type-safe queries only.
 
-### 9. pnpm only
+### 12. pnpm only
 Use pnpm for all frontend/monorepo operations. No npm, no yarn.
 
-### 10. Next.js App Router conventions
+### 13. Next.js App Router conventions
 The frontend uses Next.js 16 App Router with route groups:
 - `(public)` — marketing/SEO pages (server components)
 - `(auth)` — login, register, password reset pages
