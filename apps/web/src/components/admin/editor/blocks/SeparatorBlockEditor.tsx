@@ -21,7 +21,7 @@ export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange
   const [showDropdown, setShowDropdown] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const paddingClass = block.marginHeight === "minimal" ? "py-[0.625rem]" : "py-8";
+  const separatorClass = block.marginHeight === "minimal" ? "separator-block separator-min" : "separator-block separator-auto";
 
   // Close toolbar when clicking outside
   useEffect(() => {
@@ -45,7 +45,7 @@ export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange
   return (
     <div
       ref={wrapperRef}
-      className={`relative cursor-pointer ${paddingClass}`}
+      className={`relative cursor-pointer ${separatorClass}`}
       onClick={() => {
         const next = !showToolbar;
         setShowToolbar(next);

@@ -166,9 +166,9 @@ function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
       </div>
     );
   }
-  const padding = block.marginHeight === "minimal" ? "0.625rem" : "2rem";
+  const className = block.marginHeight === "minimal" ? "separator-block separator-min" : "separator-block separator-auto";
   return (
-    <div style={{ paddingTop: padding, paddingBottom: padding }}>
+    <div className={className}>
       <hr />
     </div>
   );
@@ -194,7 +194,7 @@ function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {
   const target = block.openInNewTab ? "_blank" : undefined;
   const rel = block.openInNewTab ? "noopener noreferrer" : undefined;
   return (
-    <div className={`btn-block-wrapper ${alignClass}`}>
+    <div className={`btn-block ${alignClass}`}>
       <a href={block.url ?? "#"} className={classes} target={target} rel={rel}>
         {block.text ?? "Zjistit více"}{isLink ? " →" : ""}
       </a>
@@ -212,14 +212,25 @@ export function PageRenderer({ content }: PageRendererProps) {
       <div className="page-content">
         {sections.map((section) => (
           <section key={section.id} className="section-container">
-            {section.blocks?.map((block) => {
-              if (block.type === "text") {
-                const content = renderLexicalContent((block as TextBlockData).content);
-                if (!content) return <div key={block.id} className="text-block"><p><br /></p></div>;
-                return <div key={block.id} className="text-block">{content}</div>;
-              }
-              return <div key={block.id}>{renderBlock(block)}</div>;
-            })}
+            <div className="content-block">
+              {section.blocks?.map((block) => {
+                switch (block.type) {
+                  case "text": {
+                    const content = renderLexicalContent((block as TextBlockData).content);
+                    if (!content) return <div key={block.id} className="text-block"><p><br /></p></div>;
+                    return <div key={block.id} className="text-block">{content}</div>;
+                  }
+                  case "separator":
+                    return <div key={block.id}>{renderBlock(block)}</div>;
+                  case "image":
+                    return <div key={block.id} className="image-block">{renderBlock(block)}</div>;
+                  case "button":
+                    return <div key={block.id}>{renderBlock(block)}</div>;
+                  default:
+                    return null;
+                }
+              })}
+            </div>
           </section>
         ))}
       </div>

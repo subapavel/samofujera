@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Allura, Inter, Josefin_Sans, Merriweather, Open_Sans } from "next/font/google";
+import { Allura, Inter, Josefin_Sans, Open_Sans } from "next/font/google";
 import "@/styles/global.css";
 
 const inter = Inter({
@@ -13,14 +13,6 @@ const josefinSans = Josefin_Sans({
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "600"],
   variable: "--font-heading",
-  display: "swap",
-});
-
-const merriweather = Merriweather({
-  subsets: ["latin", "latin-ext"],
-  weight: ["300", "400", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-body",
   display: "swap",
 });
 
@@ -56,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="cs"
-      className={`${inter.variable} ${josefinSans.variable} ${merriweather.variable} ${openSans.variable} ${allura.variable}`}
+      className={`${inter.variable} ${josefinSans.variable} ${openSans.variable} ${allura.variable}`}
     >
       <body className="min-h-screen bg-white text-[var(--foreground)] font-sans antialiased">
         {children}
