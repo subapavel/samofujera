@@ -1,11 +1,6 @@
-function getBaseUrl(): string {
-  if (typeof process !== "undefined" && process.env?.["NEXT_PUBLIC_API_URL"]) {
-    return process.env["NEXT_PUBLIC_API_URL"];
-  }
-  return "http://localhost:8080";
-}
-
-export const BASE_URL = getBaseUrl();
+// Next.js inlines NEXT_PUBLIC_* only with dot notation — never use bracket access
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export class ApiError extends Error {
   constructor(
