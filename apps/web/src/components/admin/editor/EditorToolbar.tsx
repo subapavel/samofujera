@@ -93,7 +93,7 @@ export function EditorToolbar({
 
       {/* Preview */}
       <Button variant="ghost" size="icon" asChild>
-        <Link href={`/pages/${slug}?preview=true`} target="_blank" title="Náhled">
+        <Link href={`/${slug}?preview=true`} target="_blank" title="Náhled">
           <Eye className="h-4 w-4" />
         </Link>
       </Button>

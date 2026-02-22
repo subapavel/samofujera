@@ -48,7 +48,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function PublicPageRoute({
+export default async function CmsPageRoute({
   params,
   searchParams,
 }: {

@@ -40,7 +40,7 @@ export function SettingsDrawer({
           <div>
             <label className="mb-1.5 block text-sm font-medium">URL adresa</label>
             <div className="flex items-center gap-1">
-              <span className="text-sm text-[var(--muted-foreground)]">/pages/</span>
+              <span className="text-sm text-[var(--muted-foreground)]">/</span>
               <Input
                 value={slug}
                 onChange={(e) => onSlugChange(e.target.value)}

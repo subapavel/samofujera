@@ -36,7 +36,7 @@ export function LinkEditorPanel({
   });
 
   function handleSelectPage(slug: string) {
-    setUrl(`/pages/${slug}`);
+    setUrl(`/${slug}`);
     setShowPagePicker(false);
   }
 
