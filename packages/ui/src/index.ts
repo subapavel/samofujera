@@ -67,4 +67,5 @@ export {
   AlertDialogAction,
   AlertDialogCancel,
 } from "./components/alert-dialog";
+export { Switch } from "./components/switch";
 export { cn } from "./lib/utils";

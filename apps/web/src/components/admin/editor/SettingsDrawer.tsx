@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  Switch,
   Tabs,
   TabsList,
   TabsTrigger,
@@ -214,15 +215,13 @@ export function SettingsDrawer({
               </p>
             </div>
 
-            {/* Zobrazit v navigaci */}
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={showInNav}
-                onChange={(e) => onShowInNavChange(e.target.checked)}
-                className="h-4 w-4 rounded border-[var(--border)]"
+            {/* Nezobrazovat v navigaci */}
+            <label className="flex items-center justify-between text-sm">
+              <span>Nezobrazovat v navigaci</span>
+              <Switch
+                checked={!showInNav}
+                onCheckedChange={(checked) => onShowInNavChange(!checked)}
               />
-              Zobrazit v navigaci
             </label>
           </TabsContent>
 
@@ -346,24 +345,20 @@ export function SettingsDrawer({
               <label className="mb-1.5 block text-sm font-medium">
                 Pokročilé
               </label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
+              <div className="space-y-3">
+                <label className="flex items-center justify-between text-sm">
+                  <span>noindex — nezobrazovat ve vyhledávačích</span>
+                  <Switch
                     checked={noindex}
-                    onChange={(e) => onNoindexChange(e.target.checked)}
-                    className="h-4 w-4 rounded border-[var(--border)]"
+                    onCheckedChange={onNoindexChange}
                   />
-                  noindex — nezobrazovat ve vyhledávačích
                 </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
+                <label className="flex items-center justify-between text-sm">
+                  <span>nofollow — nesledovat odkazy na stránce</span>
+                  <Switch
                     checked={nofollow}
-                    onChange={(e) => onNofollowChange(e.target.checked)}
-                    className="h-4 w-4 rounded border-[var(--border)]"
+                    onCheckedChange={onNofollowChange}
                   />
-                  nofollow — nesledovat odkazy na stránce
                 </label>
               </div>
             </div>
