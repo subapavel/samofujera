@@ -7,6 +7,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "vars": {
+    "NEXT_PUBLIC_API_URL": "https://samofujera-api.fly.dev"
+  },
   "kv_namespaces": [
     {
       "binding": "NEXT_INC_CACHE_KV",

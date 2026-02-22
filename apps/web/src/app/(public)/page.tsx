@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import Link from "next/link";
 import { PageRenderer } from "@/components/page-renderer/PageRenderer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -40,9 +40,30 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+function PlaceholderHome() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+      <h1 className="mb-4 text-3xl font-bold">Sámo Fujera</h1>
+      <p className="mb-8 max-w-md text-lg text-[var(--muted-foreground)]">
+        Stránka se připravuje. Brzy tu najdete obsah o zdraví, osobním rozvoji
+        a duchovním růstu.
+      </p>
+      <Link
+        href="/admin"
+        className="rounded-md bg-[var(--primary)] px-6 py-3 text-sm font-medium text-white transition-colors hover:opacity-90"
+      >
+        Přejít do administrace
+      </Link>
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const page = await getPage("home");
-  if (!page) notFound();
+
+  if (!page) {
+    return <PlaceholderHome />;
+  }
 
   return (
     <div
