@@ -1,5 +1,6 @@
 package cz.samofujera.page;
 
+import cz.samofujera.media.MediaService;
 import cz.samofujera.page.internal.PageRepository;
 import cz.samofujera.shared.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,9 +20,11 @@ public class PageService {
     private static final ObjectMapper JSON = new ObjectMapper();
 
     private final PageRepository pageRepository;
+    private final MediaService mediaService;
 
-    PageService(PageRepository pageRepository) {
+    PageService(PageRepository pageRepository, MediaService mediaService) {
         this.pageRepository = pageRepository;
+        this.mediaService = mediaService;
     }
 
     public PageDtos.PageListResponse getPages(String status, String type, String search, int page, int limit) {
@@ -45,7 +48,9 @@ public class PageService {
         }
         return new PageDtos.PublicPageResponse(
             row.slug(), row.title(), rawContent(row.content()),
-            row.metaTitle(), row.metaDescription()
+            row.metaTitle(), row.metaDescription(),
+            row.metaKeywords(), row.ogTitle(), row.ogDescription(),
+            resolveOgImageUrl(row.ogImageId()), row.noindex(), row.nofollow()
         );
     }
 
@@ -54,7 +59,9 @@ public class PageService {
             .orElseThrow(() -> new NotFoundException("Page not found"));
         return new PageDtos.PublicPageResponse(
             row.slug(), row.title(), rawContent(row.content()),
-            row.metaTitle(), row.metaDescription()
+            row.metaTitle(), row.metaDescription(),
+            row.metaKeywords(), row.ogTitle(), row.ogDescription(),
+            resolveOgImageUrl(row.ogImageId()), row.noindex(), row.nofollow()
         );
     }
 
@@ -76,7 +83,9 @@ public class PageService {
             ? JSONB.valueOf(toJsonString(request.content()))
             : JSONB.valueOf("{}");
         pageRepository.update(id, request.slug(), request.title(), contentJsonb,
-            request.metaTitle(), request.metaDescription(), request.ogImageId());
+            request.metaTitle(), request.metaDescription(), request.ogImageId(),
+            request.showInNav(), request.metaKeywords(), request.ogTitle(),
+            request.ogDescription(), request.noindex(), request.nofollow());
         return getPageById(id);
     }
 
@@ -141,10 +150,22 @@ public class PageService {
         return new PageDtos.PageDetailResponse(
             row.id(), row.slug(), row.title(), row.status(), row.pageType(),
             rawContent(row.content()), row.metaTitle(), row.metaDescription(),
-            row.ogImageId(), row.sortOrder(), row.showInNav(),
+            row.ogImageId(), row.metaKeywords(), row.ogTitle(), row.ogDescription(),
+            row.noindex(), row.nofollow(),
+            row.sortOrder(), row.showInNav(),
             row.createdAt(), row.updatedAt(), row.publishedAt(),
             row.scheduledPublishAt()
         );
+    }
+
+    private String resolveOgImageUrl(UUID ogImageId) {
+        if (ogImageId == null) return null;
+        try {
+            var item = mediaService.getById(ogImageId);
+            return item.originalUrl();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
