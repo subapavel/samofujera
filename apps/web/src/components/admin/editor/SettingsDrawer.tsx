@@ -11,7 +11,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@samofujera/ui";
-import { MediaPicker } from "../../media/MediaPicker";
+import { MediaPicker } from "../media/MediaPicker";
 
 interface SettingsDrawerProps {
   open: boolean;
