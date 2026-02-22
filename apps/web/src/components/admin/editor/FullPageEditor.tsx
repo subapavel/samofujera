@@ -75,6 +75,13 @@ export function FullPageEditor() {
   const [slug, setSlug] = useState("");
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
+  const [showInNav, setShowInNav] = useState(false);
+  const [ogImageId, setOgImageId] = useState<string | null>(null);
+  const [metaKeywords, setMetaKeywords] = useState("");
+  const [ogTitle, setOgTitle] = useState("");
+  const [ogDescription, setOgDescription] = useState("");
+  const [noindex, setNoindex] = useState(false);
+  const [nofollow, setNofollow] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [focusedSectionIndex, setFocusedSectionIndex] = useState<number | null>(null);
@@ -94,6 +101,13 @@ export function FullPageEditor() {
     setSlug(pageData.slug);
     setMetaTitle(pageData.metaTitle ?? "");
     setMetaDescription(pageData.metaDescription ?? "");
+    setShowInNav(pageData.showInNav ?? false);
+    setOgImageId(pageData.ogImageId ?? null);
+    setMetaKeywords(pageData.metaKeywords ?? "");
+    setOgTitle(pageData.ogTitle ?? "");
+    setOgDescription(pageData.ogDescription ?? "");
+    setNoindex(pageData.noindex ?? false);
+    setNofollow(pageData.nofollow ?? false);
     setSections(parseSections(pageData.content));
     setInitialized(true);
   }
@@ -107,7 +121,13 @@ export function FullPageEditor() {
         content: serializeContent(sections) as unknown as Record<string, unknown>,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
-        ogImageId: null,
+        ogImageId: ogImageId || null,
+        showInNav,
+        metaKeywords: metaKeywords || null,
+        ogTitle: ogTitle || null,
+        ogDescription: ogDescription || null,
+        noindex,
+        nofollow,
       }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin", "pages"] }),
@@ -290,12 +310,27 @@ export function FullPageEditor() {
       <SettingsDrawer
         open={showSettings}
         onOpenChange={setShowSettings}
+        title={title}
         slug={slug}
         onSlugChange={setSlug}
+        showInNav={showInNav}
+        onShowInNavChange={setShowInNav}
         metaTitle={metaTitle}
         onMetaTitleChange={setMetaTitle}
         metaDescription={metaDescription}
         onMetaDescriptionChange={setMetaDescription}
+        metaKeywords={metaKeywords}
+        onMetaKeywordsChange={setMetaKeywords}
+        ogTitle={ogTitle}
+        onOgTitleChange={setOgTitle}
+        ogDescription={ogDescription}
+        onOgDescriptionChange={setOgDescription}
+        ogImageId={ogImageId}
+        onOgImageIdChange={setOgImageId}
+        noindex={noindex}
+        onNoindexChange={setNoindex}
+        nofollow={nofollow}
+        onNofollowChange={setNofollow}
       />
     </>
   );
