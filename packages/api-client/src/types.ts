@@ -387,6 +387,11 @@ export interface PageResponse {
 
 export interface PageDetailResponse extends PageResponse {
   content: Record<string, unknown> | null;
+  metaKeywords: string | null;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  noindex: boolean;
+  nofollow: boolean;
 }
 
 export interface PageListResponse {
@@ -410,6 +415,12 @@ export interface UpdatePageRequest {
   metaTitle?: string | null;
   metaDescription?: string | null;
   ogImageId?: string | null;
+  showInNav?: boolean;
+  metaKeywords?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  noindex?: boolean;
+  nofollow?: boolean;
 }
 
 export interface SchedulePublishRequest {
@@ -422,4 +433,10 @@ export interface PublicPageResponse {
   content: Record<string, unknown> | null;
   metaTitle: string | null;
   metaDescription: string | null;
+  metaKeywords: string | null;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImageUrl: string | null;
+  noindex: boolean;
+  nofollow: boolean;
 }
