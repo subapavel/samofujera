@@ -13,7 +13,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { _ } = useLingui();
   return (
-    <Link href={"/katalog/" + product.slug} className="block group">
+    <Link href={"/katalog/" + product.slug} className="block group" data-testid="product-card">
       <Card className="h-full transition-shadow hover:shadow-md">
         <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-[var(--muted)]">
           {product.thumbnailUrl ? (
