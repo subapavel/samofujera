@@ -1,47 +1,71 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import type { MessageDescriptor } from "@lingui/core";
+import {
+  Upload,
+  LayoutGrid,
+  List,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 import { mediaApi } from "@samofujera/api-client";
 import type { MediaItemResponse } from "@samofujera/api-client";
-import { Button, Input, Label } from "@samofujera/ui";
-import { MediaGrid } from "../media/MediaGrid";
+import {
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from "@samofujera/ui";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { MediaGridView } from "../media/media-grid-view";
+import { MediaTableView } from "../media/media-table-view";
 import { UploadProgress } from "../media/UploadProgress";
 import { useMultiUpload } from "../media/useMultiUpload";
 
-const textareaClassName =
-  "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm ring-offset-[var(--background)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
-
 const SOURCES: Array<{ label: MessageDescriptor; value: string | undefined }> = [
-  { label: msg`Vše`, value: undefined },
+  { label: msg`Vse`, value: undefined },
   { label: msg`Produkty`, value: "products" },
   { label: msg`Kategorie`, value: "product_categories" },
-  { label: msg`Nepřiřazeno`, value: "unlinked" },
+  { label: msg`Neprirazeno`, value: "unlinked" },
 ];
 
-const VARIANT_LABELS: { key: keyof Pick<MediaItemResponse, "thumbUrl" | "mediumUrl" | "largeUrl" | "ogUrl">; label: string }[] = [
+const VARIANT_LABELS: {
+  key: keyof Pick<MediaItemResponse, "thumbUrl" | "mediumUrl" | "largeUrl" | "ogUrl">;
+  label: string;
+}[] = [
   { key: "thumbUrl", label: "Thumb" },
   { key: "mediumUrl", label: "Medium" },
   { key: "largeUrl", label: "Large" },
   { key: "ogUrl", label: "OG" },
 ];
 
+type ViewMode = "grid" | "table";
+
 export function MediaPage() {
   const { _ } = useLingui();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [source, setSource] = useState<string | undefined>(undefined);
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(
-    null,
-  );
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(null);
   const [editAltText, setEditAltText] = useState("");
 
   const itemsQuery = useQuery({
@@ -49,7 +73,7 @@ export function MediaPage() {
     queryFn: () =>
       mediaApi.getItems({
         source,
-        type: typeFilter || undefined,
+        type: typeFilter === "all" ? undefined : typeFilter,
         search: search || undefined,
         page,
         limit: 24,
@@ -74,6 +98,24 @@ export function MediaPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["media-items"] });
       setSelectedItem(null);
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        // Remove any deleted IDs
+        return next;
+      });
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const id of ids) {
+        await mediaApi.deleteItem(id);
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["media-items"] });
+      setSelectedIds(new Set());
+      setSelectedItem(null);
     },
   });
 
@@ -90,6 +132,29 @@ export function MediaPage() {
     setEditAltText(item.altText ?? "");
   }
 
+  const handleToggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleToggleSelectAll = useCallback(() => {
+    const items = itemsQuery.data?.data?.items ?? [];
+    setSelectedIds((prev) => {
+      const allSelected = items.every((i) => prev.has(i.id));
+      if (allSelected) {
+        return new Set();
+      }
+      return new Set(items.map((i) => i.id));
+    });
+  }, [itemsQuery.data]);
+
   function handleSaveAltText() {
     if (selectedItem) {
       updateAltTextMutation.mutate({
@@ -99,71 +164,81 @@ export function MediaPage() {
     }
   }
 
-  function handleDeleteItem() {
+  function handleDeleteItem(item?: MediaItemResponse) {
+    const target = item ?? selectedItem;
     if (
-      selectedItem &&
+      target &&
+      window.confirm(t`Opravdu chcete smazat "${target.originalFilename}"?`)
+    ) {
+      deleteMutation.mutate(target.id);
+    }
+  }
+
+  function handleBulkDelete() {
+    if (selectedIds.size === 0) return;
+    if (
       window.confirm(
-        t`Opravdu chcete smazat "${selectedItem.originalFilename}"?`,
+        t`Opravdu chcete smazat ${selectedIds.size} vybranych souboru?`,
       )
     ) {
-      deleteMutation.mutate(selectedItem.id);
+      bulkDeleteMutation.mutate(Array.from(selectedIds));
     }
   }
 
   const data = itemsQuery.data?.data;
 
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t`Média`}</h2>
-        <div className="flex items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            className="hidden"
-            onChange={handleUpload}
-          />
-          <Button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={multiUpload.isUploading}
-          >
-            {multiUpload.isUploading ? t`Nahrávám...` : t`Nahrát soubory`}
-          </Button>
-        </div>
-      </div>
+    <div className="flex flex-1 flex-col gap-4 sm:gap-6">
+      <PageHeader title={t`Media`} subtitle={t`Spravujte soubory a obrazky.`}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={handleUpload}
+        />
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={multiUpload.isUploading}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          {multiUpload.isUploading ? t`Nahravam...` : t`Nahrat soubory`}
+        </Button>
+      </PageHeader>
 
       {multiUpload.uploads.length > 0 && (
-        <div className="mb-4">
-          <UploadProgress
-            uploads={multiUpload.uploads}
-            onCancel={multiUpload.cancelUpload}
-            onClearDone={multiUpload.clearDone}
-          />
-        </div>
+        <UploadProgress
+          uploads={multiUpload.uploads}
+          onCancel={multiUpload.cancelUpload}
+          onClearDone={multiUpload.clearDone}
+        />
       )}
 
-      {/* Source filter tabs */}
-      <div className="flex gap-1 mb-4">
-        {SOURCES.map((s) => (
-          <button
-            key={_(s.label)}
-            type="button"
-            onClick={() => { setSource(s.value); setPage(1); }}
-            className={`px-3 py-1.5 text-sm rounded-md cursor-pointer ${
-              source === s.value
-                ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-                : "bg-[var(--muted)] text-[var(--muted-foreground)] hover:bg-[var(--accent)]"
-            }`}
-          >
-            {_(s.label)}
-          </button>
-        ))}
-      </div>
+      {/* Filter bar */}
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Source tabs */}
+        <div className="flex gap-1">
+          {SOURCES.map((s) => (
+            <button
+              key={_(s.label)}
+              type="button"
+              onClick={() => {
+                setSource(s.value);
+                setPage(1);
+              }}
+              className={`cursor-pointer rounded-md px-3 py-1.5 text-sm ${
+                source === s.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent"
+              }`}
+            >
+              {_(s.label)}
+            </button>
+          ))}
+        </div>
 
-      {/* Filters */}
-      <div className="mb-4 flex gap-3">
+        <div className="h-6 w-px bg-border" />
+
         <Input
           placeholder={t`Hledat...`}
           value={search}
@@ -173,50 +248,110 @@ export function MediaPage() {
           }}
           className="max-w-xs"
         />
-        <select
+
+        <Select
           value={typeFilter}
-          onChange={(e) => {
-            setTypeFilter(e.target.value);
+          onValueChange={(value) => {
+            setTypeFilter(value);
             setPage(1);
           }}
-          className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">{t`Všechny typy`}</option>
-          <option value="IMAGE">{t`Obrázky`}</option>
-          <option value="DOCUMENT">{t`Dokumenty`}</option>
-          <option value="AUDIO">{t`Audio`}</option>
-          <option value="VIDEO">{t`Video`}</option>
-        </select>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder={t`Vsechny typy`} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t`Vsechny typy`}</SelectItem>
+            <SelectItem value="IMAGE">{t`Obrazky`}</SelectItem>
+            <SelectItem value="DOCUMENT">{t`Dokumenty`}</SelectItem>
+            <SelectItem value="AUDIO">{t`Audio`}</SelectItem>
+            <SelectItem value="VIDEO">{t`Video`}</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="ml-auto flex items-center gap-1">
+          <Tabs
+            value={viewMode}
+            onValueChange={(v) => setViewMode(v as ViewMode)}
+          >
+            <TabsList className="h-9">
+              <TabsTrigger value="grid" className="px-2.5">
+                <LayoutGrid className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="table" className="px-2.5">
+                <List className="h-4 w-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
 
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-md border bg-muted/50 px-4 py-2">
+          <span className="text-sm text-muted-foreground">
+            {t`Vybrano: ${selectedIds.size}`}
+          </span>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleBulkDelete}
+            disabled={bulkDeleteMutation.isPending}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            {bulkDeleteMutation.isPending
+              ? t`Mazani...`
+              : t`Smazat vybrane`}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedIds(new Set())}
+          >
+            {t`Zrusit vyber`}
+          </Button>
+        </div>
+      )}
+
+      {/* Content area */}
       <div className="flex gap-6">
-        {/* Grid */}
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           {itemsQuery.isLoading && (
-            <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-              {t`Načítání...`}
-            </p>
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
           )}
 
           {itemsQuery.isError && (
-            <p className="py-8 text-center text-sm text-[var(--destructive)]">
-              {t`Nepodařilo se načíst soubory. Zkuste to prosím znovu.`}
-            </p>
+            <div className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center text-sm text-destructive">
+              {t`Nepodarilo se nacist soubory. Zkuste to prosim znovu.`}
+            </div>
           )}
 
           {itemsQuery.isSuccess && (
             <>
-              <MediaGrid
-                items={data?.items ?? []}
-                selectedId={selectedItem?.id}
-                onSelect={handleSelectItem}
-              />
+              {viewMode === "grid" ? (
+                <MediaGridView
+                  items={data?.items ?? []}
+                  selectedIds={selectedIds}
+                  onToggleSelect={handleToggleSelect}
+                  onItemClick={handleSelectItem}
+                />
+              ) : (
+                <MediaTableView
+                  items={data?.items ?? []}
+                  selectedIds={selectedIds}
+                  onToggleSelect={handleToggleSelect}
+                  onToggleSelectAll={handleToggleSelectAll}
+                  onItemClick={handleSelectItem}
+                  onDeleteItem={(item) => handleDeleteItem(item)}
+                />
+              )}
 
               {/* Pagination */}
               {data && data.totalPages > 1 && (
                 <div className="mt-4 flex items-center justify-between">
-                  <p className="text-sm text-[var(--muted-foreground)]">
-                    {t`Stránka ${data.page} z ${data.totalPages} (${data.totalItems} souborů)`}
+                  <p className="text-sm text-muted-foreground">
+                    {t`Stranka ${data.page} z ${data.totalPages} (${data.totalItems} souboru)`}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -225,7 +360,7 @@ export function MediaPage() {
                       disabled={page <= 1}
                       onClick={() => setPage((p) => p - 1)}
                     >
-                      {t`Předchozí`}
+                      {t`Predchozi`}
                     </Button>
                     <Button
                       variant="outline"
@@ -233,7 +368,7 @@ export function MediaPage() {
                       disabled={page >= data.totalPages}
                       onClick={() => setPage((p) => p + 1)}
                     >
-                      {t`Další`}
+                      {t`Dalsi`}
                     </Button>
                   </div>
                 </div>
@@ -244,21 +379,21 @@ export function MediaPage() {
 
         {/* Detail panel */}
         {selectedItem && (
-          <div className="w-72 shrink-0 rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
+          <div className="w-72 shrink-0 rounded-lg border bg-card p-4">
             <h3 className="mb-3 text-sm font-medium">{t`Detail`}</h3>
 
             {selectedItem.mimeType.startsWith("image/") && (
               <img
                 src={selectedItem.mediumUrl ?? selectedItem.originalUrl}
                 alt={selectedItem.altText ?? selectedItem.originalFilename}
-                className="mb-3 w-full rounded-md border border-[var(--border)] object-cover"
+                className="mb-3 w-full rounded-md border object-cover"
               />
             )}
 
             <p className="mb-1 truncate text-sm font-medium">
               {selectedItem.originalFilename}
             </p>
-            <p className="mb-3 text-xs text-[var(--muted-foreground)]">
+            <p className="mb-3 text-xs text-muted-foreground">
               {selectedItem.mimeType}
               {selectedItem.width != null &&
                 selectedItem.height != null &&
@@ -268,7 +403,9 @@ export function MediaPage() {
             {/* Variant URLs */}
             {selectedItem.mimeType.startsWith("image/") && (
               <div className="mb-3">
-                <p className="mb-1 text-xs font-medium text-[var(--muted-foreground)]">{t`Varianty`}</p>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  {t`Varianty`}
+                </p>
                 <div className="space-y-1">
                   {VARIANT_LABELS.map(({ key, label }) => {
                     const url = selectedItem[key];
@@ -279,7 +416,7 @@ export function MediaPage() {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block truncate text-xs text-[var(--primary)] hover:underline"
+                        className="block truncate text-xs text-primary hover:underline"
                       >
                         {label}
                       </a>
@@ -293,12 +430,11 @@ export function MediaPage() {
               <Label htmlFor="altText" className="text-xs">
                 {t`Alt text`}
               </Label>
-              <textarea
+              <Textarea
                 id="altText"
                 value={editAltText}
                 onChange={(e) => setEditAltText(e.target.value)}
                 rows={2}
-                className={textareaClassName}
               />
               <Button
                 type="button"
@@ -312,8 +448,8 @@ export function MediaPage() {
                 }
               >
                 {updateAltTextMutation.isPending
-                  ? t`Ukládám...`
-                  : t`Uložit alt text`}
+                  ? t`Ukladam...`
+                  : t`Ulozit alt text`}
               </Button>
             </div>
 
@@ -322,10 +458,10 @@ export function MediaPage() {
               variant="destructive"
               size="sm"
               className="w-full"
-              onClick={handleDeleteItem}
+              onClick={() => handleDeleteItem()}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? t`Mazání...` : t`Smazat soubor`}
+              {deleteMutation.isPending ? t`Mazani...` : t`Smazat soubor`}
             </Button>
           </div>
         )}
