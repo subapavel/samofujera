@@ -7,7 +7,10 @@ export default defineConfig({
   catalogs: [
     {
       path: "<rootDir>/src/locales/{locale}/messages",
-      include: ["src"],
+      include: [
+        "<rootDir>/../../apps/web/src/**/*.tsx",
+        "<rootDir>/../../apps/web/src/**/*.ts",
+      ],
     },
   ],
   format: formatter({ lineNumbers: false }),

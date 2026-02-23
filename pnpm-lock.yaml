@@ -56,6 +56,15 @@ importers:
       '@lexical/utils':
         specifier: ^0.40.0
         version: 0.40.0
+      '@lingui/core':
+        specifier: ^5.2.0
+        version: 5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))
+      '@lingui/macro':
+        specifier: ^5.9.1
+        version: 5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))(react@19.2.4)
+      '@lingui/react':
+        specifier: ^5.2.0
+        version: 5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))(react@19.2.4)
       '@opennextjs/cloudflare':
         specifier: ^1
         version: 1.16.5(next@16.1.6(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.65.0(@cloudflare/workers-types@4.20260214.0))
@@ -96,6 +105,9 @@ importers:
       '@eslint/eslintrc':
         specifier: ^3.3.3
         version: 3.3.3
+      '@lingui/swc-plugin':
+        specifier: ^5.11.0
+        version: 5.11.0(@lingui/core@5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3)))(next@16.1.6(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       '@tailwindcss/postcss':
         specifier: ^4.1.18
         version: 4.2.0
@@ -1608,6 +1620,18 @@ packages:
     resolution: {integrity: sha512-UrjFoRuhv5Yj7Tx2OsoxXDmKSEJ8m7xNJUO965WZ1XoI/Y3UHyv3FL+FK1rCP+kuwmjWnvUx+HNsQusvbK7glA==}
     engines: {node: '>=20.0.0'}
 
+  '@lingui/macro@5.9.1':
+    resolution: {integrity: sha512-f799qWDXqu4jDowBydp3tr6Xq8UWflEk2zGRPmIPDPcXyZ/RbibfbWK70h9n7X7fere9CiSZD59BlVPSueRyCQ==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@lingui/babel-plugin-lingui-macro': 5.9.1
+      babel-plugin-macros: 2 || 3
+    peerDependenciesMeta:
+      '@lingui/babel-plugin-lingui-macro':
+        optional: true
+      babel-plugin-macros:
+        optional: true
+
   '@lingui/message-utils@5.9.1':
     resolution: {integrity: sha512-2hj2PqHQU7hI+2+JiViOPmeTmms/8Xl1i/AWd59hwaf+lbqDFKc8CmeZNeAvrM+D7FeYgX1/mDoQvWAkLZNYjQ==}
     engines: {node: '>=20.0.0'}
@@ -1623,6 +1647,18 @@ packages:
       '@lingui/babel-plugin-lingui-macro':
         optional: true
       babel-plugin-macros:
+        optional: true
+
+  '@lingui/swc-plugin@5.11.0':
+    resolution: {integrity: sha512-0PBYyozQOiA4WtxKPsnCyrbA9da9zOYehyZjvrv56Kzt9w81xbgnNjuAQZyjIX7UYuqFFE48GvzBqnB5SLLOFA==}
+    peerDependencies:
+      '@lingui/core': '5'
+      '@swc/core': '*'
+      next: '*'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      next:
         optional: true
 
   '@lingui/vite-plugin@5.9.1':
@@ -7459,6 +7495,15 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@lingui/macro@5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))(react@19.2.4)':
+    dependencies:
+      '@lingui/core': 5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))
+      '@lingui/react': 5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))(react@19.2.4)
+    optionalDependencies:
+      '@lingui/babel-plugin-lingui-macro': 5.9.1(typescript@5.9.3)
+    transitivePeerDependencies:
+      - react
+
   '@lingui/message-utils@5.9.1':
     dependencies:
       '@messageformat/parser': 5.1.1
@@ -7471,6 +7516,12 @@ snapshots:
       react: 19.2.4
     optionalDependencies:
       '@lingui/babel-plugin-lingui-macro': 5.9.1(typescript@5.9.3)
+
+  '@lingui/swc-plugin@5.11.0(@lingui/core@5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3)))(next@16.1.6(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
+    dependencies:
+      '@lingui/core': 5.9.1(@lingui/babel-plugin-lingui-macro@5.9.1(typescript@5.9.3))
+    optionalDependencies:
+      next: 16.1.6(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
   '@lingui/vite-plugin@5.9.1(typescript@5.9.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.16.9)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
