@@ -4,8 +4,18 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { t } from "@lingui/core/macro";
+import { ArrowLeft, Download, Loader2, Play, Video } from "lucide-react";
 import { libraryApi, ApiError } from "@samofujera/api-client";
-import { Button, Alert, AlertDescription, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
+import {
+  Alert,
+  AlertDescription,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@samofujera/ui";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -54,7 +64,9 @@ export function LibraryProductPage() {
     onError: (error: unknown) => {
       if (error instanceof ApiError) {
         if (error.status === 429) {
-          setErrorMessage(t`Příliš mnoho stažení. Zkuste to prosím za hodinu.`);
+          setErrorMessage(
+            t`Příliš mnoho stažení. Zkuste to prosím za hodinu.`,
+          );
         } else if (error.status === 403) {
           setErrorMessage(t`K tomuto produktu nemáte přístup.`);
         } else {
@@ -70,39 +82,42 @@ export function LibraryProductPage() {
   const mediaItems = mediaQuery.data?.data?.items ?? [];
   const eventAccess = eventQuery.data?.data ?? null;
 
-  const isLoading = filesQuery.isLoading && mediaQuery.isLoading && eventQuery.isLoading;
+  const isLoading =
+    filesQuery.isLoading && mediaQuery.isLoading && eventQuery.isLoading;
   const hasFiles = files.length > 0;
   const hasMedia = mediaItems.length > 0;
   const hasEvent = eventAccess !== null;
 
   return (
-    <div>
-      <div className="mb-4 flex items-center gap-3">
-        <Button variant="outline" size="sm" onClick={() => router.push("/muj-ucet/knihovna")}>
-          {t`Zpět na knihovnu`}
+    <div className="flex flex-1 flex-col gap-4 sm:gap-6">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push("/muj-ucet/knihovna")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t`Zpět`}
         </Button>
-        <h2 className="text-2xl font-bold">{t`Obsah produktu`}</h2>
+        <h2 className="text-2xl font-bold tracking-tight">
+          {t`Obsah produktu`}
+        </h2>
       </div>
 
       {errorMessage && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant="destructive">
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
 
       {isLoading && (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-16 animate-pulse rounded-lg border border-[var(--border)] bg-[var(--card)]"
-            />
-          ))}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {hasFiles && (
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
             <CardTitle>{t`Soubory ke stažení`}</CardTitle>
           </CardHeader>
@@ -111,15 +126,15 @@ export function LibraryProductPage() {
               {files.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--card)] p-4"
+                  className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-4">
-                    <span className="rounded-md bg-[var(--accent)] px-2.5 py-1 text-xs font-semibold text-[var(--accent-foreground)]">
+                    <Badge variant="secondary">
                       {file.mimeType.split("/").pop()?.toUpperCase() ?? "FILE"}
-                    </span>
+                    </Badge>
                     <div>
                       <p className="text-sm font-medium">{file.fileName}</p>
-                      <p className="text-xs text-[var(--muted-foreground)]">
+                      <p className="text-xs text-muted-foreground">
                         {formatFileSize(file.fileSizeBytes)}
                       </p>
                     </div>
@@ -130,6 +145,7 @@ export function LibraryProductPage() {
                     disabled={downloadMutation.isPending}
                     onClick={() => downloadMutation.mutate(file.id)}
                   >
+                    <Download className="mr-2 h-4 w-4" />
                     {t`Stáhnout`}
                   </Button>
                 </div>
@@ -140,7 +156,7 @@ export function LibraryProductPage() {
       )}
 
       {hasMedia && (
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
             <CardTitle>{t`Média`}</CardTitle>
           </CardHeader>
@@ -149,19 +165,24 @@ export function LibraryProductPage() {
               {mediaItems.map((media) => (
                 <div
                   key={media.id}
-                  className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--card)] p-4"
+                  className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-4">
-                    <span className="rounded-md bg-[var(--accent)] px-2.5 py-1 text-xs font-semibold text-[var(--accent-foreground)]">
-                      {media.mediaType}
-                    </span>
+                    {media.mediaType === "VIDEO" ? (
+                      <Video className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <Play className="h-5 w-5 text-muted-foreground" />
+                    )}
                     <div>
                       <p className="text-sm font-medium">{media.title}</p>
-                      {media.durationSeconds != null && (
-                        <p className="text-xs text-[var(--muted-foreground)]">
-                          {formatDuration(media.durationSeconds)}
-                        </p>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{media.mediaType}</Badge>
+                        {media.durationSeconds != null && (
+                          <span className="text-xs text-muted-foreground">
+                            {formatDuration(media.durationSeconds)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,54 +193,60 @@ export function LibraryProductPage() {
       )}
 
       {hasEvent && (
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
             <CardTitle>{t`Událost`}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {eventAccess.venue && (
-                <p className="text-sm">
-                  <span className="font-medium">{t`Místo`}:</span> {eventAccess.venue}
-                </p>
+                <div className="text-sm">
+                  <p className="font-medium text-muted-foreground">
+                    {t`Místo`}
+                  </p>
+                  <p>{eventAccess.venue}</p>
+                </div>
               )}
               {eventAccess.isOnline && eventAccess.streamUrl && (
-                <p className="text-sm">
-                  <span className="font-medium">Stream:</span>{" "}
+                <div className="text-sm">
+                  <p className="font-medium text-muted-foreground">Stream</p>
                   <a
                     href={eventAccess.streamUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--primary)] hover:underline"
+                    className="text-primary hover:underline"
                   >
                     {t`Otevřít stream`}
                   </a>
-                </p>
+                </div>
               )}
               {eventAccess.occurrences.length > 0 && (
                 <div>
-                  <p className="mb-2 text-sm font-medium">{t`Termíny`}:</p>
+                  <p className="mb-2 text-sm font-medium text-muted-foreground">
+                    {t`Termíny`}
+                  </p>
                   <div className="space-y-2">
                     {eventAccess.occurrences.map((occ) => (
                       <div
                         key={occ.id}
-                        className="flex items-center justify-between rounded-md border border-[var(--border)] p-3"
+                        className="flex items-center justify-between rounded-md border p-3"
                       >
                         <div>
                           <p className="text-sm">
-                            {new Date(occ.startsAt).toLocaleString("cs-CZ")} --{" "}
+                            {new Date(occ.startsAt).toLocaleString("cs-CZ")}{" "}
+                            &ndash;{" "}
                             {new Date(occ.endsAt).toLocaleTimeString("cs-CZ")}
                           </p>
-                          <p className="text-xs text-[var(--muted-foreground)]">
+                          <Badge variant="outline" className="mt-1">
                             {occ.status}
-                          </p>
+                          </Badge>
                         </div>
                         {occ.streamUrl && (
                           <a
                             href={occ.streamUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-[var(--primary)] hover:underline"
+                            className="text-sm text-primary hover:underline"
                           >
                             Stream
                           </a>
@@ -235,11 +262,13 @@ export function LibraryProductPage() {
       )}
 
       {!isLoading && !hasFiles && !hasMedia && !hasEvent && (
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
-          <p className="text-[var(--muted-foreground)]">
-            {t`Pro tento produkt není dostupný žádný obsah.`}
-          </p>
-        </div>
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">
+              {t`Pro tento produkt není dostupný žádný obsah.`}
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
