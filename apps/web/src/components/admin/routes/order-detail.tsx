@@ -8,7 +8,24 @@ import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import type { MessageDescriptor } from "@lingui/core";
 import { adminApi } from "@samofujera/api-client";
-import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Separator,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@samofujera/ui";
 
 const STATUS_LABELS: Record<string, MessageDescriptor> = {
   PENDING: msg`Čekající`,
@@ -17,11 +34,11 @@ const STATUS_LABELS: Record<string, MessageDescriptor> = {
   REFUNDED: msg`Vráceno`,
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-700",
-  PAID: "bg-green-100 text-green-700",
-  CANCELLED: "bg-gray-100 text-gray-700",
-  REFUNDED: "bg-red-100 text-red-700",
+const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  PENDING: "outline",
+  PAID: "default",
+  CANCELLED: "secondary",
+  REFUNDED: "destructive",
 };
 
 const PRODUCT_TYPE_LABELS: Record<string, MessageDescriptor> = {
@@ -97,7 +114,7 @@ export function OrderDetailPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-4">
+      <div className="mb-6 flex items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => router.push("/admin/objednavky")}>
           {t`Zpět`}
         </Button>
@@ -107,41 +124,37 @@ export function OrderDetailPage() {
       {/* Order Info */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>{t`Informace o objednávce`}</CardTitle>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{t`Informace o objednávce`}</CardTitle>
+              <CardDescription className="font-mono text-xs">{order.id}</CardDescription>
+            </div>
+            <Badge variant={STATUS_VARIANT[order.status] ?? "outline"}>
+              {_(STATUS_LABELS[order.status]) ?? order.status}
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-            <div>
-              <p className="font-medium text-[var(--muted-foreground)]">ID</p>
-              <p className="font-mono text-xs">{order.id}</p>
-            </div>
-            <div>
-              <p className="font-medium text-[var(--muted-foreground)]">{t`Stav`}</p>
-              <span
-                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[order.status] ?? ""}`}
-              >
-                {_(STATUS_LABELS[order.status]) ?? order.status}
-              </span>
-            </div>
-            <div>
-              <p className="font-medium text-[var(--muted-foreground)]">{t`Celkem`}</p>
-              <p>
-                {order.totalAmount} {order.currency}
-              </p>
-            </div>
+          <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
             <div>
               <p className="font-medium text-[var(--muted-foreground)]">{t`Datum`}</p>
               <p>{new Date(order.createdAt).toLocaleString("cs-CZ")}</p>
             </div>
-          </div>
-          {order.discountAmount > 0 && (
-            <div className="mt-3 text-sm">
-              <span className="font-medium text-[var(--muted-foreground)]">{t`Sleva`}: </span>
-              <span>
-                {order.discountAmount} {order.currency}
-              </span>
+            <div>
+              <p className="font-medium text-[var(--muted-foreground)]">{t`Celkem`}</p>
+              <p className="text-lg font-semibold">
+                {order.totalAmount} {order.currency}
+              </p>
             </div>
-          )}
+            {order.discountAmount > 0 && (
+              <div>
+                <p className="font-medium text-[var(--muted-foreground)]">{t`Sleva`}</p>
+                <p>
+                  {order.discountAmount} {order.currency}
+                </p>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -151,36 +164,36 @@ export function OrderDetailPage() {
           <CardTitle>{t`Položky`}</CardTitle>
         </CardHeader>
         <CardContent>
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)]">
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Produkt`}</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Typ`}</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Množství`}</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Jednotková cena`}</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Celkem`}</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t`Produkt`}</TableHead>
+                <TableHead>{t`Typ`}</TableHead>
+                <TableHead className="text-right">{t`Množství`}</TableHead>
+                <TableHead className="text-right">{t`Jednotková cena`}</TableHead>
+                <TableHead className="text-right">{t`Celkem`}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {order.items.map((item) => (
-                <tr key={item.id} className="border-b border-[var(--border)] last:border-b-0">
-                  <td className="py-3 font-medium">{item.productTitle}</td>
-                  <td className="py-3">
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.productTitle}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
                       {_(PRODUCT_TYPE_LABELS[item.productType]) ?? item.productType}
-                    </span>
-                  </td>
-                  <td className="py-3">{item.quantity}</td>
-                  <td className="py-3">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">{item.quantity}</TableCell>
+                  <TableCell className="text-right">
                     {item.unitPrice} {order.currency}
-                  </td>
-                  <td className="py-3">
+                  </TableCell>
+                  <TableCell className="text-right">
                     {item.totalPrice} {order.currency}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
@@ -192,20 +205,23 @@ export function OrderDetailPage() {
           </CardHeader>
           <CardContent>
             {order.shipping && (order.shipping.shippedAt || order.shipping.deliveredAt) && (
-              <div className="mb-4 space-y-1 text-sm">
-                {order.shipping.shippedAt && (
-                  <p>
-                    <span className="font-medium text-[var(--muted-foreground)]">{t`Odesláno`}: </span>
-                    {new Date(order.shipping.shippedAt).toLocaleString("cs-CZ")}
-                  </p>
-                )}
-                {order.shipping.deliveredAt && (
-                  <p>
-                    <span className="font-medium text-[var(--muted-foreground)]">{t`Doručeno`}: </span>
-                    {new Date(order.shipping.deliveredAt).toLocaleString("cs-CZ")}
-                  </p>
-                )}
-              </div>
+              <>
+                <div className="space-y-2 text-sm">
+                  {order.shipping.shippedAt && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-[var(--muted-foreground)]">{t`Odesláno`}</span>
+                      <span>{new Date(order.shipping.shippedAt).toLocaleString("cs-CZ")}</span>
+                    </div>
+                  )}
+                  {order.shipping.deliveredAt && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-[var(--muted-foreground)]">{t`Doručeno`}</span>
+                      <span>{new Date(order.shipping.deliveredAt).toLocaleString("cs-CZ")}</span>
+                    </div>
+                  )}
+                </div>
+                <Separator className="my-4" />
+              </>
             )}
 
             <form onSubmit={handleShippingSubmit} className="space-y-4">
