@@ -39,7 +39,13 @@ export async function generateMetadata({
     openGraph: {
       title: page.ogTitle || page.metaTitle || page.title,
       description: page.ogDescription || page.metaDescription || undefined,
-      images: page.ogImageUrl ? [{ url: page.ogImageUrl }] : undefined,
+      images: [
+        {
+          url: page.ogImageUrl || `/api/og-image/page/${slug}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
     robots: {
       index: !page.noindex,
