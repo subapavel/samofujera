@@ -1,26 +1,33 @@
 import type { Metadata } from "next";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { cookies } from "next/headers";
+import { SidebarInset, SidebarProvider } from "@samofujera/ui";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import { Header } from "@/components/dashboard/header";
 import { Providers } from "@/components/dashboard/Providers";
 
 export const metadata: Metadata = {
   robots: "noindex, nofollow",
 };
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
+
   return (
     <Providers>
-      <div className="flex h-screen bg-[var(--background)] text-[var(--foreground)]">
-        <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <DashboardHeader />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
-        </div>
-      </div>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <SidebarInset>
+          <Header />
+          <main className="flex-1 overflow-auto p-4 md:p-6">
+            {children}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
     </Providers>
   );
 }
