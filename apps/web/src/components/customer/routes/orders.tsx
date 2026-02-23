@@ -1,167 +1,56 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { t } from "@lingui/core/macro";
-import { msg } from "@lingui/core/macro";
-import { useLingui } from "@lingui/react";
-import type { MessageDescriptor } from "@lingui/core";
+import { Loader2 } from "lucide-react";
 import { ordersApi } from "@samofujera/api-client";
-import { Button } from "@samofujera/ui";
-
-const statusConfig: Record<string, { label: MessageDescriptor; className: string }> = {
-  PENDING: {
-    label: msg`Čeká na platbu`,
-    className: "bg-yellow-100 text-yellow-800",
-  },
-  PAID: {
-    label: msg`Zaplaceno`,
-    className: "bg-green-100 text-green-800",
-  },
-  CANCELLED: {
-    label: msg`Zrušeno`,
-    className: "bg-gray-100 text-gray-600",
-  },
-  REFUNDED: {
-    label: msg`Vráceno`,
-    className: "bg-blue-100 text-blue-800",
-  },
-};
-
-function formatPrice(amount: number, currency: string): string {
-  return new Intl.NumberFormat("cs-CZ", {
-    style: "currency",
-    currency,
-  }).format(amount / 100);
-}
+import { DataTable } from "@/components/data-table";
+import type { FilterConfig } from "@/components/data-table";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { useCustomerOrdersColumns } from "@/components/customer/orders/customer-orders-columns";
 
 export function OrdersPage() {
-  const { _ } = useLingui();
-  const router = useRouter();
-  const [page, setPage] = useState(1);
-  const limit = 10;
-
   const ordersQuery = useQuery({
-    queryKey: ["orders", page, limit],
-    queryFn: () => ordersApi.getMyOrders({ page, limit }),
+    queryKey: ["orders"],
+    queryFn: () => ordersApi.getMyOrders({ limit: 100 }),
   });
 
-  const data = ordersQuery.data?.data;
+  const columns = useCustomerOrdersColumns();
+  const data = ordersQuery.data?.data?.items ?? [];
+
+  const statusOptions = [
+    { label: t`Čeká na platbu`, value: "PENDING" },
+    { label: t`Zaplaceno`, value: "PAID" },
+    { label: t`Odesláno`, value: "SHIPPED" },
+    { label: t`Zrušeno`, value: "CANCELLED" },
+    { label: t`Vráceno`, value: "REFUNDED" },
+  ];
+
+  const filters: FilterConfig[] = [
+    { columnId: "status", title: t`Stav`, options: statusOptions },
+  ];
 
   return (
-    <div>
-      <h2 className="mb-4 text-2xl font-bold">{t`Objednávky`}</h2>
+    <div className="flex flex-1 flex-col gap-4 sm:gap-6">
+      <PageHeader
+        title={t`Objednávky`}
+        subtitle={t`Přehled vašich objednávek.`}
+      />
 
-      {ordersQuery.isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-12 animate-pulse rounded-lg border border-[var(--border)] bg-[var(--card)]"
-            />
-          ))}
+      {ordersQuery.isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
-      )}
-
-      {ordersQuery.isError && (
-        <p className="text-[var(--destructive)]">
+      ) : ordersQuery.isError ? (
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center text-sm text-destructive">
           {t`Nepodařilo se načíst objednávky. Zkuste to prosím znovu.`}
-        </p>
-      )}
-
-      {ordersQuery.isSuccess && data && (
-        <>
-          {data.items.length === 0 ? (
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
-              <p className="text-[var(--muted-foreground)]">
-                {t`Zatím nemáte žádné objednávky.`}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-hidden rounded-lg border border-[var(--border)]">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--border)] bg-[var(--card)]">
-                      <th className="px-4 py-3 text-left font-medium text-[var(--muted-foreground)]">
-                        {t`Objednávka`}
-                      </th>
-                      <th className="px-4 py-3 text-left font-medium text-[var(--muted-foreground)]">
-                        {t`Stav`}
-                      </th>
-                      <th className="px-4 py-3 text-right font-medium text-[var(--muted-foreground)]">
-                        {t`Celkem`}
-                      </th>
-                      <th className="px-4 py-3 text-right font-medium text-[var(--muted-foreground)]">
-                        {t`Datum`}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.items.map((order) => {
-                      const status = statusConfig[order.status] ?? {
-                        label: order.status,
-                        className: "bg-gray-100 text-gray-600",
-                      };
-                      const statusLabel = typeof status.label === "string" ? status.label : _(status.label);
-                      return (
-                        <tr
-                          key={order.id}
-                          className="cursor-pointer border-b border-[var(--border)] transition-colors last:border-b-0 hover:bg-[var(--accent)]"
-                          onClick={() => router.push(`/muj-ucet/objednavky/${order.id}`)}
-                        >
-                          <td className="px-4 py-3 font-mono text-xs">
-                            {order.id.slice(0, 8)}...
-                          </td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}
-                            >
-                              {statusLabel}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {formatPrice(order.totalAmount, order.currency)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-[var(--muted-foreground)]">
-                            {new Date(order.createdAt).toLocaleDateString(
-                              "cs-CZ",
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {data.totalPages > 1 && (
-                <div className="mt-4 flex items-center justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    {t`Předchozí`}
-                  </Button>
-                  <span className="text-sm text-[var(--muted-foreground)]">
-                    {t`Strana ${data.page} z ${data.totalPages}`}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= data.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    {t`Další`}
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={data}
+          filters={filters}
+        />
       )}
     </div>
   );
