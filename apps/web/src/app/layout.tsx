@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Allura, Inter, Josefin_Sans, Open_Sans } from "next/font/google";
 import "@/styles/global.css";
 
@@ -40,14 +41,17 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value ?? "cs";
+
   return (
     <html
-      lang="cs"
+      lang={locale}
       className={`${inter.variable} ${josefinSans.variable} ${openSans.variable} ${allura.variable}`}
       suppressHydrationWarning
     >

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
 import { libraryApi, ApiError } from "@samofujera/api-client";
 import { Button, Alert, AlertDescription, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 
@@ -53,16 +54,14 @@ export function LibraryProductPage() {
     onError: (error: unknown) => {
       if (error instanceof ApiError) {
         if (error.status === 429) {
-          setErrorMessage(
-            "Příliš mnoho stažení. Zkuste to prosím za hodinu.",
-          );
+          setErrorMessage(t`Příliš mnoho stažení. Zkuste to prosím za hodinu.`);
         } else if (error.status === 403) {
-          setErrorMessage("K tomuto produktu nemáte přístup.");
+          setErrorMessage(t`K tomuto produktu nemáte přístup.`);
         } else {
-          setErrorMessage("Nepodařilo se stáhnout soubor. Zkuste to znovu.");
+          setErrorMessage(t`Nepodařilo se stáhnout soubor. Zkuste to znovu.`);
         }
       } else {
-        setErrorMessage("Nepodařilo se stáhnout soubor. Zkuste to znovu.");
+        setErrorMessage(t`Nepodařilo se stáhnout soubor. Zkuste to znovu.`);
       }
     },
   });
@@ -79,14 +78,10 @@ export function LibraryProductPage() {
   return (
     <div>
       <div className="mb-4 flex items-center gap-3">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push("/muj-ucet/knihovna")}
-        >
-          Zpět na knihovnu
+        <Button variant="outline" size="sm" onClick={() => router.push("/muj-ucet/knihovna")}>
+          {t`Zpět na knihovnu`}
         </Button>
-        <h2 className="text-2xl font-bold">Obsah produktu</h2>
+        <h2 className="text-2xl font-bold">{t`Obsah produktu`}</h2>
       </div>
 
       {errorMessage && (
@@ -106,11 +101,10 @@ export function LibraryProductPage() {
         </div>
       )}
 
-      {/* EBOOK: Downloadable files */}
       {hasFiles && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Soubory ke stažení</CardTitle>
+            <CardTitle>{t`Soubory ke stažení`}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -136,7 +130,7 @@ export function LibraryProductPage() {
                     disabled={downloadMutation.isPending}
                     onClick={() => downloadMutation.mutate(file.id)}
                   >
-                    Stáhnout
+                    {t`Stáhnout`}
                   </Button>
                 </div>
               ))}
@@ -145,11 +139,10 @@ export function LibraryProductPage() {
         </Card>
       )}
 
-      {/* AUDIO_VIDEO: Media list */}
       {hasMedia && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Media</CardTitle>
+            <CardTitle>{t`Média`}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -178,17 +171,16 @@ export function LibraryProductPage() {
         </Card>
       )}
 
-      {/* Events: Event access */}
       {hasEvent && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Událost</CardTitle>
+            <CardTitle>{t`Událost`}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {eventAccess.venue && (
                 <p className="text-sm">
-                  <span className="font-medium">Místo:</span> {eventAccess.venue}
+                  <span className="font-medium">{t`Místo`}:</span> {eventAccess.venue}
                 </p>
               )}
               {eventAccess.isOnline && eventAccess.streamUrl && (
@@ -200,13 +192,13 @@ export function LibraryProductPage() {
                     rel="noopener noreferrer"
                     className="text-[var(--primary)] hover:underline"
                   >
-                    Otevřít stream
+                    {t`Otevřít stream`}
                   </a>
                 </p>
               )}
               {eventAccess.occurrences.length > 0 && (
                 <div>
-                  <p className="mb-2 text-sm font-medium">Termíny:</p>
+                  <p className="mb-2 text-sm font-medium">{t`Termíny`}:</p>
                   <div className="space-y-2">
                     {eventAccess.occurrences.map((occ) => (
                       <div
@@ -242,11 +234,10 @@ export function LibraryProductPage() {
         </Card>
       )}
 
-      {/* No content found */}
       {!isLoading && !hasFiles && !hasMedia && !hasEvent && (
         <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
           <p className="text-[var(--muted-foreground)]">
-            Pro tento produkt není dostupný žádný obsah.
+            {t`Pro tento produkt není dostupný žádný obsah.`}
           </p>
         </div>
       )}

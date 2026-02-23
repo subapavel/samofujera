@@ -1,7 +1,8 @@
 import type React from "react";
+import type { MessageDescriptor } from "@lingui/core";
 
 type BaseNavItem = {
-  title: string;
+  title: MessageDescriptor;
   badge?: string;
   icon?: React.ElementType;
 };
@@ -19,7 +20,7 @@ export type NavCollapsible = BaseNavItem & {
 export type NavItem = NavCollapsible | NavLink;
 
 export type NavGroup = {
-  title: string;
+  title: MessageDescriptor;
   items: NavItem[];
 };
 

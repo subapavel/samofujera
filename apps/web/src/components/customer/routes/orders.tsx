@@ -3,24 +3,28 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import type { MessageDescriptor } from "@lingui/core";
 import { ordersApi } from "@samofujera/api-client";
 import { Button } from "@samofujera/ui";
 
-const statusConfig: Record<string, { label: string; className: string }> = {
+const statusConfig: Record<string, { label: MessageDescriptor; className: string }> = {
   PENDING: {
-    label: "Čeká na platbu",
+    label: msg`Čeká na platbu`,
     className: "bg-yellow-100 text-yellow-800",
   },
   PAID: {
-    label: "Zaplaceno",
+    label: msg`Zaplaceno`,
     className: "bg-green-100 text-green-800",
   },
   CANCELLED: {
-    label: "Zrušeno",
+    label: msg`Zrušeno`,
     className: "bg-gray-100 text-gray-600",
   },
   REFUNDED: {
-    label: "Vráceno",
+    label: msg`Vráceno`,
     className: "bg-blue-100 text-blue-800",
   },
 };
@@ -33,6 +37,7 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 export function OrdersPage() {
+  const { _ } = useLingui();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const limit = 10;
@@ -46,7 +51,7 @@ export function OrdersPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Objednávky</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t`Objednávky`}</h2>
 
       {ordersQuery.isLoading && (
         <div className="space-y-2">
@@ -61,7 +66,7 @@ export function OrdersPage() {
 
       {ordersQuery.isError && (
         <p className="text-[var(--destructive)]">
-          Nepodařilo se načíst objednávky. Zkuste to prosím znovu.
+          {t`Nepodařilo se načíst objednávky. Zkuste to prosím znovu.`}
         </p>
       )}
 
@@ -70,7 +75,7 @@ export function OrdersPage() {
           {data.items.length === 0 ? (
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
               <p className="text-[var(--muted-foreground)]">
-                Zatím nemáte žádné objednávky.
+                {t`Zatím nemáte žádné objednávky.`}
               </p>
             </div>
           ) : (
@@ -80,16 +85,16 @@ export function OrdersPage() {
                   <thead>
                     <tr className="border-b border-[var(--border)] bg-[var(--card)]">
                       <th className="px-4 py-3 text-left font-medium text-[var(--muted-foreground)]">
-                        Objednávka
+                        {t`Objednávka`}
                       </th>
                       <th className="px-4 py-3 text-left font-medium text-[var(--muted-foreground)]">
-                        Stav
+                        {t`Stav`}
                       </th>
                       <th className="px-4 py-3 text-right font-medium text-[var(--muted-foreground)]">
-                        Celkem
+                        {t`Celkem`}
                       </th>
                       <th className="px-4 py-3 text-right font-medium text-[var(--muted-foreground)]">
-                        Datum
+                        {t`Datum`}
                       </th>
                     </tr>
                   </thead>
@@ -99,6 +104,7 @@ export function OrdersPage() {
                         label: order.status,
                         className: "bg-gray-100 text-gray-600",
                       };
+                      const statusLabel = typeof status.label === "string" ? status.label : _(status.label);
                       return (
                         <tr
                           key={order.id}
@@ -112,7 +118,7 @@ export function OrdersPage() {
                             <span
                               className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}
                             >
-                              {status.label}
+                              {statusLabel}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right">
@@ -138,10 +144,10 @@ export function OrdersPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Předchozí
+                    {t`Předchozí`}
                   </Button>
                   <span className="text-sm text-[var(--muted-foreground)]">
-                    Strana {data.page} z {data.totalPages}
+                    {t`Strana ${data.page} z ${data.totalPages}`}
                   </span>
                   <Button
                     variant="outline"
@@ -149,7 +155,7 @@ export function OrdersPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Další
+                    {t`Další`}
                   </Button>
                 </div>
               )}

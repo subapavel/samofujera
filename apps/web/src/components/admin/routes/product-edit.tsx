@@ -3,6 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useParams } from "next/navigation";
+import { t } from "@lingui/core/macro";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import type { MessageDescriptor } from "@lingui/core";
 import { adminApi, catalogApi, mediaApi } from "@samofujera/api-client";
 import type {
   ProductType,
@@ -43,13 +47,13 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const PRODUCT_TYPES: Array<{ value: ProductType; label: string }> = [
-  { value: "PHYSICAL", label: "Fyzicky produkt" },
-  { value: "EBOOK", label: "E-book" },
-  { value: "AUDIO_VIDEO", label: "Audio/Video" },
-  { value: "ONLINE_EVENT", label: "Online udalost" },
-  { value: "RECURRING_EVENT", label: "Opakovana udalost" },
-  { value: "OFFLINE_EVENT", label: "Offline udalost" },
+const PRODUCT_TYPES: Array<{ value: ProductType; label: MessageDescriptor }> = [
+  { value: "PHYSICAL", label: msg`Fyzický produkt` },
+  { value: "EBOOK", label: msg`E-book` },
+  { value: "AUDIO_VIDEO", label: msg`Audio/Video` },
+  { value: "ONLINE_EVENT", label: msg`Online událost` },
+  { value: "RECURRING_EVENT", label: msg`Opakovaná událost` },
+  { value: "OFFLINE_EVENT", label: msg`Offline událost` },
 ];
 
 const selectClassName =
@@ -107,7 +111,7 @@ function GalleryTab({
   }
 
   function handleUnlinkImage(image: ImageResponse) {
-    if (window.confirm("Opravdu chcete odebrat tento obrázek z galerie?")) {
+    if (window.confirm(t`Opravdu chcete odebrat tento obrázek z galerie?`)) {
       unlinkImageMutation.mutate(image.mediaItemId);
     }
   }
@@ -154,7 +158,7 @@ function GalleryTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Galerie obrazku</CardTitle>
+        <CardTitle>{t`Galerie obrázků`}</CardTitle>
       </CardHeader>
       <CardContent>
         {images.length > 0 ? (
@@ -196,13 +200,13 @@ function GalleryTab({
           </div>
         ) : (
           <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-            Zadne nahrane obrazky.
+            {t`Žádné nahrané obrázky.`}
           </p>
         )}
 
         <div className="flex items-end gap-3">
           <div className="flex-1">
-            <Label htmlFor="imageUpload">Nahrat obrazek</Label>
+            <Label htmlFor="imageUpload">{t`Nahrát obrázek`}</Label>
             <input
               ref={imageInputRef}
               id="imageUpload"
@@ -216,7 +220,7 @@ function GalleryTab({
             onClick={handleUploadImage}
             disabled={isPending}
           >
-            {uploadAndLinkMutation.isPending ? "Nahravam..." : "Nahrat"}
+            {uploadAndLinkMutation.isPending ? t`Nahrávám...` : t`Nahrát`}
           </Button>
         </div>
 
@@ -230,7 +234,7 @@ function GalleryTab({
 
         {(uploadAndLinkMutation.isError || linkImageMutation.isError) && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Nepodařilo se přidat obrázek. Zkuste to prosím znovu.
+            {t`Nepodařilo se přidat obrázek. Zkuste to prosím znovu.`}
           </p>
         )}
       </CardContent>
@@ -358,7 +362,7 @@ function VariantsTab({
     if (row.isNew) {
       setRows((prev) => prev.filter((_, i) => i !== index));
     } else if (row.id) {
-      if (window.confirm(`Opravdu chcete smazat variantu "${row.name}"?`)) {
+      if (window.confirm(t`Opravdu chcete smazat variantu "${row.name}"?`)) {
         deleteVariantMutation.mutate(row.id);
       }
     }
@@ -372,7 +376,7 @@ function VariantsTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Varianty</CardTitle>
+        <CardTitle>{t`Varianty`}</CardTitle>
       </CardHeader>
       <CardContent>
         {rows.length > 0 ? (
@@ -380,12 +384,12 @@ function VariantsTab({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)] text-left text-xs text-[var(--muted-foreground)]">
-                  <th className="px-2 py-2">Nazev</th>
+                  <th className="px-2 py-2">{t`Název`}</th>
                   <th className="px-2 py-2">SKU</th>
-                  <th className="px-2 py-2 w-20">Sklad</th>
+                  <th className="px-2 py-2 w-20">{t`Sklad`}</th>
                   <th className="px-2 py-2 w-24">CZK</th>
                   <th className="px-2 py-2 w-24">EUR</th>
-                  <th className="px-2 py-2 w-32">Akce</th>
+                  <th className="px-2 py-2 w-32">{t`Akce`}</th>
                 </tr>
               </thead>
               <tbody>
@@ -450,7 +454,7 @@ function VariantsTab({
                             disabled={isPending || !row.name || !row.sku}
                             className="h-8"
                           >
-                            Ulozit
+                            {t`Uložit`}
                           </Button>
                         )}
                         <Button
@@ -460,7 +464,7 @@ function VariantsTab({
                           disabled={isPending}
                           className="h-8"
                         >
-                          Smazat
+                          {t`Smazat`}
                         </Button>
                       </div>
                     </td>
@@ -471,17 +475,17 @@ function VariantsTab({
           </div>
         ) : (
           <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-            Zadne varianty. Pridejte prvni variantu nize.
+            {t`Žádné varianty. Přidejte první variantu níže.`}
           </p>
         )}
 
         <Button type="button" variant="outline" onClick={addRow} disabled={isPending} className="mt-4">
-          Pridat variantu
+          {t`Přidat variantu`}
         </Button>
 
         {(createVariantMutation.isError || updateVariantMutation.isError || deleteVariantMutation.isError) && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Operace se nezdařila. Zkuste to prosím znovu.
+            {t`Operace se nezdařila. Zkuste to prosím znovu.`}
           </p>
         )}
       </CardContent>
@@ -521,7 +525,7 @@ function FilesTab({
   }
 
   function handleDeleteFile(file: FileResponse) {
-    if (window.confirm(`Opravdu chcete smazat soubor "${file.fileName}"?`)) {
+    if (window.confirm(t`Opravdu chcete smazat soubor "${file.fileName}"?`)) {
       deleteFileMutation.mutate(file.id);
     }
   }
@@ -529,7 +533,7 @@ function FilesTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Soubory ke stazeni</CardTitle>
+        <CardTitle>{t`Soubory ke stažení`}</CardTitle>
       </CardHeader>
       <CardContent>
         {files.length > 0 ? (
@@ -551,20 +555,20 @@ function FilesTab({
                   disabled={deleteFileMutation.isPending}
                   onClick={() => handleDeleteFile(file)}
                 >
-                  Smazat
+                  {t`Smazat`}
                 </Button>
               </div>
             ))}
           </div>
         ) : (
           <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-            Zadne nahrane soubory.
+            {t`Žádné nahrané soubory.`}
           </p>
         )}
 
         <div className="flex items-end gap-3">
           <div className="flex-1">
-            <Label htmlFor="fileUpload">Nahrat soubor</Label>
+            <Label htmlFor="fileUpload">{t`Nahrát soubor`}</Label>
             <input
               ref={fileInputRef}
               id="fileUpload"
@@ -577,13 +581,13 @@ function FilesTab({
             onClick={handleUploadFile}
             disabled={uploadFileMutation.isPending}
           >
-            {uploadFileMutation.isPending ? "Nahravam..." : "Nahrat"}
+            {uploadFileMutation.isPending ? t`Nahrávám...` : t`Nahrát`}
           </Button>
         </div>
 
         {uploadFileMutation.isError && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Nepodařilo se nahrát soubor. Zkuste to prosím znovu.
+            {t`Nepodařilo se nahrát soubor. Zkuste to prosím znovu.`}
           </p>
         )}
       </CardContent>
@@ -634,7 +638,7 @@ function MediaTab({
   }
 
   function handleDeleteMedia(media: MediaResponse) {
-    if (window.confirm(`Opravdu chcete smazat "${media.title}"?`)) {
+    if (window.confirm(t`Opravdu chcete smazat "${media.title}"?`)) {
       deleteMediaMutation.mutate(media.id);
     }
   }
@@ -642,7 +646,7 @@ function MediaTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Media</CardTitle>
+        <CardTitle>{t`Média`}</CardTitle>
       </CardHeader>
       <CardContent>
         {mediaItems.length > 0 ? (
@@ -667,23 +671,23 @@ function MediaTab({
                   disabled={deleteMediaMutation.isPending}
                   onClick={() => handleDeleteMedia(media)}
                 >
-                  Smazat
+                  {t`Smazat`}
                 </Button>
               </div>
             ))}
           </div>
         ) : (
           <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-            Zadna pridana media.
+            {t`Žádná přidaná média.`}
           </p>
         )}
 
         <form onSubmit={handleCreateMedia} className="space-y-3 rounded-md border border-[var(--border)] p-4">
-          <p className="text-sm font-medium">Pridat medium</p>
+          <p className="text-sm font-medium">{t`Přidat médium`}</p>
           <div className="flex gap-3">
             <div className="flex-1">
               <Label htmlFor="mediaTitle" className="text-xs">
-                Nazev
+                {t`Název`}
               </Label>
               <Input
                 id="mediaTitle"
@@ -695,7 +699,7 @@ function MediaTab({
             </div>
             <div className="w-32">
               <Label htmlFor="mediaType" className="text-xs">
-                Typ
+                {t`Typ`}
               </Label>
               <select
                 id="mediaType"
@@ -704,8 +708,8 @@ function MediaTab({
                 disabled={createMediaMutation.isPending}
                 className={selectClassName}
               >
-                <option value="VIDEO">Video</option>
-                <option value="AUDIO">Audio</option>
+                <option value="VIDEO">{t`Video`}</option>
+                <option value="AUDIO">{t`Audio`}</option>
               </select>
             </div>
           </div>
@@ -718,13 +722,13 @@ function MediaTab({
                 id="cfStreamUid"
                 value={cfStreamUid}
                 onChange={(e) => setCfStreamUid(e.target.value)}
-                placeholder="volitelne"
+                placeholder={t`volitelné`}
                 disabled={createMediaMutation.isPending}
               />
             </div>
             <div className="w-24">
               <Label htmlFor="mediaSortOrder" className="text-xs">
-                Poradi
+                {t`Pořadí`}
               </Label>
               <Input
                 id="mediaSortOrder"
@@ -737,11 +741,11 @@ function MediaTab({
             </div>
           </div>
           <Button type="submit" size="sm" disabled={createMediaMutation.isPending}>
-            {createMediaMutation.isPending ? "Pridavam..." : "Pridat medium"}
+            {createMediaMutation.isPending ? t`Přidávám...` : t`Přidat médium`}
           </Button>
           {createMediaMutation.isError && (
             <p className="text-sm text-[var(--destructive)]">
-              Nepodařilo se přidat médium.
+              {t`Nepodařilo se přidat médium.`}
             </p>
           )}
         </form>
@@ -753,6 +757,7 @@ function MediaTab({
 // ---- Main Page ----
 
 export function ProductEditPage() {
+  const { _ } = useLingui();
   const params = useParams();
   const productId = params.productId as string;
   const router = useRouter();
@@ -856,19 +861,19 @@ export function ProductEditPage() {
   }
 
   if (productQuery.isLoading) {
-    return <p className="text-[var(--muted-foreground)]">Načítání produktu...</p>;
+    return <p className="text-[var(--muted-foreground)]">{t`Načítání produktu...`}</p>;
   }
 
   if (productQuery.isError) {
     return (
       <p className="text-[var(--destructive)]">
-        Nepodařilo se načíst produkt. Zkuste to prosím znovu.
+        {t`Nepodařilo se načíst produkt. Zkuste to prosím znovu.`}
       </p>
     );
   }
 
   if (!product) {
-    return <p className="text-[var(--muted-foreground)]">Produkt nenalezen.</p>;
+    return <p className="text-[var(--muted-foreground)]">{t`Produkt nenalezen.`}</p>;
   }
 
   const isPending = updateMutation.isPending;
@@ -877,34 +882,35 @@ export function ProductEditPage() {
   const showFilesTab = product.productType === "EBOOK";
   const showMediaTab = product.productType === "AUDIO_VIDEO";
 
-  const typeLabel = PRODUCT_TYPES.find((t) => t.value === product.productType)?.label ?? product.productType;
+  const typeLabel = PRODUCT_TYPES.find((pt) => pt.value === product.productType);
+  const typeLabelStr = typeLabel ? _(typeLabel.label) : product.productType;
 
   return (
     <div>
       <div className="mb-4">
-        <h2 className="text-2xl font-bold">Upravit produkt</h2>
-        <p className="text-sm text-[var(--muted-foreground)]">{typeLabel}</p>
+        <h2 className="text-2xl font-bold">{t`Upravit produkt`}</h2>
+        <p className="text-sm text-[var(--muted-foreground)]">{typeLabelStr}</p>
       </div>
 
       <Tabs defaultValue="info">
         <TabsList>
-          <TabsTrigger value="info">Zakladni info</TabsTrigger>
-          <TabsTrigger value="gallery">Galerie</TabsTrigger>
-          {showVariantsTab && <TabsTrigger value="variants">Varianty</TabsTrigger>}
-          {showFilesTab && <TabsTrigger value="files">Soubory</TabsTrigger>}
-          {showMediaTab && <TabsTrigger value="media">Media</TabsTrigger>}
+          <TabsTrigger value="info">{t`Základní info`}</TabsTrigger>
+          <TabsTrigger value="gallery">{t`Galerie`}</TabsTrigger>
+          {showVariantsTab && <TabsTrigger value="variants">{t`Varianty`}</TabsTrigger>}
+          {showFilesTab && <TabsTrigger value="files">{t`Soubory`}</TabsTrigger>}
+          {showMediaTab && <TabsTrigger value="media">{t`Média`}</TabsTrigger>}
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
           <Card>
             <CardHeader>
-              <CardTitle>Udaje o produktu</CardTitle>
+              <CardTitle>{t`Údaje o produktu`}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSaveAsDraft} className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Nazev</Label>
+                  <Label htmlFor="title">{t`Název`}</Label>
                   <Input
                     id="title"
                     value={title}
@@ -915,7 +921,7 @@ export function ProductEditPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="slug">Slug</Label>
+                  <Label htmlFor="slug">{t`Slug`}</Label>
                   <Input
                     id="slug"
                     value={slug}
@@ -926,7 +932,7 @@ export function ProductEditPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Popis</Label>
+                  <Label htmlFor="description">{t`Popis`}</Label>
                   <textarea
                     id="description"
                     value={description}
@@ -938,7 +944,7 @@ export function ProductEditPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="shortDescription">Kratky popis</Label>
+                  <Label htmlFor="shortDescription">{t`Krátký popis`}</Label>
                   <Input
                     id="shortDescription"
                     value={shortDescription}
@@ -948,7 +954,7 @@ export function ProductEditPage() {
                 </div>
 
                 <div>
-                  <Label>Ceny</Label>
+                  <Label>{t`Ceny`}</Label>
                   <div className="mt-1 flex gap-4">
                     <div className="flex-1">
                       <Label htmlFor="priceCZK" className="text-xs text-[var(--muted-foreground)]">
@@ -984,10 +990,10 @@ export function ProductEditPage() {
                 </div>
 
                 <div>
-                  <Label>Kategorie</Label>
+                  <Label>{t`Kategorie`}</Label>
                   <div className="mt-1 max-h-48 space-y-2 overflow-y-auto rounded-md border border-[var(--border)] p-3">
                     {categories.length === 0 ? (
-                      <p className="text-sm text-[var(--muted-foreground)]">Zadne kategorie</p>
+                      <p className="text-sm text-[var(--muted-foreground)]">{t`Žádné kategorie`}</p>
                     ) : (
                       categories.map((cat) => (
                         <label key={cat.id} className="flex items-center gap-2 text-sm">
@@ -1006,12 +1012,12 @@ export function ProductEditPage() {
 
                 {updateMutation.isError && (
                   <p className="text-sm text-[var(--destructive)]">
-                    Nepodařilo se uložit změny. Zkuste to prosím znovu.
+                    {t`Nepodařilo se uložit změny. Zkuste to prosím znovu.`}
                   </p>
                 )}
 
                 {updateMutation.isSuccess && (
-                  <p className="text-sm text-green-600">Produkt byl uspesne ulozen.</p>
+                  <p className="text-sm text-green-600">{t`Produkt byl úspěšně uložen.`}</p>
                 )}
 
                 <div className="flex gap-2">
@@ -1020,10 +1026,10 @@ export function ProductEditPage() {
                     onClick={handlePublish}
                     disabled={isPending}
                   >
-                    {isPending ? "Ukladam..." : "Publikovat"}
+                    {isPending ? t`Ukládám...` : t`Publikovat`}
                   </Button>
                   <Button type="submit" variant="outline" disabled={isPending}>
-                    Ulozit jako draft
+                    {t`Uložit jako draft`}
                   </Button>
                   <Button
                     type="button"
@@ -1031,7 +1037,7 @@ export function ProductEditPage() {
                     onClick={() => router.push("/admin/produkty")}
                     disabled={isPending}
                   >
-                    Zpet na produkty
+                    {t`Zpět na produkty`}
                   </Button>
                 </div>
               </form>
@@ -1084,7 +1090,7 @@ export function ProductEditPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="metaTitle">Meta titulek</Label>
+                <Label htmlFor="metaTitle">{t`Meta titulek`}</Label>
                 <Input
                   id="metaTitle"
                   value={metaTitle}
@@ -1094,7 +1100,7 @@ export function ProductEditPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="metaDescription">Meta popis</Label>
+                <Label htmlFor="metaDescription">{t`Meta popis`}</Label>
                 <textarea
                   id="metaDescription"
                   value={metaDescription}

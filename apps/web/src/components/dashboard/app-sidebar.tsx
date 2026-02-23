@@ -2,6 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +19,7 @@ import { adminSidebarData } from "./sidebar-data";
 import { customerSidebarData } from "./customer-sidebar-data";
 
 export function AppSidebar() {
+  const { _ } = useLingui();
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
   const data = isAdmin ? adminSidebarData : customerSidebarData;
@@ -34,11 +37,11 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <BrandHeader section={isAdmin ? "Administrace" : "Můj účet"} />
+        <BrandHeader section={isAdmin ? t`Administrace` : t`Můj účet`} />
       </SidebarHeader>
       <SidebarContent>
         {data.navGroups.map((group) => (
-          <NavGroup key={group.title} {...group} />
+          <NavGroup key={_(group.title)} {...group} />
         ))}
       </SidebarContent>
       <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { t } from "@lingui/core/macro";
 import {
   Button,
   Input,
@@ -35,7 +36,7 @@ export function ForgotPasswordForm() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Odeslání se nezdařilo. Zkuste to prosím znovu.");
+        setError(t`Odeslání se nezdařilo. Zkuste to prosím znovu.`);
       }
     } finally {
       setIsLoading(false);
@@ -46,10 +47,9 @@ export function ForgotPasswordForm() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>E-mail odeslán</CardTitle>
+          <CardTitle>{t`E-mail odeslán`}</CardTitle>
           <CardDescription>
-            Pokud účet s tímto e-mailem existuje, odeslali jsme vám odkaz pro
-            obnovení hesla. Zkontrolujte svou e-mailovou schránku.
+            {t`Pokud účet s tímto e-mailem existuje, odeslali jsme vám odkaz pro obnovení hesla. Zkontrolujte svou e-mailovou schránku.`}
           </CardDescription>
         </CardHeader>
         <CardFooter>
@@ -57,7 +57,7 @@ export function ForgotPasswordForm() {
             href="/prihlaseni"
             className="text-sm text-[var(--primary)] hover:underline"
           >
-            Zpět na přihlášení
+            {t`Zpět na přihlášení`}
           </Link>
         </CardFooter>
       </Card>
@@ -67,9 +67,9 @@ export function ForgotPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Zapomenuté heslo</CardTitle>
+        <CardTitle>{t`Zapomenuté heslo`}</CardTitle>
         <CardDescription>
-          Zadejte svůj e-mail a my vám pošleme odkaz pro obnovení hesla.
+          {t`Zadejte svůj e-mail a my vám pošleme odkaz pro obnovení hesla.`}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
@@ -80,11 +80,11 @@ export function ForgotPasswordForm() {
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email">{t`E-mail`}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="vas@email.cz"
+              placeholder={t`vas@email.cz`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -94,13 +94,13 @@ export function ForgotPasswordForm() {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Odesílám..." : "Odeslat odkaz"}
+            {isLoading ? t`Odesílám...` : t`Odeslat odkaz`}
           </Button>
           <Link
             href="/prihlaseni"
             className="text-sm text-[var(--primary)] hover:underline"
           >
-            Zpět na přihlášení
+            {t`Zpět na přihlášení`}
           </Link>
         </CardFooter>
       </form>

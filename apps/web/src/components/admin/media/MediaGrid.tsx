@@ -1,5 +1,6 @@
 "use client";
 
+import { t } from "@lingui/core/macro";
 import type { MediaItemResponse } from "@samofujera/api-client";
 
 function formatFileSize(bytes: number): string {
@@ -18,7 +19,7 @@ export function MediaGrid({ items, selectedId, onSelect }: MediaGridProps) {
   if (items.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-        Zatím žádné soubory.
+        {t`Zatím žádné soubory.`}
       </p>
     );
   }

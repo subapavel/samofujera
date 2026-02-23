@@ -1,3 +1,6 @@
+import { msg } from "@lingui/core/macro";
+import type { MessageDescriptor } from "@lingui/core";
+
 export function formatPrice(amount: number, currency: string): string {
   return new Intl.NumberFormat("cs-CZ", {
     style: "currency",
@@ -20,22 +23,22 @@ export function primaryPrice(prices: Record<string, number>): { amount: number; 
   return null;
 }
 
-export function productTypeLabel(type: string): string {
+export function productTypeDescriptor(type: string): MessageDescriptor {
   switch (type) {
     case "PHYSICAL":
-      return "Fyzicky produkt";
+      return msg`Fyzický produkt`;
     case "EBOOK":
-      return "E-book";
+      return msg`E-book`;
     case "AUDIO_VIDEO":
-      return "Audio/Video";
+      return msg`Audio/Video`;
     case "ONLINE_EVENT":
-      return "Online udalost";
+      return msg`Online událost`;
     case "RECURRING_EVENT":
-      return "Opakovana udalost";
+      return msg`Opakovaná událost`;
     case "OFFLINE_EVENT":
-      return "Offline udalost";
+      return msg`Offline událost`;
     default:
-      return type;
+      return msg`${type}`;
   }
 }
 

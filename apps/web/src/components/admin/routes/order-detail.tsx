@@ -3,14 +3,18 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import type { MessageDescriptor } from "@lingui/core";
 import { adminApi } from "@samofujera/api-client";
 import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 
-const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Čekající",
-  PAID: "Zaplaceno",
-  CANCELLED: "Zrušeno",
-  REFUNDED: "Vráceno",
+const STATUS_LABELS: Record<string, MessageDescriptor> = {
+  PENDING: msg`Čekající`,
+  PAID: msg`Zaplaceno`,
+  CANCELLED: msg`Zrušeno`,
+  REFUNDED: msg`Vráceno`,
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -20,14 +24,15 @@ const STATUS_COLORS: Record<string, string> = {
   REFUNDED: "bg-red-100 text-red-700",
 };
 
-const PRODUCT_TYPE_LABELS: Record<string, string> = {
-  DIGITAL: "Digitální",
-  STREAMING: "Streaming",
-  PHYSICAL: "Fyzický",
-  EVENT: "Událost",
+const PRODUCT_TYPE_LABELS: Record<string, MessageDescriptor> = {
+  DIGITAL: msg`Digitální`,
+  STREAMING: msg`Streaming`,
+  PHYSICAL: msg`Fyzický`,
+  EVENT: msg`Událost`,
 };
 
 export function OrderDetailPage() {
+  const { _ } = useLingui();
   const params = useParams();
   const orderId = params.orderId as string;
   const router = useRouter();
@@ -75,34 +80,34 @@ export function OrderDetailPage() {
   const hasPhysicalItems = order?.items.some((item) => item.productType === "PHYSICAL");
 
   if (orderQuery.isLoading) {
-    return <p className="text-[var(--muted-foreground)]">Načítání objednávky...</p>;
+    return <p className="text-[var(--muted-foreground)]">{t`Načítání objednávky...`}</p>;
   }
 
   if (orderQuery.isError) {
     return (
       <p className="text-[var(--destructive)]">
-        Nepodařilo se načíst objednávku. Zkuste to prosím znovu.
+        {t`Nepodařilo se načíst objednávku. Zkuste to prosím znovu.`}
       </p>
     );
   }
 
   if (!order) {
-    return <p className="text-[var(--muted-foreground)]">Objednávka nenalezena.</p>;
+    return <p className="text-[var(--muted-foreground)]">{t`Objednávka nenalezena.`}</p>;
   }
 
   return (
     <div>
       <div className="mb-4 flex items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => router.push("/admin/objednavky")}>
-          Zpět
+          {t`Zpět`}
         </Button>
-        <h2 className="text-2xl font-bold">Objednávka</h2>
+        <h2 className="text-2xl font-bold">{t`Objednávka`}</h2>
       </div>
 
       {/* Order Info */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Informace o objednávce</CardTitle>
+          <CardTitle>{t`Informace o objednávce`}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
@@ -111,27 +116,27 @@ export function OrderDetailPage() {
               <p className="font-mono text-xs">{order.id}</p>
             </div>
             <div>
-              <p className="font-medium text-[var(--muted-foreground)]">Stav</p>
+              <p className="font-medium text-[var(--muted-foreground)]">{t`Stav`}</p>
               <span
                 className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[order.status] ?? ""}`}
               >
-                {STATUS_LABELS[order.status] ?? order.status}
+                {_(STATUS_LABELS[order.status]) ?? order.status}
               </span>
             </div>
             <div>
-              <p className="font-medium text-[var(--muted-foreground)]">Celkem</p>
+              <p className="font-medium text-[var(--muted-foreground)]">{t`Celkem`}</p>
               <p>
                 {order.totalAmount} {order.currency}
               </p>
             </div>
             <div>
-              <p className="font-medium text-[var(--muted-foreground)]">Datum</p>
+              <p className="font-medium text-[var(--muted-foreground)]">{t`Datum`}</p>
               <p>{new Date(order.createdAt).toLocaleString("cs-CZ")}</p>
             </div>
           </div>
           {order.discountAmount > 0 && (
             <div className="mt-3 text-sm">
-              <span className="font-medium text-[var(--muted-foreground)]">Sleva: </span>
+              <span className="font-medium text-[var(--muted-foreground)]">{t`Sleva`}: </span>
               <span>
                 {order.discountAmount} {order.currency}
               </span>
@@ -143,17 +148,17 @@ export function OrderDetailPage() {
       {/* Order Items */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Položky</CardTitle>
+          <CardTitle>{t`Položky`}</CardTitle>
         </CardHeader>
         <CardContent>
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-[var(--border)]">
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Produkt</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Typ</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Množství</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Jednotková cena</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Celkem</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Produkt`}</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Typ`}</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Množství`}</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Jednotková cena`}</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">{t`Celkem`}</th>
               </tr>
             </thead>
             <tbody>
@@ -162,7 +167,7 @@ export function OrderDetailPage() {
                   <td className="py-3 font-medium">{item.productTitle}</td>
                   <td className="py-3">
                     <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                      {PRODUCT_TYPE_LABELS[item.productType] ?? item.productType}
+                      {_(PRODUCT_TYPE_LABELS[item.productType]) ?? item.productType}
                     </span>
                   </td>
                   <td className="py-3">{item.quantity}</td>
@@ -183,20 +188,20 @@ export function OrderDetailPage() {
       {hasPhysicalItems && (
         <Card>
           <CardHeader>
-            <CardTitle>Doprava</CardTitle>
+            <CardTitle>{t`Doprava`}</CardTitle>
           </CardHeader>
           <CardContent>
             {order.shipping && (order.shipping.shippedAt || order.shipping.deliveredAt) && (
               <div className="mb-4 space-y-1 text-sm">
                 {order.shipping.shippedAt && (
                   <p>
-                    <span className="font-medium text-[var(--muted-foreground)]">Odesláno: </span>
+                    <span className="font-medium text-[var(--muted-foreground)]">{t`Odesláno`}: </span>
                     {new Date(order.shipping.shippedAt).toLocaleString("cs-CZ")}
                   </p>
                 )}
                 {order.shipping.deliveredAt && (
                   <p>
-                    <span className="font-medium text-[var(--muted-foreground)]">Doručeno: </span>
+                    <span className="font-medium text-[var(--muted-foreground)]">{t`Doručeno`}: </span>
                     {new Date(order.shipping.deliveredAt).toLocaleString("cs-CZ")}
                   </p>
                 )}
@@ -205,17 +210,17 @@ export function OrderDetailPage() {
 
             <form onSubmit={handleShippingSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="carrier">Dopravce</Label>
+                <Label htmlFor="carrier">{t`Dopravce`}</Label>
                 <Input
                   id="carrier"
                   value={carrier}
                   onChange={(e) => setCarrier(e.target.value)}
-                  placeholder="Zásilkovna, PPL, DPD..."
+                  placeholder={t`Zásilkovna, PPL, DPD...`}
                   disabled={shippingMutation.isPending}
                 />
               </div>
               <div>
-                <Label htmlFor="trackingNumber">Číslo zásilky</Label>
+                <Label htmlFor="trackingNumber">{t`Číslo zásilky`}</Label>
                 <Input
                   id="trackingNumber"
                   value={trackingNumber}
@@ -224,7 +229,7 @@ export function OrderDetailPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="trackingUrl">URL sledování</Label>
+                <Label htmlFor="trackingUrl">{t`URL sledování`}</Label>
                 <Input
                   id="trackingUrl"
                   value={trackingUrl}
@@ -236,16 +241,16 @@ export function OrderDetailPage() {
 
               {shippingMutation.isError && (
                 <p className="text-sm text-[var(--destructive)]">
-                  Nepodařilo se uložit údaje o dopravě.
+                  {t`Nepodařilo se uložit údaje o dopravě.`}
                 </p>
               )}
 
               {shippingMutation.isSuccess && (
-                <p className="text-sm text-green-600">Údaje o dopravě byly uloženy.</p>
+                <p className="text-sm text-green-600">{t`Údaje o dopravě byly uloženy.`}</p>
               )}
 
               <Button type="submit" disabled={shippingMutation.isPending}>
-                {shippingMutation.isPending ? "Ukládání..." : "Uložit dopravu"}
+                {shippingMutation.isPending ? t`Ukládání...` : t`Uložit dopravu`}
               </Button>
             </form>
           </CardContent>

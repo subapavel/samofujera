@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import type { MessageDescriptor } from "@lingui/core";
 import { adminApi } from "@samofujera/api-client";
 import type { ProductType } from "@samofujera/api-client";
 import {
@@ -15,28 +19,28 @@ import {
   DropdownMenuItem,
 } from "@samofujera/ui";
 
-const PRODUCT_TYPE_LABELS: Record<string, string> = {
-  PHYSICAL: "Fyzický",
-  EBOOK: "E-book",
-  AUDIO_VIDEO: "Audio/Video",
-  ONLINE_EVENT: "Online událost",
-  RECURRING_EVENT: "Opakovaná událost",
-  OFFLINE_EVENT: "Offline událost",
+const PRODUCT_TYPE_LABELS: Record<string, MessageDescriptor> = {
+  PHYSICAL: msg`Fyzický`,
+  EBOOK: msg`E-book`,
+  AUDIO_VIDEO: msg`Audio/Video`,
+  ONLINE_EVENT: msg`Online událost`,
+  RECURRING_EVENT: msg`Opakovaná událost`,
+  OFFLINE_EVENT: msg`Offline událost`,
 };
 
-const PRODUCT_TYPES: Array<{ value: ProductType; label: string }> = [
-  { value: "PHYSICAL", label: "Fyzický produkt" },
-  { value: "EBOOK", label: "E-book" },
-  { value: "AUDIO_VIDEO", label: "Audio/Video" },
-  { value: "ONLINE_EVENT", label: "Online událost" },
-  { value: "RECURRING_EVENT", label: "Opakovaná událost" },
-  { value: "OFFLINE_EVENT", label: "Offline událost" },
+const PRODUCT_TYPES: Array<{ value: ProductType; label: MessageDescriptor }> = [
+  { value: "PHYSICAL", label: msg`Fyzický produkt` },
+  { value: "EBOOK", label: msg`E-book` },
+  { value: "AUDIO_VIDEO", label: msg`Audio/Video` },
+  { value: "ONLINE_EVENT", label: msg`Online událost` },
+  { value: "RECURRING_EVENT", label: msg`Opakovaná událost` },
+  { value: "OFFLINE_EVENT", label: msg`Offline událost` },
 ];
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Draft",
-  ACTIVE: "Publikováno",
-  ARCHIVED: "Archivováno",
+const STATUS_LABELS: Record<string, MessageDescriptor> = {
+  DRAFT: msg`Draft`,
+  ACTIVE: msg`Publikováno`,
+  ARCHIVED: msg`Archivováno`,
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -52,6 +56,7 @@ function formatPrices(prices: Record<string, number>): string {
 }
 
 export function ProductsPage() {
+  const { _ } = useLingui();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
@@ -86,7 +91,7 @@ export function ProductsPage() {
   });
 
   function handleDelete(id: string, title: string) {
-    if (window.confirm(`Opravdu chcete smazat produkt "${title}"?`)) {
+    if (window.confirm(t`Opravdu chcete smazat produkt "${title}"?`)) {
       deleteMutation.mutate(id);
     }
   }
@@ -96,10 +101,10 @@ export function ProductsPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Produkty</h2>
+        <h2 className="text-2xl font-bold">{t`Produkty`}</h2>
         <div className="flex">
           <Link href="/admin/produkty/novy">
-            <Button className="rounded-r-none">Nový produkt</Button>
+            <Button className="rounded-r-none">{t`Nový produkt`}</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -110,13 +115,13 @@ export function ProductsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {PRODUCT_TYPES.map((t) => (
+              {PRODUCT_TYPES.map((pt) => (
                 <DropdownMenuItem
-                  key={t.value}
+                  key={pt.value}
                   disabled={createDraftMutation.isPending}
-                  onClick={() => createDraftMutation.mutate(t.value)}
+                  onClick={() => createDraftMutation.mutate(pt.value)}
                 >
-                  {t.label}
+                  {_(pt.label)}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -127,7 +132,7 @@ export function ProductsPage() {
       {/* Filters */}
       <div className="mb-4 flex gap-3">
         <Input
-          placeholder="Hledat..."
+          placeholder={t`Hledat...`}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -143,9 +148,9 @@ export function ProductsPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Všechny stavy</option>
-          <option value="DRAFT">Draft</option>
-          <option value="ACTIVE">Publikováno</option>
+          <option value="">{t`Všechny stavy`}</option>
+          <option value="DRAFT">{t`Draft`}</option>
+          <option value="ACTIVE">{t`Publikováno`}</option>
         </select>
         <select
           value={typeFilter}
@@ -155,24 +160,24 @@ export function ProductsPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Všechny typy</option>
-          <option value="PHYSICAL">Fyzický</option>
-          <option value="EBOOK">E-book</option>
-          <option value="AUDIO_VIDEO">Audio/Video</option>
-          <option value="ONLINE_EVENT">Online událost</option>
-          <option value="RECURRING_EVENT">Opakovaná událost</option>
-          <option value="OFFLINE_EVENT">Offline událost</option>
+          <option value="">{t`Všechny typy`}</option>
+          <option value="PHYSICAL">{t`Fyzický`}</option>
+          <option value="EBOOK">{t`E-book`}</option>
+          <option value="AUDIO_VIDEO">{t`Audio/Video`}</option>
+          <option value="ONLINE_EVENT">{t`Online událost`}</option>
+          <option value="RECURRING_EVENT">{t`Opakovaná událost`}</option>
+          <option value="OFFLINE_EVENT">{t`Offline událost`}</option>
         </select>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {productsQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Načítání produktů...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">{t`Načítání produktů...`}</p>
         )}
 
         {productsQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodařilo se načíst produkty. Zkuste to prosím znovu.
+            {t`Nepodařilo se načíst produkty. Zkuste to prosím znovu.`}
           </p>
         )}
 
@@ -181,18 +186,18 @@ export function ProductsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)]">
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Název</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Typ</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Stav</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Cena</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Akce</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Název`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Typ`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Stav`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Cena`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Akce`}</th>
                 </tr>
               </thead>
               <tbody>
                 {data && data.items.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-[var(--muted-foreground)]" colSpan={5}>
-                      Žádné produkty.
+                      {t`Žádné produkty.`}
                     </td>
                   </tr>
                 ) : (
@@ -201,14 +206,14 @@ export function ProductsPage() {
                       <td className="px-4 py-3 font-medium">{product.title}</td>
                       <td className="px-4 py-3">
                         <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          {PRODUCT_TYPE_LABELS[product.productType] ?? product.productType}
+                          {_(PRODUCT_TYPE_LABELS[product.productType]) ?? product.productType}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[product.status] ?? ""}`}
                         >
-                          {STATUS_LABELS[product.status] ?? product.status}
+                          {_(STATUS_LABELS[product.status]) ?? product.status}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -218,7 +223,7 @@ export function ProductsPage() {
                         <div className="flex gap-2">
                           <Link href={`/admin/produkty/${product.id}`}>
                             <Button variant="outline" size="sm">
-                              Upravit
+                              {t`Upravit`}
                             </Button>
                           </Link>
                           <Button
@@ -227,7 +232,7 @@ export function ProductsPage() {
                             disabled={deleteMutation.isPending}
                             onClick={() => handleDelete(product.id, product.title)}
                           >
-                            Smazat
+                            {t`Smazat`}
                           </Button>
                         </div>
                       </td>
@@ -241,7 +246,7 @@ export function ProductsPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stránka {data.page} z {data.totalPages} ({data.totalItems} produktů)
+                  {t`Stránka ${data.page} z ${data.totalPages} (${data.totalItems} produktů)`}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -250,7 +255,7 @@ export function ProductsPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Předchozí
+                    {t`Předchozí`}
                   </Button>
                   <Button
                     variant="outline"
@@ -258,7 +263,7 @@ export function ProductsPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Další
+                    {t`Další`}
                   </Button>
                 </div>
               </div>

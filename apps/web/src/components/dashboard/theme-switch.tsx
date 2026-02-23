@@ -2,6 +2,7 @@
 
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
+import { t } from "@lingui/core/macro";
 import {
   Button,
   DropdownMenu,
@@ -19,23 +20,23 @@ export function ThemeSwitch() {
         <Button variant="ghost" size="icon" className="size-7">
           <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Přepnout téma</span>
+          <span className="sr-only">{t`Přepnout téma`}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun className="size-4" />
-          Světlý
+          {t`Světlý`}
           {theme === "light" && <span className="ms-auto text-xs">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon className="size-4" />
-          Tmavý
+          {t`Tmavý`}
           {theme === "dark" && <span className="ms-auto text-xs">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Monitor className="size-4" />
-          Systém
+          {t`Systém`}
           {theme === "system" && <span className="ms-auto text-xs">✓</span>}
         </DropdownMenuItem>
       </DropdownMenuContent>

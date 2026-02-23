@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Link from "next/link";
+import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { catalogApi, checkoutApi } from "@samofujera/api-client";
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
-import { formatPrices, productTypeLabel, formatFileSize, primaryPrice, formatPrice } from "./utils";
+import { formatPrices, productTypeDescriptor, formatFileSize, primaryPrice, formatPrice } from "./utils";
 
 export function ProductDetail({ slug }: { slug: string }) {
+  const { _ } = useLingui();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
@@ -27,7 +30,7 @@ export function ProductDetail({ slug }: { slug: string }) {
       window.location.href = response.data.checkoutUrl;
     },
     onError: () => {
-      setCheckoutError("Nepodařilo se vytvořit objednávku. Zkuste to prosím znovu.");
+      setCheckoutError(t`Nepodařilo se vytvořit objednávku. Zkuste to prosím znovu.`);
     },
   });
 
@@ -45,10 +48,10 @@ export function ProductDetail({ slug }: { slug: string }) {
     return (
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-12 text-center">
         <p className="text-lg text-[var(--muted-foreground)]">
-          Produkt nebyl nalezen.
+          {t`Produkt nebyl nalezen.`}
         </p>
         <Link href="/katalog" className="mt-4 inline-block">
-          <Button variant="outline">Zpet do katalogu</Button>
+          <Button variant="outline">{t`Zpět do katalogu`}</Button>
         </Link>
       </div>
     );
@@ -64,7 +67,7 @@ export function ProductDetail({ slug }: { slug: string }) {
           href="/katalog"
           className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
-          &larr; Zpet do katalogu
+          &larr; {t`Zpět do katalogu`}
         </Link>
       </div>
 
@@ -86,7 +89,7 @@ export function ProductDetail({ slug }: { slug: string }) {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="inline-block rounded-full bg-[var(--secondary)] px-3 py-1 text-xs font-medium text-[var(--secondary-foreground)]">
-                {productTypeLabel(product.productType)}
+                {_(productTypeDescriptor(product.productType))}
               </span>
               {product.categories?.length > 0 &&
                 product.categories.map((cat) => (
@@ -113,7 +116,7 @@ export function ProductDetail({ slug }: { slug: string }) {
           {product.productType === "EBOOK" && product.files && product.files.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Soubory ke stazeni</CardTitle>
+                <CardTitle className="text-lg">{t`Soubory ke stažení`}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="divide-y divide-[var(--border)]">
@@ -137,7 +140,7 @@ export function ProductDetail({ slug }: { slug: string }) {
           {product.productType === "AUDIO_VIDEO" && product.media && product.media.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Obsah</CardTitle>
+                <CardTitle className="text-lg">{t`Obsah`}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="divide-y divide-[var(--border)]">
@@ -181,13 +184,13 @@ export function ProductDetail({ slug }: { slug: string }) {
                   onClick={() => checkoutMutation.mutate()}
                   disabled={checkoutMutation.isPending}
                 >
-                  {checkoutMutation.isPending ? "Zpracovavam..." : "Koupit"}
+                  {checkoutMutation.isPending ? t`Zpracovávám...` : t`Koupit`}
                 </Button>
                 {checkoutError && (
                   <p className="text-sm text-[var(--destructive)]">{checkoutError}</p>
                 )}
                 <p className="text-xs text-center text-[var(--muted-foreground)]">
-                  Budete presmerovani na bezpecnou platebni branu Stripe
+                  {t`Budete přesměrováni na bezpečnou platební bránu Stripe`}
                 </p>
               </CardContent>
             </Card>

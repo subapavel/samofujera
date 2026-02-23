@@ -5,6 +5,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
+import { t } from "@lingui/core/macro";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import type { MessageDescriptor } from "@lingui/core";
 import { pageAdminApi } from "@samofujera/api-client";
 import {
   Button,
@@ -16,10 +20,10 @@ import {
   DialogFooter,
 } from "@samofujera/ui";
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Koncept",
-  PUBLISHED: "Publikováno",
-  ARCHIVED: "Archivováno",
+const STATUS_LABELS: Record<string, MessageDescriptor> = {
+  DRAFT: msg`Koncept`,
+  PUBLISHED: msg`Publikováno`,
+  ARCHIVED: msg`Archivováno`,
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -42,6 +46,7 @@ function formatDate(dateStr: string): string {
 }
 
 export function PagesListPage() {
+  const { _ } = useLingui();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
@@ -158,7 +163,7 @@ export function PagesListPage() {
   });
 
   function handleDelete(id: string, title: string) {
-    if (window.confirm(`Opravdu chcete smazat stránku "${title}"?`)) {
+    if (window.confirm(t`Opravdu chcete smazat stránku "${title}"?`)) {
       deleteMutation.mutate(id);
     }
   }
@@ -180,14 +185,14 @@ export function PagesListPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Stránky</h2>
-        <Button onClick={handleOpenCreateDialog}>Nová stránka</Button>
+        <h2 className="text-2xl font-bold">{t`Stránky`}</h2>
+        <Button onClick={handleOpenCreateDialog}>{t`Nová stránka`}</Button>
       </div>
 
       {/* Filters */}
       <div className="mb-4 flex gap-3">
         <Input
-          placeholder="Hledat..."
+          placeholder={t`Hledat...`}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -203,21 +208,21 @@ export function PagesListPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Všechny stavy</option>
-          <option value="DRAFT">Koncept</option>
-          <option value="PUBLISHED">Publikováno</option>
-          <option value="ARCHIVED">Archivováno</option>
+          <option value="">{t`Všechny stavy`}</option>
+          <option value="DRAFT">{t`Koncept`}</option>
+          <option value="PUBLISHED">{t`Publikováno`}</option>
+          <option value="ARCHIVED">{t`Archivováno`}</option>
         </select>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {pagesQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Načítání stránek...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">{t`Načítání stránek...`}</p>
         )}
 
         {pagesQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodařilo se načíst stránky. Zkuste to prosím znovu.
+            {t`Nepodařilo se načíst stránky. Zkuste to prosím znovu.`}
           </p>
         )}
 
@@ -226,18 +231,18 @@ export function PagesListPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)]">
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Název</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Slug</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Stav</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Aktualizováno</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Akce</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Název`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Slug`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Stav`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Aktualizováno`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Akce`}</th>
                 </tr>
               </thead>
               <tbody>
                 {data && data.items.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-[var(--muted-foreground)]" colSpan={5}>
-                      Žádné stránky.
+                      {t`Žádné stránky.`}
                     </td>
                   </tr>
                 ) : (
@@ -256,7 +261,7 @@ export function PagesListPage() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? ""}`}
                         >
-                          {STATUS_LABELS[p.status] ?? p.status}
+                          {_(STATUS_LABELS[p.status]) ?? p.status}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-[var(--muted-foreground)]">
@@ -266,7 +271,7 @@ export function PagesListPage() {
                         <div className="flex gap-2">
                           <Link href={`/admin/stranky/${p.id}/edit`}>
                             <Button variant="outline" size="sm">
-                              Upravit
+                              {t`Upravit`}
                             </Button>
                           </Link>
                           <Button
@@ -275,7 +280,7 @@ export function PagesListPage() {
                             disabled={deleteMutation.isPending}
                             onClick={() => handleDelete(p.id, p.title)}
                           >
-                            Smazat
+                            {t`Smazat`}
                           </Button>
                         </div>
                       </td>
@@ -289,7 +294,7 @@ export function PagesListPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stránka {data.page} z {data.totalPages} ({data.totalItems} stránek)
+                  {t`Stránka ${data.page} z ${data.totalPages} (${data.totalItems} stránek)`}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -298,7 +303,7 @@ export function PagesListPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Předchozí
+                    {t`Předchozí`}
                   </Button>
                   <Button
                     variant="outline"
@@ -306,7 +311,7 @@ export function PagesListPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Další
+                    {t`Další`}
                   </Button>
                 </div>
               </div>
@@ -320,7 +325,7 @@ export function PagesListPage() {
         {step === "template" ? (
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Nová stránka</DialogTitle>
+              <DialogTitle>{t`Nová stránka`}</DialogTitle>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
               <button
@@ -329,32 +334,32 @@ export function PagesListPage() {
                 onClick={() => setStep("title")}
               >
                 <FileText className="h-10 w-10 text-[var(--muted-foreground)]" />
-                <span className="font-medium">Prázdná stránka</span>
+                <span className="font-medium">{t`Prázdná stránka`}</span>
               </button>
             </div>
           </DialogContent>
         ) : (
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Název stránky</DialogTitle>
+              <DialogTitle>{t`Název stránky`}</DialogTitle>
             </DialogHeader>
             <div className="py-4">
               <Input
                 value={newTitle}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="Zadejte název stránky"
+                placeholder={t`Zadejte název stránky`}
                 autoFocus
               />
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setStep("template")}>
-                Zpět
+                {t`Zpět`}
               </Button>
               <Button
                 disabled={!newTitle.trim() || createMutation.isPending}
                 onClick={() => createMutation.mutate()}
               >
-                Vytvořit
+                {t`Vytvořit`}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
+import { t } from "@lingui/core/macro";
 import { authApi } from "@samofujera/api-client";
 import {
   Avatar,
@@ -87,14 +88,14 @@ export function NavUser({ user }: NavUserProps) {
               <DropdownMenuItem asChild>
                 <Link href="/muj-ucet/profile">
                   <UserCog />
-                  Profil
+                  {t`Profil`}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => void handleLogout()}>
               <LogOut />
-              Odhlásit se
+              {t`Odhlásit se`}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

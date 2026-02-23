@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
 import {
   Button,
@@ -48,19 +49,18 @@ export function DeleteAccountPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Smazat účet</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t`Smazat účet`}</h2>
 
       <Alert variant="destructive" className="mb-6">
-        <AlertTitle>Upozornění</AlertTitle>
+        <AlertTitle>{t`Upozornění`}</AlertTitle>
         <AlertDescription>
-          Smazání účtu je nevratná akce. Všechna vaše data, včetně historie objednávek, členství
-          a přístupu k zakoupenému obsahu, budou trvale odstraněna. Tuto akci nelze vrátit zpět.
+          {t`Smazání účtu je nevratná akce. Všechna vaše data, včetně historie objednávek, členství a přístupu k zakoupenému obsahu, budou trvale odstraněna. Tuto akci nelze vrátit zpět.`}
         </AlertDescription>
       </Alert>
 
       <Card>
         <CardHeader>
-          <CardTitle>Trvalé smazání účtu</CardTitle>
+          <CardTitle>{t`Trvalé smazání účtu`}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -68,21 +68,21 @@ export function DeleteAccountPage() {
               htmlFor="password"
               className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]"
             >
-              Pro potvrzení zadejte své heslo
+              {t`Pro potvrzení zadejte své heslo`}
             </label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Vaše heslo"
+              placeholder={t`Vaše heslo`}
               disabled={deleteMutation.isPending}
             />
           </div>
 
           {deleteMutation.isError && (
             <p className="text-sm text-[var(--destructive)]">
-              Nepodařilo se smazat účet. Zkontrolujte heslo a zkuste to znovu.
+              {t`Nepodařilo se smazat účet. Zkontrolujte heslo a zkuste to znovu.`}
             </p>
           )}
 
@@ -92,27 +92,26 @@ export function DeleteAccountPage() {
                 variant="destructive"
                 disabled={!password.trim() || deleteMutation.isPending}
               >
-                Smazat můj účet
+                {t`Smazat můj účet`}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Opravdu chcete smazat svůj účet?</DialogTitle>
+                <DialogTitle>{t`Opravdu chcete smazat svůj účet?`}</DialogTitle>
                 <DialogDescription>
-                  Tato akce je nevratná. Všechna vaše data budou trvale odstraněna
-                  a nebude možné je obnovit.
+                  {t`Tato akce je nevratná. Všechna vaše data budou trvale odstraněna a nebude možné je obnovit.`}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Zrušit
+                  {t`Zrušit`}
                 </Button>
                 <Button
                   variant="destructive"
                   disabled={deleteMutation.isPending}
                   onClick={handleConfirmDelete}
                 >
-                  {deleteMutation.isPending ? "Mazání..." : "Ano, smazat účet"}
+                  {deleteMutation.isPending ? t`Mazání...` : t`Ano, smazat účet`}
                 </Button>
               </DialogFooter>
             </DialogContent>

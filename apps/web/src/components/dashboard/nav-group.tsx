@@ -4,6 +4,7 @@ import { type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { useLingui } from "@lingui/react";
 import {
   Badge,
   Collapsible,
@@ -33,14 +34,15 @@ import {
 } from "./types";
 
 export function NavGroup({ title, items }: NavGroupProps) {
+  const { _ } = useLingui();
   const { state, isMobile } = useSidebar();
   const pathname = usePathname();
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      <SidebarGroupLabel>{_(title)}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          const key = `${item.title}-${item.url}`;
+          const key = `${_(item.title)}-${item.url}`;
 
           if (!item.items)
             return <SidebarMenuLink key={key} item={item} pathname={pathname} />;
@@ -62,17 +64,19 @@ function NavBadge({ children }: { children: ReactNode }) {
 }
 
 function SidebarMenuLink({ item, pathname }: { item: NavLink; pathname: string }) {
+  const { _ } = useLingui();
   const { setOpenMobile } = useSidebar();
+  const resolvedTitle = _(item.title);
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
         isActive={checkIsActive(pathname, item)}
-        tooltip={item.title}
+        tooltip={resolvedTitle}
       >
         <Link href={item.url} onClick={() => setOpenMobile(false)}>
           {item.icon && <item.icon />}
-          <span>{item.title}</span>
+          <span>{resolvedTitle}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
         </Link>
       </SidebarMenuButton>
@@ -87,7 +91,9 @@ function SidebarMenuCollapsible({
   item: NavCollapsible;
   pathname: string;
 }) {
+  const { _ } = useLingui();
   const { setOpenMobile } = useSidebar();
+  const resolvedTitle = _(item.title);
   return (
     <Collapsible
       asChild
@@ -96,9 +102,9 @@ function SidebarMenuCollapsible({
     >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton tooltip={item.title}>
+          <SidebarMenuButton tooltip={resolvedTitle}>
             {item.icon && <item.icon />}
-            <span>{item.title}</span>
+            <span>{resolvedTitle}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
             <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
           </SidebarMenuButton>
@@ -106,14 +112,14 @@ function SidebarMenuCollapsible({
         <CollapsibleContent>
           <SidebarMenuSub>
             {item.items.map((subItem) => (
-              <SidebarMenuSubItem key={subItem.title}>
+              <SidebarMenuSubItem key={_(subItem.title)}>
                 <SidebarMenuSubButton
                   asChild
                   isActive={checkIsActive(pathname, subItem)}
                 >
                   <Link href={subItem.url} onClick={() => setOpenMobile(false)}>
                     {subItem.icon && <subItem.icon />}
-                    <span>{subItem.title}</span>
+                    <span>{_(subItem.title)}</span>
                     {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
                   </Link>
                 </SidebarMenuSubButton>
@@ -133,33 +139,35 @@ function SidebarMenuCollapsedDropdown({
   item: NavCollapsible;
   pathname: string;
 }) {
+  const { _ } = useLingui();
+  const resolvedTitle = _(item.title);
   return (
     <SidebarMenuItem>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <SidebarMenuButton
-            tooltip={item.title}
+            tooltip={resolvedTitle}
             isActive={checkIsActive(pathname, item)}
           >
             {item.icon && <item.icon />}
-            <span>{item.title}</span>
+            <span>{resolvedTitle}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
             <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" align="start" sideOffset={4}>
           <DropdownMenuLabel>
-            {item.title} {item.badge ? `(${item.badge})` : ""}
+            {resolvedTitle} {item.badge ? `(${item.badge})` : ""}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {item.items.map((sub) => (
-            <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
+            <DropdownMenuItem key={`${_(sub.title)}-${sub.url}`} asChild>
               <Link
                 href={sub.url}
                 className={`${checkIsActive(pathname, sub) ? "bg-secondary" : ""}`}
               >
                 {sub.icon && <sub.icon />}
-                <span className="max-w-52 text-wrap">{sub.title}</span>
+                <span className="max-w-52 text-wrap">{_(sub.title)}</span>
                 {sub.badge && (
                   <span className="ms-auto text-xs">{sub.badge}</span>
                 )}

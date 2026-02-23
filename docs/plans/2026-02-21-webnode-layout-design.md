@@ -67,9 +67,9 @@ Only text blocks are width-constrained. Images, separators, buttons go full sect
 | Block type  | Width              | Wrapper class    |
 |-------------|-------------------|-----------------|
 | text        | 973px (centered)  | `.text-block`   |
-| image       | full section (1280px) | none        |
-| separator   | full section (1280px) | none        |
-| button      | full section (1280px) | none        |
+| image       | 973px (centered)  | `.text-block`   |
+| separator   | 973px (centered)  | `.text-block`   |
+| button      | 973px (centered)  | `.text-block`   |
 
 ## Responsive Typography
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { t } from "@lingui/core/macro";
 import { catalogApi } from "@samofujera/api-client";
 
 interface CategoryFilterProps {
@@ -30,9 +31,9 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
   }
 
   return (
-    <nav aria-label="Kategorie">
+    <nav aria-label={t`Kategorie`}>
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
-        Kategorie
+        {t`Kategorie`}
       </h3>
       <ul className="space-y-1">
         <li>
@@ -45,7 +46,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
                 : "text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
             }`}
           >
-            Vše
+            {t`Vše`}
           </button>
         </li>
         {categories.map((category) => (

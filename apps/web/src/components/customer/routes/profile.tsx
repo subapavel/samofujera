@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
 import { Button, Input, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 
@@ -45,26 +46,26 @@ export function ProfilePage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Profil</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t`Profil`}</h2>
 
       {profileQuery.isLoading && (
-        <p className="text-[var(--muted-foreground)]">Načítání profilu...</p>
+        <p className="text-[var(--muted-foreground)]">{t`Načítání profilu...`}</p>
       )}
 
       {profileQuery.isError && (
         <p className="text-[var(--destructive)]">
-          Nepodařilo se načíst profil. Zkuste to prosím znovu.
+          {t`Nepodařilo se načíst profil. Zkuste to prosím znovu.`}
         </p>
       )}
 
       {profileQuery.isSuccess && (
         <Card>
           <CardHeader>
-            <CardTitle>Osobni udaje</CardTitle>
+            <CardTitle>{t`Osobní údaje`}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-[var(--muted-foreground)]">E-mail</p>
+              <p className="text-sm font-medium text-[var(--muted-foreground)]">{t`E-mail`}</p>
               <p className="text-sm">{profileQuery.data.data.email}</p>
             </div>
 
@@ -72,26 +73,26 @@ export function ProfilePage() {
               <form onSubmit={handleSave} className="space-y-3">
                 <div>
                   <label htmlFor="name" className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
-                    Jmeno
+                    {t`Jméno`}
                   </label>
                   <Input
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Vase jmeno"
+                    placeholder={t`Vaše jméno`}
                     disabled={updateMutation.isPending}
                   />
                 </div>
 
                 {updateMutation.isError && (
                   <p className="text-sm text-[var(--destructive)]">
-                    Nepodařilo se uložit změny. Zkuste to prosím znovu.
+                    {t`Nepodařilo se uložit změny. Zkuste to prosím znovu.`}
                   </p>
                 )}
 
                 <div className="flex gap-2">
                   <Button type="submit" disabled={updateMutation.isPending}>
-                    {updateMutation.isPending ? "Ukladani..." : "Ulozit"}
+                    {updateMutation.isPending ? t`Ukládání...` : t`Uložit`}
                   </Button>
                   <Button
                     type="button"
@@ -99,17 +100,17 @@ export function ProfilePage() {
                     onClick={handleCancel}
                     disabled={updateMutation.isPending}
                   >
-                    Zrusit
+                    {t`Zrušit`}
                   </Button>
                 </div>
               </form>
             ) : (
               <div>
-                <p className="text-sm font-medium text-[var(--muted-foreground)]">Jmeno</p>
+                <p className="text-sm font-medium text-[var(--muted-foreground)]">{t`Jméno`}</p>
                 <div className="flex items-center gap-3">
                   <p className="text-sm">{profileQuery.data.data.name}</p>
                   <Button variant="outline" size="sm" onClick={handleEdit}>
-                    Upravit
+                    {t`Upravit`}
                   </Button>
                 </div>
               </div>

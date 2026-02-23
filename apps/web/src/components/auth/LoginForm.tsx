@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { t } from "@lingui/core/macro";
 import {
   Button,
   Input,
@@ -39,12 +40,12 @@ export function LoginForm() {
       if (err instanceof ApiError && err.status === 409) {
         const body = err.body as { existingDevice?: string } | null;
         setSessionConflict(
-          body?.existingDevice ?? "jiné zařízení"
+          body?.existingDevice ?? t`jiné zařízení`
         );
       } else if (err instanceof ApiError && err.status === 401) {
-        setError("Nesprávný e-mail nebo heslo.");
+        setError(t`Nesprávný e-mail nebo heslo.`);
       } else {
-        setError("Přihlášení se nezdařilo. Zkuste to prosím znovu.");
+        setError(t`Přihlášení se nezdařilo. Zkuste to prosím znovu.`);
       }
     } finally {
       setIsLoading(false);
@@ -65,9 +66,9 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Přihlášení</CardTitle>
+        <CardTitle>{t`Přihlášení`}</CardTitle>
         <CardDescription>
-          Zadejte svůj e-mail a heslo pro přihlášení.
+          {t`Zadejte svůj e-mail a heslo pro přihlášení.`}
         </CardDescription>
       </CardHeader>
       <form onSubmit={(e) => void handleSubmit(e)}>
@@ -81,8 +82,8 @@ export function LoginForm() {
             <Alert>
               <AlertDescription>
                 <p className="mb-2">
-                  Máte aktivní sezení na zařízení: <strong>{sessionConflict}</strong>.
-                  Chcete se přihlásit zde a odhlásit druhé zařízení?
+                  {t`Máte aktivní sezení na zařízení:`} <strong>{sessionConflict}</strong>.
+                  {t`Chcete se přihlásit zde a odhlásit druhé zařízení?`}
                 </p>
                 <Button
                   type="button"
@@ -90,17 +91,17 @@ export function LoginForm() {
                   disabled={isLoading}
                   onClick={() => void handleForceLogin()}
                 >
-                  Ano, přihlásit se zde
+                  {t`Ano, přihlásit se zde`}
                 </Button>
               </AlertDescription>
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email">{t`E-mail`}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="vas@email.cz"
+              placeholder={t`vas@email.cz`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -108,7 +109,7 @@ export function LoginForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Heslo</Label>
+            <Label htmlFor="password">{t`Heslo`}</Label>
             <Input
               id="password"
               type="password"
@@ -123,18 +124,18 @@ export function LoginForm() {
               href="/zapomenute-heslo"
               className="text-[var(--primary)] hover:underline"
             >
-              Zapomenuté heslo?
+              {t`Zapomenuté heslo?`}
             </Link>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Přihlašuji..." : "Přihlásit se"}
+            {isLoading ? t`Přihlašuji...` : t`Přihlásit se`}
           </Button>
           <p className="text-sm text-[var(--muted-foreground)] text-center">
-            Nemáte účet?{" "}
+            {t`Nemáte účet?`}{" "}
             <Link href="/registrace" className="text-[var(--primary)] hover:underline">
-              Zaregistrujte se
+              {t`Zaregistrujte se`}
             </Link>
           </p>
         </CardFooter>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
 import { Button } from "@samofujera/ui";
 
@@ -21,22 +22,22 @@ export function SessionsPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Aktivní sezení</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t`Aktivní sezení`}</h2>
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
         {sessionsQuery.isLoading && (
-          <p className="text-[var(--muted-foreground)]">Načítání sezení...</p>
+          <p className="text-[var(--muted-foreground)]">{t`Načítání sezení...`}</p>
         )}
 
         {sessionsQuery.isError && (
           <p className="text-[var(--destructive)]">
-            Nepodařilo se načíst sezení. Zkuste to prosím znovu.
+            {t`Nepodařilo se načíst sezení. Zkuste to prosím znovu.`}
           </p>
         )}
 
         {sessionsQuery.isSuccess && (
           <>
             {sessionsQuery.data.data.length === 0 ? (
-              <p className="text-[var(--muted-foreground)]">Žádná aktivní sezení.</p>
+              <p className="text-[var(--muted-foreground)]">{t`Žádná aktivní sezení.`}</p>
             ) : (
               <div className="space-y-4">
                 {sessionsQuery.data.data.map((session) => (
@@ -50,13 +51,13 @@ export function SessionsPage() {
                         IP: {session.ipAddress}
                       </p>
                       <p className="text-xs text-[var(--muted-foreground)]">
-                        Posledni aktivita:{" "}
+                        {t`Poslední aktivita`}:{" "}
                         {new Date(session.lastActiveAt).toLocaleString("cs-CZ")}
                       </p>
                     </div>
                     {session.current ? (
                       <span className="text-xs font-medium text-green-600">
-                        Toto zarizeni
+                        {t`Toto zařízení`}
                       </span>
                     ) : (
                       <Button
@@ -65,7 +66,7 @@ export function SessionsPage() {
                         disabled={revokeMutation.isPending}
                         onClick={() => revokeMutation.mutate(session.sessionId)}
                       >
-                        Odvolat
+                        {t`Odvolat`}
                       </Button>
                     )}
                   </div>

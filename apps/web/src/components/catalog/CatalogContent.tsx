@@ -2,10 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { catalogApi } from "@samofujera/api-client";
-import { formatPrices, productTypeLabel } from "./utils";
+import { formatPrices, productTypeDescriptor } from "./utils";
 
 export function CatalogContent() {
+  const { _ } = useLingui();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["catalog", "products"],
     queryFn: () => catalogApi.getProducts(),
@@ -19,7 +22,7 @@ export function CatalogContent() {
         className="text-3xl font-medium text-center mb-10"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
-        Obchod
+        {t`Obchod`}
       </h1>
 
       {isLoading && (
@@ -32,13 +35,13 @@ export function CatalogContent() {
 
       {isError && (
         <p className="text-center text-[var(--destructive)]">
-          Nepodařilo se načíst produkty. Zkuste to prosím znovu.
+          {t`Nepodařilo se načíst produkty. Zkuste to prosím znovu.`}
         </p>
       )}
 
       {!isLoading && !isError && products.length === 0 && (
         <p className="text-center text-[var(--muted-foreground)]">
-          Zatím zde nejsou žádné produkty.
+          {t`Zatím zde nejsou žádné produkty.`}
         </p>
       )}
 
@@ -65,7 +68,7 @@ export function CatalogContent() {
               )}
               <div className="p-4">
                 <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider mb-1">
-                  {productTypeLabel(product.productType)}
+                  {_(productTypeDescriptor(product.productType))}
                 </p>
                 <h2 className="text-lg font-medium text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
                   {product.title}

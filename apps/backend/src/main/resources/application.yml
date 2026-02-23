@@ -1,6 +1,10 @@
 spring:
   application:
     name: samofujera
+  servlet:
+    multipart:
+      max-file-size: 10GB
+      max-request-size: 10GB
   flyway:
     enabled: true
     locations: classpath:db/migration

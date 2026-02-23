@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
 import { adminApi } from "@samofujera/api-client";
 import {
   Button,
@@ -74,16 +75,16 @@ export function CategoryNewPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Nová kategorie</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t`Nová kategorie`}</h2>
 
       <Card>
         <CardHeader>
-          <CardTitle>Udaje o kategorii</CardTitle>
+          <CardTitle>{t`Údaje o kategorii`}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name">Nazev</Label>
+              <Label htmlFor="name">{t`Název`}</Label>
               <Input
                 id="name"
                 value={name}
@@ -94,7 +95,7 @@ export function CategoryNewPage() {
             </div>
 
             <div>
-              <Label htmlFor="slug">Slug</Label>
+              <Label htmlFor="slug">{t`Slug`}</Label>
               <Input
                 id="slug"
                 value={slug}
@@ -105,7 +106,7 @@ export function CategoryNewPage() {
             </div>
 
             <div>
-              <Label htmlFor="description">Popis</Label>
+              <Label htmlFor="description">{t`Popis`}</Label>
               <textarea
                 id="description"
                 value={description}
@@ -117,7 +118,7 @@ export function CategoryNewPage() {
             </div>
 
             <div>
-              <Label>Obrazek</Label>
+              <Label>{t`Obrázek`}</Label>
               <div className="mt-1">
                 <MediaPicker
                   value={imageMediaId}
@@ -128,7 +129,7 @@ export function CategoryNewPage() {
             </div>
 
             <div>
-              <Label htmlFor="metaTitle">Meta titulek</Label>
+              <Label htmlFor="metaTitle">{t`Meta titulek`}</Label>
               <Input
                 id="metaTitle"
                 value={metaTitle}
@@ -139,7 +140,7 @@ export function CategoryNewPage() {
             </div>
 
             <div>
-              <Label htmlFor="metaDescription">Meta popis</Label>
+              <Label htmlFor="metaDescription">{t`Meta popis`}</Label>
               <textarea
                 id="metaDescription"
                 value={metaDescription}
@@ -153,13 +154,13 @@ export function CategoryNewPage() {
 
             {createMutation.isError && (
               <p className="text-sm text-[var(--destructive)]">
-                Nepodařilo se vytvořit kategorii. Zkuste to prosím znovu.
+                {t`Nepodařilo se vytvořit kategorii. Zkuste to prosím znovu.`}
               </p>
             )}
 
             <div className="flex gap-2">
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Vytvarim..." : "Vytvorit kategorii"}
+                {isPending ? t`Vytvářím...` : t`Vytvořit kategorii`}
               </Button>
               <Button
                 type="button"
@@ -167,7 +168,7 @@ export function CategoryNewPage() {
                 onClick={() => router.push("/admin/produkty/kategorie")}
                 disabled={isPending}
               >
-                Zrusit
+                {t`Zrušit`}
               </Button>
             </div>
           </form>

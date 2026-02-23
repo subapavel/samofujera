@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { t } from "@lingui/core/macro";
 import {
   Button,
   Input,
@@ -31,7 +32,7 @@ export function ResetPasswordForm() {
 
     const token = searchParams.get("token") ?? "";
     if (token === "") {
-      setError("Neplatný nebo chybějící odkaz pro obnovení hesla.");
+      setError(t`Neplatný nebo chybějící odkaz pro obnovení hesla.`);
       return;
     }
 
@@ -44,7 +45,7 @@ export function ResetPasswordForm() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Obnovení hesla se nezdařilo. Zkuste to prosím znovu.");
+        setError(t`Obnovení hesla se nezdařilo. Zkuste to prosím znovu.`);
       }
     } finally {
       setIsLoading(false);
@@ -54,8 +55,8 @@ export function ResetPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Obnovení hesla</CardTitle>
-        <CardDescription>Zadejte své nové heslo.</CardDescription>
+        <CardTitle>{t`Obnovení hesla`}</CardTitle>
+        <CardDescription>{t`Zadejte své nové heslo.`}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -65,7 +66,7 @@ export function ResetPasswordForm() {
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="newPassword">Nové heslo</Label>
+            <Label htmlFor="newPassword">{t`Nové heslo`}</Label>
             <Input
               id="newPassword"
               type="password"
@@ -79,13 +80,13 @@ export function ResetPasswordForm() {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Ukládám..." : "Nastavit nové heslo"}
+            {isLoading ? t`Ukládám...` : t`Nastavit nové heslo`}
           </Button>
           <Link
             href="/prihlaseni"
             className="text-sm text-[var(--primary)] hover:underline"
           >
-            Zpět na přihlášení
+            {t`Zpět na přihlášení`}
           </Link>
         </CardFooter>
       </form>

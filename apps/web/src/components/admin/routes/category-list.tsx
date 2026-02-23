@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { t } from "@lingui/core/macro";
 import { adminApi, catalogApi } from "@samofujera/api-client";
 import type { CategoryResponse } from "@samofujera/api-client";
 import {
@@ -98,7 +99,7 @@ function SortableRow({
         <div className="flex gap-2">
           <Link href={`/admin/produkty/kategorie/${category.id}`}>
             <Button variant="outline" size="sm">
-              Upravit
+              {t`Upravit`}
             </Button>
           </Link>
           <Button
@@ -107,7 +108,7 @@ function SortableRow({
             disabled={isDeleting}
             onClick={() => onDelete(category)}
           >
-            Smazat
+            {t`Smazat`}
           </Button>
         </div>
       </td>
@@ -149,7 +150,7 @@ export function CategoryListPage() {
   );
 
   function handleDelete(cat: CategoryResponse) {
-    if (window.confirm(`Opravdu chcete smazat kategorii "${cat.name}"?`)) {
+    if (window.confirm(t`Opravdu chcete smazat kategorii "${cat.name}"?`)) {
       deleteMutation.mutate(cat.id);
     }
   }
@@ -178,22 +179,22 @@ export function CategoryListPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Kategorie</h2>
+        <h2 className="text-2xl font-bold">{t`Kategorie`}</h2>
         <Link href="/admin/produkty/kategorie/nova">
-          <Button>Nová kategorie</Button>
+          <Button>{t`Nová kategorie`}</Button>
         </Link>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {categoriesQuery.isLoading && (
           <p className="p-6 text-[var(--muted-foreground)]">
-            Načítání kategorií...
+            {t`Načítání kategorií...`}
           </p>
         )}
 
         {categoriesQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodařilo se načíst kategorie. Zkuste to prosím znovu.
+            {t`Nepodařilo se načíst kategorie. Zkuste to prosím znovu.`}
           </p>
         )}
 
@@ -201,7 +202,7 @@ export function CategoryListPage() {
           <>
             {displayCategories.length === 0 ? (
               <p className="p-6 text-[var(--muted-foreground)]">
-                Zadne kategorie.
+                {t`Žádné kategorie.`}
               </p>
             ) : (
               <table className="w-full text-left text-sm">
@@ -209,16 +210,16 @@ export function CategoryListPage() {
                   <tr className="border-b border-[var(--border)]">
                     <th className="w-10 px-2 py-3" />
                     <th className="w-14 px-2 py-3 font-medium text-[var(--muted-foreground)]">
-                      Obrazek
+                      {t`Obrázek`}
                     </th>
                     <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">
-                      Nazev
+                      {t`Název`}
                     </th>
                     <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">
-                      Slug
+                      {t`Slug`}
                     </th>
                     <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">
-                      Akce
+                      {t`Akce`}
                     </th>
                   </tr>
                 </thead>

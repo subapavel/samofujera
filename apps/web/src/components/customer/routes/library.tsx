@@ -2,19 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { libraryApi } from "@samofujera/api-client";
 import { Button, Card, CardContent } from "@samofujera/ui";
-
-const productTypeLabels: Record<string, string> = {
-  PHYSICAL: "Fyzický produkt",
-  EBOOK: "E-book",
-  AUDIO_VIDEO: "Audio/Video",
-  ONLINE_EVENT: "Online událost",
-  RECURRING_EVENT: "Opakovaná událost",
-  OFFLINE_EVENT: "Offline událost",
-};
+import { productTypeDescriptor } from "../../catalog/utils";
 
 export function LibraryPage() {
+  const { _ } = useLingui();
   const router = useRouter();
 
   const libraryQuery = useQuery({
@@ -24,7 +19,7 @@ export function LibraryPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Knihovna</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t`Knihovna`}</h2>
 
       {libraryQuery.isLoading && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -39,7 +34,7 @@ export function LibraryPage() {
 
       {libraryQuery.isError && (
         <p className="text-[var(--destructive)]">
-          Nepodařilo se načíst knihovnu. Zkuste to prosím znovu.
+          {t`Nepodařilo se načíst knihovnu. Zkuste to prosím znovu.`}
         </p>
       )}
 
@@ -48,7 +43,7 @@ export function LibraryPage() {
           {libraryQuery.data.data.length === 0 ? (
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
               <p className="text-[var(--muted-foreground)]">
-                Zatím nemáte žádné zakoupené produkty.
+                {t`Zatím nemáte žádné zakoupené produkty.`}
               </p>
             </div>
           ) : (
@@ -87,19 +82,19 @@ export function LibraryPage() {
                         {item.productTitle}
                       </h3>
                       <span className="shrink-0 rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--primary)]">
-                        {productTypeLabels[item.productType] ?? item.productType}
+                        {_(productTypeDescriptor(item.productType))}
                       </span>
                     </div>
 
                     <p className="text-xs text-[var(--muted-foreground)]">
-                      Zakoupeno: {new Date(item.grantedAt).toLocaleDateString("cs-CZ")}
+                      {t`Zakoupeno`}: {new Date(item.grantedAt).toLocaleDateString("cs-CZ")}
                     </p>
 
                     <Button
                       size="sm"
                       onClick={() => router.push(`/muj-ucet/knihovna/${item.productId}`)}
                     >
-                      Zobrazit
+                      {t`Zobrazit`}
                     </Button>
                   </CardContent>
                 </Card>

@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { t } from "@lingui/core/macro";
 import {
   Button,
   Input,
@@ -38,7 +39,7 @@ export function RegisterForm() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Registrace se nezdařila. Zkuste to prosím znovu.");
+        setError(t`Registrace se nezdařila. Zkuste to prosím znovu.`);
       }
     } finally {
       setIsLoading(false);
@@ -48,9 +49,9 @@ export function RegisterForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Registrace</CardTitle>
+        <CardTitle>{t`Registrace`}</CardTitle>
         <CardDescription>
-          Vytvořte si účet pro přístup ke všem materiálům.
+          {t`Vytvořte si účet pro přístup ke všem materiálům.`}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
@@ -61,11 +62,11 @@ export function RegisterForm() {
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="name">Jméno</Label>
+            <Label htmlFor="name">{t`Jméno`}</Label>
             <Input
               id="name"
               type="text"
-              placeholder="Jan Novák"
+              placeholder={t`Jan Novák`}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -73,11 +74,11 @@ export function RegisterForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email">{t`E-mail`}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="vas@email.cz"
+              placeholder={t`vas@email.cz`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -85,7 +86,7 @@ export function RegisterForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Heslo</Label>
+            <Label htmlFor="password">{t`Heslo`}</Label>
             <Input
               id="password"
               type="password"
@@ -99,12 +100,12 @@ export function RegisterForm() {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Registruji..." : "Zaregistrovat se"}
+            {isLoading ? t`Registruji...` : t`Zaregistrovat se`}
           </Button>
           <p className="text-sm text-[var(--muted-foreground)] text-center">
-            Už máte účet?{" "}
+            {t`Už máte účet?`}{" "}
             <Link href="/prihlaseni" className="text-[var(--primary)] hover:underline">
-              Přihlaste se
+              {t`Přihlaste se`}
             </Link>
           </p>
         </CardFooter>

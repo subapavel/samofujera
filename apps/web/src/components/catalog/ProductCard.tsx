@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useLingui } from "@lingui/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 import type { ProductResponse } from "@samofujera/api-client";
-import { formatPrices, productTypeLabel } from "./utils";
+import { formatPrices, productTypeDescriptor } from "./utils";
 
 interface ProductCardProps {
   product: ProductResponse;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { _ } = useLingui();
   return (
     <Link href={"/katalog/" + product.slug} className="block group">
       <Card className="h-full transition-shadow hover:shadow-md">
@@ -31,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             <span className="inline-block rounded-full bg-[var(--secondary)] px-2 py-0.5 text-xs font-medium text-[var(--secondary-foreground)]">
-              {productTypeLabel(product.productType)}
+              {_(productTypeDescriptor(product.productType))}
             </span>
             {product.categories?.length > 0 && (
               <div className="flex flex-wrap gap-1">

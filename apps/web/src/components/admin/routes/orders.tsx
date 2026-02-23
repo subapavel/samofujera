@@ -3,14 +3,18 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { t } from "@lingui/core/macro";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import type { MessageDescriptor } from "@lingui/core";
 import { adminApi } from "@samofujera/api-client";
 import { Button } from "@samofujera/ui";
 
-const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Čekající",
-  PAID: "Zaplaceno",
-  CANCELLED: "Zrušeno",
-  REFUNDED: "Vráceno",
+const STATUS_LABELS: Record<string, MessageDescriptor> = {
+  PENDING: msg`Čekající`,
+  PAID: msg`Zaplaceno`,
+  CANCELLED: msg`Zrušeno`,
+  REFUNDED: msg`Vráceno`,
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -21,6 +25,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function OrdersPage() {
+  const { _ } = useLingui();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -39,7 +44,7 @@ export function OrdersPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Objednávky</h2>
+        <h2 className="text-2xl font-bold">{t`Objednávky`}</h2>
       </div>
 
       {/* Filters */}
@@ -52,22 +57,21 @@ export function OrdersPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Všechny stavy</option>
-          <option value="PENDING">Čekající</option>
-          <option value="PAID">Zaplaceno</option>
-          <option value="CANCELLED">Zrušeno</option>
-          <option value="REFUNDED">Vráceno</option>
+          <option value="">{t`Všechny stavy`}</option>
+          {Object.entries(STATUS_LABELS).map(([value, descriptor]) => (
+            <option key={value} value={value}>{_(descriptor)}</option>
+          ))}
         </select>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {ordersQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Načítání objednávek...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">{t`Načítání objednávek...`}</p>
         )}
 
         {ordersQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodařilo se načíst objednávky. Zkuste to prosím znovu.
+            {t`Nepodařilo se načíst objednávky. Zkuste to prosím znovu.`}
           </p>
         )}
 
@@ -77,18 +81,18 @@ export function OrdersPage() {
               <thead>
                 <tr className="border-b border-[var(--border)]">
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">ID</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Stav</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Celkem</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Měna</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Datum</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Akce</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Stav`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Celkem`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Měna`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Datum`}</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">{t`Akce`}</th>
                 </tr>
               </thead>
               <tbody>
                 {data && data.items.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-[var(--muted-foreground)]" colSpan={6}>
-                      Žádné objednávky.
+                      {t`Žádné objednávky.`}
                     </td>
                   </tr>
                 ) : (
@@ -101,7 +105,7 @@ export function OrdersPage() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[order.status] ?? ""}`}
                         >
-                          {STATUS_LABELS[order.status] ?? order.status}
+                          {_(STATUS_LABELS[order.status]) ?? order.status}
                         </span>
                       </td>
                       <td className="px-4 py-3">{order.totalAmount}</td>
@@ -112,7 +116,7 @@ export function OrdersPage() {
                       <td className="px-4 py-3">
                         <Link href={`/admin/objednavky/${order.id}`}>
                           <Button variant="outline" size="sm">
-                            Detail
+                            {t`Detail`}
                           </Button>
                         </Link>
                       </td>
@@ -126,7 +130,7 @@ export function OrdersPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stránka {data.page} z {data.totalPages} ({data.totalItems} objednávek)
+                  {t`Stránka ${data.page} z ${data.totalPages} (${data.totalItems} objednávek)`}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -135,7 +139,7 @@ export function OrdersPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Předchozí
+                    {t`Předchozí`}
                   </Button>
                   <Button
                     variant="outline"
@@ -143,7 +147,7 @@ export function OrdersPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Další
+                    {t`Další`}
                   </Button>
                 </div>
               </div>
