@@ -74,4 +74,31 @@ export { Avatar, AvatarImage, AvatarFallback } from "./components/avatar";
 export { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./components/collapsible";
 export { Skeleton } from "./components/skeleton";
 export { Badge, badgeVariants } from "./components/badge";
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
+} from "./components/sidebar";
+export { useIsMobile } from "./hooks/use-mobile";
 export { cn } from "./lib/utils";
