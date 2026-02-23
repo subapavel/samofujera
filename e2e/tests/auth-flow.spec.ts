@@ -1,27 +1,32 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, login } from "./fixtures";
 
 test.describe("auth flow", () => {
-  test("register, login, view profile, logout", async ({ page }) => {
-    // Register
+  test("register new user", async ({ page }) => {
+    const unique = Date.now();
     await page.goto("/registrace");
-    await page.fill('[name="email"]', "e2e@test.com");
-    await page.fill('[name="password"]', "password123");
-    await page.fill('[name="name"]', "E2E User");
+
+    await page.fill('[name="name"]', `Test User ${unique}`);
+    await page.fill('[name="email"]', `reg-${unique}@test.com`);
+    await page.fill('[name="password"]', "TestPassword123!");
     await page.click('button[type="submit"]');
+
     await expect(page).toHaveURL(/prihlaseni/);
+  });
 
-    // Login
-    await page.fill('[name="email"]', "e2e@test.com");
-    await page.fill('[name="password"]', "password123");
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/dashboard/);
+  test("login and view profile", async ({ page, registeredUser }) => {
+    await login(page, registeredUser.email, registeredUser.password);
 
-    // View profile
-    await page.goto("/dashboard/profile");
-    await expect(page.locator("text=E2E User")).toBeVisible();
+    await page.goto("/muj-ucet/profile");
+    await expect(page.locator(`text=${registeredUser.name}`)).toBeVisible();
+  });
 
-    // Logout
-    await page.click("text=Odhlásit");
+  test("logout", async ({ page, registeredUser }) => {
+    await login(page, registeredUser.email, registeredUser.password);
+
+    // Click user menu and logout
+    await page.click('[data-testid="nav-user-trigger"]');
+    await page.click('text=Odhlásit se');
+
     await expect(page).toHaveURL(/prihlaseni/);
   });
 });
