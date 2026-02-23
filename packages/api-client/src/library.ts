@@ -2,9 +2,8 @@ import { apiFetch } from "./client";
 import type {
   ApiResponse,
   LibraryItem,
-  FileResponse,
+  ContentResponse,
   DownloadResponse,
-  StreamResponse,
   EventAccessResponse,
 } from "./types";
 
@@ -12,14 +11,9 @@ export const libraryApi = {
   getLibrary: () =>
     apiFetch<ApiResponse<LibraryItem[]>>("/api/library"),
 
-  getFiles: (productId: string) =>
-    apiFetch<ApiResponse<FileResponse[]>>(
-      `/api/library/${productId}/files`,
-    ),
-
-  getMedia: (productId: string) =>
-    apiFetch<ApiResponse<StreamResponse>>(
-      `/api/library/${productId}/media`,
+  getContent: (productId: string) =>
+    apiFetch<ApiResponse<ContentResponse[]>>(
+      `/api/library/${productId}/content`,
     ),
 
   getEvent: (productId: string) =>
@@ -27,8 +21,8 @@ export const libraryApi = {
       `/api/library/${productId}/event`,
     ),
 
-  download: (fileId: string) =>
+  download: (contentId: string) =>
     apiFetch<ApiResponse<DownloadResponse>>(
-      `/api/delivery/${fileId}/download`,
+      `/api/delivery/${contentId}/download`,
     ),
 };

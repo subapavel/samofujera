@@ -1,7 +1,7 @@
 package cz.samofujera.delivery;
 
-import cz.samofujera.catalog.CatalogDtos;
 import cz.samofujera.catalog.CatalogService;
+import cz.samofujera.catalog.ProductContentDtos;
 import cz.samofujera.delivery.internal.DownloadLogRepository;
 import cz.samofujera.delivery.internal.RateLimitService;
 import cz.samofujera.entitlement.EntitlementService;
@@ -10,7 +10,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,43 +29,31 @@ public class DeliveryService {
         this.rateLimitService = rateLimitService;
     }
 
-    public DeliveryDtos.DownloadResponse generateDownload(UUID userId, UUID fileId,
+    public DeliveryDtos.DownloadResponse generateDownload(UUID userId, UUID contentId,
                                                            String ipAddress, String userAgent) {
-        var file = catalogService.getFileById(fileId);
+        var content = catalogService.getContentById(contentId);
 
-        if (!entitlementService.hasAccess(userId, file.productId())) {
-            throw new AccessDeniedException("No access to this file");
+        if (!entitlementService.hasAccess(userId, content.productId())) {
+            throw new AccessDeniedException("No access to this content");
         }
 
         if (rateLimitService.isRateLimited(userId, 5)) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Download rate limit exceeded");
         }
 
-        var downloadUrl = catalogService.generateFileDownloadUrl(fileId, Duration.ofMinutes(15));
-        downloadLogRepository.log(userId, fileId, ipAddress, userAgent);
+        var downloadUrl = catalogService.generateContentDownloadUrl(contentId);
+        downloadLogRepository.log(userId, contentId, ipAddress, userAgent);
 
-        return new DeliveryDtos.DownloadResponse(downloadUrl, file.fileName(), file.fileSizeBytes());
+        var fileName = content.originalFilename() != null ? content.originalFilename() : content.title();
+        var fileSize = content.fileSizeBytes() != null ? content.fileSizeBytes() : 0L;
+        return new DeliveryDtos.DownloadResponse(downloadUrl, fileName, fileSize);
     }
 
-    public List<CatalogDtos.FileResponse> getEntitledFiles(UUID userId, UUID productId) {
+    public List<ProductContentDtos.ContentResponse> getEntitledContent(UUID userId, UUID productId) {
         if (!entitlementService.hasAccess(userId, productId)) {
             throw new AccessDeniedException("No access to this product");
         }
-        return catalogService.getFilesForProduct(productId);
-    }
-
-    public DeliveryDtos.StreamResponse getEntitledMedia(UUID userId, UUID productId) {
-        if (!entitlementService.hasAccess(userId, productId)) {
-            throw new AccessDeniedException("No access to this product");
-        }
-        var mediaList = catalogService.getMediaForProduct(productId);
-        var items = mediaList.stream()
-            .map(m -> new DeliveryDtos.StreamItem(
-                m.id(), m.title(), m.mediaType(), m.cfStreamUid(),
-                m.durationSeconds(), m.sortOrder()
-            ))
-            .toList();
-        return new DeliveryDtos.StreamResponse(items);
+        return catalogService.getContentForProduct(productId);
     }
 
     public DeliveryDtos.EventAccessResponse getEntitledEventAccess(UUID userId, UUID productId) {

@@ -1,6 +1,7 @@
 package cz.samofujera.delivery;
 
 import cz.samofujera.auth.UserPrincipal;
+import cz.samofujera.catalog.ProductContentDtos;
 import cz.samofujera.shared.api.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,22 +24,22 @@ public class DeliveryController {
         this.deliveryService = deliveryService;
     }
 
-    @GetMapping("/{fileId}/download")
+    @GetMapping("/{contentId}/download")
     public ResponseEntity<ApiResponse<DeliveryDtos.DownloadResponse>> download(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable UUID fileId,
+            @PathVariable UUID contentId,
             HttpServletRequest request) {
         var ipAddress = request.getRemoteAddr();
         var userAgent = request.getHeader("User-Agent");
-        var result = deliveryService.generateDownload(principal.getId(), fileId, ipAddress, userAgent);
+        var result = deliveryService.generateDownload(principal.getId(), contentId, ipAddress, userAgent);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
-    @GetMapping("/{productId}/stream")
-    public ResponseEntity<ApiResponse<DeliveryDtos.StreamResponse>> stream(
+    @GetMapping("/{productId}/content")
+    public ResponseEntity<ApiResponse<List<ProductContentDtos.ContentResponse>>> getContent(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID productId) {
-        var result = deliveryService.getEntitledMedia(principal.getId(), productId);
+        var result = deliveryService.getEntitledContent(principal.getId(), productId);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 

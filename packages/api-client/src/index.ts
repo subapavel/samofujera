@@ -8,4 +8,6 @@ export { libraryApi } from "./library";
 export { adminApi } from "./admin";
 export { imageApi } from "./images";
 export { pageAdminApi, pagePublicApi } from "./pages";
+export { productContentApi } from "./product-content";
+export type { ContentResponse as ProductContentResponse } from "./product-content";
 export type * from "./types";

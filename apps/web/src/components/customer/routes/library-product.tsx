@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { t } from "@lingui/core/macro";
-import { ArrowLeft, Download, Loader2, Play, Video } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Play, Video, FileText } from "lucide-react";
 import { libraryApi, ApiError } from "@samofujera/api-client";
 import {
   Alert,
@@ -37,15 +37,9 @@ export function LibraryProductPage() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const filesQuery = useQuery({
-    queryKey: ["library", productId, "files"],
-    queryFn: () => libraryApi.getFiles(productId),
-    enabled: Boolean(productId),
-  });
-
-  const mediaQuery = useQuery({
-    queryKey: ["library", productId, "media"],
-    queryFn: () => libraryApi.getMedia(productId),
+  const contentQuery = useQuery({
+    queryKey: ["library", productId, "content"],
+    queryFn: () => libraryApi.getContent(productId),
     enabled: Boolean(productId),
   });
 
@@ -56,7 +50,7 @@ export function LibraryProductPage() {
   });
 
   const downloadMutation = useMutation({
-    mutationFn: (fileId: string) => libraryApi.download(fileId),
+    mutationFn: (contentId: string) => libraryApi.download(contentId),
     onSuccess: (data) => {
       setErrorMessage(null);
       window.open(data.data.downloadUrl, "_blank");
@@ -78,13 +72,14 @@ export function LibraryProductPage() {
     },
   });
 
-  const files = filesQuery.data?.data ?? [];
-  const mediaItems = mediaQuery.data?.data?.items ?? [];
+  const contentItems = contentQuery.data?.data ?? [];
   const eventAccess = eventQuery.data?.data ?? null;
 
-  const isLoading =
-    filesQuery.isLoading && mediaQuery.isLoading && eventQuery.isLoading;
-  const hasFiles = files.length > 0;
+  const fileItems = contentItems.filter((c) => c.contentType === "FILE");
+  const mediaItems = contentItems.filter((c) => c.contentType === "VIDEO" || c.contentType === "AUDIO");
+
+  const isLoading = contentQuery.isLoading && eventQuery.isLoading;
+  const hasFiles = fileItems.length > 0;
   const hasMedia = mediaItems.length > 0;
   const hasEvent = eventAccess !== null;
 
@@ -123,27 +118,34 @@ export function LibraryProductPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {files.map((file) => (
+              {fileItems.map((item) => (
                 <div
-                  key={file.id}
+                  key={item.id}
                   className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-4">
-                    <Badge variant="secondary">
-                      {file.mimeType.split("/").pop()?.toUpperCase() ?? "FILE"}
-                    </Badge>
+                    <FileText className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">{file.fileName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatFileSize(file.fileSizeBytes)}
-                      </p>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <div className="flex items-center gap-2">
+                        {item.mimeType && (
+                          <Badge variant="secondary">
+                            {item.mimeType.split("/").pop()?.toUpperCase() ?? "FILE"}
+                          </Badge>
+                        )}
+                        {item.fileSizeBytes != null && (
+                          <span className="text-xs text-muted-foreground">
+                            {formatFileSize(item.fileSizeBytes)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <Button
                     size="sm"
                     disabled={downloadMutation.isPending}
-                    onClick={() => downloadMutation.mutate(file.id)}
+                    onClick={() => downloadMutation.mutate(item.id)}
                   >
                     <Download className="mr-2 h-4 w-4" />
                     {t`Stáhnout`}
@@ -162,24 +164,24 @@ export function LibraryProductPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {mediaItems.map((media) => (
+              {mediaItems.map((item) => (
                 <div
-                  key={media.id}
+                  key={item.id}
                   className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-4">
-                    {media.mediaType === "VIDEO" ? (
+                    {item.contentType === "VIDEO" ? (
                       <Video className="h-5 w-5 text-muted-foreground" />
                     ) : (
                       <Play className="h-5 w-5 text-muted-foreground" />
                     )}
                     <div>
-                      <p className="text-sm font-medium">{media.title}</p>
+                      <p className="text-sm font-medium">{item.title}</p>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline">{media.mediaType}</Badge>
-                        {media.durationSeconds != null && (
+                        <Badge variant="outline">{item.contentType}</Badge>
+                        {item.durationSeconds != null && (
                           <span className="text-xs text-muted-foreground">
-                            {formatDuration(media.durationSeconds)}
+                            {formatDuration(item.durationSeconds)}
                           </span>
                         )}
                       </div>

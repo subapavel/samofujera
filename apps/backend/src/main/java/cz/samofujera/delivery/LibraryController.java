@@ -1,7 +1,7 @@
 package cz.samofujera.delivery;
 
 import cz.samofujera.auth.UserPrincipal;
-import cz.samofujera.catalog.CatalogDtos;
+import cz.samofujera.catalog.ProductContentDtos;
 import cz.samofujera.entitlement.EntitlementDtos;
 import cz.samofujera.entitlement.EntitlementService;
 import cz.samofujera.shared.api.ApiResponse;
@@ -34,20 +34,12 @@ public class LibraryController {
         return ResponseEntity.ok(ApiResponse.ok(library));
     }
 
-    @GetMapping("/{productId}/files")
-    public ResponseEntity<ApiResponse<List<CatalogDtos.FileResponse>>> getProductFiles(
+    @GetMapping("/{productId}/content")
+    public ResponseEntity<ApiResponse<List<ProductContentDtos.ContentResponse>>> getProductContent(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID productId) {
-        var files = deliveryService.getEntitledFiles(principal.getId(), productId);
-        return ResponseEntity.ok(ApiResponse.ok(files));
-    }
-
-    @GetMapping("/{productId}/media")
-    public ResponseEntity<ApiResponse<DeliveryDtos.StreamResponse>> getProductMedia(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable UUID productId) {
-        var media = deliveryService.getEntitledMedia(principal.getId(), productId);
-        return ResponseEntity.ok(ApiResponse.ok(media));
+        var content = deliveryService.getEntitledContent(principal.getId(), productId);
+        return ResponseEntity.ok(ApiResponse.ok(content));
     }
 
     @GetMapping("/{productId}/event")

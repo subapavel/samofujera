@@ -66,8 +66,7 @@ public final class CatalogDtos {
         String metaTitle, String metaDescription, List<CategorySummary> categories,
         List<ImageResponse> images,
         List<VariantResponse> variants,
-        List<FileResponse> files,
-        List<MediaResponse> media,
+        List<ProductContentDtos.ContentResponse> content,
         EventResponse event,
         List<OccurrenceResponse> occurrences,
         OffsetDateTime createdAt, OffsetDateTime updatedAt
@@ -131,32 +130,7 @@ public final class CatalogDtos {
         @NotNull List<UUID> imageIds
     ) {}
 
-    // File DTOs (EBOOK)
-
-    public record FileResponse(
-        UUID id, String fileName, long fileSizeBytes, String mimeType, int sortOrder
-    ) {}
-
-    public record FileDetailResponse(
-        UUID id, UUID productId, String fileKey, String fileName,
-        long fileSizeBytes, String mimeType, int sortOrder
-    ) {}
-
-    // Media DTOs (AUDIO_VIDEO)
-
-    public record MediaResponse(
-        UUID id, String title, String mediaType, String cfStreamUid,
-        Integer durationSeconds, int sortOrder
-    ) {}
-
-    public record CreateMediaRequest(
-        @NotBlank @Size(max = 255) String title,
-        @NotBlank String mediaType,
-        String cfStreamUid,
-        String fileKey,
-        Integer durationSeconds,
-        int sortOrder
-    ) {}
+    // Note: File and Media DTOs replaced by ProductContentDtos
 
     // Event DTOs
 

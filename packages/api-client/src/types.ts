@@ -114,6 +114,22 @@ export interface VariantResponse {
   prices: Record<string, number>;
 }
 
+export interface ContentResponse {
+  id: string;
+  productId: string;
+  contentType: string;
+  title: string;
+  isPreview: boolean;
+  originalFilename: string | null;
+  mimeType: string | null;
+  fileSizeBytes: number | null;
+  streamUid: string | null;
+  durationSeconds: number | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
+/** @deprecated Use ContentResponse instead */
 export interface FileResponse {
   id: string;
   fileName: string;
@@ -122,6 +138,7 @@ export interface FileResponse {
   sortOrder: number;
 }
 
+/** @deprecated Use ContentResponse instead */
 export interface MediaResponse {
   id: string;
   title: string;
@@ -160,8 +177,7 @@ export interface ProductImageResponse {
 export interface ProductDetailResponse extends ProductResponse {
   images: ProductImageResponse[];
   variants: VariantResponse[] | null;
-  files: FileResponse[] | null;
-  media: MediaResponse[] | null;
+  content: ContentResponse[] | null;
   event: EventResponse | null;
   occurrences: OccurrenceResponse[] | null;
 }

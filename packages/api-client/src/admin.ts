@@ -14,10 +14,7 @@ import type {
   OrderResponse,
   ShippingResponse,
   UpdateShippingRequest,
-  FileResponse,
   ProductImageResponse,
-  MediaResponse,
-  CreateMediaRequest,
   VariantResponse,
 } from "./types";
 
@@ -118,48 +115,6 @@ export const adminApi = {
   deleteVariant: (productId: string, variantId: string) =>
     apiFetch<void>(
       `/api/admin/products/${productId}/variants/${variantId}`,
-      { method: "DELETE" },
-    ),
-
-  // Files (EBOOK)
-
-  uploadFile: (productId: string, file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return apiFetch<ApiResponse<FileResponse>>(
-      `/api/admin/products/${productId}/files`,
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-  },
-
-  deleteFile: (productId: string, fileId: string) =>
-    apiFetch<void>(
-      `/api/admin/products/${productId}/files/${fileId}`,
-      { method: "DELETE" },
-    ),
-
-  // Media (AUDIO_VIDEO)
-
-  getMedia: (productId: string) =>
-    apiFetch<ApiResponse<MediaResponse[]>>(
-      `/api/admin/products/${productId}/media`,
-    ),
-
-  createMedia: (productId: string, data: CreateMediaRequest) =>
-    apiFetch<ApiResponse<MediaResponse>>(
-      `/api/admin/products/${productId}/media`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      },
-    ),
-
-  deleteMedia: (productId: string, mediaId: string) =>
-    apiFetch<void>(
-      `/api/admin/products/${productId}/media/${mediaId}`,
       { method: "DELETE" },
     ),
 

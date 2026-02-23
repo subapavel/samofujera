@@ -112,50 +112,28 @@ export function ProductDetail({ slug }: { slug: string }) {
             </div>
           )}
 
-          {/* EBOOK: File list preview */}
-          {product.productType === "EBOOK" && product.files && product.files.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">{t`Soubory ke stažení`}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="divide-y divide-[var(--border)]">
-                  {product.files.map((file) => (
-                    <li key={file.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-                      <span className="text-[var(--muted-foreground)]">{"\u{1F4C4}"}</span>
-                      <div>
-                        <p className="text-sm font-medium">{file.fileName}</p>
-                        <p className="text-xs text-[var(--muted-foreground)]">
-                          {file.mimeType} &middot; {formatFileSize(file.fileSizeBytes)}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* AUDIO_VIDEO: Media list preview */}
-          {product.productType === "AUDIO_VIDEO" && product.media && product.media.length > 0 && (
+          {/* Content preview (files, audio, video) */}
+          {product.content && product.content.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">{t`Obsah`}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="divide-y divide-[var(--border)]">
-                  {product.media.map((media) => (
-                    <li key={media.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                  {product.content.map((item) => (
+                    <li key={item.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                       <span className="text-[var(--muted-foreground)]">
-                        {media.mediaType === "VIDEO" ? "\u{1F3AC}" : "\u{1F3B5}"}
+                        {item.contentType === "VIDEO" ? "\u{1F3AC}" : item.contentType === "AUDIO" ? "\u{1F3B5}" : "\u{1F4C4}"}
                       </span>
                       <div>
-                        <p className="text-sm font-medium">{media.title}</p>
-                        {media.durationSeconds != null && (
-                          <p className="text-xs text-[var(--muted-foreground)]">
-                            {formatDuration(media.durationSeconds)}
-                          </p>
-                        )}
+                        <p className="text-sm font-medium">{item.title}</p>
+                        <p className="text-xs text-[var(--muted-foreground)]">
+                          {item.contentType === "FILE" && item.mimeType && item.fileSizeBytes != null
+                            ? `${item.mimeType} \u00b7 ${formatFileSize(item.fileSizeBytes)}`
+                            : item.durationSeconds != null
+                              ? formatDuration(item.durationSeconds)
+                              : null}
+                        </p>
                       </div>
                     </li>
                   ))}

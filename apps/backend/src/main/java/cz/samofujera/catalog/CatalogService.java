@@ -7,9 +7,7 @@ import cz.samofujera.shared.storage.StorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -20,40 +18,40 @@ public class CatalogService {
     private final ProductPriceRepository productPriceRepository;
     private final ProductVariantRepository productVariantRepository;
     private final VariantPriceRepository variantPriceRepository;
-    private final ProductFileRepository productFileRepository;
-    private final ProductMediaRepository productMediaRepository;
+    private final ProductContentRepository productContentRepository;
     private final ProductGalleryRepository galleryRepository;
     private final EventRepository eventRepository;
     private final EventOccurrenceRepository eventOccurrenceRepository;
     private final StorageService storageService;
     private final ProductCategoryAssignmentRepository assignmentRepository;
     private final ImageService imageService;
+    private final ProductContentService productContentService;
 
     CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
                    ProductPriceRepository productPriceRepository,
                    ProductVariantRepository productVariantRepository,
                    VariantPriceRepository variantPriceRepository,
-                   ProductFileRepository productFileRepository,
-                   ProductMediaRepository productMediaRepository,
+                   ProductContentRepository productContentRepository,
                    ProductGalleryRepository galleryRepository,
                    EventRepository eventRepository,
                    EventOccurrenceRepository eventOccurrenceRepository,
                    StorageService storageService,
                    ProductCategoryAssignmentRepository assignmentRepository,
-                   ImageService imageService) {
+                   ImageService imageService,
+                   ProductContentService productContentService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.productPriceRepository = productPriceRepository;
         this.productVariantRepository = productVariantRepository;
         this.variantPriceRepository = variantPriceRepository;
-        this.productFileRepository = productFileRepository;
-        this.productMediaRepository = productMediaRepository;
+        this.productContentRepository = productContentRepository;
         this.galleryRepository = galleryRepository;
         this.eventRepository = eventRepository;
         this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.storageService = storageService;
         this.assignmentRepository = assignmentRepository;
         this.imageService = imageService;
+        this.productContentService = productContentService;
     }
 
     // --- Category methods ---
@@ -274,89 +272,18 @@ public class CatalogService {
         return variantPriceRepository.findByVariantIdAndCurrency(variantId, currency);
     }
 
-    // --- File methods (EBOOK) ---
+    // --- Content methods (unified files + media) ---
 
-    public CatalogDtos.FileDetailResponse getFileById(UUID fileId) {
-        var file = productFileRepository.findById(fileId)
-            .orElseThrow(() -> new NotFoundException("File not found"));
-        return new CatalogDtos.FileDetailResponse(
-            file.id(), file.productId(), file.fileKey(), file.fileName(),
-            file.fileSizeBytes(), file.mimeType(), file.sortOrder()
-        );
+    public ProductContentDtos.ContentResponse getContentById(UUID contentId) {
+        return productContentService.getContentById(contentId);
     }
 
-    public String generateFileDownloadUrl(UUID fileId, Duration ttl) {
-        var file = productFileRepository.findById(fileId)
-            .orElseThrow(() -> new NotFoundException("File not found"));
-        return storageService.generatePresignedUrl(file.fileKey(), ttl);
+    public String generateContentDownloadUrl(UUID contentId) {
+        return productContentService.generateDownloadUrl(contentId);
     }
 
-    @Transactional
-    public CatalogDtos.FileResponse uploadFile(UUID productId, String fileName, String mimeType,
-                                                 long fileSize, InputStream inputStream) {
-        productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Product not found"));
-
-        var fileKey = "products/" + productId + "/" + UUID.randomUUID() + "/" + fileName;
-        var sortOrder = productFileRepository.countByProductId(productId);
-
-        storageService.upload(fileKey, inputStream, fileSize, mimeType);
-
-        var fileId = productFileRepository.create(productId, fileKey, fileName, fileSize, mimeType, sortOrder);
-        var created = productFileRepository.findById(fileId)
-            .orElseThrow(() -> new NotFoundException("File not found"));
-
-        return toFileResponse(created);
-    }
-
-    @Transactional
-    public void deleteFile(UUID productId, UUID fileId) {
-        var file = productFileRepository.findById(fileId)
-            .orElseThrow(() -> new NotFoundException("File not found"));
-        if (!file.productId().equals(productId)) {
-            throw new IllegalArgumentException("File does not belong to product");
-        }
-        storageService.delete(file.fileKey());
-        productFileRepository.delete(fileId);
-    }
-
-    public List<CatalogDtos.FileResponse> getFilesForProduct(UUID productId) {
-        return productFileRepository.findByProductId(productId).stream()
-            .map(this::toFileResponse)
-            .toList();
-    }
-
-    // --- Media methods (AUDIO_VIDEO) ---
-
-    @Transactional
-    public CatalogDtos.MediaResponse createMedia(UUID productId, CatalogDtos.CreateMediaRequest request) {
-        productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Product not found"));
-
-        var mediaId = productMediaRepository.create(
-            productId, request.title(), request.mediaType(),
-            request.cfStreamUid(), request.fileKey(),
-            request.durationSeconds(), request.sortOrder()
-        );
-        var created = productMediaRepository.findById(mediaId)
-            .orElseThrow(() -> new NotFoundException("Media not found"));
-        return toMediaResponse(created);
-    }
-
-    @Transactional
-    public void deleteMedia(UUID productId, UUID mediaId) {
-        var media = productMediaRepository.findById(mediaId)
-            .orElseThrow(() -> new NotFoundException("Media not found"));
-        if (!media.productId().equals(productId)) {
-            throw new IllegalArgumentException("Media does not belong to product");
-        }
-        productMediaRepository.delete(mediaId);
-    }
-
-    public List<CatalogDtos.MediaResponse> getMediaForProduct(UUID productId) {
-        return productMediaRepository.findByProductId(productId).stream()
-            .map(this::toMediaResponse)
-            .toList();
+    public List<ProductContentDtos.ContentResponse> getContentForProduct(UUID productId) {
+        return productContentService.getContentForProduct(productId);
     }
 
     // --- Event methods ---
@@ -579,8 +506,10 @@ public class CatalogService {
             .toList();
         var images = getImagesForProduct(product.id());
         var variants = "PHYSICAL".equals(product.productType()) ? getVariantsForProduct(product.id()) : null;
-        var files = "EBOOK".equals(product.productType()) ? getFilesForProduct(product.id()) : null;
-        var media = "AUDIO_VIDEO".equals(product.productType()) ? getMediaForProduct(product.id()) : null;
+
+        // Unified content for EBOOK and AUDIO_VIDEO product types
+        var hasContent = "EBOOK".equals(product.productType()) || "AUDIO_VIDEO".equals(product.productType());
+        var content = hasContent ? getContentForProduct(product.id()) : null;
 
         CatalogDtos.EventResponse eventResp = null;
         List<CatalogDtos.OccurrenceResponse> occurrenceResps = null;
@@ -599,7 +528,7 @@ public class CatalogService {
             product.shortDescription(), product.productType(), prices,
             product.status(), product.thumbnailUrl(),
             product.metaTitle(), product.metaDescription(), categories,
-            images, variants, files, media, eventResp, occurrenceResps,
+            images, variants, content, eventResp, occurrenceResps,
             product.createdAt(), product.updatedAt()
         );
     }
@@ -612,19 +541,6 @@ public class CatalogService {
             row.productType(), prices, row.status(), row.thumbnailUrl(),
             row.metaTitle(), row.metaDescription(), categories,
             row.createdAt(), row.updatedAt()
-        );
-    }
-
-    private CatalogDtos.FileResponse toFileResponse(ProductFileRepository.FileRow row) {
-        return new CatalogDtos.FileResponse(
-            row.id(), row.fileName(), row.fileSizeBytes(), row.mimeType(), row.sortOrder()
-        );
-    }
-
-    private CatalogDtos.MediaResponse toMediaResponse(ProductMediaRepository.MediaRow row) {
-        return new CatalogDtos.MediaResponse(
-            row.id(), row.title(), row.mediaType(), row.cfStreamUid(),
-            row.durationSeconds(), row.sortOrder()
         );
     }
 

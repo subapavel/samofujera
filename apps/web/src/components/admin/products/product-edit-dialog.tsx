@@ -13,13 +13,12 @@ import { Loader2 } from "lucide-react";
 import { adminApi, catalogApi, imageApi } from "@samofujera/api-client";
 import type {
   ProductType,
-  FileResponse,
-  MediaResponse,
   ProductImageResponse,
   VariantResponse,
   CreateVariantRequest,
   CategoryResponse,
 } from "@samofujera/api-client";
+import { ProductContentTab } from "./product-content-tab";
 import {
   Button,
   Input,
@@ -38,11 +37,6 @@ import {
   TabsTrigger,
   TabsContent,
   Textarea,
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
   Checkbox,
   Table,
   TableHeader,
@@ -59,7 +53,7 @@ import {
 } from "@samofujera/ui";
 import { ImagePicker } from "../images/ImagePicker";
 import type { ImagePickerResult } from "../images/ImagePicker";
-import { formatFileSize } from "../images/format-file-size";
+
 
 function slugify(text: string): string {
   return text
@@ -529,270 +523,6 @@ function VariantsTab({
   );
 }
 
-// ---- Files Tab (EBOOK) ----
-
-function FilesTab({
-  productId,
-  files,
-  onInvalidate,
-}: {
-  productId: string;
-  files: FileResponse[];
-  onInvalidate: () => Promise<void>;
-}) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const uploadFileMutation = useMutation({
-    mutationFn: (file: File) => adminApi.uploadFile(productId, file),
-    onSuccess: async () => {
-      await onInvalidate();
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    },
-  });
-
-  const deleteFileMutation = useMutation({
-    mutationFn: (fileId: string) => adminApi.deleteFile(productId, fileId),
-    onSuccess: onInvalidate,
-  });
-
-  function handleUploadFile() {
-    const file = fileInputRef.current?.files?.[0];
-    if (file) uploadFileMutation.mutate(file);
-  }
-
-  function handleDeleteFile(file: FileResponse) {
-    if (window.confirm(t`Opravdu chcete smazat soubor "${file.fileName}"?`)) {
-      deleteFileMutation.mutate(file.id);
-    }
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t`Soubory ke stažení`}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {files.length > 0 ? (
-          <div className="mb-4 space-y-2">
-            {files.map((file) => (
-              <div
-                key={file.id}
-                className="flex items-center justify-between rounded-md border border-[var(--border)] p-3"
-              >
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium">{file.fileName}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">
-                    {file.mimeType} &middot; {formatFileSize(file.fileSizeBytes)}
-                  </p>
-                </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={deleteFileMutation.isPending}
-                  onClick={() => handleDeleteFile(file)}
-                >
-                  {t`Smazat`}
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-            {t`Žádné nahrané soubory.`}
-          </p>
-        )}
-
-        <div className="flex items-end gap-3">
-          <div className="flex-1">
-            <Label htmlFor="fileUpload">{t`Nahrát soubor`}</Label>
-            <input
-              ref={fileInputRef}
-              id="fileUpload"
-              type="file"
-              className="block w-full text-sm text-[var(--muted-foreground)] file:mr-2 file:rounded-md file:border-0 file:bg-[var(--primary)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-[var(--primary-foreground)]"
-            />
-          </div>
-          <Button
-            type="button"
-            onClick={handleUploadFile}
-            disabled={uploadFileMutation.isPending}
-          >
-            {uploadFileMutation.isPending ? t`Nahrávám...` : t`Nahrát`}
-          </Button>
-        </div>
-
-        {uploadFileMutation.isError && (
-          <p className="mt-2 text-sm text-[var(--destructive)]">
-            {t`Nepodařilo se nahrát soubor. Zkuste to prosím znovu.`}
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ---- Media Tab (AUDIO_VIDEO) ----
-
-function MediaTab({
-  productId,
-  mediaItems,
-  onInvalidate,
-}: {
-  productId: string;
-  mediaItems: MediaResponse[];
-  onInvalidate: () => Promise<void>;
-}) {
-  const [mediaTitle, setMediaTitle] = useState("");
-  const [mediaType, setMediaType] = useState<"VIDEO" | "AUDIO">("VIDEO");
-  const [cfStreamUid, setCfStreamUid] = useState("");
-  const [mediaSortOrder, setMediaSortOrder] = useState("0");
-
-  const createMediaMutation = useMutation({
-    mutationFn: () =>
-      adminApi.createMedia(productId, {
-        title: mediaTitle,
-        mediaType,
-        cfStreamUid: cfStreamUid || undefined,
-        sortOrder: Number(mediaSortOrder),
-      }),
-    onSuccess: async () => {
-      await onInvalidate();
-      setMediaTitle("");
-      setCfStreamUid("");
-      setMediaSortOrder("0");
-    },
-  });
-
-  const deleteMediaMutation = useMutation({
-    mutationFn: (mediaId: string) => adminApi.deleteMedia(productId, mediaId),
-    onSuccess: onInvalidate,
-  });
-
-  function handleCreateMedia(event: React.FormEvent) {
-    event.preventDefault();
-    createMediaMutation.mutate();
-  }
-
-  function handleDeleteMedia(media: MediaResponse) {
-    if (window.confirm(t`Opravdu chcete smazat "${media.title}"?`)) {
-      deleteMediaMutation.mutate(media.id);
-    }
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t`Média`}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {mediaItems.length > 0 ? (
-          <div className="mb-4 space-y-2">
-            {mediaItems.map((media) => (
-              <div
-                key={media.id}
-                className="flex items-center justify-between rounded-md border border-[var(--border)] p-3"
-              >
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium">{media.title}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">
-                    {media.mediaType}
-                    {media.durationSeconds != null &&
-                      ` \u00b7 ${Math.floor(media.durationSeconds / 60)}:${String(media.durationSeconds % 60).padStart(2, "0")}`}
-                    {media.cfStreamUid && ` \u00b7 CF: ${media.cfStreamUid.slice(0, 8)}...`}
-                  </p>
-                </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={deleteMediaMutation.isPending}
-                  onClick={() => handleDeleteMedia(media)}
-                >
-                  {t`Smazat`}
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-            {t`Žádná přidaná média.`}
-          </p>
-        )}
-
-        <form onSubmit={handleCreateMedia} className="space-y-3 rounded-md border border-[var(--border)] p-4">
-          <p className="text-sm font-medium">{t`Přidat médium`}</p>
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <Label htmlFor="mediaTitle" className="text-xs">
-                {t`Název`}
-              </Label>
-              <Input
-                id="mediaTitle"
-                value={mediaTitle}
-                onChange={(e) => setMediaTitle(e.target.value)}
-                required
-                disabled={createMediaMutation.isPending}
-              />
-            </div>
-            <div className="w-32">
-              <Label htmlFor="mediaType" className="text-xs">
-                {t`Typ`}
-              </Label>
-              <Select
-                value={mediaType}
-                onValueChange={(value) => setMediaType(value as "VIDEO" | "AUDIO")}
-                disabled={createMediaMutation.isPending}
-              >
-                <SelectTrigger id="mediaType">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="VIDEO">{t`Video`}</SelectItem>
-                  <SelectItem value="AUDIO">{t`Audio`}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <Label htmlFor="cfStreamUid" className="text-xs">
-                CF Stream UID
-              </Label>
-              <Input
-                id="cfStreamUid"
-                value={cfStreamUid}
-                onChange={(e) => setCfStreamUid(e.target.value)}
-                placeholder={t`volitelné`}
-                disabled={createMediaMutation.isPending}
-              />
-            </div>
-            <div className="w-24">
-              <Label htmlFor="mediaSortOrder" className="text-xs">
-                {t`Pořadí`}
-              </Label>
-              <Input
-                id="mediaSortOrder"
-                type="number"
-                min="0"
-                value={mediaSortOrder}
-                onChange={(e) => setMediaSortOrder(e.target.value)}
-                disabled={createMediaMutation.isPending}
-              />
-            </div>
-          </div>
-          <Button type="submit" size="sm" disabled={createMediaMutation.isPending}>
-            {createMediaMutation.isPending ? t`Přidávám...` : t`Přidat médium`}
-          </Button>
-          {createMediaMutation.isError && (
-            <p className="text-sm text-[var(--destructive)]">
-              {t`Nepodařilo se přidat médium.`}
-            </p>
-          )}
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
-
 // ---- Dialog ----
 
 interface ProductEditDialogProps {
@@ -910,8 +640,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
   const isPending = updateMutation.isPending;
 
   const showVariantsTab = product?.productType === "PHYSICAL";
-  const showFilesTab = product?.productType === "EBOOK";
-  const showMediaTab = product?.productType === "AUDIO_VIDEO";
+  const showContentTab = product?.productType === "EBOOK" || product?.productType === "AUDIO_VIDEO";
 
   const typeLabel = product
     ? PRODUCT_TYPES.find((pt) => pt.value === product.productType)
@@ -942,8 +671,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
               <TabsTrigger value="info">{t`Základní info`}</TabsTrigger>
               <TabsTrigger value="gallery">{t`Galerie`}</TabsTrigger>
               {showVariantsTab && <TabsTrigger value="variants">{t`Varianty`}</TabsTrigger>}
-              {showFilesTab && <TabsTrigger value="files">{t`Soubory`}</TabsTrigger>}
-              {showMediaTab && <TabsTrigger value="media">{t`Média`}</TabsTrigger>}
+              {showContentTab && <TabsTrigger value="content">{t`Obsah`}</TabsTrigger>}
               <TabsTrigger value="seo">SEO</TabsTrigger>
             </TabsList>
 
@@ -1129,21 +857,11 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
               </TabsContent>
             )}
 
-            {showFilesTab && (
-              <TabsContent value="files">
-                <FilesTab
+            {showContentTab && (
+              <TabsContent value="content">
+                <ProductContentTab
                   productId={productId!}
-                  files={product.files ?? []}
-                  onInvalidate={invalidateProduct}
-                />
-              </TabsContent>
-            )}
-
-            {showMediaTab && (
-              <TabsContent value="media">
-                <MediaTab
-                  productId={productId!}
-                  mediaItems={product.media ?? []}
+                  contentItems={product.content ?? []}
                   onInvalidate={invalidateProduct}
                 />
               </TabsContent>
