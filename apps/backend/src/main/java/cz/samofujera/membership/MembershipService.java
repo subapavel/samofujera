@@ -197,26 +197,23 @@ public class MembershipService {
     }
 
     /**
-     * Check if user has a specific feature through their active subscription plan.
-     * Features JSONB keys map to entity types (e.g. "articles", "video_library").
-     * Values can be "all", true, or specific config.
+     * Get the features JSONB map from the user's active subscription plan.
+     * Returns null if the user has no active subscription.
+     * Used by AccessChecker for Layer 2 access checks.
      */
-    public boolean hasFeature(UUID userId, String featureKey) {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getActiveSubscriptionFeatures(UUID userId) {
         var sub = subscriptionRepository.findActiveByUserId(userId);
-        if (sub == null) return false;
+        if (sub == null) return null;
 
         var plan = planRepository.findById(sub.planId());
-        if (plan == null || plan.features() == null) return false;
+        if (plan == null || plan.features() == null) return null;
 
         if (plan.features() instanceof Map<?, ?> featuresMap) {
-            var value = featuresMap.get(featureKey);
-            if (value == null) return false;
-            if (value instanceof Boolean b) return b;
-            if ("all".equals(value) || "true".equals(value)) return true;
-            return value != null;
+            return (Map<String, Object>) featuresMap;
         }
 
-        return false;
+        return null;
     }
 
     public Object getPlanFeatures(UUID planId) {
