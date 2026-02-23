@@ -13,95 +13,1348 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#. Form labels
-msgid "auth.label.email"
-msgstr ""
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "{type}"
+msgstr "{type}"
 
-msgid "auth.label.password"
-msgstr ""
+#: ../../apps/web/src/components/dashboard/app-sidebar.tsx
+msgid "Administrace"
+msgstr "Administrácia"
 
-msgid "auth.label.name"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Akce"
+msgstr "Akcie"
 
-msgid "auth.label.newPassword"
-msgstr ""
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+msgid "Aktivní sezení"
+msgstr "Aktívne relácie"
 
-#. Button labels
-msgid "auth.button.login"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Aktualizováno"
+msgstr "Aktualizované"
 
-msgid "auth.button.register"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Alt text"
+msgstr "Alt text"
 
-msgid "auth.button.logout"
-msgstr ""
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Ano, přihlásit se zde"
+msgstr "Áno, prihlásiť sa tu"
 
-msgid "auth.button.resetPassword"
-msgstr ""
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Ano, smazat účet"
+msgstr "Áno, zmazať účet"
 
-msgid "auth.button.deleteAccount"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Archivováno"
+msgstr "Archivované"
 
-#. Validation errors
-msgid "auth.validation.invalidEmail"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Audio"
+msgstr "Audio"
 
-msgid "auth.validation.passwordMinLength"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "Audio/Video"
+msgstr "Audio/Video"
 
-msgid "auth.validation.requiredField"
-msgstr ""
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Budete přesměrováni na bezpečnou platební bránu Stripe"
+msgstr "Budete presmerovaní na bezpečnú platobnú bránu Stripe"
 
-#. Success messages
-msgid "auth.success.registration"
-msgstr ""
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Čeká na platbu"
+msgstr "Čaká na platbu"
 
-msgid "auth.success.passwordResetSent"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Čekající"
+msgstr "Čakajúci"
 
-#. Error messages
-msgid "auth.error.invalidCredentials"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Celkem"
+msgstr "Celkom"
 
-msgid "auth.error.emailAlreadyExists"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Cena"
+msgstr "Cena"
 
-#. Page titles
-msgid "auth.page.login"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Ceny"
+msgstr "Ceny"
 
-msgid "auth.page.register"
-msgstr ""
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Chcete se přihlásit zde a odhlásit druhé zařízení?"
+msgstr "Chcete sa prihlásiť tu a odhlásiť druhé zariadenie?"
 
-msgid "auth.page.forgotPassword"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Číslo zásilky"
+msgstr "Číslo zásielky"
 
-msgid "auth.page.resetPassword"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Další"
+msgstr "Ďalší"
 
-#. Navigation
-msgid "auth.nav.dashboard"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Datum"
+msgstr "Dátum"
 
-msgid "auth.nav.profile"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Detail"
+msgstr "Detail"
 
-msgid "auth.nav.activeSessions"
-msgstr ""
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Detail objednávky"
+msgstr "Detail objednávky"
 
-msgid "auth.nav.deleteAccount"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Digitální"
+msgstr "Digitálny"
 
-#. Session management
-msgid "auth.session.activeDevices"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Digitální soubory ke stažení"
+msgstr "Digitálne súbory na stiahnutie"
 
-msgid "auth.session.revokeAccess"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Dokumenty"
+msgstr "Dokumenty"
 
-#. Account deletion
-msgid "auth.delete.confirmation"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Doprava"
+msgstr "Doprava"
 
-msgid "auth.delete.passwordPrompt"
-msgstr ""
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Dopravce"
+msgstr "Dopravca"
+
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Doručení"
+msgstr "Doručenie"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Doručeno"
+msgstr "Doručené"
+
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Draft"
+msgstr "Draft"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "E-book"
+msgstr "E-book"
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "E-mail"
+msgstr "E-mail"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "E-mail odeslán"
+msgstr "E-mail odoslaný"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Fyzický"
+msgstr "Fyzický"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "Fyzický produkt"
+msgstr "Fyzický produkt"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Galerie"
+msgstr "Galéria"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Galerie obrázků"
+msgstr "Galéria obrázkov"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Heslo"
+msgstr "Heslo"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Hledat..."
+msgstr "Hľadať..."
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Hmotný produkt s variantami a skladem"
+msgstr "Hmotný produkt s variantmi a skladom"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Informace o objednávce"
+msgstr "Informácie o objednávke"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Jan Novák"
+msgstr "Ján Novák"
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Jednorázová online událost"
+msgstr "Jednorazová online udalosť"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Jednotková cena"
+msgstr "Jednotková cena"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "jiné zařízení"
+msgstr "iné zariadenie"
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Jméno"
+msgstr "Meno"
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "K tomuto produktu nemáte přístup."
+msgstr "K tomuto produktu nemáte prístup."
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/catalog/CategoryFilter.tsx
+#: ../../apps/web/src/components/catalog/CategoryFilter.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Kategorie"
+msgstr "Kategórie"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Kategorie byla úspěšně uložena."
+msgstr "Kategória bola úspešne uložená."
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Kategorie nenalezena."
+msgstr "Kategória nenájdená."
+
+#: ../../apps/web/src/components/customer/routes/library.tsx
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+msgid "Knihovna"
+msgstr "Knižnica"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Koncept"
+msgstr "Koncept"
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Koupit"
+msgstr "Kúpiť"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Krátký popis"
+msgstr "Krátky popis"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Máte aktivní sezení na zařízení:"
+msgstr "Máte aktívnu reláciu na zariadení:"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Mazání..."
+msgstr "Mazanie..."
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Média"
+msgstr "Médiá"
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Měna"
+msgstr "Mena"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Meta popis"
+msgstr "Meta popis"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Meta titulek"
+msgstr "Meta titulok"
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Místo"
+msgstr "Miesto"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Množství"
+msgstr "Množstvo"
+
+#: ../../apps/web/src/components/dashboard/app-sidebar.tsx
+msgid "Můj účet"
+msgstr "Môj účet"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Načítání kategorie..."
+msgstr "Načítavanie kategórie..."
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Načítání kategorií..."
+msgstr "Načítavanie kategórií..."
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Načítání objednávek..."
+msgstr "Načítavanie objednávok..."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Načítání objednávky..."
+msgstr "Načítavanie objednávky..."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Načítání produktu..."
+msgstr "Načítavanie produktu..."
+
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Načítání produktů..."
+msgstr "Načítavanie produktov..."
+
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Načítání profilu..."
+msgstr "Načítavanie profilu..."
+
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+msgid "Načítání sezení..."
+msgstr "Načítavanie relácií..."
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Načítání stránek..."
+msgstr "Načítavanie stránok..."
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Načítání..."
+msgstr "Načítavanie..."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nahrát"
+msgstr "Nahrať"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nahrát obrázek"
+msgstr "Nahrať obrázok"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nahrát soubor"
+msgstr "Nahrať súbor"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Nahrát soubory"
+msgstr "Nahrať súbory"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nahrávám..."
+msgstr "Nahrávam..."
+
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+msgid "Nákupy"
+msgstr "Nákupy"
+
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Nastavit nové heslo"
+msgstr "Nastaviť nové heslo"
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Nástěnka"
+msgstr "Nástenka"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Název"
+msgstr "Názov"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Název stránky"
+msgstr "Názov stránky"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Nemáte účet?"
+msgstr "Nemáte účet?"
+
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Neplatný nebo chybějící odkaz pro obnovení hesla."
+msgstr "Neplatný alebo chýbajúci odkaz na obnovenie hesla."
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Nepodařilo se načíst kategorie. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať kategórie. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Nepodařilo se načíst kategorii. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať kategóriu. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/customer/routes/library.tsx
+msgid "Nepodařilo se načíst knihovnu. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať knižnicu. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Nepodařilo se načíst objednávku. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať objednávku. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Nepodařilo se načíst objednávky. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať objednávky. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nepodařilo se načíst produkt. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať produkt. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/CatalogContent.tsx
+msgid "Nepodařilo se načíst produkty. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať produkty. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Nepodařilo se načíst profil. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať profil. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+msgid "Nepodařilo se načíst sezení. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať relácie. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Nepodařilo se načíst soubory. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať súbory. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Nepodařilo se načíst stránky. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa načítať stránky. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nepodařilo se nahrát soubor. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa nahrať súbor. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nepodařilo se přidat médium."
+msgstr "Nepodarilo sa pridať médium."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Nepodařilo se přidat obrázek. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa pridať obrázok. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Nepodařilo se smazat účet. Zkontrolujte heslo a zkuste to znovu."
+msgstr "Nepodarilo sa zmazať účet. Skontrolujte heslo a skúste to znova."
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Nepodařilo se stáhnout soubor. Zkuste to znovu."
+msgstr "Nepodarilo sa stiahnuť súbor. Skúste to znova."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Nepodařilo se uložit údaje o dopravě."
+msgstr "Nepodarilo sa uložiť údaje o doprave."
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Nepodařilo se uložit změny. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa uložiť zmeny. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Nepodařilo se vytvořit kategorii. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa vytvoriť kategóriu. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Nepodařilo se vytvořit objednávku. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa vytvoriť objednávku. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Nepodařilo se vytvořit produkt. Zkuste to prosím znovu."
+msgstr "Nepodarilo sa vytvoriť produkt. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Nepřiřazeno"
+msgstr "Nepriradené"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Nesprávný e-mail nebo heslo."
+msgstr "Nesprávny e-mail alebo heslo."
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Nová kategorie"
+msgstr "Nová kategória"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Nová stránka"
+msgstr "Nová stránka"
+
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Nové heslo"
+msgstr "Nové heslo"
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Nový produkt"
+msgstr "Nový produkt"
+
+#: ../../apps/web/src/components/catalog/CatalogContent.tsx
+msgid "Obchod"
+msgstr "Obchod"
+
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Obecné"
+msgstr "Všeobecné"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Objednávka"
+msgstr "Objednávka"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Objednávka nenalezena."
+msgstr "Objednávka nenájdená."
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Objednávky"
+msgstr "Objednávky"
+
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Obnovení hesla"
+msgstr "Obnovenie hesla"
+
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Obnovení hesla se nezdařilo. Zkuste to prosím znovu."
+msgstr "Obnovenie hesla sa nepodarilo. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Obrázek"
+msgstr "Obrázok"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Obrázky"
+msgstr "Obrázky"
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Obsah"
+msgstr "Obsah"
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Obsah produktu"
+msgstr "Obsah produktu"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "Odesílám..."
+msgstr "Odosielam..."
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "Odeslání se nezdařilo. Zkuste to prosím znovu."
+msgstr "Odoslanie sa nepodarilo. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Odesláno"
+msgstr "Odoslané"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "Odeslat odkaz"
+msgstr "Odoslať odkaz"
+
+#: ../../apps/web/src/components/dashboard/nav-user.tsx
+msgid "Odhlásit se"
+msgstr "Odhlásiť sa"
+
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+msgid "Odvolat"
+msgstr "Odvolať"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "Offline událost"
+msgstr "Offline udalosť"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "Online událost"
+msgstr "Online udalosť"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/catalog/utils.ts
+msgid "Opakovaná událost"
+msgstr "Opakovaná udalosť"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Operace se nezdařila. Zkuste to prosím znovu."
+msgstr "Operácia sa nepodarila. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Opravdu chcete odebrat tento obrázek z galerie?"
+msgstr "Naozaj chcete odstrániť tento obrázok z galérie?"
+
+#. placeholder {0}: media.title
+#. placeholder {0}: selectedItem.originalFilename
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Opravdu chcete smazat \"{0}\"?"
+msgstr "Naozaj chcete zmazať \"{0}\"?"
+
+#. placeholder {0}: cat.name
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Opravdu chcete smazat kategorii \"{0}\"?"
+msgstr "Naozaj chcete zmazať kategóriu \"{0}\"?"
+
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Opravdu chcete smazat produkt \"{title}\"?"
+msgstr "Naozaj chcete zmazať produkt \"{title}\"?"
+
+#. placeholder {0}: file.fileName
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Opravdu chcete smazat soubor \"{0}\"?"
+msgstr "Naozaj chcete zmazať súbor \"{0}\"?"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Opravdu chcete smazat stránku \"{title}\"?"
+msgstr "Naozaj chcete zmazať stránku \"{title}\"?"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Opravdu chcete smazat svůj účet?"
+msgstr "Naozaj chcete zmazať svoj účet?"
+
+#. placeholder {0}: row.name
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Opravdu chcete smazat variantu \"{0}\"?"
+msgstr "Naozaj chcete zmazať variant \"{0}\"?"
+
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Osobní údaje"
+msgstr "Osobné údaje"
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Otevřít stream"
+msgstr "Otvoriť stream"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "Pokud účet s tímto e-mailem existuje, odeslali jsme vám odkaz pro obnovení hesla. Zkontrolujte svou e-mailovou schránku."
+msgstr "Ak účet s týmto e-mailom existuje, odoslali sme vám odkaz na obnovenie hesla. Skontrolujte svoju e-mailovú schránku."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Položky"
+msgstr "Položky"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Popis"
+msgstr "Popis"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Pořadí"
+msgstr "Poradie"
+
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+msgid "Poslední aktivita"
+msgstr "Posledná aktivita"
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Pravidelně se opakující událost"
+msgstr "Pravidelne sa opakujúca udalosť"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Prázdná stránka"
+msgstr "Prázdna stránka"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Předchozí"
+msgstr "Predchádzajúci"
+
+#: ../../apps/web/src/components/dashboard/theme-switch.tsx
+msgid "Přepnout téma"
+msgstr "Prepnúť tému"
+
+#: ../../apps/web/src/components/admin/routes/page-editor.tsx
+msgid "Přesměrování..."
+msgstr "Presmerovanie..."
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Prezenční událost na místě"
+msgstr "Prezenčná udalosť na mieste"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Přidat médium"
+msgstr "Pridať médium"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Přidat variantu"
+msgstr "Pridať variant"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Přidávám..."
+msgstr "Pridávam..."
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Přihlášení"
+msgstr "Prihlásenie"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Přihlášení se nezdařilo. Zkuste to prosím znovu."
+msgstr "Prihlásenie sa nepodarilo. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Přihlásit se"
+msgstr "Prihlásiť sa"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Přihlaste se"
+msgstr "Prihláste sa"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Přihlašuji..."
+msgstr "Prihlasovanie..."
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Příliš mnoho stažení. Zkuste to prosím za hodinu."
+msgstr "Príliš veľa stiahnutí. Skúste to prosím za hodinu."
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Pro potvrzení zadejte své heslo"
+msgstr "Pre potvrdenie zadajte svoje heslo"
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Pro tento produkt není dostupný žádný obsah."
+msgstr "Pre tento produkt nie je dostupný žiadny obsah."
+
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Prodej"
+msgstr "Predaj"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Produkt"
+msgstr "Produkt"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Produkt byl úspěšně uložen."
+msgstr "Produkt bol úspešne uložený."
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Produkt nebyl nalezen."
+msgstr "Produkt nebol nájdený."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Produkt nenalezen."
+msgstr "Produkt nenájdený."
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Produkty"
+msgstr "Produkty"
+
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/nav-user.tsx
+msgid "Profil"
+msgstr "Profil"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Publikováno"
+msgstr "Publikované"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Publikovat"
+msgstr "Publikovať"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Registrace"
+msgstr "Registrácia"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Registrace se nezdařila. Zkuste to prosím znovu."
+msgstr "Registrácia sa nepodarila. Skúste to prosím znova."
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Registruji..."
+msgstr "Registrujem..."
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+msgid "Role"
+msgstr "Rola"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Sklad"
+msgstr "Sklad"
+
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Sledovací číslo"
+msgstr "Sledovacie číslo"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Sleva"
+msgstr "Zľava"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Slug"
+msgstr "Slug"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Smazání účtu je nevratná akce. Všechna vaše data, včetně historie objednávek, členství a přístupu k zakoupenému obsahu, budou trvale odstraněna. Tuto akci nelze vrátit zpět."
+msgstr "Zmazanie účtu je nevratná akcia. Všetky vaše dáta, vrátane histórie objednávok, členstva a prístupu k zakúpenému obsahu, budú trvale odstránené. Túto akciu nie je možné vrátiť späť."
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Smazat"
+msgstr "Zmazať"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Smazat můj účet"
+msgstr "Zmazať môj účet"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Smazat soubor"
+msgstr "Zmazať súbor"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+msgid "Smazat účet"
+msgstr "Zmazať účet"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Soubory"
+msgstr "Súbory"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Soubory ke stažení"
+msgstr "Súbory na stiahnutie"
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+msgid "Správa uživatelů bude implementována zde."
+msgstr "Správa používateľov bude implementovaná tu."
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Stáhnout"
+msgstr "Stiahnuť"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Stav"
+msgstr "Stav"
+
+#. placeholder {0}: data.page
+#. placeholder {1}: data.totalPages
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Strana {0} z {1}"
+msgstr "Strana {0} z {1}"
+
+#. placeholder {0}: data.page
+#. placeholder {1}: data.totalPages
+#. placeholder {2}: data.totalItems
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Stránka {0} z {1} ({2} objednávek)"
+msgstr "Stránka {0} z {1} ({2} objednávok)"
+
+#. placeholder {0}: data.page
+#. placeholder {1}: data.totalPages
+#. placeholder {2}: data.totalItems
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Stránka {0} z {1} ({2} produktů)"
+msgstr "Stránka {0} z {1} ({2} produktov)"
+
+#. placeholder {0}: data.page
+#. placeholder {1}: data.totalPages
+#. placeholder {2}: data.totalItems
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Stránka {0} z {1} ({2} souborů)"
+msgstr "Stránka {0} z {1} ({2} súborov)"
+
+#. placeholder {0}: data.page
+#. placeholder {1}: data.totalPages
+#. placeholder {2}: data.totalItems
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Stránka {0} z {1} ({2} stránek)"
+msgstr "Stránka {0} z {1} ({2} stránok)"
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Stránky"
+msgstr "Stránky"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Streaming"
+msgstr "Streaming"
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Streamovaný obsah přes Cloudflare"
+msgstr "Streamovaný obsah cez Cloudflare"
+
+#: ../../apps/web/src/components/dashboard/theme-switch.tsx
+msgid "Světlý"
+msgstr "Svetlý"
+
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/theme-switch.tsx
+msgid "Systém"
+msgstr "Systém"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Tato akce je nevratná. Všechna vaše data budou trvale odstraněna a nebude možné je obnovit."
+msgstr "Táto akcia je nevratná. Všetky vaše dáta budú trvale odstránené a nebude možné ich obnoviť."
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Termíny"
+msgstr "Termíny"
+
+#: ../../apps/web/src/components/dashboard/theme-switch.tsx
+msgid "Tmavý"
+msgstr "Tmavý"
+
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+msgid "Toto zařízení"
+msgstr "Toto zariadenie"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Trvalé smazání účtu"
+msgstr "Trvalé zmazanie účtu"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Typ"
+msgstr "Typ"
+
+#: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+msgid "Účet"
+msgstr "Účet"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Údaje o dopravě byly uloženy."
+msgstr "Údaje o doprave boli uložené."
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Údaje o kategorii"
+msgstr "Údaje o kategórii"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Údaje o produktu"
+msgstr "Údaje o produkte"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Událost"
+msgstr "Udalosť"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Ukládám..."
+msgstr "Ukladám..."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Ukládání..."
+msgstr "Ukladanie..."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Uložit"
+msgstr "Uložiť"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+msgid "Uložit alt text"
+msgstr "Uložiť alt text"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Uložit dopravu"
+msgstr "Uložiť dopravu"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Uložit jako draft"
+msgstr "Uložiť ako draft"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Uložit změny"
+msgstr "Uložiť zmeny"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Upozornění"
+msgstr "Upozornenie"
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Upravit"
+msgstr "Upraviť"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Upravit kategorii"
+msgstr "Upraviť kategóriu"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Upravit produkt"
+msgstr "Upraviť produkt"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "URL sledování"
+msgstr "URL sledovania"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Už máte účet?"
+msgstr "Už máte účet?"
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Uživatelé"
+msgstr "Používatelia"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Varianty"
+msgstr "Varianty"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "vas@email.cz"
+msgstr "vas@email.sk"
+
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+msgid "Vaše heslo"
+msgstr "Vaše heslo"
+
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Vaše jméno"
+msgstr "Vaše meno"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Video"
+msgstr "Video"
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Vítejte v administraci Sámo Fujera. Vyberte sekci z navigace vlevo."
+msgstr "Vitajte v administrácii Sámo Fujera. Vyberte sekciu z navigácie vľavo."
+
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Vítejte ve svém zákaznickém panelu. Pomocí navigace vlevo můžete spravovat svůj profil, aktivní sezení nebo účet."
+msgstr "Vitajte vo svojom zákazníckom paneli. Pomocou navigácie vľavo môžete spravovať svoj profil, aktívne relácie alebo účet."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "volitelné"
+msgstr "voliteľné"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Vráceno"
+msgstr "Vrátené"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/catalog/CategoryFilter.tsx
+msgid "Vše"
+msgstr "Všetko"
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Všechny stavy"
+msgstr "Všetky stavy"
+
+#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Všechny typy"
+msgstr "Všetky typy"
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Vyberte typ produktu"
+msgstr "Vyberte typ produktu"
+
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Vytvářím produkt..."
+msgstr "Vytváram produkt..."
+
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Vytvářím..."
+msgstr "Vytváram..."
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Vytvořit"
+msgstr "Vytvoriť"
+
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Vytvořit kategorii"
+msgstr "Vytvoriť kategóriu"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Vytvořte si účet pro přístup ke všem materiálům."
+msgstr "Vytvorte si účet pre prístup ku všetkým materiálom."
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Zadejte název stránky"
+msgstr "Zadajte názov stránky"
+
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Zadejte své nové heslo."
+msgstr "Zadajte svoje nové heslo."
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Zadejte svůj e-mail a heslo pro přihlášení."
+msgstr "Zadajte svoj e-mail a heslo pre prihlásenie."
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "Zadejte svůj e-mail a my vám pošleme odkaz pro obnovení hesla."
+msgstr "Zadajte svoj e-mail a my vám pošleme odkaz na obnovenie hesla."
+
+#: ../../apps/web/src/components/customer/routes/sessions.tsx
+msgid "Žádná aktivní sezení."
+msgstr "Žiadne aktívne relácie."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Žádná přidaná média."
+msgstr "Žiadne pridané médiá."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Žádné kategorie"
+msgstr "Žiadne kategórie"
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Žádné kategorie."
+msgstr "Žiadne kategórie."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Žádné nahrané obrázky."
+msgstr "Žiadne nahrané obrázky."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Žádné nahrané soubory."
+msgstr "Žiadne nahrané súbory."
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Žádné objednávky."
+msgstr "Žiadne objednávky."
+
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Žádné produkty."
+msgstr "Žiadne produkty."
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Žádné stránky."
+msgstr "Žiadne stránky."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Žádné varianty. Přidejte první variantu níže."
+msgstr "Žiadne varianty. Pridajte prvý variant nižšie."
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+msgid "Základní info"
+msgstr "Základné info"
+
+#: ../../apps/web/src/components/customer/routes/library.tsx
+msgid "Zakoupeno"
+msgstr "Zakúpené"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Zaplaceno"
+msgstr "Zaplatené"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+msgid "Zapomenuté heslo"
+msgstr "Zabudnuté heslo"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Zapomenuté heslo?"
+msgstr "Zabudnuté heslo?"
+
+#: ../../apps/web/src/components/auth/RegisterForm.tsx
+msgid "Zaregistrovat se"
+msgstr "Zaregistrovať sa"
+
+#: ../../apps/web/src/components/auth/LoginForm.tsx
+msgid "Zaregistrujte se"
+msgstr "Zaregistrujte sa"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+msgid "Zásilkovna, PPL, DPD..."
+msgstr "Zásielkovňa, PPL, DPD..."
+
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Zatím nemáte žádné objednávky."
+msgstr "Zatiaľ nemáte žiadne objednávky."
+
+#: ../../apps/web/src/components/customer/routes/library.tsx
+msgid "Zatím nemáte žádné zakoupené produkty."
+msgstr "Zatiaľ nemáte žiadne zakúpené produkty."
+
+#: ../../apps/web/src/components/admin/media/MediaGrid.tsx
+msgid "Zatím žádné soubory."
+msgstr "Zatiaľ žiadne súbory."
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+msgid "Zatím žádní uživatelé."
+msgstr "Zatiaľ žiadni používatelia."
+
+#: ../../apps/web/src/components/catalog/CatalogContent.tsx
+msgid "Zatím zde nejsou žádné produkty."
+msgstr "Zatiaľ tu nie sú žiadne produkty."
+
+#: ../../apps/web/src/components/customer/routes/library.tsx
+msgid "Zobrazit"
+msgstr "Zobraziť"
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Zpět"
+msgstr "Späť"
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Zpět do katalogu"
+msgstr "Späť do katalógu"
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+msgid "Zpět na kategorie"
+msgstr "Späť na kategórie"
+
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+msgid "Zpět na knihovnu"
+msgstr "Späť na knižnicu"
+
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+msgid "Zpět na objednávky"
+msgstr "Späť na objednávky"
+
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+#: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+#: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
+msgid "Zpět na přihlášení"
+msgstr "Späť na prihlásenie"
+
+#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/product-new.tsx
+msgid "Zpět na produkty"
+msgstr "Späť na produkty"
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Zpracovávám..."
+msgstr "Spracovávam..."
+
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Zrušeno"
+msgstr "Zrušené"
+
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Zrušit"
+msgstr "Zrušiť"
