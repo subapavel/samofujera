@@ -6,6 +6,7 @@ import {
   Tags,
   ShoppingCart,
   Users,
+  Crown,
 } from "lucide-react";
 import { msg } from "@lingui/core/macro";
 import type { SidebarData } from "./types";
@@ -31,6 +32,7 @@ export const adminSidebarData: SidebarData = {
         { title: msg`Produkty`, url: "/admin/produkty", icon: Package },
         { title: msg`Kategorie`, url: "/admin/produkty/kategorie", icon: Tags },
         { title: msg`Objednávky`, url: "/admin/objednavky", icon: ShoppingCart },
+        { title: msg`Členství`, url: "/admin/clenstvi", icon: Crown },
       ],
     },
     {

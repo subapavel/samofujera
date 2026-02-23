@@ -2,8 +2,10 @@ package cz.samofujera.payment;
 
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
+import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
+import cz.samofujera.membership.MembershipService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +27,11 @@ public class StripeWebhookController {
     private String webhookSecret;
 
     private final PaymentService paymentService;
+    private final MembershipService membershipService;
 
-    StripeWebhookController(PaymentService paymentService) {
+    StripeWebhookController(PaymentService paymentService, MembershipService membershipService) {
         this.paymentService = paymentService;
+        this.membershipService = membershipService;
     }
 
     @PostMapping("/webhook")
@@ -53,18 +57,52 @@ public class StripeWebhookController {
 
         log.info("Received Stripe webhook event: {} ({})", event.getType(), event.getId());
 
-        if ("checkout.session.completed".equals(event.getType())) {
-            var session = (Session) event.getDataObjectDeserializer()
-                .getObject()
-                .orElse(null);
+        switch (event.getType()) {
+            case "checkout.session.completed" -> {
+                var session = (Session) event.getDataObjectDeserializer()
+                    .getObject()
+                    .orElse(null);
 
-            if (session != null) {
-                paymentService.handleCheckoutCompleted(session);
-            } else {
-                log.warn("Could not deserialize checkout session from event {}", event.getId());
+                if (session != null) {
+                    paymentService.handleCheckoutCompleted(session);
+                } else {
+                    log.warn("Could not deserialize checkout session from event {}", event.getId());
+                }
             }
-        } else {
-            log.debug("Unhandled Stripe event type: {}", event.getType());
+            case "customer.subscription.created" -> {
+                var subscription = (Subscription) event.getDataObjectDeserializer()
+                    .getObject()
+                    .orElse(null);
+
+                if (subscription != null) {
+                    membershipService.handleSubscriptionCreated(subscription);
+                } else {
+                    log.warn("Could not deserialize subscription from event {}", event.getId());
+                }
+            }
+            case "customer.subscription.updated" -> {
+                var subscription = (Subscription) event.getDataObjectDeserializer()
+                    .getObject()
+                    .orElse(null);
+
+                if (subscription != null) {
+                    membershipService.handleSubscriptionUpdated(subscription);
+                } else {
+                    log.warn("Could not deserialize subscription from event {}", event.getId());
+                }
+            }
+            case "customer.subscription.deleted" -> {
+                var subscription = (Subscription) event.getDataObjectDeserializer()
+                    .getObject()
+                    .orElse(null);
+
+                if (subscription != null) {
+                    membershipService.handleSubscriptionDeleted(subscription);
+                } else {
+                    log.warn("Could not deserialize subscription from event {}", event.getId());
+                }
+            }
+            default -> log.debug("Unhandled Stripe event type: {}", event.getType());
         }
 
         return ResponseEntity.ok("OK");

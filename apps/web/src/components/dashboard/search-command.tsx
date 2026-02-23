@@ -13,7 +13,7 @@ import {
 } from "@samofujera/ui";
 import {
   LayoutDashboard, Package, FileText, ShoppingCart,
-  Users, Image, Settings, Library,
+  Users, Image, Settings, Library, Crown,
 } from "lucide-react";
 import { useSearch } from "./search-provider";
 
@@ -52,6 +52,10 @@ export function SearchCommand() {
             <Image className="mr-2 h-4 w-4" />
             <span>{t`Knihovna obrázků`}</span>
           </CommandItem>
+          <CommandItem onSelect={() => navigate("/admin/clenstvi")}>
+            <Crown className="mr-2 h-4 w-4" />
+            <span>{t`Členství`}</span>
+          </CommandItem>
           <CommandItem onSelect={() => navigate("/admin/users")}>
             <Users className="mr-2 h-4 w-4" />
             <span>{t`Uživatelé`}</span>
@@ -70,6 +74,10 @@ export function SearchCommand() {
           <CommandItem onSelect={() => navigate("/muj-ucet/objednavky")}>
             <ShoppingCart className="mr-2 h-4 w-4" />
             <span>{t`Objednávky`}</span>
+          </CommandItem>
+          <CommandItem onSelect={() => navigate("/muj-ucet/predplatne")}>
+            <Crown className="mr-2 h-4 w-4" />
+            <span>{t`Předplatné`}</span>
           </CommandItem>
           <CommandItem onSelect={() => navigate("/muj-ucet/profile")}>
             <Settings className="mr-2 h-4 w-4" />

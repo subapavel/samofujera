@@ -26,6 +26,8 @@ function getSegmentLabel(segment: string): string {
     profile: () => t`Profil`,
     knihovna: () => t`Knihovna`,
     sessions: () => t`Sezení`,
+    clenstvi: () => t`Členství`,
+    predplatne: () => t`Předplatné`,
     "delete-account": () => t`Smazat účet`,
     novy: () => t`Nový`,
     nova: () => t`Nová`,
