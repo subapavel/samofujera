@@ -39,6 +39,7 @@ export {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuGroup,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "./components/dropdown-menu";
 export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor } from "./components/popover";
