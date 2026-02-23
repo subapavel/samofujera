@@ -49,6 +49,7 @@ export default function RootLayout({
     <html
       lang="cs"
       className={`${inter.variable} ${josefinSans.variable} ${openSans.variable} ${allura.variable}`}
+      suppressHydrationWarning
     >
       <body className="min-h-screen bg-white text-[var(--foreground)] font-sans antialiased">
         {children}
