@@ -3,25 +3,20 @@
 import type { ReactNode } from "react";
 import { t } from "@lingui/core/macro";
 import { Separator } from "@samofujera/ui";
-import { User, Settings, Monitor, Trash2 } from "lucide-react";
+import { User, Monitor, Trash2 } from "lucide-react";
 import { SettingsNav } from "./settings-nav";
 
 export function SettingsLayout({ children }: { children: ReactNode }) {
   const items = [
-    { title: t`Profil`, href: "/muj-ucet/profil", icon: User },
-    {
-      title: t`Nastavení účtu`,
-      href: "/muj-ucet/nastaveni-uctu",
-      icon: Settings,
-    },
+    { title: t`Profil`, href: "/muj-ucet/profile", icon: User },
     {
       title: t`Aktivní sezení`,
-      href: "/muj-ucet/sezeni",
+      href: "/muj-ucet/sessions",
       icon: Monitor,
     },
     {
       title: t`Smazat účet`,
-      href: "/muj-ucet/smazat-ucet",
+      href: "/muj-ucet/delete-account",
       icon: Trash2,
     },
   ];

@@ -8,33 +8,45 @@ test.describe("admin products", () => {
 
   test("view products list", async ({ page }) => {
     await page.goto("/admin/produkty");
-    await expect(page.locator("h2")).toContainText(/Produkty/);
+    await expect(page.locator("h2")).toContainText(/Produkty/, { timeout: 15000 });
   });
 
-  test("create a product via new product flow", async ({ page }) => {
+  test("create and edit a product via dialogs", async ({ page }) => {
     const productName = `E2E Product ${Date.now()}`;
 
-    // Navigate directly to the new product page
-    await page.goto("/admin/produkty/novy");
-    await expect(page.getByRole("heading", { name: "Nový produkt" })).toBeVisible();
+    // Open the products list
+    await page.goto("/admin/produkty");
+    await expect(page.locator("h2")).toContainText(/Produkty/, { timeout: 15000 });
 
-    // Click E-book type card
-    await page.locator("button", { hasText: "E-book" }).first().click();
+    // Click the primary "Nový produkt" button (the one with the Plus icon, not table row buttons)
+    await page.getByRole("button", { name: /Nový produkt/ }).first().click();
 
-    // Should navigate to product edit page
-    await page.waitForURL(/admin\/produkty\/[a-f0-9-]+/, { timeout: 15000 });
+    // Create dialog should appear with product type selection
+    await expect(page.getByRole("dialog")).toBeVisible();
 
-    // Verify the edit page loaded
-    await expect(page.getByRole("heading", { name: "Upravit produkt" })).toBeVisible();
+    // Click E-book type button in the create dialog
+    await page.getByRole("dialog").getByRole("button", { name: "E-book" }).click();
+
+    // Edit dialog should open (create dialog closes, edit dialog opens)
+    await expect(
+      page.getByRole("dialog").getByText(/Upravit produkt/),
+    ).toBeVisible({ timeout: 15000 });
 
     // Fill in title using the label
-    await page.getByLabel("Název").fill(productName);
+    await page.getByRole("dialog").getByLabel("Název").fill(productName);
 
     // Save as draft
-    await page.getByRole("button", { name: "Uložit jako draft" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Uložit jako draft" }).click();
 
-    // Go back to products list and verify product appears
-    await page.goto("/admin/produkty");
+    // Wait for save to complete
+    await expect(
+      page.getByRole("dialog").getByText(/úspěšně/),
+    ).toBeVisible({ timeout: 10000 });
+
+    // Close the edit dialog
+    await page.keyboard.press("Escape");
+
+    // Verify product appears in the list
     await expect(page.getByText(productName).first()).toBeVisible({ timeout: 10000 });
   });
 });

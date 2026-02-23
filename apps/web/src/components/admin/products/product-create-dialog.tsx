@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { msg } from "@lingui/core/macro";
@@ -30,14 +29,15 @@ const PRODUCT_TYPES: Array<{ value: ProductType; label: MessageDescriptor }> = [
 interface ProductCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated?: (productId: string) => void;
 }
 
 export function ProductCreateDialog({
   open,
   onOpenChange,
+  onCreated,
 }: ProductCreateDialogProps) {
   const { _ } = useLingui();
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const createDraftMutation = useMutation({
@@ -45,7 +45,7 @@ export function ProductCreateDialog({
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       onOpenChange(false);
-      router.push(`/admin/produkty/${response.data.id}`);
+      onCreated?.(response.data.id);
     },
   });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Search } from "lucide-react";
 import { Button } from "@samofujera/ui";
 import { t } from "@lingui/core/macro";
@@ -8,11 +8,10 @@ import { useSearch } from "./search-provider";
 
 export function SearchTrigger() {
   const { setOpen } = useSearch();
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().includes("MAC"));
-  }, []);
+  const isMac = useMemo(
+    () => typeof navigator !== "undefined" && navigator.platform.toUpperCase().includes("MAC"),
+    [],
+  );
 
   return (
     <Button

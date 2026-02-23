@@ -2,11 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useParams } from "next/navigation";
 import { t } from "@lingui/core/macro";
 import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import type { MessageDescriptor } from "@lingui/core";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Loader2 } from "lucide-react";
 import { adminApi, catalogApi, mediaApi } from "@samofujera/api-client";
 import type {
   ProductType,
@@ -25,12 +28,37 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
+  Textarea,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Checkbox,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
 } from "@samofujera/ui";
 import { MediaPicker } from "../media/MediaPicker";
+import { formatFileSize } from "../media/format-file-size";
 
 function slugify(text: string): string {
   return text
@@ -39,12 +67,6 @@ function slugify(text: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 const PRODUCT_TYPES: Array<{ value: ProductType; label: MessageDescriptor }> = [
@@ -56,11 +78,19 @@ const PRODUCT_TYPES: Array<{ value: ProductType; label: MessageDescriptor }> = [
   { value: "OFFLINE_EVENT", label: msg`Offline událost` },
 ];
 
-const selectClassName =
-  "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm";
+const productFormSchema = z.object({
+  title: z.string().min(1),
+  slug: z.string().min(1),
+  description: z.string().optional().default(""),
+  shortDescription: z.string().optional().default(""),
+  priceCZK: z.string().optional().default(""),
+  priceEUR: z.string().optional().default(""),
+  categoryIds: z.array(z.string()).default([]),
+  metaTitle: z.string().optional().default(""),
+  metaDescription: z.string().optional().default(""),
+});
 
-const textareaClassName =
-  "flex w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm ring-offset-[var(--background)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2";
+type ProductFormValues = z.infer<typeof productFormSchema>;
 
 // ---- Gallery Tab ----
 
@@ -381,37 +411,37 @@ function VariantsTab({
       <CardContent>
         {rows.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border)] text-left text-xs text-[var(--muted-foreground)]">
-                  <th className="px-2 py-2">{t`Název`}</th>
-                  <th className="px-2 py-2">SKU</th>
-                  <th className="px-2 py-2 w-20">{t`Sklad`}</th>
-                  <th className="px-2 py-2 w-24">CZK</th>
-                  <th className="px-2 py-2 w-24">EUR</th>
-                  <th className="px-2 py-2 w-32">{t`Akce`}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t`Název`}</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead className="w-20">{t`Sklad`}</TableHead>
+                  <TableHead className="w-24">CZK</TableHead>
+                  <TableHead className="w-24">EUR</TableHead>
+                  <TableHead className="w-32">{t`Akce`}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {rows.map((row, index) => (
-                  <tr key={row.id ?? `new-${index}`} className="border-b border-[var(--border)]">
-                    <td className="px-2 py-1.5">
+                  <TableRow key={row.id ?? `new-${index}`}>
+                    <TableCell className="px-2 py-1.5">
                       <Input
                         value={row.name}
                         onChange={(e) => updateRow(index, "name", e.target.value)}
                         disabled={isPending}
                         className="h-8"
                       />
-                    </td>
-                    <td className="px-2 py-1.5">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5">
                       <Input
                         value={row.sku}
                         onChange={(e) => updateRow(index, "sku", e.target.value)}
                         disabled={isPending}
                         className="h-8"
                       />
-                    </td>
-                    <td className="px-2 py-1.5">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5">
                       <Input
                         type="number"
                         min="0"
@@ -420,8 +450,8 @@ function VariantsTab({
                         disabled={isPending}
                         className="h-8"
                       />
-                    </td>
-                    <td className="px-2 py-1.5">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5">
                       <Input
                         type="number"
                         min="0"
@@ -432,8 +462,8 @@ function VariantsTab({
                         disabled={isPending}
                         className="h-8"
                       />
-                    </td>
-                    <td className="px-2 py-1.5">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5">
                       <Input
                         type="number"
                         min="0"
@@ -444,8 +474,8 @@ function VariantsTab({
                         disabled={isPending}
                         className="h-8"
                       />
-                    </td>
-                    <td className="px-2 py-1.5">
+                    </TableCell>
+                    <TableCell className="px-2 py-1.5">
                       <div className="flex gap-1">
                         {row.isDirty && (
                           <Button
@@ -467,11 +497,11 @@ function VariantsTab({
                           {t`Smazat`}
                         </Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         ) : (
           <p className="mb-4 text-sm text-[var(--muted-foreground)]">
@@ -701,16 +731,19 @@ function MediaTab({
               <Label htmlFor="mediaType" className="text-xs">
                 {t`Typ`}
               </Label>
-              <select
-                id="mediaType"
+              <Select
                 value={mediaType}
-                onChange={(e) => setMediaType(e.target.value as "VIDEO" | "AUDIO")}
+                onValueChange={(value) => setMediaType(value as "VIDEO" | "AUDIO")}
                 disabled={createMediaMutation.isPending}
-                className={selectClassName}
               >
-                <option value="VIDEO">{t`Video`}</option>
-                <option value="AUDIO">{t`Audio`}</option>
-              </select>
+                <SelectTrigger id="mediaType">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="VIDEO">{t`Video`}</SelectItem>
+                  <SelectItem value="AUDIO">{t`Audio`}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="flex gap-3">
@@ -754,31 +787,39 @@ function MediaTab({
   );
 }
 
-// ---- Main Page ----
+// ---- Dialog ----
 
-export function ProductEditPage() {
+interface ProductEditDialogProps {
+  productId: string | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function ProductEditDialog({ productId, open, onOpenChange }: ProductEditDialogProps) {
   const { _ } = useLingui();
-  const params = useParams();
-  const productId = params.productId as string;
-  const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
   const [slugManual, setSlugManual] = useState(false);
-  const [description, setDescription] = useState("");
-  const [shortDescription, setShortDescription] = useState("");
-  const [priceCZK, setPriceCZK] = useState("");
-  const [priceEUR, setPriceEUR] = useState("");
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
-  const [metaTitle, setMetaTitle] = useState("");
-  const [metaDescription, setMetaDescription] = useState("");
-  const [formLoaded, setFormLoaded] = useState(false);
+
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      title: "",
+      slug: "",
+      description: "",
+      shortDescription: "",
+      priceCZK: "",
+      priceEUR: "",
+      categoryIds: [],
+      metaTitle: "",
+      metaDescription: "",
+    },
+  });
 
   const productQuery = useQuery({
     queryKey: ["admin", "product", productId],
-    queryFn: () => adminApi.getProduct(productId),
-    enabled: Boolean(productId),
+    queryFn: () => adminApi.getProduct(productId!),
+    enabled: Boolean(productId) && open,
   });
 
   const product = productQuery.data?.data;
@@ -789,20 +830,30 @@ export function ProductEditPage() {
   });
 
   useEffect(() => {
-    if (product && !formLoaded) {
-      setTitle(product.title);
-      setSlug(product.slug);
+    if (product) {
+      form.reset({
+        title: product.title,
+        slug: product.slug,
+        description: product.description ?? "",
+        shortDescription: product.shortDescription ?? "",
+        priceCZK: product.prices.CZK != null ? String(product.prices.CZK) : "",
+        priceEUR: product.prices.EUR != null ? String(product.prices.EUR) : "",
+        categoryIds: product.categories?.map((c) => c.id) ?? [],
+        metaTitle: product.metaTitle ?? "",
+        metaDescription: product.metaDescription ?? "",
+      });
       setSlugManual(true);
-      setDescription(product.description ?? "");
-      setShortDescription(product.shortDescription ?? "");
-      setPriceCZK(product.prices.CZK != null ? String(product.prices.CZK) : "");
-      setPriceEUR(product.prices.EUR != null ? String(product.prices.EUR) : "");
-      setCategoryIds(product.categories?.map((c) => c.id) ?? []);
-      setMetaTitle(product.metaTitle ?? "");
-      setMetaDescription(product.metaDescription ?? "");
-      setFormLoaded(true);
     }
-  }, [product, formLoaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
+
+  const watchedTitle = form.watch("title");
+
+  useEffect(() => {
+    if (!slugManual && watchedTitle) {
+      form.setValue("slug", slugify(watchedTitle), { shouldDirty: true });
+    }
+  }, [watchedTitle, slugManual, form]);
 
   const invalidateProduct = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ["admin", "product", productId] });
@@ -811,40 +862,28 @@ export function ProductEditPage() {
 
   const updateMutation = useMutation({
     mutationFn: (status: string) => {
+      const values = form.getValues();
       const prices: Record<string, number> = {};
-      if (priceCZK) prices.CZK = Number(priceCZK);
-      if (priceEUR) prices.EUR = Number(priceEUR);
+      if (values.priceCZK) prices.CZK = Number(values.priceCZK);
+      if (values.priceEUR) prices.EUR = Number(values.priceEUR);
 
-      return adminApi.updateProduct(productId, {
-        title,
-        slug,
-        description: description || undefined,
-        shortDescription: shortDescription || undefined,
+      return adminApi.updateProduct(productId!, {
+        title: values.title,
+        slug: values.slug,
+        description: values.description || undefined,
+        shortDescription: values.shortDescription || undefined,
         productType: product!.productType,
         prices,
-        categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
-        metaTitle: metaTitle || undefined,
-        metaDescription: metaDescription || undefined,
+        categoryIds: (values.categoryIds ?? []).length > 0 ? values.categoryIds : undefined,
+        metaTitle: values.metaTitle || undefined,
+        metaDescription: values.metaDescription || undefined,
         status,
       });
     },
     onSuccess: invalidateProduct,
   });
 
-  function handleTitleChange(value: string) {
-    setTitle(value);
-    if (!slugManual) {
-      setSlug(slugify(value));
-    }
-  }
-
-  function handleSlugChange(value: string) {
-    setSlugManual(true);
-    setSlug(value);
-  }
-
-  function handleSaveAsDraft(event: React.FormEvent) {
-    event.preventDefault();
+  function handleSaveAsDraft() {
     updateMutation.mutate("DRAFT");
   }
 
@@ -855,266 +894,306 @@ export function ProductEditPage() {
   const categories: CategoryResponse[] = categoriesQuery.data?.data ?? [];
 
   function toggleCategory(id: string) {
-    setCategoryIds((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
-    );
-  }
-
-  if (productQuery.isLoading) {
-    return <p className="text-[var(--muted-foreground)]">{t`Načítání produktu...`}</p>;
-  }
-
-  if (productQuery.isError) {
-    return (
-      <p className="text-[var(--destructive)]">
-        {t`Nepodařilo se načíst produkt. Zkuste to prosím znovu.`}
-      </p>
-    );
-  }
-
-  if (!product) {
-    return <p className="text-[var(--muted-foreground)]">{t`Produkt nenalezen.`}</p>;
+    const current = form.getValues("categoryIds") ?? [];
+    const next = current.includes(id)
+      ? current.filter((c) => c !== id)
+      : [...current, id];
+    form.setValue("categoryIds", next, { shouldDirty: true });
   }
 
   const isPending = updateMutation.isPending;
 
-  const showVariantsTab = product.productType === "PHYSICAL";
-  const showFilesTab = product.productType === "EBOOK";
-  const showMediaTab = product.productType === "AUDIO_VIDEO";
+  const showVariantsTab = product?.productType === "PHYSICAL";
+  const showFilesTab = product?.productType === "EBOOK";
+  const showMediaTab = product?.productType === "AUDIO_VIDEO";
 
-  const typeLabel = PRODUCT_TYPES.find((pt) => pt.value === product.productType);
-  const typeLabelStr = typeLabel ? _(typeLabel.label) : product.productType;
+  const typeLabel = product
+    ? PRODUCT_TYPES.find((pt) => pt.value === product.productType)
+    : undefined;
+  const typeLabelStr = typeLabel ? _(typeLabel.label) : (product?.productType ?? "");
+
+  const categoryIds = form.watch("categoryIds") ?? [];
 
   return (
-    <div>
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold">{t`Upravit produkt`}</h2>
-        <p className="text-sm text-[var(--muted-foreground)]">{typeLabelStr}</p>
-      </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{t`Upravit produkt`}</DialogTitle>
+          <DialogDescription>{typeLabelStr}</DialogDescription>
+        </DialogHeader>
 
-      <Tabs defaultValue="info">
-        <TabsList>
-          <TabsTrigger value="info">{t`Základní info`}</TabsTrigger>
-          <TabsTrigger value="gallery">{t`Galerie`}</TabsTrigger>
-          {showVariantsTab && <TabsTrigger value="variants">{t`Varianty`}</TabsTrigger>}
-          {showFilesTab && <TabsTrigger value="files">{t`Soubory`}</TabsTrigger>}
-          {showMediaTab && <TabsTrigger value="media">{t`Média`}</TabsTrigger>}
-          <TabsTrigger value="seo">SEO</TabsTrigger>
-        </TabsList>
+        {productQuery.isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : productQuery.isError ? (
+          <div className="text-center text-sm text-destructive">
+            {t`Nepodařilo se načíst produkt.`}
+          </div>
+        ) : !product ? null : (
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList>
+              <TabsTrigger value="info">{t`Základní info`}</TabsTrigger>
+              <TabsTrigger value="gallery">{t`Galerie`}</TabsTrigger>
+              {showVariantsTab && <TabsTrigger value="variants">{t`Varianty`}</TabsTrigger>}
+              {showFilesTab && <TabsTrigger value="files">{t`Soubory`}</TabsTrigger>}
+              {showMediaTab && <TabsTrigger value="media">{t`Média`}</TabsTrigger>}
+              <TabsTrigger value="seo">SEO</TabsTrigger>
+            </TabsList>
 
-        <TabsContent value="info">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t`Údaje o produktu`}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSaveAsDraft} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">{t`Název`}</Label>
-                  <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => handleTitleChange(e.target.value)}
-                    required
-                    disabled={isPending}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="slug">{t`Slug`}</Label>
-                  <Input
-                    id="slug"
-                    value={slug}
-                    onChange={(e) => handleSlugChange(e.target.value)}
-                    required
-                    disabled={isPending}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">{t`Popis`}</Label>
-                  <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    disabled={isPending}
-                    rows={4}
-                    className={textareaClassName}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="shortDescription">{t`Krátký popis`}</Label>
-                  <Input
-                    id="shortDescription"
-                    value={shortDescription}
-                    onChange={(e) => setShortDescription(e.target.value)}
-                    disabled={isPending}
-                  />
-                </div>
-
-                <div>
-                  <Label>{t`Ceny`}</Label>
-                  <div className="mt-1 flex gap-4">
-                    <div className="flex-1">
-                      <Label htmlFor="priceCZK" className="text-xs text-[var(--muted-foreground)]">
-                        CZK
-                      </Label>
-                      <Input
-                        id="priceCZK"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={priceCZK}
-                        onChange={(e) => setPriceCZK(e.target.value)}
-                        placeholder="0.00"
-                        disabled={isPending}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="priceEUR" className="text-xs text-[var(--muted-foreground)]">
-                        EUR
-                      </Label>
-                      <Input
-                        id="priceEUR"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={priceEUR}
-                        onChange={(e) => setPriceEUR(e.target.value)}
-                        placeholder="0.00"
-                        disabled={isPending}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label>{t`Kategorie`}</Label>
-                  <div className="mt-1 max-h-48 space-y-2 overflow-y-auto rounded-md border border-[var(--border)] p-3">
-                    {categories.length === 0 ? (
-                      <p className="text-sm text-[var(--muted-foreground)]">{t`Žádné kategorie`}</p>
-                    ) : (
-                      categories.map((cat) => (
-                        <label key={cat.id} className="flex items-center gap-2 text-sm">
-                          <input
-                            type="checkbox"
-                            checked={categoryIds.includes(cat.id)}
-                            onChange={() => toggleCategory(cat.id)}
+            <TabsContent value="info">
+              <Form {...form}>
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Název`}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            required
                             disabled={isPending}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              if (!slugManual) {
+                                form.setValue("slug", slugify(e.target.value), { shouldDirty: true });
+                              }
+                            }}
                           />
-                          {cat.name}
-                        </label>
-                      ))
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="slug"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Slug`}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            required
+                            disabled={isPending}
+                            onChange={(e) => {
+                              setSlugManual(true);
+                              field.onChange(e);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Popis`}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            disabled={isPending}
+                            rows={4}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="shortDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Krátký popis`}</FormLabel>
+                        <FormControl>
+                          <Input {...field} disabled={isPending} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div>
+                    <Label>{t`Ceny`}</Label>
+                    <div className="mt-1 flex gap-4">
+                      <FormField
+                        control={form.control}
+                        name="priceCZK"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel className="text-xs text-[var(--muted-foreground)]">
+                              CZK
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                                disabled={isPending}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="priceEUR"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel className="text-xs text-[var(--muted-foreground)]">
+                              EUR
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                                disabled={isPending}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
+
+                  <div>
+                    <Label>{t`Kategorie`}</Label>
+                    <div className="mt-1 max-h-48 space-y-2 overflow-y-auto rounded-md border border-[var(--border)] p-3">
+                      {categories.length === 0 ? (
+                        <p className="text-sm text-[var(--muted-foreground)]">{t`Žádné kategorie`}</p>
+                      ) : (
+                        categories.map((cat) => (
+                          <label key={cat.id} className="flex items-center gap-2 text-sm">
+                            <Checkbox
+                              checked={categoryIds.includes(cat.id)}
+                              onCheckedChange={() => toggleCategory(cat.id)}
+                              disabled={isPending}
+                            />
+                            {cat.name}
+                          </label>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {updateMutation.isError && (
+                    <p className="text-sm text-[var(--destructive)]">
+                      {t`Nepodařilo se uložit změny. Zkuste to prosím znovu.`}
+                    </p>
+                  )}
+
+                  {updateMutation.isSuccess && (
+                    <p className="text-sm text-green-600">{t`Produkt byl úspěšně uložen.`}</p>
+                  )}
                 </div>
+              </Form>
+            </TabsContent>
 
-                {updateMutation.isError && (
-                  <p className="text-sm text-[var(--destructive)]">
-                    {t`Nepodařilo se uložit změny. Zkuste to prosím znovu.`}
-                  </p>
-                )}
+            <TabsContent value="gallery">
+              <GalleryTab
+                productId={productId!}
+                images={product.images ?? []}
+                onInvalidate={invalidateProduct}
+              />
+            </TabsContent>
 
-                {updateMutation.isSuccess && (
-                  <p className="text-sm text-green-600">{t`Produkt byl úspěšně uložen.`}</p>
-                )}
+            {showVariantsTab && (
+              <TabsContent value="variants">
+                <VariantsTab
+                  productId={productId!}
+                  variants={product.variants ?? []}
+                  onInvalidate={invalidateProduct}
+                />
+              </TabsContent>
+            )}
 
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    onClick={handlePublish}
-                    disabled={isPending}
-                  >
-                    {isPending ? t`Ukládám...` : t`Publikovat`}
-                  </Button>
-                  <Button type="submit" variant="outline" disabled={isPending}>
-                    {t`Uložit jako draft`}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.push("/admin/produkty")}
-                    disabled={isPending}
-                  >
-                    {t`Zpět na produkty`}
-                  </Button>
+            {showFilesTab && (
+              <TabsContent value="files">
+                <FilesTab
+                  productId={productId!}
+                  files={product.files ?? []}
+                  onInvalidate={invalidateProduct}
+                />
+              </TabsContent>
+            )}
+
+            {showMediaTab && (
+              <TabsContent value="media">
+                <MediaTab
+                  productId={productId!}
+                  mediaItems={product.media ?? []}
+                  onInvalidate={invalidateProduct}
+                />
+              </TabsContent>
+            )}
+
+            <TabsContent value="seo">
+              <Form {...form}>
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="metaTitle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Meta titulek`}</FormLabel>
+                        <FormControl>
+                          <Input {...field} disabled={isPending} maxLength={255} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="metaDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Meta popis`}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            disabled={isPending}
+                            rows={3}
+                            maxLength={500}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="gallery">
-          <GalleryTab
-            productId={productId}
-            images={product.images ?? []}
-            onInvalidate={invalidateProduct}
-          />
-        </TabsContent>
-
-        {showVariantsTab && (
-          <TabsContent value="variants">
-            <VariantsTab
-              productId={productId}
-              variants={product.variants ?? []}
-              onInvalidate={invalidateProduct}
-            />
-          </TabsContent>
+              </Form>
+            </TabsContent>
+          </Tabs>
         )}
 
-        {showFilesTab && (
-          <TabsContent value="files">
-            <FilesTab
-              productId={productId}
-              files={product.files ?? []}
-              onInvalidate={invalidateProduct}
-            />
-          </TabsContent>
+        {product && (
+          <div className="flex justify-end gap-2 border-t pt-4">
+            <Button type="button" onClick={handlePublish} disabled={isPending}>
+              {isPending ? t`Ukládám...` : t`Publikovat`}
+            </Button>
+            <Button type="button" variant="outline" onClick={handleSaveAsDraft} disabled={isPending}>
+              {t`Uložit jako draft`}
+            </Button>
+          </div>
         )}
-
-        {showMediaTab && (
-          <TabsContent value="media">
-            <MediaTab
-              productId={productId}
-              mediaItems={product.media ?? []}
-              onInvalidate={invalidateProduct}
-            />
-          </TabsContent>
-        )}
-
-        <TabsContent value="seo">
-          <Card>
-            <CardHeader>
-              <CardTitle>SEO</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="metaTitle">{t`Meta titulek`}</Label>
-                <Input
-                  id="metaTitle"
-                  value={metaTitle}
-                  onChange={(e) => setMetaTitle(e.target.value)}
-                  disabled={isPending}
-                  maxLength={255}
-                />
-              </div>
-              <div>
-                <Label htmlFor="metaDescription">{t`Meta popis`}</Label>
-                <textarea
-                  id="metaDescription"
-                  value={metaDescription}
-                  onChange={(e) => setMetaDescription(e.target.value)}
-                  disabled={isPending}
-                  rows={3}
-                  maxLength={500}
-                  className={textareaClassName}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

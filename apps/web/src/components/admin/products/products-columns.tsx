@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
 import { t } from "@lingui/core/macro";
 import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
@@ -53,6 +52,7 @@ function formatPrices(prices: Record<string, number>): string {
 
 interface UseProductsColumnsOptions {
   onDelete?: (id: string, title: string) => void;
+  onEdit?: (id: string) => void;
 }
 
 export function useProductsColumns(
@@ -92,12 +92,13 @@ export function useProductsColumns(
           <DataTableColumnHeader column={column} title={t`Název`} />
         ),
         cell: ({ row }) => (
-          <Link
-            href={`/admin/produkty/${row.original.id}`}
-            className="font-medium hover:underline"
+          <button
+            type="button"
+            className="font-medium hover:underline text-left"
+            onClick={() => options?.onEdit?.(row.original.id)}
           >
             {row.getValue("title")}
-          </Link>
+          </button>
         ),
       },
       {
@@ -149,10 +150,8 @@ export function useProductsColumns(
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href={`/admin/produkty/${product.id}`}>
-                    {t`Upravit`}
-                  </Link>
+                <DropdownMenuItem onClick={() => options?.onEdit?.(product.id)}>
+                  {t`Upravit`}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -173,5 +172,5 @@ export function useProductsColumns(
 
     return columns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_, options?.onDelete]);
+  }, [_, options?.onDelete, options?.onEdit]);
 }

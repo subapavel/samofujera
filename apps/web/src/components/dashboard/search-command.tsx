@@ -71,7 +71,7 @@ export function SearchCommand() {
             <ShoppingCart className="mr-2 h-4 w-4" />
             <span>{t`Objednávky`}</span>
           </CommandItem>
-          <CommandItem onSelect={() => navigate("/muj-ucet/profil")}>
+          <CommandItem onSelect={() => navigate("/muj-ucet/profile")}>
             <Settings className="mr-2 h-4 w-4" />
             <span>{t`Profil`}</span>
           </CommandItem>

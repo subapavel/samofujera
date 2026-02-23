@@ -11,10 +11,12 @@ import type { FilterConfig } from "@/components/data-table";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { useProductsColumns } from "@/components/admin/products/products-columns";
 import { ProductCreateDialog } from "@/components/admin/products/product-create-dialog";
+import { ProductEditDialog } from "@/components/admin/products/product-edit-dialog";
 
 export function ProductsPage() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
+  const [editProductId, setEditProductId] = useState<string | null>(null);
 
   const productsQuery = useQuery({
     queryKey: ["admin", "products"],
@@ -37,7 +39,10 @@ export function ProductsPage() {
     [deleteMutation],
   );
 
-  const columns = useProductsColumns({ onDelete: handleDelete });
+  const columns = useProductsColumns({
+    onDelete: handleDelete,
+    onEdit: (id) => setEditProductId(id),
+  });
   const data = productsQuery.data?.data?.items ?? [];
 
   const statusOptions = [
@@ -90,7 +95,20 @@ export function ProductsPage() {
         />
       )}
 
-      <ProductCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <ProductCreateDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onCreated={(id) => {
+          setCreateOpen(false);
+          setEditProductId(id);
+        }}
+      />
+
+      <ProductEditDialog
+        productId={editProductId}
+        open={editProductId !== null}
+        onOpenChange={(open) => { if (!open) setEditProductId(null); }}
+      />
     </div>
   );
 }

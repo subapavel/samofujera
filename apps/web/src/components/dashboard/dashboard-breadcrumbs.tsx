@@ -23,15 +23,13 @@ function getSegmentLabel(segment: string): string {
     objednavky: () => t`Objednávky`,
     media: () => t`Média`,
     users: () => t`Uživatelé`,
-    profil: () => t`Profil`,
+    profile: () => t`Profil`,
     knihovna: () => t`Knihovna`,
-    sezeni: () => t`Sezení`,
+    sessions: () => t`Sezení`,
+    "delete-account": () => t`Smazat účet`,
     novy: () => t`Nový`,
     nova: () => t`Nová`,
     edit: () => t`Upravit`,
-    nastaveni: () => t`Nastavení`,
-    "nastaveni-uctu": () => t`Nastavení účtu`,
-    "smazat-ucet": () => t`Smazat účet`,
   };
   return labels[segment]?.() ?? segment;
 }
