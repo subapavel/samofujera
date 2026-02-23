@@ -22,6 +22,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@samofujera/ui";
+import { SettingsLayout } from "../settings-layout";
 
 export function DeleteAccountPage() {
   const [password, setPassword] = useState("");
@@ -48,9 +49,7 @@ export function DeleteAccountPage() {
   }
 
   return (
-    <div>
-      <h2 className="mb-4 text-2xl font-bold">{t`Smazat účet`}</h2>
-
+    <SettingsLayout>
       <Alert variant="destructive" className="mb-6">
         <AlertTitle>{t`Upozornění`}</AlertTitle>
         <AlertDescription>
@@ -66,7 +65,7 @@ export function DeleteAccountPage() {
           <div>
             <label
               htmlFor="password"
-              className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]"
+              className="mb-1 block text-sm font-medium text-muted-foreground"
             >
               {t`Pro potvrzení zadejte své heslo`}
             </label>
@@ -81,7 +80,7 @@ export function DeleteAccountPage() {
           </div>
 
           {deleteMutation.isError && (
-            <p className="text-sm text-[var(--destructive)]">
+            <p className="text-sm text-destructive">
               {t`Nepodařilo se smazat účet. Zkontrolujte heslo a zkuste to znovu.`}
             </p>
           )}
@@ -118,6 +117,6 @@ export function DeleteAccountPage() {
           </Dialog>
         </CardContent>
       </Card>
-    </div>
+    </SettingsLayout>
   );
 }

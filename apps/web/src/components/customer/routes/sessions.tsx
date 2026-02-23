@@ -3,7 +3,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
-import { Button } from "@samofujera/ui";
+import {
+  Button,
+  Badge,
+  Card,
+  CardContent,
+} from "@samofujera/ui";
+import { SettingsLayout } from "../settings-layout";
 
 export function SessionsPage() {
   const queryClient = useQueryClient();
@@ -21,61 +27,62 @@ export function SessionsPage() {
   });
 
   return (
-    <div>
-      <h2 className="mb-4 text-2xl font-bold">{t`Aktivní sezení`}</h2>
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
-        {sessionsQuery.isLoading && (
-          <p className="text-[var(--muted-foreground)]">{t`Načítání sezení...`}</p>
-        )}
+    <SettingsLayout>
+      {sessionsQuery.isLoading && (
+        <p className="text-muted-foreground">{t`Načítání sezení...`}</p>
+      )}
 
-        {sessionsQuery.isError && (
-          <p className="text-[var(--destructive)]">
-            {t`Nepodařilo se načíst sezení. Zkuste to prosím znovu.`}
-          </p>
-        )}
+      {sessionsQuery.isError && (
+        <p className="text-destructive">
+          {t`Nepodařilo se načíst sezení. Zkuste to prosím znovu.`}
+        </p>
+      )}
 
-        {sessionsQuery.isSuccess && (
-          <>
-            {sessionsQuery.data.data.length === 0 ? (
-              <p className="text-[var(--muted-foreground)]">{t`Žádná aktivní sezení.`}</p>
-            ) : (
-              <div className="space-y-4">
-                {sessionsQuery.data.data.map((session) => (
-                  <div
-                    key={session.sessionId}
-                    className="flex items-center justify-between rounded-md border border-[var(--border)] p-4"
-                  >
+      {sessionsQuery.isSuccess && (
+        <>
+          {sessionsQuery.data.data.length === 0 ? (
+            <p className="text-muted-foreground">{t`Žádná aktivní sezení.`}</p>
+          ) : (
+            <div className="space-y-4">
+              {sessionsQuery.data.data.map((session) => (
+                <Card key={session.sessionId}>
+                  <CardContent className="flex items-center justify-between p-4">
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">{session.deviceName}</p>
-                      <p className="text-xs text-[var(--muted-foreground)]">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">
+                          {session.deviceName}
+                        </p>
+                        {session.current && (
+                          <Badge variant="secondary">{t`Toto zařízení`}</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
                         IP: {session.ipAddress}
                       </p>
-                      <p className="text-xs text-[var(--muted-foreground)]">
+                      <p className="text-xs text-muted-foreground">
                         {t`Poslední aktivita`}:{" "}
                         {new Date(session.lastActiveAt).toLocaleString("cs-CZ")}
                       </p>
                     </div>
-                    {session.current ? (
-                      <span className="text-xs font-medium text-green-600">
-                        {t`Toto zařízení`}
-                      </span>
-                    ) : (
+                    {!session.current && (
                       <Button
                         variant="destructive"
                         size="sm"
                         disabled={revokeMutation.isPending}
-                        onClick={() => revokeMutation.mutate(session.sessionId)}
+                        onClick={() =>
+                          revokeMutation.mutate(session.sessionId)
+                        }
                       >
                         {t`Odvolat`}
                       </Button>
                     )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </SettingsLayout>
   );
 }

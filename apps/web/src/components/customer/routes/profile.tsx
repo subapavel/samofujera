@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
 import { Button, Input, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
+import { SettingsLayout } from "../settings-layout";
 
 export function ProfilePage() {
   const queryClient = useQueryClient();
@@ -60,15 +61,13 @@ export function ProfilePage() {
   }
 
   return (
-    <div>
-      <h2 className="mb-4 text-2xl font-bold">{t`Profil`}</h2>
-
+    <SettingsLayout>
       {profileQuery.isLoading && (
-        <p className="text-[var(--muted-foreground)]">{t`Načítání profilu...`}</p>
+        <p className="text-muted-foreground">{t`Načítání profilu...`}</p>
       )}
 
       {profileQuery.isError && (
-        <p className="text-[var(--destructive)]">
+        <p className="text-destructive">
           {t`Nepodařilo se načíst profil. Zkuste to prosím znovu.`}
         </p>
       )}
@@ -80,14 +79,14 @@ export function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-[var(--muted-foreground)]">{t`E-mail`}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t`E-mail`}</p>
               <p className="text-sm">{profileQuery.data.data.email}</p>
             </div>
 
             {isEditing ? (
               <form onSubmit={handleSave} className="space-y-3">
                 <div>
-                  <label htmlFor="name" className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
+                  <label htmlFor="name" className="mb-1 block text-sm font-medium text-muted-foreground">
                     {t`Jméno`}
                   </label>
                   <Input
@@ -100,7 +99,7 @@ export function ProfilePage() {
                 </div>
 
                 {updateMutation.isError && (
-                  <p className="text-sm text-[var(--destructive)]">
+                  <p className="text-sm text-destructive">
                     {t`Nepodařilo se uložit změny. Zkuste to prosím znovu.`}
                   </p>
                 )}
@@ -121,7 +120,7 @@ export function ProfilePage() {
               </form>
             ) : (
               <div>
-                <p className="text-sm font-medium text-[var(--muted-foreground)]">{t`Jméno`}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t`Jméno`}</p>
                 <div className="flex items-center gap-3">
                   <p className="text-sm">{profileQuery.data.data.name}</p>
                   <Button variant="outline" size="sm" onClick={handleEdit}>
@@ -131,7 +130,7 @@ export function ProfilePage() {
               </div>
             )}
             <div>
-              <p className="text-sm font-medium text-[var(--muted-foreground)]">{t`Jazyk`}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t`Jazyk`}</p>
               <div className="mt-1 flex gap-2">
                 <Button
                   variant={locale === "cs" ? "default" : "outline"}
@@ -154,6 +153,6 @@ export function ProfilePage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </SettingsLayout>
   );
 }
