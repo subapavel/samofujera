@@ -3,6 +3,7 @@
 import { Separator, SidebarTrigger } from "@samofujera/ui";
 import { ThemeSwitch } from "./theme-switch";
 import { DashboardBreadcrumbs } from "./dashboard-breadcrumbs";
+import { SearchTrigger } from "./search-trigger";
 
 export function Header() {
   return (
@@ -11,6 +12,7 @@ export function Header() {
       <Separator orientation="vertical" className="mr-2 h-4" />
       <DashboardBreadcrumbs />
       <div className="flex-1" />
+      <SearchTrigger />
       <ThemeSwitch />
     </header>
   );
