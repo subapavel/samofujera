@@ -57,12 +57,12 @@ export function LibraryProductPage() {
             "Prilis mnoho stazeni. Zkuste to prosim za hodinu.",
           );
         } else if (error.status === 403) {
-          setErrorMessage("K tomuto produktu nemate pristup.");
+          setErrorMessage("K tomuto produktu nemáte přístup.");
         } else {
-          setErrorMessage("Nepodarilo se stahnout soubor. Zkuste to znovu.");
+          setErrorMessage("Nepodařilo se stáhnout soubor. Zkuste to znovu.");
         }
       } else {
-        setErrorMessage("Nepodarilo se stahnout soubor. Zkuste to znovu.");
+        setErrorMessage("Nepodařilo se stáhnout soubor. Zkuste to znovu.");
       }
     },
   });

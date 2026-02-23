@@ -21,22 +21,22 @@ export function SessionsPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Aktivni sezeni</h2>
+      <h2 className="mb-4 text-2xl font-bold">Aktivní sezení</h2>
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
         {sessionsQuery.isLoading && (
-          <p className="text-[var(--muted-foreground)]">Nacitani sezeni...</p>
+          <p className="text-[var(--muted-foreground)]">Načítání sezení...</p>
         )}
 
         {sessionsQuery.isError && (
           <p className="text-[var(--destructive)]">
-            Nepodarilo se nacist sezeni. Zkuste to prosim znovu.
+            Nepodařilo se načíst sezení. Zkuste to prosím znovu.
           </p>
         )}
 
         {sessionsQuery.isSuccess && (
           <>
             {sessionsQuery.data.data.length === 0 ? (
-              <p className="text-[var(--muted-foreground)]">Zadna aktivni sezeni.</p>
+              <p className="text-[var(--muted-foreground)]">Žádná aktivní sezení.</p>
             ) : (
               <div className="space-y-4">
                 {sessionsQuery.data.data.map((session) => (

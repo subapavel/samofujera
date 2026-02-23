@@ -180,20 +180,20 @@ export function CategoryListPage() {
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Kategorie</h2>
         <Link href="/admin/produkty/kategorie/nova">
-          <Button>Nova kategorie</Button>
+          <Button>Nová kategorie</Button>
         </Link>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {categoriesQuery.isLoading && (
           <p className="p-6 text-[var(--muted-foreground)]">
-            Nacitani kategorii...
+            Načítání kategorií...
           </p>
         )}
 
         {categoriesQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodarilo se nacist kategorie. Zkuste to prosim znovu.
+            Nepodařilo se načíst kategorie. Zkuste to prosím znovu.
           </p>
         )}
 

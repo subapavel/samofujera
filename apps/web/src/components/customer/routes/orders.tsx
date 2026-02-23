@@ -16,11 +16,11 @@ const statusConfig: Record<string, { label: string; className: string }> = {
     className: "bg-green-100 text-green-800",
   },
   CANCELLED: {
-    label: "Zruseno",
+    label: "Zrušeno",
     className: "bg-gray-100 text-gray-600",
   },
   REFUNDED: {
-    label: "Vraceno",
+    label: "Vráceno",
     className: "bg-blue-100 text-blue-800",
   },
 };
@@ -61,7 +61,7 @@ export function OrdersPage() {
 
       {ordersQuery.isError && (
         <p className="text-[var(--destructive)]">
-          Nepodarilo se nacist objednavky. Zkuste to prosim znovu.
+          Nepodařilo se načíst objednávky. Zkuste to prosím znovu.
         </p>
       )}
 

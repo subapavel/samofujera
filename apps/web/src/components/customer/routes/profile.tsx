@@ -48,12 +48,12 @@ export function ProfilePage() {
       <h2 className="mb-4 text-2xl font-bold">Profil</h2>
 
       {profileQuery.isLoading && (
-        <p className="text-[var(--muted-foreground)]">Nacitani profilu...</p>
+        <p className="text-[var(--muted-foreground)]">Načítání profilu...</p>
       )}
 
       {profileQuery.isError && (
         <p className="text-[var(--destructive)]">
-          Nepodarilo se nacist profil. Zkuste to prosim znovu.
+          Nepodařilo se načíst profil. Zkuste to prosím znovu.
         </p>
       )}
 
@@ -85,7 +85,7 @@ export function ProfilePage() {
 
                 {updateMutation.isError && (
                   <p className="text-sm text-[var(--destructive)]">
-                    Nepodarilo se ulozit zmeny. Zkuste to prosim znovu.
+                    Nepodařilo se uložit změny. Zkuste to prosím znovu.
                   </p>
                 )}
 

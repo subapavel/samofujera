@@ -74,7 +74,7 @@ export function CategoryNewPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Nova kategorie</h2>
+      <h2 className="mb-4 text-2xl font-bold">Nová kategorie</h2>
 
       <Card>
         <CardHeader>
@@ -153,7 +153,7 @@ export function CategoryNewPage() {
 
             {createMutation.isError && (
               <p className="text-sm text-[var(--destructive)]">
-                Nepodarilo se vytvorit kategorii. Zkuste to prosim znovu.
+                Nepodařilo se vytvořit kategorii. Zkuste to prosím znovu.
               </p>
             )}
 

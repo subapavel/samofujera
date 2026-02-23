@@ -101,14 +101,14 @@ export function CategoryEditPage() {
 
   if (categoryQuery.isLoading) {
     return (
-      <p className="text-[var(--muted-foreground)]">Nacitani kategorie...</p>
+      <p className="text-[var(--muted-foreground)]">Načítání kategorie...</p>
     );
   }
 
   if (categoryQuery.isError) {
     return (
       <p className="text-[var(--destructive)]">
-        Nepodarilo se nacist kategorii. Zkuste to prosim znovu.
+        Nepodařilo se načíst kategorii. Zkuste to prosím znovu.
       </p>
     );
   }
@@ -202,13 +202,13 @@ export function CategoryEditPage() {
 
             {updateMutation.isError && (
               <p className="text-sm text-[var(--destructive)]">
-                Nepodarilo se ulozit zmeny. Zkuste to prosim znovu.
+                Nepodařilo se uložit změny. Zkuste to prosím znovu.
               </p>
             )}
 
             {updateMutation.isSuccess && (
               <p className="text-sm text-green-600">
-                Kategorie byla uspesne ulozena.
+                Kategorie byla úspěšně uložena.
               </p>
             )}
 

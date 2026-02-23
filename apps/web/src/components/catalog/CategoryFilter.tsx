@@ -45,7 +45,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
                 : "text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)]"
             }`}
           >
-            Vse
+            Vše
           </button>
         </li>
         {categories.map((category) => (

@@ -48,19 +48,19 @@ export function DeleteAccountPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Smazat ucet</h2>
+      <h2 className="mb-4 text-2xl font-bold">Smazat účet</h2>
 
       <Alert variant="destructive" className="mb-6">
-        <AlertTitle>Upozorneni</AlertTitle>
+        <AlertTitle>Upozornění</AlertTitle>
         <AlertDescription>
-          Smazani uctu je nevratna akce. Vsechna vase data, vcetne historie objednavek, clenstvi
-          a pristupu k zakoupenemu obsahu, budou trvale odstranena. Tuto akci nelze vratit zpet.
+          Smazání účtu je nevratná akce. Všechna vaše data, včetně historie objednávek, členství
+          a přístupu k zakoupenému obsahu, budou trvale odstraněna. Tuto akci nelze vrátit zpět.
         </AlertDescription>
       </Alert>
 
       <Card>
         <CardHeader>
-          <CardTitle>Trvale smazani uctu</CardTitle>
+          <CardTitle>Trvalé smazání účtu</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -68,21 +68,21 @@ export function DeleteAccountPage() {
               htmlFor="password"
               className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]"
             >
-              Pro potvrzeni zadejte sve heslo
+              Pro potvrzení zadejte své heslo
             </label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Vase heslo"
+              placeholder="Vaše heslo"
               disabled={deleteMutation.isPending}
             />
           </div>
 
           {deleteMutation.isError && (
             <p className="text-sm text-[var(--destructive)]">
-              Nepodarilo se smazat ucet. Zkontrolujte heslo a zkuste to znovu.
+              Nepodařilo se smazat účet. Zkontrolujte heslo a zkuste to znovu.
             </p>
           )}
 
@@ -92,27 +92,27 @@ export function DeleteAccountPage() {
                 variant="destructive"
                 disabled={!password.trim() || deleteMutation.isPending}
               >
-                Smazat muj ucet
+                Smazat můj účet
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Opravdu chcete smazat svuj ucet?</DialogTitle>
+                <DialogTitle>Opravdu chcete smazat svůj účet?</DialogTitle>
                 <DialogDescription>
-                  Tato akce je nevratna. Vsechna vase data budou trvale odstranena
-                  a nebude mozne je obnovit.
+                  Tato akce je nevratná. Všechna vaše data budou trvale odstraněna
+                  a nebude možné je obnovit.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Zrusit
+                  Zrušit
                 </Button>
                 <Button
                   variant="destructive"
                   disabled={deleteMutation.isPending}
                   onClick={handleConfirmDelete}
                 >
-                  {deleteMutation.isPending ? "Mazani..." : "Ano, smazat ucet"}
+                  {deleteMutation.isPending ? "Mazání..." : "Ano, smazat účet"}
                 </Button>
               </DialogFooter>
             </DialogContent>

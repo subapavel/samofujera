@@ -44,7 +44,7 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
   if (state === "loading") {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-sm text-[var(--muted-foreground)]">Nacitani...</div>
+        <div className="text-sm text-[var(--muted-foreground)]">Načítání...</div>
       </div>
     );
   }

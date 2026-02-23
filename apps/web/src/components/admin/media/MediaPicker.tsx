@@ -138,7 +138,7 @@ export function MediaPicker({ value, onChange, accept }: MediaPickerProps) {
           <div className="min-h-[300px]">
             {itemsQuery.isLoading && (
               <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-                Nacitani...
+                Načítání...
               </p>
             )}
 

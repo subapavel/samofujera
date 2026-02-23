@@ -107,7 +107,7 @@ function GalleryTab({
   }
 
   function handleUnlinkImage(image: ImageResponse) {
-    if (window.confirm("Opravdu chcete odebrat tento obrazek z galerie?")) {
+    if (window.confirm("Opravdu chcete odebrat tento obrázek z galerie?")) {
       unlinkImageMutation.mutate(image.mediaItemId);
     }
   }
@@ -230,7 +230,7 @@ function GalleryTab({
 
         {(uploadAndLinkMutation.isError || linkImageMutation.isError) && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Nepodarilo se pridat obrazek. Zkuste to prosim znovu.
+            Nepodařilo se přidat obrázek. Zkuste to prosím znovu.
           </p>
         )}
       </CardContent>
@@ -481,7 +481,7 @@ function VariantsTab({
 
         {(createVariantMutation.isError || updateVariantMutation.isError || deleteVariantMutation.isError) && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Operace se nezdarila. Zkuste to prosim znovu.
+            Operace se nezdařila. Zkuste to prosím znovu.
           </p>
         )}
       </CardContent>
@@ -583,7 +583,7 @@ function FilesTab({
 
         {uploadFileMutation.isError && (
           <p className="mt-2 text-sm text-[var(--destructive)]">
-            Nepodarilo se nahrat soubor. Zkuste to prosim znovu.
+            Nepodařilo se nahrát soubor. Zkuste to prosím znovu.
           </p>
         )}
       </CardContent>
@@ -741,7 +741,7 @@ function MediaTab({
           </Button>
           {createMediaMutation.isError && (
             <p className="text-sm text-[var(--destructive)]">
-              Nepodarilo se pridat medium.
+              Nepodařilo se přidat médium.
             </p>
           )}
         </form>
@@ -856,13 +856,13 @@ export function ProductEditPage() {
   }
 
   if (productQuery.isLoading) {
-    return <p className="text-[var(--muted-foreground)]">Nacitani produktu...</p>;
+    return <p className="text-[var(--muted-foreground)]">Načítání produktu...</p>;
   }
 
   if (productQuery.isError) {
     return (
       <p className="text-[var(--destructive)]">
-        Nepodarilo se nacist produkt. Zkuste to prosim znovu.
+        Nepodařilo se načíst produkt. Zkuste to prosím znovu.
       </p>
     );
   }
@@ -1006,7 +1006,7 @@ export function ProductEditPage() {
 
                 {updateMutation.isError && (
                   <p className="text-sm text-[var(--destructive)]">
-                    Nepodarilo se ulozit zmeny. Zkuste to prosim znovu.
+                    Nepodařilo se uložit změny. Zkuste to prosím znovu.
                   </p>
                 )}
 

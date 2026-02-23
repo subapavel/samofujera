@@ -27,7 +27,7 @@ export function ProductDetail({ slug }: { slug: string }) {
       window.location.href = response.data.checkoutUrl;
     },
     onError: () => {
-      setCheckoutError("Nepodarilo se vytvorit objednavku. Zkuste to prosim znovu.");
+      setCheckoutError("Nepodařilo se vytvořit objednávku. Zkuste to prosím znovu.");
     },
   });
 

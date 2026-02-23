@@ -39,7 +39,7 @@ export function LibraryPage() {
 
       {libraryQuery.isError && (
         <p className="text-[var(--destructive)]">
-          Nepodarilo se nacist knihovnu. Zkuste to prosim znovu.
+          Nepodařilo se načíst knihovnu. Zkuste to prosím znovu.
         </p>
       )}
 

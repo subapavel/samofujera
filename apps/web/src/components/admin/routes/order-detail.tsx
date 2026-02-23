@@ -7,10 +7,10 @@ import { adminApi } from "@samofujera/api-client";
 import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
 
 const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Cekajici",
+  PENDING: "Čekající",
   PAID: "Zaplaceno",
-  CANCELLED: "Zruseno",
-  REFUNDED: "Vraceno",
+  CANCELLED: "Zrušeno",
+  REFUNDED: "Vráceno",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -81,13 +81,13 @@ export function OrderDetailPage() {
   if (orderQuery.isError) {
     return (
       <p className="text-[var(--destructive)]">
-        Nepodarilo se nacist objednavku. Zkuste to prosim znovu.
+        Nepodařilo se načíst objednávku. Zkuste to prosím znovu.
       </p>
     );
   }
 
   if (!order) {
-    return <p className="text-[var(--muted-foreground)]">Objednavka nenalezena.</p>;
+    return <p className="text-[var(--muted-foreground)]">Objednávka nenalezena.</p>;
   }
 
   return (
@@ -236,7 +236,7 @@ export function OrderDetailPage() {
 
               {shippingMutation.isError && (
                 <p className="text-sm text-[var(--destructive)]">
-                  Nepodarilo se ulozit udaje o doprave.
+                  Nepodařilo se uložit údaje o dopravě.
                 </p>
               )}
 

@@ -7,10 +7,10 @@ import { adminApi } from "@samofujera/api-client";
 import { Button } from "@samofujera/ui";
 
 const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Cekajici",
+  PENDING: "Čekající",
   PAID: "Zaplaceno",
-  CANCELLED: "Zruseno",
-  REFUNDED: "Vraceno",
+  CANCELLED: "Zrušeno",
+  REFUNDED: "Vráceno",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -52,17 +52,17 @@ export function OrdersPage() {
           }}
           className="rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
         >
-          <option value="">Vsechny stavy</option>
-          <option value="PENDING">Cekajici</option>
+          <option value="">Všechny stavy</option>
+          <option value="PENDING">Čekající</option>
           <option value="PAID">Zaplaceno</option>
-          <option value="CANCELLED">Zruseno</option>
-          <option value="REFUNDED">Vraceno</option>
+          <option value="CANCELLED">Zrušeno</option>
+          <option value="REFUNDED">Vráceno</option>
         </select>
       </div>
 
       <div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
         {ordersQuery.isLoading && (
-          <p className="p-6 text-[var(--muted-foreground)]">Nacitani objednavek...</p>
+          <p className="p-6 text-[var(--muted-foreground)]">Načítání objednávek...</p>
         )}
 
         {ordersQuery.isError && (

@@ -47,7 +47,7 @@ export function ProductNewPage() {
 
       {createDraftMutation.isError && (
         <p className="mt-4 text-sm text-[var(--destructive)]">
-          Nepodarilo se vytvorit produkt. Zkuste to prosim znovu.
+          Nepodařilo se vytvořit produkt. Zkuste to prosím znovu.
         </p>
       )}
 
