@@ -14,7 +14,7 @@ export const adminSidebarData: SidebarData = {
     {
       title: "Obecné",
       items: [
-        { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+        { title: "Nástěnka", url: "/admin", icon: LayoutDashboard },
       ],
     },
     {

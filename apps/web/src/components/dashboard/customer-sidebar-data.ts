@@ -13,7 +13,7 @@ export const customerSidebarData: SidebarData = {
     {
       title: "Obecné",
       items: [
-        { title: "Dashboard", url: "/muj-ucet", icon: LayoutDashboard },
+        { title: "Nástěnka", url: "/muj-ucet", icon: LayoutDashboard },
       ],
     },
     {
