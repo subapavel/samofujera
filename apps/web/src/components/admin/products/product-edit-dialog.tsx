@@ -10,12 +10,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
-import { adminApi, catalogApi, mediaApi } from "@samofujera/api-client";
+import { adminApi, catalogApi, imageApi } from "@samofujera/api-client";
 import type {
   ProductType,
   FileResponse,
   MediaResponse,
-  ImageResponse,
+  ProductImageResponse,
   VariantResponse,
   CreateVariantRequest,
   CategoryResponse,
@@ -57,8 +57,9 @@ import {
   FormControl,
   FormMessage,
 } from "@samofujera/ui";
-import { MediaPicker } from "../media/MediaPicker";
-import { formatFileSize } from "../media/format-file-size";
+import { ImagePicker } from "../images/ImagePicker";
+import type { ImagePickerResult } from "../images/ImagePicker";
+import { formatFileSize } from "../images/format-file-size";
 
 function slugify(text: string): string {
   return text
@@ -100,19 +101,19 @@ function GalleryTab({
   onInvalidate,
 }: {
   productId: string;
-  images: ImageResponse[];
+  images: ProductImageResponse[];
   onInvalidate: () => Promise<void>;
 }) {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
-  const [pickerValue, setPickerValue] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const uploadAndLinkMutation = useMutation({
     mutationFn: async (file: File) => {
-      const uploadResult = await mediaApi.uploadDirect(file);
-      const mediaItemId = uploadResult.data.id;
-      await adminApi.linkImage(productId, mediaItemId);
+      const uploadResult = await imageApi.uploadDirect(file);
+      const imageId = uploadResult.data.id;
+      await adminApi.linkImage(productId, imageId);
     },
     onSuccess: async () => {
       await onInvalidate();
@@ -121,17 +122,17 @@ function GalleryTab({
   });
 
   const linkImageMutation = useMutation({
-    mutationFn: (mediaItemId: string) => adminApi.linkImage(productId, mediaItemId),
+    mutationFn: (imageId: string) => adminApi.linkImage(productId, imageId),
     onSuccess: onInvalidate,
   });
 
   const unlinkImageMutation = useMutation({
-    mutationFn: (mediaItemId: string) => adminApi.unlinkImage(productId, mediaItemId),
+    mutationFn: (imageId: string) => adminApi.unlinkImage(productId, imageId),
     onSuccess: onInvalidate,
   });
 
   const reorderMutation = useMutation({
-    mutationFn: (mediaItemIds: string[]) => adminApi.reorderImages(productId, mediaItemIds),
+    mutationFn: (imageIds: string[]) => adminApi.reorderImages(productId, imageIds),
     onSuccess: onInvalidate,
   });
 
@@ -140,21 +141,18 @@ function GalleryTab({
     if (file) uploadAndLinkMutation.mutate(file);
   }
 
-  function handleUnlinkImage(image: ImageResponse) {
+  function handleUnlinkImage(image: ProductImageResponse) {
     if (window.confirm(t`Opravdu chcete odebrat tento obrázek z galerie?`)) {
-      unlinkImageMutation.mutate(image.mediaItemId);
+      unlinkImageMutation.mutate(image.imageId);
     }
   }
 
-  function handlePickerChange(id: string | null) {
-    setPickerValue(id);
-    if (id) {
-      const alreadyLinked = images.some((img) => img.mediaItemId === id);
-      if (!alreadyLinked) {
-        linkImageMutation.mutate(id);
-      }
-      setPickerValue(null);
+  function handlePickerSelect(result: ImagePickerResult) {
+    const alreadyLinked = images.some((img) => img.imageId === result.imageId);
+    if (!alreadyLinked) {
+      linkImageMutation.mutate(result.imageId);
     }
+    setPickerOpen(false);
   }
 
   function handleDragStart(index: number) {
@@ -175,7 +173,7 @@ function GalleryTab({
     const newOrder = [...images];
     const [moved] = newOrder.splice(dragSourceIndex, 1);
     newOrder.splice(targetIndex, 0, moved);
-    reorderMutation.mutate(newOrder.map((img) => img.mediaItemId));
+    reorderMutation.mutate(newOrder.map((img) => img.imageId));
     setDragOverIndex(null);
     setDragSourceIndex(null);
   }
@@ -195,7 +193,7 @@ function GalleryTab({
           <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {images.map((image, index) => (
               <div
-                key={image.mediaItemId}
+                key={image.imageId}
                 draggable
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
@@ -206,9 +204,10 @@ function GalleryTab({
                 }`}
               >
                 <img
-                  src={image.thumbUrl ?? image.originalUrl}
+                  src={image.url}
                   alt={image.altText ?? ""}
                   className="aspect-square w-full rounded object-cover"
+                  style={{ objectPosition: `${image.panX}% ${image.panY}%` }}
                 />
                 {image.altText && (
                   <div className="mt-1.5">
@@ -255,10 +254,17 @@ function GalleryTab({
         </div>
 
         <div className="mt-3">
-          <MediaPicker
-            value={pickerValue}
-            onChange={handlePickerChange}
-            accept="image/*"
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setPickerOpen(true)}
+          >
+            {t`Vybrat z knihovny`}
+          </Button>
+          <ImagePicker
+            open={pickerOpen}
+            onOpenChange={setPickerOpen}
+            onSelect={handlePickerSelect}
           />
         </div>
 

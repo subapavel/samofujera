@@ -14,7 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@samofujera/ui";
-import { MediaPicker } from "../media/MediaPicker";
+import { ImagePicker } from "../images/ImagePicker";
+import type { ImagePickerResult } from "../images/ImagePicker";
 
 function slugify(text: string): string {
   return text
@@ -42,6 +43,7 @@ export function CategoryEditPage() {
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [formLoaded, setFormLoaded] = useState(false);
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   const categoryQuery = useQuery({
     queryKey: ["admin", "category", categoryId],
@@ -169,10 +171,43 @@ export function CategoryEditPage() {
             <div>
               <Label>{t`Obrázek`}</Label>
               <div className="mt-1">
-                <MediaPicker
-                  value={imageMediaId}
-                  onChange={setImageMediaId}
-                  accept="image/*"
+                {imageMediaId ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-[var(--muted-foreground)]">
+                      {imageMediaId.slice(0, 8)}...
+                    </span>
+                    <button
+                      type="button"
+                      className="text-xs text-[var(--primary)] hover:underline"
+                      onClick={() => setImagePickerOpen(true)}
+                    >
+                      {t`Změnit`}
+                    </button>
+                    <button
+                      type="button"
+                      className="text-xs text-[var(--destructive)] hover:underline"
+                      onClick={() => setImageMediaId(null)}
+                    >
+                      {t`Odebrat`}
+                    </button>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setImagePickerOpen(true)}
+                  >
+                    {t`Vybrat obrázek`}
+                  </Button>
+                )}
+                <ImagePicker
+                  open={imagePickerOpen}
+                  onOpenChange={setImagePickerOpen}
+                  onSelect={(result: ImagePickerResult) => {
+                    setImageMediaId(result.imageId);
+                    setImagePickerOpen(false);
+                  }}
                 />
               </div>
             </div>

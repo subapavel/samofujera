@@ -12,9 +12,11 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@samofujera/ui";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { mediaApi } from "@samofujera/api-client";
-import { MediaPicker } from "../media/MediaPicker";
+import { imageApi } from "@samofujera/api-client";
+import { ImagePicker } from "../images/ImagePicker";
+import type { ImagePickerResult } from "../images/ImagePicker";
 
 interface SettingsDrawerProps {
   open: boolean;
@@ -108,12 +110,12 @@ function SocialPreview({
   const effectiveDesc = ogDescription || metaDescription || "";
 
   const imageQuery = useQuery({
-    queryKey: ["media", "item", ogImageId],
-    queryFn: () => mediaApi.getItem(ogImageId!),
+    queryKey: ["images", "detail", ogImageId],
+    queryFn: () => imageApi.getImage(ogImageId!),
     enabled: Boolean(ogImageId),
   });
 
-  const imageUrl = imageQuery.data?.data?.originalUrl;
+  const imageUrl = imageQuery.data?.data?.url;
 
   return (
     <div className="overflow-hidden rounded-lg border border-[var(--border)]">
@@ -170,6 +172,12 @@ export function SettingsDrawer({
   nofollow,
   onNofollowChange,
 }: SettingsDrawerProps) {
+  const [ogPickerOpen, setOgPickerOpen] = useState(false);
+
+  function handleOgImageSelect(result: ImagePickerResult) {
+    onOgImageIdChange(result.imageId);
+    setOgPickerOpen(false);
+  }
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[400px] overflow-y-auto">
@@ -318,10 +326,40 @@ export function SettingsDrawer({
               <label className="mb-1.5 block text-sm font-medium">
                 OG obrázek
               </label>
-              <MediaPicker
-                value={ogImageId}
-                onChange={onOgImageIdChange}
-                accept="image/*"
+              {ogImageId ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-[var(--muted-foreground)]">
+                    {ogImageId.slice(0, 8)}...
+                  </span>
+                  <button
+                    type="button"
+                    className="text-xs text-[var(--primary)] hover:underline"
+                    onClick={() => setOgPickerOpen(true)}
+                  >
+                    Změnit
+                  </button>
+                  <button
+                    type="button"
+                    className="text-xs text-[var(--destructive)] hover:underline"
+                    onClick={() => onOgImageIdChange(null)}
+                  >
+                    Odebrat
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="rounded-md border border-[var(--border)] px-3 py-1.5 text-sm hover:bg-[var(--accent)]"
+                  onClick={() => setOgPickerOpen(true)}
+                >
+                  Vybrat obrázek
+                </button>
+              )}
+              <ImagePicker
+                open={ogPickerOpen}
+                onOpenChange={setOgPickerOpen}
+                onSelect={handleOgImageSelect}
+                targetAspectRatio={1.91}
               />
             </div>
 

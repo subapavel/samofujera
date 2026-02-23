@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { mediaApi } from "@samofujera/api-client";
+import { imageApi } from "@samofujera/api-client";
 
 export interface UploadItem {
   id: string;
@@ -35,9 +35,10 @@ export function useMultiUpload(options?: UseMultiUploadOptions) {
 
   const uploadFile = useCallback(
     (item: UploadItem) => {
-      const { promise, abort } = mediaApi.uploadWithProgress(
+      const { promise, abort } = imageApi.uploadWithProgress(
         item.file,
         (progress) => updateUpload(item.id, { progress, status: "uploading" }),
+        undefined,
         undefined,
         isPublic,
       );
@@ -48,8 +49,7 @@ export function useMultiUpload(options?: UseMultiUploadOptions) {
         .then(() => {
           updateUpload(item.id, { progress: 100, status: "done" });
           abortFns.current.delete(item.id);
-          void queryClient.invalidateQueries({ queryKey: ["media", "items"] });
-          void queryClient.invalidateQueries({ queryKey: ["media-items"] });
+          void queryClient.invalidateQueries({ queryKey: ["images"] });
         })
         .catch((err: Error) => {
           if (err.message !== "Upload cancelled") {

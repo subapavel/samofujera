@@ -1,5 +1,6 @@
 "use client";
 
+import { t } from "@lingui/core/macro";
 import { Button } from "@samofujera/ui";
 import type { UploadItem } from "./useMultiUpload";
 
@@ -23,7 +24,7 @@ export function UploadProgress({
     <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
       <div className="mb-2 flex items-center justify-between">
         <p className="text-sm font-medium">
-          Nahravani ({doneCount}/{uploads.length})
+          {t`Nahrávání`} ({doneCount}/{uploads.length})
         </p>
         {allDone && (
           <Button
@@ -32,7 +33,7 @@ export function UploadProgress({
             size="sm"
             onClick={onClearDone}
           >
-            Zavrit
+            {t`Zavřít`}
           </Button>
         )}
       </div>
@@ -70,11 +71,11 @@ export function UploadProgress({
                 </>
               )}
               {upload.status === "done" && (
-                <span className="text-xs text-emerald-500">Hotovo</span>
+                <span className="text-xs text-emerald-500">{t`Hotovo`}</span>
               )}
               {upload.status === "error" && (
                 <span className="text-xs text-[var(--destructive)]">
-                  Chyba
+                  {t`Chyba`}
                 </span>
               )}
             </div>

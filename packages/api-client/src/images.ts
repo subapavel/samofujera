@@ -1,13 +1,13 @@
 import { apiFetch, BASE_URL } from "./client";
 import type {
   ApiResponse,
-  MediaItemResponse,
-  MediaItemListResponse,
-  UpdateMediaItemRequest,
+  ImageDetailResponse,
+  ImageListResponse,
+  UpdateImageRequest,
 } from "./types";
 
-export const mediaApi = {
-  getItems: (params?: {
+export const imageApi = {
+  getImages: (params?: {
     source?: string;
     type?: string;
     search?: string;
@@ -21,46 +21,49 @@ export const mediaApi = {
     if (params?.page) searchParams.set("page", String(params.page));
     if (params?.limit) searchParams.set("limit", String(params.limit));
     const qs = searchParams.toString();
-    return apiFetch<ApiResponse<MediaItemListResponse>>(
-      `/api/admin/media${qs ? `?${qs}` : ""}`,
+    return apiFetch<ApiResponse<ImageListResponse>>(
+      `/api/admin/images${qs ? `?${qs}` : ""}`,
     );
   },
 
-  getItem: (id: string) =>
-    apiFetch<ApiResponse<MediaItemResponse>>(`/api/admin/media/${id}`),
+  getImage: (id: string) =>
+    apiFetch<ApiResponse<ImageDetailResponse>>(`/api/admin/images/${id}`),
 
-  uploadDirect: (file: File, altText?: string, isPublic?: boolean) => {
+  uploadDirect: (file: File, altText?: string, title?: string, isPublic?: boolean) => {
     const formData = new FormData();
     formData.append("file", file);
     if (altText) formData.append("altText", altText);
+    if (title) formData.append("title", title);
     const qs = isPublic ? "?public=true" : "";
-    return apiFetch<ApiResponse<MediaItemResponse>>(
-      `/api/admin/media/upload${qs}`,
+    return apiFetch<ApiResponse<ImageDetailResponse>>(
+      `/api/admin/images/upload${qs}`,
       { method: "POST", body: formData },
     );
   },
 
-  updateItem: (id: string, data: UpdateMediaItemRequest) =>
-    apiFetch<ApiResponse<MediaItemResponse>>(`/api/admin/media/${id}`, {
+  updateImage: (id: string, data: UpdateImageRequest) =>
+    apiFetch<ApiResponse<ImageDetailResponse>>(`/api/admin/images/${id}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
 
-  deleteItem: (id: string) =>
-    apiFetch<void>(`/api/admin/media/${id}`, { method: "DELETE" }),
+  deleteImage: (id: string) =>
+    apiFetch<void>(`/api/admin/images/${id}`, { method: "DELETE" }),
 
   uploadWithProgress: (
     file: File,
     onProgress: (percent: number) => void,
     altText?: string,
+    title?: string,
     isPublic?: boolean,
-  ): { promise: Promise<ApiResponse<MediaItemResponse>>; abort: () => void } => {
+  ): { promise: Promise<ApiResponse<ImageDetailResponse>>; abort: () => void } => {
     const xhr = new XMLHttpRequest();
-    const promise = new Promise<ApiResponse<MediaItemResponse>>(
+    const promise = new Promise<ApiResponse<ImageDetailResponse>>(
       (resolve, reject) => {
         const formData = new FormData();
         formData.append("file", file);
         if (altText) formData.append("altText", altText);
+        if (title) formData.append("title", title);
 
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) {
@@ -70,9 +73,7 @@ export const mediaApi = {
 
         xhr.addEventListener("load", () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(
-              JSON.parse(xhr.responseText) as ApiResponse<MediaItemResponse>,
-            );
+            resolve(JSON.parse(xhr.responseText) as ApiResponse<ImageDetailResponse>);
           } else {
             reject(new Error(`Upload failed: ${xhr.status}`));
           }
@@ -82,7 +83,7 @@ export const mediaApi = {
         xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
 
         const qs = isPublic ? "?public=true" : "";
-        xhr.open("POST", `${BASE_URL}/api/admin/media/upload${qs}`);
+        xhr.open("POST", `${BASE_URL}/api/admin/images/upload${qs}`);
         xhr.withCredentials = true;
         xhr.send(formData);
       },

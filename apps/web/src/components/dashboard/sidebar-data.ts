@@ -22,7 +22,7 @@ export const adminSidebarData: SidebarData = {
       title: msg`Obsah`,
       items: [
         { title: msg`Stránky`, url: "/admin/stranky", icon: FileText },
-        { title: msg`Média`, url: "/admin/media", icon: Image },
+        { title: msg`Knihovna obrázků`, url: "/admin/obrazky", icon: Image },
       ],
     },
     {

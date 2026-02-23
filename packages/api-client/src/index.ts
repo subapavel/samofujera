@@ -6,6 +6,6 @@ export { ordersApi } from "./orders";
 export { checkoutApi } from "./checkout";
 export { libraryApi } from "./library";
 export { adminApi } from "./admin";
-export { mediaApi } from "./media";
+export { imageApi } from "./images";
 export { pageAdminApi, pagePublicApi } from "./pages";
 export type * from "./types";

@@ -148,19 +148,17 @@ export interface OccurrenceResponse {
   streamUrl: string | null;
 }
 
-export interface ImageResponse {
-  mediaItemId: string;
-  originalUrl: string;
-  thumbUrl: string | null;
-  mediumUrl: string | null;
-  largeUrl: string | null;
-  ogUrl: string | null;
+export interface ProductImageResponse {
+  imageId: string;
+  url: string;
   altText: string | null;
+  panX: number;
+  panY: number;
   sortOrder: number;
 }
 
 export interface ProductDetailResponse extends ProductResponse {
-  images: ImageResponse[];
+  images: ProductImageResponse[];
   variants: VariantResponse[] | null;
   files: FileResponse[] | null;
   media: MediaResponse[] | null;
@@ -336,33 +334,38 @@ export interface UpdateShippingRequest {
   trackingUrl?: string;
 }
 
-// Media Library types
+// Image Library types
 
-export interface MediaItemResponse {
+export interface ImageDetailResponse {
   id: string;
+  url: string;
   originalFilename: string;
-  originalUrl: string;
-  thumbUrl: string | null;
-  mediumUrl: string | null;
-  largeUrl: string | null;
-  ogUrl: string | null;
   mimeType: string;
   fileSizeBytes: number;
   width: number | null;
   height: number | null;
+  title: string | null;
   altText: string | null;
   createdAt: string;
+  usedIn: UsageInfo[];
 }
 
-export interface MediaItemListResponse {
-  items: MediaItemResponse[];
+export interface UsageInfo {
+  entityType: string;
+  entityId: string;
+  entityName: string;
+}
+
+export interface ImageListResponse {
+  items: ImageDetailResponse[];
   page: number;
   limit: number;
   totalItems: number;
   totalPages: number;
 }
 
-export interface UpdateMediaItemRequest {
+export interface UpdateImageRequest {
+  title?: string;
   altText?: string;
 }
 

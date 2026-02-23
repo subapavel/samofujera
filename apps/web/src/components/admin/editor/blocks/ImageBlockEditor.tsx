@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { mediaApi } from "@samofujera/api-client";
-import type { MediaItemResponse } from "@samofujera/api-client";
+import { imageApi } from "@samofujera/api-client";
+import type { ImageDetailResponse } from "@samofujera/api-client";
 import {
   Button,
   Dialog,
@@ -22,9 +22,9 @@ import {
   Link,
   Unlink,
 } from "lucide-react";
-import { MediaGrid } from "../../media/MediaGrid";
-import { UploadProgress } from "../../media/UploadProgress";
-import { useMultiUpload } from "../../media/useMultiUpload";
+import { ImageGrid } from "../../images/ImageGrid";
+import { UploadProgress } from "../../images/UploadProgress";
+import { useMultiUpload } from "../../images/useMultiUpload";
 import type { ImageBlock } from "../types";
 
 interface ImageBlockEditorProps {
@@ -198,7 +198,7 @@ export function ImageBlockEditor({
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
   const [search, setSearch] = useState("");
-  const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ImageDetailResponse | null>(null);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -216,8 +216,8 @@ export function ImageBlockEditor({
   const multiUpload = useMultiUpload({ isPublic: true });
 
   const itemsQuery = useQuery({
-    queryKey: ["media", "items", { search, pickerOpen: showPicker }],
-    queryFn: () => mediaApi.getItems({ search: search || undefined, limit: 50 }),
+    queryKey: ["images", "picker", { search, pickerOpen: showPicker }],
+    queryFn: () => imageApi.getImages({ search: search || undefined, limit: 50 }),
     enabled: showPicker,
   });
 
@@ -268,7 +268,7 @@ export function ImageBlockEditor({
     if (selectedItem) {
       onChange({
         ...block,
-        src: selectedItem.originalUrl,
+        src: selectedItem.url,
         altText: selectedItem.altText ?? selectedItem.originalFilename,
         mediaItemId: selectedItem.id,
         width: null,
@@ -655,7 +655,7 @@ export function ImageBlockEditor({
               <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">Načítání...</p>
             )}
             {itemsQuery.isSuccess && (
-              <MediaGrid items={imageItems} selectedId={selectedItem?.id} onSelect={setSelectedItem} />
+              <ImageGrid items={imageItems} selectedId={selectedItem?.id} onSelect={setSelectedItem} />
             )}
           </div>
           {multiUpload.uploads.length > 0 && (

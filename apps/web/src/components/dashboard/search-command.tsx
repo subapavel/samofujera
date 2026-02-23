@@ -48,9 +48,9 @@ export function SearchCommand() {
             <ShoppingCart className="mr-2 h-4 w-4" />
             <span>{t`Objednávky`}</span>
           </CommandItem>
-          <CommandItem onSelect={() => navigate("/admin/media")}>
+          <CommandItem onSelect={() => navigate("/admin/obrazky")}>
             <Image className="mr-2 h-4 w-4" />
-            <span>{t`Média`}</span>
+            <span>{t`Knihovna obrázků`}</span>
           </CommandItem>
           <CommandItem onSelect={() => navigate("/admin/users")}>
             <Users className="mr-2 h-4 w-4" />

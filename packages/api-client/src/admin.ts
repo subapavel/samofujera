@@ -15,7 +15,7 @@ import type {
   ShippingResponse,
   UpdateShippingRequest,
   FileResponse,
-  ImageResponse,
+  ProductImageResponse,
   MediaResponse,
   CreateMediaRequest,
   VariantResponse,
@@ -69,29 +69,29 @@ export const adminApi = {
   deleteProduct: (id: string) =>
     apiFetch<void>(`/api/admin/products/${id}`, { method: "DELETE" }),
 
-  // Images (linked via media items)
+  // Images (linked via image library)
 
-  linkImage: (productId: string, mediaItemId: string) =>
-    apiFetch<ApiResponse<ImageResponse>>(
+  linkImage: (productId: string, imageId: string) =>
+    apiFetch<ApiResponse<ProductImageResponse>>(
       `/api/admin/products/${productId}/images`,
       {
         method: "POST",
-        body: JSON.stringify({ mediaItemId }),
+        body: JSON.stringify({ imageId }),
       },
     ),
 
-  unlinkImage: (productId: string, mediaItemId: string) =>
+  unlinkImage: (productId: string, imageId: string) =>
     apiFetch<void>(
-      `/api/admin/products/${productId}/images/${mediaItemId}`,
+      `/api/admin/products/${productId}/images/${imageId}`,
       { method: "DELETE" },
     ),
 
-  reorderImages: (productId: string, mediaItemIds: string[]) =>
+  reorderImages: (productId: string, imageIds: string[]) =>
     apiFetch<void>(
       `/api/admin/products/${productId}/images/reorder`,
       {
         method: "PUT",
-        body: JSON.stringify({ mediaItemIds }),
+        body: JSON.stringify({ imageIds }),
       },
     ),
 

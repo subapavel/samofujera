@@ -12,8 +12,8 @@ import {
   $getNodeByKey,
 } from "lexical";
 import { useQuery } from "@tanstack/react-query";
-import { mediaApi } from "@samofujera/api-client";
-import type { MediaItemResponse } from "@samofujera/api-client";
+import { imageApi } from "@samofujera/api-client";
+import type { ImageDetailResponse } from "@samofujera/api-client";
 import {
   Button,
   Dialog,
@@ -22,9 +22,9 @@ import {
   DialogTitle,
   Input,
 } from "@samofujera/ui";
-import { MediaGrid } from "../../media/MediaGrid";
-import { UploadProgress } from "../../media/UploadProgress";
-import { useMultiUpload } from "../../media/useMultiUpload";
+import { ImageGrid } from "../../images/ImageGrid";
+import { UploadProgress } from "../../images/UploadProgress";
+import { useMultiUpload } from "../../images/useMultiUpload";
 import { BlockWrapper } from "./BlockWrapper";
 
 export type ImageAlignment = "left" | "center" | "right" | "full";
@@ -55,15 +55,15 @@ function ImageComponent({
   const [isSelected, setIsSelected] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedItem, setSelectedItem] = useState<MediaItemResponse | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ImageDetailResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const multiUpload = useMultiUpload({ isPublic: true });
 
   const itemsQuery = useQuery({
-    queryKey: ["media", "items", { search, pickerOpen: showPicker }],
+    queryKey: ["images", "picker", { search, pickerOpen: showPicker }],
     queryFn: () =>
-      mediaApi.getItems({
+      imageApi.getImages({
         search: search || undefined,
         limit: 50,
       }),
@@ -107,7 +107,7 @@ function ImageComponent({
 
   function handleConfirmSelect() {
     if (selectedItem) {
-      const imageUrl = selectedItem.largeUrl ?? selectedItem.originalUrl;
+      const imageUrl = selectedItem.url;
       const alt = selectedItem.altText ?? selectedItem.originalFilename;
       editor.update(() => {
         const node = $getNodeByKey(nodeKey);
@@ -199,7 +199,7 @@ function ImageComponent({
               </p>
             )}
             {itemsQuery.isSuccess && (
-              <MediaGrid
+              <ImageGrid
                 items={imageItems}
                 selectedId={selectedItem?.id}
                 onSelect={setSelectedItem}

@@ -157,4 +157,5 @@ export {
   PaginationNext,
   PaginationPrevious,
 } from "./components/pagination";
+export { Slider } from "./components/slider";
 export { cn } from "./lib/utils";
