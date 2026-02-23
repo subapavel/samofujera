@@ -3,16 +3,16 @@ import * as React from "react";
 import { Layout } from "./components/Layout";
 
 export const AccountBlocked = () => (
-  <Layout preview="Vas ucet byl zablokovany - Samo Fujera">
+  <Layout preview="Váš účet byl zablokován - Sámo Fujera">
     <Heading as="h2" style={heading}>
-      Ucet byl zablokovany
+      Účet byl zablokován
     </Heading>
     <Text style={paragraph}>
-      Vas ucet na platforme Samo Fujera byl zablokovany. Pristup k vasemu uctu a
-      vsem souvisejicim sluzbam byl docasne pozastaven.
+      Váš účet na platformě Sámo Fujera byl zablokován. Přístup k vašemu účtu a
+      všem souvisejícím službám byl dočasně pozastaven.
     </Text>
     <Text style={paragraph}>
-      Pokud se domnivate, ze doslo k omylu, kontaktujte nas prosim na adrese
+      Pokud se domníváte, že došlo k omylu, kontaktujte nás prosím na adrese
       podpora@samofujera.cz.
     </Text>
   </Layout>

@@ -211,7 +211,7 @@ export function MediaPage() {
               {data && data.totalPages > 1 && (
                 <div className="mt-4 flex items-center justify-between">
                   <p className="text-sm text-[var(--muted-foreground)]">
-                    Stranka {data.page} z {data.totalPages} (
+                    Stránka {data.page} z {data.totalPages} (
                     {data.totalItems} souborů)
                   </p>
                   <div className="flex gap-2">

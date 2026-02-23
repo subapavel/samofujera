@@ -58,7 +58,7 @@ function GooglePreview({
   metaDescription: string;
 }) {
   const displayTitle =
-    metaTitle || (title ? `${title} | Samo Fujera` : "Samo Fujera");
+    metaTitle || (title ? `${title} | Sámo Fujera` : "Sámo Fujera");
   const displayUrl = `samofujera.cz/${slug}`;
   const displayDesc = metaDescription || "Popis není nastaven";
   const truncTitle =
@@ -104,7 +104,7 @@ function SocialPreview({
   ogDescription: string;
   ogImageId: string | null;
 }) {
-  const effectiveTitle = ogTitle || metaTitle || title || "Samo Fujera";
+  const effectiveTitle = ogTitle || metaTitle || title || "Sámo Fujera";
   const effectiveDesc = ogDescription || metaDescription || "";
 
   const imageQuery = useQuery({

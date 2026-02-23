@@ -33,7 +33,7 @@ export async function generateMetadata({
   const page = await getPage(slug);
   if (!page) return {};
   return {
-    title: page.metaTitle || `${page.title} | Samo Fujera`,
+    title: page.metaTitle || `${page.title} | Sámo Fujera`,
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords || undefined,
     openGraph: {

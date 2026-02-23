@@ -7,7 +7,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PENDING: {
-    label: "Ceka na platbu",
+    label: "Čeká na platbu",
     className: "bg-yellow-100 text-yellow-800",
   },
   PAID: {
@@ -52,9 +52,9 @@ export function OrderDetailPage() {
           size="sm"
           onClick={() => router.push("/muj-ucet/objednavky")}
         >
-          Zpet na objednavky
+          Zpět na objednávky
         </Button>
-        <h2 className="text-2xl font-bold">Detail objednavky</h2>
+        <h2 className="text-2xl font-bold">Detail objednávky</h2>
       </div>
 
       {orderQuery.isLoading && (
@@ -76,7 +76,7 @@ export function OrderDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <span>Objednavka</span>
+                <span>Objednávka</span>
                 <span className="font-mono text-sm font-normal text-[var(--muted-foreground)]">
                   {order.id}
                 </span>
@@ -130,7 +130,7 @@ export function OrderDetailPage() {
           {/* Order items */}
           <Card>
             <CardHeader>
-              <CardTitle>Polozky</CardTitle>
+              <CardTitle>Položky</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-hidden rounded-md border border-[var(--border)]">
@@ -141,7 +141,7 @@ export function OrderDetailPage() {
                         Produkt
                       </th>
                       <th className="px-4 py-2 text-right font-medium text-[var(--muted-foreground)]">
-                        Mnozstvi
+                        Množství
                       </th>
                       <th className="px-4 py-2 text-right font-medium text-[var(--muted-foreground)]">
                         Cena
@@ -173,7 +173,7 @@ export function OrderDetailPage() {
           {order.shipping && (
             <Card>
               <CardHeader>
-                <CardTitle>Doruceni</CardTitle>
+                <CardTitle>Doručení</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -188,7 +188,7 @@ export function OrderDetailPage() {
                   {order.shipping.trackingNumber && (
                     <div>
                       <p className="text-sm font-medium text-[var(--muted-foreground)]">
-                        Sledovaci cislo
+                        Sledovací číslo
                       </p>
                       {order.shipping.trackingUrl ? (
                         <a
@@ -209,7 +209,7 @@ export function OrderDetailPage() {
                   {order.shipping.shippedAt && (
                     <div>
                       <p className="text-sm font-medium text-[var(--muted-foreground)]">
-                        Odeslano
+                        Odesláno
                       </p>
                       <p className="mt-1 text-sm">
                         {new Date(
@@ -221,7 +221,7 @@ export function OrderDetailPage() {
                   {order.shipping.deliveredAt && (
                     <div>
                       <p className="text-sm font-medium text-[var(--muted-foreground)]">
-                        Doruceno
+                        Doručeno
                       </p>
                       <p className="mt-1 text-sm">
                         {new Date(

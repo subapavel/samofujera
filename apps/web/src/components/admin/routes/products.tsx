@@ -172,7 +172,7 @@ export function ProductsPage() {
 
         {productsQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodařilo se načíst produkty. Zkuste to prosim znovu.
+            Nepodařilo se načíst produkty. Zkuste to prosím znovu.
           </p>
         )}
 
@@ -241,7 +241,7 @@ export function ProductsPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stranka {data.page} z {data.totalPages} ({data.totalItems} produktů)
+                  Stránka {data.page} z {data.totalPages} ({data.totalItems} produktů)
                 </p>
                 <div className="flex gap-2">
                   <Button

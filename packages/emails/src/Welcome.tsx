@@ -3,20 +3,20 @@ import * as React from "react";
 import { Layout } from "./components/Layout";
 
 export const Welcome = () => (
-  <Layout preview="Vitejte na platforme Samo Fujera">
+  <Layout preview="Vítejte na platformě Sámo Fujera">
     <Heading as="h2" style={heading}>
-      {"Vitejte, {{name}}!"}
+      {"Vítejte, {{name}}!"}
     </Heading>
     <Text style={paragraph}>
-      Dekujeme za registraci na platforme Samo Fujera. Jsme radi, ze jste se k
-      nam pridali.
+      Děkujeme za registraci na platformě Sámo Fujera. Jsme rádi, že jste se k
+      nám přidali.
     </Text>
     <Text style={paragraph}>
-      Vase cesta k osobnimu rustu, zdravi a duchovnimu rozvoji prave zacina.
-      Prozkoumejte nase kurzy, clanky a komunitu.
+      Vaše cesta k osobnímu růstu, zdraví a duchovnímu rozvoji právě začíná.
+      Prozkoumejte naše kurzy, články a komunitu.
     </Text>
     <Text style={paragraph}>
-      Pokud mate jakekoli dotazy, nevahejte se na nas obratit.
+      Pokud máte jakékoli dotazy, neváhejte se na nás obrátit.
     </Text>
   </Layout>
 );

@@ -21,10 +21,10 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const PRODUCT_TYPE_LABELS: Record<string, string> = {
-  DIGITAL: "Digitalni",
+  DIGITAL: "Digitální",
   STREAMING: "Streaming",
-  PHYSICAL: "Fyzicky",
-  EVENT: "Udalost",
+  PHYSICAL: "Fyzický",
+  EVENT: "Událost",
 };
 
 export function OrderDetailPage() {
@@ -75,7 +75,7 @@ export function OrderDetailPage() {
   const hasPhysicalItems = order?.items.some((item) => item.productType === "PHYSICAL");
 
   if (orderQuery.isLoading) {
-    return <p className="text-[var(--muted-foreground)]">Nacitani objednavky...</p>;
+    return <p className="text-[var(--muted-foreground)]">Načítání objednávky...</p>;
   }
 
   if (orderQuery.isError) {
@@ -94,15 +94,15 @@ export function OrderDetailPage() {
     <div>
       <div className="mb-4 flex items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => router.push("/admin/objednavky")}>
-          Zpet
+          Zpět
         </Button>
-        <h2 className="text-2xl font-bold">Objednavka</h2>
+        <h2 className="text-2xl font-bold">Objednávka</h2>
       </div>
 
       {/* Order Info */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Informace o objednavce</CardTitle>
+          <CardTitle>Informace o objednávce</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
@@ -143,7 +143,7 @@ export function OrderDetailPage() {
       {/* Order Items */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Polozky</CardTitle>
+          <CardTitle>Položky</CardTitle>
         </CardHeader>
         <CardContent>
           <table className="w-full text-left text-sm">
@@ -151,8 +151,8 @@ export function OrderDetailPage() {
               <tr className="border-b border-[var(--border)]">
                 <th className="pb-2 font-medium text-[var(--muted-foreground)]">Produkt</th>
                 <th className="pb-2 font-medium text-[var(--muted-foreground)]">Typ</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Mnozstvi</th>
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Jednotkova cena</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Množství</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Jednotková cena</th>
                 <th className="pb-2 font-medium text-[var(--muted-foreground)]">Celkem</th>
               </tr>
             </thead>
@@ -190,13 +190,13 @@ export function OrderDetailPage() {
               <div className="mb-4 space-y-1 text-sm">
                 {order.shipping.shippedAt && (
                   <p>
-                    <span className="font-medium text-[var(--muted-foreground)]">Odeslano: </span>
+                    <span className="font-medium text-[var(--muted-foreground)]">Odesláno: </span>
                     {new Date(order.shipping.shippedAt).toLocaleString("cs-CZ")}
                   </p>
                 )}
                 {order.shipping.deliveredAt && (
                   <p>
-                    <span className="font-medium text-[var(--muted-foreground)]">Doruceno: </span>
+                    <span className="font-medium text-[var(--muted-foreground)]">Doručeno: </span>
                     {new Date(order.shipping.deliveredAt).toLocaleString("cs-CZ")}
                   </p>
                 )}
@@ -210,12 +210,12 @@ export function OrderDetailPage() {
                   id="carrier"
                   value={carrier}
                   onChange={(e) => setCarrier(e.target.value)}
-                  placeholder="Zasilkovna, PPL, DPD..."
+                  placeholder="Zásilkovna, PPL, DPD..."
                   disabled={shippingMutation.isPending}
                 />
               </div>
               <div>
-                <Label htmlFor="trackingNumber">Cislo zasilky</Label>
+                <Label htmlFor="trackingNumber">Číslo zásilky</Label>
                 <Input
                   id="trackingNumber"
                   value={trackingNumber}
@@ -224,7 +224,7 @@ export function OrderDetailPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="trackingUrl">URL sledovani</Label>
+                <Label htmlFor="trackingUrl">URL sledování</Label>
                 <Input
                   id="trackingUrl"
                   value={trackingUrl}
@@ -241,11 +241,11 @@ export function OrderDetailPage() {
               )}
 
               {shippingMutation.isSuccess && (
-                <p className="text-sm text-green-600">Udaje o doprave byly ulozeny.</p>
+                <p className="text-sm text-green-600">Údaje o dopravě byly uloženy.</p>
               )}
 
               <Button type="submit" disabled={shippingMutation.isPending}>
-                {shippingMutation.isPending ? "Ukladani..." : "Ulozit dopravu"}
+                {shippingMutation.isPending ? "Ukládání..." : "Uložit dopravu"}
               </Button>
             </form>
           </CardContent>

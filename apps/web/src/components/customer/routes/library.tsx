@@ -6,12 +6,12 @@ import { libraryApi } from "@samofujera/api-client";
 import { Button, Card, CardContent } from "@samofujera/ui";
 
 const productTypeLabels: Record<string, string> = {
-  PHYSICAL: "Fyzicky produkt",
+  PHYSICAL: "Fyzický produkt",
   EBOOK: "E-book",
   AUDIO_VIDEO: "Audio/Video",
-  ONLINE_EVENT: "Online udalost",
-  RECURRING_EVENT: "Opakovana udalost",
-  OFFLINE_EVENT: "Offline udalost",
+  ONLINE_EVENT: "Online událost",
+  RECURRING_EVENT: "Opakovaná událost",
+  OFFLINE_EVENT: "Offline událost",
 };
 
 export function LibraryPage() {
@@ -48,7 +48,7 @@ export function LibraryPage() {
           {libraryQuery.data.data.length === 0 ? (
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
               <p className="text-[var(--muted-foreground)]">
-                Zatim nemate zadne zakoupene produkty.
+                Zatím nemáte žádné zakoupené produkty.
               </p>
             </div>
           ) : (

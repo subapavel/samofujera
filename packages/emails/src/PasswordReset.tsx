@@ -3,13 +3,13 @@ import * as React from "react";
 import { Layout } from "./components/Layout";
 
 export const PasswordReset = () => (
-  <Layout preview="Obnoveni hesla - Samo Fujera">
+  <Layout preview="Obnovení hesla - Sámo Fujera">
     <Heading as="h2" style={heading}>
-      Obnoveni hesla
+      Obnovení hesla
     </Heading>
     <Text style={paragraph}>
-      Obdrzeli jsme zadost o obnoveni vaseho hesla. Kliknete na tlacitko nize
-      pro nastaveni noveho hesla.
+      Obdrželi jsme žádost o obnovení vašeho hesla. Klikněte na tlačítko níže
+      pro nastavení nového hesla.
     </Text>
     <Section style={buttonContainer}>
       <Button href="{{resetLink}}" style={button}>
@@ -17,8 +17,8 @@ export const PasswordReset = () => (
       </Button>
     </Section>
     <Text style={warning}>
-      Tento odkaz je platny pouze 1 hodinu. Pokud jste o obnoveni hesla
-      nezadali, tento e-mail muzete ignorovat.
+      Tento odkaz je platný pouze 1 hodinu. Pokud jste o obnovení hesla
+      nežádali, tento e-mail můžete ignorovat.
     </Text>
   </Layout>
 );

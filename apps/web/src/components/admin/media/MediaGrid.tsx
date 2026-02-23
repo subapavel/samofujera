@@ -18,7 +18,7 @@ export function MediaGrid({ items, selectedId, onSelect }: MediaGridProps) {
   if (items.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-        Zatim zadne soubory.
+        Zatím žádné soubory.
       </p>
     );
   }

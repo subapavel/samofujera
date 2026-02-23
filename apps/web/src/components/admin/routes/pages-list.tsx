@@ -289,7 +289,7 @@ export function PagesListPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stranka {data.page} z {data.totalPages} ({data.totalItems} stránek)
+                  Stránka {data.page} z {data.totalPages} ({data.totalItems} stránek)
                 </p>
                 <div className="flex gap-2">
                   <Button

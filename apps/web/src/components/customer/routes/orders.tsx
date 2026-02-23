@@ -8,7 +8,7 @@ import { Button } from "@samofujera/ui";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   PENDING: {
-    label: "Ceka na platbu",
+    label: "Čeká na platbu",
     className: "bg-yellow-100 text-yellow-800",
   },
   PAID: {
@@ -46,7 +46,7 @@ export function OrdersPage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Objednavky</h2>
+      <h2 className="mb-4 text-2xl font-bold">Objednávky</h2>
 
       {ordersQuery.isLoading && (
         <div className="space-y-2">
@@ -70,7 +70,7 @@ export function OrdersPage() {
           {data.items.length === 0 ? (
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
               <p className="text-[var(--muted-foreground)]">
-                Zatim nemate zadne objednavky.
+                Zatím nemáte žádné objednávky.
               </p>
             </div>
           ) : (
@@ -80,7 +80,7 @@ export function OrdersPage() {
                   <thead>
                     <tr className="border-b border-[var(--border)] bg-[var(--card)]">
                       <th className="px-4 py-3 text-left font-medium text-[var(--muted-foreground)]">
-                        Objednavka
+                        Objednávka
                       </th>
                       <th className="px-4 py-3 text-left font-medium text-[var(--muted-foreground)]">
                         Stav
@@ -138,7 +138,7 @@ export function OrdersPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Predchozi
+                    Předchozí
                   </Button>
                   <span className="text-sm text-[var(--muted-foreground)]">
                     Strana {data.page} z {data.totalPages}
@@ -149,7 +149,7 @@ export function OrdersPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Dalsi
+                    Další
                   </Button>
                 </div>
               )}

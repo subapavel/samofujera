@@ -10,7 +10,7 @@ export function UsersPage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-[var(--border)]">
-                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Jmeno</th>
+                <th className="pb-2 font-medium text-[var(--muted-foreground)]">Jméno</th>
                 <th className="pb-2 font-medium text-[var(--muted-foreground)]">E-mail</th>
                 <th className="pb-2 font-medium text-[var(--muted-foreground)]">Role</th>
                 <th className="pb-2 font-medium text-[var(--muted-foreground)]">Stav</th>
@@ -19,7 +19,7 @@ export function UsersPage() {
             <tbody>
               <tr>
                 <td className="py-3 text-[var(--muted-foreground)]" colSpan={4}>
-                  Zatim zadni uzivatele.
+                  Zatím žádní uživatelé.
                 </td>
               </tr>
             </tbody>

@@ -39,7 +39,7 @@ export function OrdersPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Objednavky</h2>
+        <h2 className="text-2xl font-bold">Objednávky</h2>
       </div>
 
       {/* Filters */}
@@ -67,7 +67,7 @@ export function OrdersPage() {
 
         {ordersQuery.isError && (
           <p className="p-6 text-[var(--destructive)]">
-            Nepodarilo se nacist objednavky. Zkuste to prosim znovu.
+            Nepodařilo se načíst objednávky. Zkuste to prosím znovu.
           </p>
         )}
 
@@ -79,7 +79,7 @@ export function OrdersPage() {
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">ID</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Stav</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Celkem</th>
-                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Mena</th>
+                  <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Měna</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Datum</th>
                   <th className="px-4 py-3 font-medium text-[var(--muted-foreground)]">Akce</th>
                 </tr>
@@ -88,7 +88,7 @@ export function OrdersPage() {
                 {data && data.items.length === 0 ? (
                   <tr>
                     <td className="px-4 py-6 text-[var(--muted-foreground)]" colSpan={6}>
-                      Zadne objednavky.
+                      Žádné objednávky.
                     </td>
                   </tr>
                 ) : (
@@ -126,7 +126,7 @@ export function OrdersPage() {
             {data && data.totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Stranka {data.page} z {data.totalPages} ({data.totalItems} objednavek)
+                  Stránka {data.page} z {data.totalPages} ({data.totalItems} objednávek)
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -135,7 +135,7 @@ export function OrdersPage() {
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Predchozi
+                    Předchozí
                   </Button>
                   <Button
                     variant="outline"
@@ -143,7 +143,7 @@ export function OrdersPage() {
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Dalsi
+                    Další
                   </Button>
                 </div>
               </div>

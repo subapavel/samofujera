@@ -3,17 +3,17 @@ import * as React from "react";
 import { Layout } from "./components/Layout";
 
 export const AccountUnblocked = () => (
-  <Layout preview="Vas ucet byl obnoven - Samo Fujera">
+  <Layout preview="Váš účet byl obnoven - Sámo Fujera">
     <Heading as="h2" style={heading}>
-      Ucet byl obnoven
+      Účet byl obnoven
     </Heading>
     <Text style={paragraph}>
-      S radosti vam oznamujeme, ze vas ucet na platforme Samo Fujera byl
-      obnoven. Nyni se muzete opet prihlasit a vyuzivat vsechny sluzby.
+      S radostí vám oznamujeme, že váš účet na platformě Sámo Fujera byl
+      obnoven. Nyní se můžete opět přihlásit a využívat všechny služby.
     </Text>
     <Text style={paragraph}>
-      Dekujeme za vasi trpelivost. Pokud mate jakekoli dotazy, neváhejte se na
-      nas obratit.
+      Děkujeme za vaši trpělivost. Pokud máte jakékoli dotazy, neváhejte se na
+      nás obrátit.
     </Text>
   </Layout>
 );

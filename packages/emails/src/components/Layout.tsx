@@ -22,7 +22,7 @@ export const Layout = ({ preview, children }: LayoutProps) => (
       <Container style={container}>
         <Section style={header}>
           <Heading as="h1" style={brandHeading}>
-            Samo Fujera
+            Sámo Fujera
           </Heading>
         </Section>
 
@@ -32,11 +32,11 @@ export const Layout = ({ preview, children }: LayoutProps) => (
 
         <Section style={footer}>
           <Text style={footerText}>
-            &copy; 2026 Samo Fujera. Vsechna prava vyhrazena.
+            &copy; 2026 Sámo Fujera. Všechna práva vyhrazena.
           </Text>
           <Text style={footerText}>
-            Pokud si neprejete dostávat tyto e-maily, muzete se{" "}
-            {"{{unsubscribeLink}}"}odhlasit.
+            Pokud si nepřejete dostávat tyto e-maily, můžete se{" "}
+            {"{{unsubscribeLink}}"}odhlásit.
           </Text>
         </Section>
       </Container>

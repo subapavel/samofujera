@@ -54,7 +54,7 @@ export function LibraryProductPage() {
       if (error instanceof ApiError) {
         if (error.status === 429) {
           setErrorMessage(
-            "Prilis mnoho stazeni. Zkuste to prosim za hodinu.",
+            "Příliš mnoho stažení. Zkuste to prosím za hodinu.",
           );
         } else if (error.status === 403) {
           setErrorMessage("K tomuto produktu nemáte přístup.");
@@ -84,7 +84,7 @@ export function LibraryProductPage() {
           size="sm"
           onClick={() => router.push("/muj-ucet/knihovna")}
         >
-          Zpet na knihovnu
+          Zpět na knihovnu
         </Button>
         <h2 className="text-2xl font-bold">Obsah produktu</h2>
       </div>
@@ -110,7 +110,7 @@ export function LibraryProductPage() {
       {hasFiles && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Soubory ke stazeni</CardTitle>
+            <CardTitle>Soubory ke stažení</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -136,7 +136,7 @@ export function LibraryProductPage() {
                     disabled={downloadMutation.isPending}
                     onClick={() => downloadMutation.mutate(file.id)}
                   >
-                    Stahnout
+                    Stáhnout
                   </Button>
                 </div>
               ))}
@@ -182,13 +182,13 @@ export function LibraryProductPage() {
       {hasEvent && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Udalost</CardTitle>
+            <CardTitle>Událost</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {eventAccess.venue && (
                 <p className="text-sm">
-                  <span className="font-medium">Misto:</span> {eventAccess.venue}
+                  <span className="font-medium">Místo:</span> {eventAccess.venue}
                 </p>
               )}
               {eventAccess.isOnline && eventAccess.streamUrl && (
@@ -200,13 +200,13 @@ export function LibraryProductPage() {
                     rel="noopener noreferrer"
                     className="text-[var(--primary)] hover:underline"
                   >
-                    Otevrit stream
+                    Otevřít stream
                   </a>
                 </p>
               )}
               {eventAccess.occurrences.length > 0 && (
                 <div>
-                  <p className="mb-2 text-sm font-medium">Terminy:</p>
+                  <p className="mb-2 text-sm font-medium">Termíny:</p>
                   <div className="space-y-2">
                     {eventAccess.occurrences.map((occ) => (
                       <div
@@ -246,7 +246,7 @@ export function LibraryProductPage() {
       {!isLoading && !hasFiles && !hasMedia && !hasEvent && (
         <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
           <p className="text-[var(--muted-foreground)]">
-            Pro tento produkt neni dostupny zadny obsah.
+            Pro tento produkt není dostupný žádný obsah.
           </p>
         </div>
       )}

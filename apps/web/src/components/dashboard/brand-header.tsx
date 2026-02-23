@@ -21,7 +21,7 @@ export function BrandHeader({ section }: BrandHeaderProps) {
               <span className="font-bold text-sm">SF</span>
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Samo Fujera</span>
+              <span className="truncate font-semibold">Sámo Fujera</span>
               <span className="truncate text-xs text-[var(--muted-foreground)]">{section}</span>
             </div>
           </Link>

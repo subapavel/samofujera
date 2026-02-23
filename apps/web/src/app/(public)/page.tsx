@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
   return {
-    title: page.metaTitle || `${page.title} | Samo Fujera`,
+    title: page.metaTitle || `${page.title} | Sámo Fujera`,
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords || undefined,
     openGraph: {
