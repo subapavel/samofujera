@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { SidebarInset, SidebarProvider } from "@samofujera/ui";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { Header } from "@/components/dashboard/header";
+import { MainContent } from "@/components/dashboard/main-content";
 import { Providers } from "@/components/dashboard/Providers";
 
 export const metadata: Metadata = {
@@ -22,9 +23,7 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <main className="flex-1 overflow-auto p-4 md:p-6">
-            {children}
-          </main>
+          <MainContent>{children}</MainContent>
         </SidebarInset>
       </SidebarProvider>
     </Providers>
