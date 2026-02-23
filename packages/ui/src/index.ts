@@ -68,4 +68,10 @@ export {
   AlertDialogCancel,
 } from "./components/alert-dialog";
 export { Switch } from "./components/switch";
+export { Separator } from "./components/separator";
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./components/tooltip";
+export { Avatar, AvatarImage, AvatarFallback } from "./components/avatar";
+export { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./components/collapsible";
+export { Skeleton } from "./components/skeleton";
+export { Badge, badgeVariants } from "./components/badge";
 export { cn } from "./lib/utils";
