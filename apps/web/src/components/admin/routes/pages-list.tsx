@@ -132,6 +132,12 @@ export function PagesListPage() {
         metaTitle: null,
         metaDescription: null,
         ogImageId: null,
+        showInNav: false,
+        metaKeywords: null,
+        ogTitle: null,
+        ogDescription: null,
+        noindex: false,
+        nofollow: false,
       });
       return response;
     },
