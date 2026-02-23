@@ -1,26 +1,9 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-const PROTECTED_PATHS = ["/admin", "/muj-ucet"];
-
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  const isProtected = PROTECTED_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`)
-  );
-
-  if (!isProtected) {
-    return NextResponse.next();
-  }
-
-  const sessionCookie = request.cookies.get("SESSION");
-
-  if (!sessionCookie?.value) {
-    const loginUrl = new URL("/prihlaseni", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
+// Session cookie lives on the API domain (cross-origin), so middleware
+// cannot see it. Auth protection is handled client-side by AuthGuard
+// which calls the API with credentials: "include".
+export function middleware() {
   return NextResponse.next();
 }
 
