@@ -66,4 +66,6 @@ export const pageAdminApi = {
 export const pagePublicApi = {
   getPage: (slug: string) =>
     apiFetch<ApiResponse<PublicPageResponse>>(`/api/pages/${slug}`),
+  getPagePreview: (slug: string) =>
+    apiFetch<ApiResponse<PublicPageResponse>>(`/api/pages/${slug}?preview=true`),
 };

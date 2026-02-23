@@ -1,26 +1,14 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { PageRenderer } from "@/components/page-renderer/PageRenderer";
+import { PagePreview } from "@/components/page-renderer/PagePreview";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-async function getPage(slug: string, preview: boolean) {
+async function getPage(slug: string) {
   try {
-    const headers: Record<string, string> = {};
-    if (preview) {
-      const cookieStore = await cookies();
-      const session = cookieStore.get("SESSION");
-      if (session) {
-        headers["Cookie"] = `SESSION=${session.value}`;
-      }
-    }
-    const url = preview
-      ? `${API_URL}/api/pages/${slug}?preview=true`
-      : `${API_URL}/api/pages/${slug}`;
-    const res = await fetch(url, {
+    const res = await fetch(`${API_URL}/api/pages/${slug}`, {
       cache: "no-store",
-      headers,
     });
     if (!res.ok) return null;
     const json = await res.json();
@@ -40,7 +28,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const sp = await searchParams;
   const preview = sp.preview === "true";
-  const page = await getPage(slug, preview);
+  // No metadata for preview — the page might not be published yet
+  if (preview) return { robots: { index: false, follow: false } };
+  const page = await getPage(slug);
   if (!page) return {};
   return {
     title: page.metaTitle || `${page.title} | Samo Fujera`,
@@ -68,7 +58,21 @@ export default async function CmsPageRoute({
   const { slug } = await params;
   const sp = await searchParams;
   const preview = sp.preview === "true";
-  const page = await getPage(slug, preview);
+
+  // Preview: client-side fetch with credentials (browser has the SESSION cookie)
+  if (preview) {
+    return (
+      <div
+        className="bg-repeat pb-12 sm:pb-16"
+        style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
+      >
+        <PagePreview slug={slug} />
+      </div>
+    );
+  }
+
+  // Published page: server-side fetch (no auth needed, good for SEO)
+  const page = await getPage(slug);
   if (!page) notFound();
 
   return (
