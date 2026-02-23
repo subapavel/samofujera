@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
@@ -10,17 +10,32 @@ export function ProfilePage() {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [locale, setLocale] = useState<string>("");
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
     queryFn: () => userApi.getProfile(),
   });
 
+  useEffect(() => {
+    if (profileQuery.data) {
+      setLocale(profileQuery.data.data.locale ?? "cs");
+    }
+  }, [profileQuery.data]);
+
   const updateMutation = useMutation({
     mutationFn: (newName: string) => userApi.updateProfile({ name: newName }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
       setIsEditing(false);
+    },
+  });
+
+  const localeMutation = useMutation({
+    mutationFn: (newLocale: string) => userApi.updateLocale(newLocale),
+    onSuccess: (_data: unknown, newLocale: string) => {
+      document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=${60 * 60 * 24 * 365}`;
+      window.location.reload();
     },
   });
 
@@ -115,6 +130,27 @@ export function ProfilePage() {
                 </div>
               </div>
             )}
+            <div>
+              <p className="text-sm font-medium text-[var(--muted-foreground)]">{t`Jazyk`}</p>
+              <div className="mt-1 flex gap-2">
+                <Button
+                  variant={locale === "cs" ? "default" : "outline"}
+                  size="sm"
+                  disabled={localeMutation.isPending}
+                  onClick={() => localeMutation.mutate("cs")}
+                >
+                  Čeština
+                </Button>
+                <Button
+                  variant={locale === "sk" ? "default" : "outline"}
+                  size="sm"
+                  disabled={localeMutation.isPending}
+                  onClick={() => localeMutation.mutate("sk")}
+                >
+                  Slovenčina
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
