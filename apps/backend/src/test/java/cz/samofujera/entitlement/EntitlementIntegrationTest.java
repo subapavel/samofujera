@@ -77,10 +77,10 @@ class EntitlementIntegrationTest {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
         var productId = createTestProduct(suffix);
 
-        entitlementService.grantAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
+        entitlementService.grantProductAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
             "test@test.com", "Test Product", "EBOOK");
 
-        assertThat(entitlementService.hasAccess(userId, productId)).isTrue();
+        assertThat(entitlementService.hasProductAccess(userId, productId)).isTrue();
     }
 
     @Test
@@ -88,7 +88,7 @@ class EntitlementIntegrationTest {
         var userId = createTestUser();
         var productId = UUID.randomUUID();
 
-        assertThat(entitlementService.hasAccess(userId, productId)).isFalse();
+        assertThat(entitlementService.hasProductAccess(userId, productId)).isFalse();
     }
 
     @Test
@@ -97,12 +97,12 @@ class EntitlementIntegrationTest {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
         var productId = createTestProduct(suffix);
 
-        entitlementService.grantAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
+        entitlementService.grantProductAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
             "test@test.com", "Test Product", "EBOOK");
-        assertThat(entitlementService.hasAccess(userId, productId)).isTrue();
+        assertThat(entitlementService.hasProductAccess(userId, productId)).isTrue();
 
-        entitlementService.revokeAccess(userId, productId);
-        assertThat(entitlementService.hasAccess(userId, productId)).isFalse();
+        entitlementService.revokeAccess(userId, "PRODUCT", productId);
+        assertThat(entitlementService.hasProductAccess(userId, productId)).isFalse();
     }
 
     @Test
@@ -111,7 +111,7 @@ class EntitlementIntegrationTest {
         var suffix = UUID.randomUUID().toString().substring(0, 8);
         var productId = createTestProduct(suffix);
 
-        entitlementService.grantAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
+        entitlementService.grantProductAccess(userId, productId, "PURCHASE", UUID.randomUUID(),
             "test@test.com", "Entitlement Product " + suffix, "EBOOK");
 
         var library = entitlementService.getLibrary(userId);
@@ -138,6 +138,6 @@ class EntitlementIntegrationTest {
         transactionTemplate.executeWithoutResult(status -> eventPublisher.publishEvent(event));
         Thread.sleep(2000);
 
-        assertThat(entitlementService.hasAccess(userId, productId)).isTrue();
+        assertThat(entitlementService.hasProductAccess(userId, productId)).isTrue();
     }
 }

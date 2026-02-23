@@ -72,10 +72,11 @@ class EmailListener {
 
     @ApplicationModuleListener
     void on(EntitlementGrantedEvent event) {
-        if ("DIGITAL".equals(event.productType()) || "STREAMING".equals(event.productType())) {
+        if ("PRODUCT".equals(event.entityType()) &&
+            ("DIGITAL".equals(event.entitySubType()) || "STREAMING".equals(event.entitySubType()))) {
             emailService.send(event.userEmail(), "Váš digitální obsah je připraven", "digital-delivery",
                 Map.of(
-                    "productTitle", event.productTitle(),
+                    "productTitle", event.entityTitle(),
                     "libraryUrl", frontendUrl + "/muj-ucet/knihovna"
                 ));
         }

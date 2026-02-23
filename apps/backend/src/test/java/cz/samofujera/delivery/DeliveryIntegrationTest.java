@@ -124,7 +124,7 @@ class DeliveryIntegrationTest {
         var customer = createTestCustomer();
 
         // Grant entitlement
-        entitlementService.grantAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
+        entitlementService.grantProductAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
             customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
         // Mock presigned URL generation
@@ -145,7 +145,7 @@ class DeliveryIntegrationTest {
         var productId = createProductWithFile(suffix);
         var customer = createTestCustomer();
 
-        entitlementService.grantAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
+        entitlementService.grantProductAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
             customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
         mockMvc.perform(get("/api/library")
@@ -175,7 +175,7 @@ class DeliveryIntegrationTest {
         var fileId = uploadFile(productId);
         var customer = createTestCustomer();
 
-        entitlementService.grantAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
+        entitlementService.grantProductAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
             customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
         mockMvc.perform(get("/api/library/{productId}/files", productId)

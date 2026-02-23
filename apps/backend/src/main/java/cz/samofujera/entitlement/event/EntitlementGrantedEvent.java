@@ -5,7 +5,8 @@ import java.util.UUID;
 public record EntitlementGrantedEvent(
     UUID userId,
     String userEmail,
-    UUID productId,
-    String productTitle,
-    String productType
+    String entityType,
+    UUID entityId,
+    String entityTitle,
+    String entitySubType
 ) {}

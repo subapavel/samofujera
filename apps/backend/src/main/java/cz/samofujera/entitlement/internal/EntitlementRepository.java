@@ -8,10 +8,19 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static cz.samofujera.generated.jooq.Tables.ENTITLEMENTS;
-
 @Repository
 public class EntitlementRepository {
+
+    private static final org.jooq.Table<?> ENTITLEMENTS = DSL.table("entitlements");
+    private static final org.jooq.Field<UUID> ID = DSL.field("entitlements.id", UUID.class);
+    private static final org.jooq.Field<UUID> USER_ID = DSL.field("entitlements.user_id", UUID.class);
+    private static final org.jooq.Field<String> ENTITY_TYPE = DSL.field("entitlements.entity_type", String.class);
+    private static final org.jooq.Field<UUID> ENTITY_ID = DSL.field("entitlements.entity_id", UUID.class);
+    private static final org.jooq.Field<String> SOURCE_TYPE = DSL.field("entitlements.source_type", String.class);
+    private static final org.jooq.Field<UUID> SOURCE_ID = DSL.field("entitlements.source_id", UUID.class);
+    private static final org.jooq.Field<OffsetDateTime> GRANTED_AT = DSL.field("entitlements.granted_at", OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> EXPIRES_AT = DSL.field("entitlements.expires_at", OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> REVOKED_AT = DSL.field("entitlements.revoked_at", OffsetDateTime.class);
 
     private final DSLContext dsl;
 
@@ -20,66 +29,82 @@ public class EntitlementRepository {
     }
 
     public record EntitlementRow(
-        UUID id,
-        UUID userId,
-        UUID productId,
-        String sourceType,
-        UUID sourceId,
-        OffsetDateTime grantedAt,
-        OffsetDateTime expiresAt
+        UUID id, UUID userId, String entityType, UUID entityId,
+        String sourceType, UUID sourceId,
+        OffsetDateTime grantedAt, OffsetDateTime expiresAt
     ) {}
 
-    public UUID grant(UUID userId, UUID productId, String sourceType, UUID sourceId) {
-        return dsl.insertInto(ENTITLEMENTS)
-            .set(ENTITLEMENTS.USER_ID, userId)
-            .set(ENTITLEMENTS.PRODUCT_ID, productId)
-            .set(ENTITLEMENTS.SOURCE_TYPE, sourceType)
-            .set(ENTITLEMENTS.SOURCE_ID, sourceId)
-            .returning(ENTITLEMENTS.ID)
-            .fetchOne()
-            .getId();
+    public UUID grant(UUID userId, String entityType, UUID entityId,
+                      String sourceType, UUID sourceId, OffsetDateTime expiresAt) {
+        var insert = dsl.insertInto(ENTITLEMENTS)
+            .set(USER_ID, userId)
+            .set(ENTITY_TYPE, entityType)
+            .set(ENTITY_ID, entityId)
+            .set(SOURCE_TYPE, sourceType)
+            .set(SOURCE_ID, sourceId);
+        if (expiresAt != null) {
+            insert = insert.set(EXPIRES_AT, expiresAt);
+        }
+        return insert.returning(ID).fetchOne().get(ID);
     }
 
-    public boolean hasAccess(UUID userId, UUID productId) {
+    public boolean hasAccess(UUID userId, String entityType, UUID entityId) {
         return dsl.fetchExists(
             dsl.selectOne()
                 .from(ENTITLEMENTS)
-                .where(ENTITLEMENTS.USER_ID.eq(userId))
-                .and(ENTITLEMENTS.PRODUCT_ID.eq(productId))
-                .and(ENTITLEMENTS.REVOKED_AT.isNull())
-                .and(ENTITLEMENTS.EXPIRES_AT.isNull()
-                    .or(ENTITLEMENTS.EXPIRES_AT.gt(DSL.currentOffsetDateTime())))
+                .where(USER_ID.eq(userId))
+                .and(ENTITY_TYPE.eq(entityType))
+                .and(ENTITY_ID.eq(entityId))
+                .and(REVOKED_AT.isNull())
+                .and(EXPIRES_AT.isNull()
+                    .or(EXPIRES_AT.gt(DSL.currentOffsetDateTime())))
         );
     }
 
     public List<EntitlementRow> findByUserId(UUID userId) {
-        return dsl.select(
-                ENTITLEMENTS.ID, ENTITLEMENTS.USER_ID, ENTITLEMENTS.PRODUCT_ID,
-                ENTITLEMENTS.SOURCE_TYPE, ENTITLEMENTS.SOURCE_ID,
-                ENTITLEMENTS.GRANTED_AT, ENTITLEMENTS.EXPIRES_AT)
+        return dsl.select(ID, USER_ID, ENTITY_TYPE, ENTITY_ID, SOURCE_TYPE, SOURCE_ID, GRANTED_AT, EXPIRES_AT)
             .from(ENTITLEMENTS)
-            .where(ENTITLEMENTS.USER_ID.eq(userId))
-            .and(ENTITLEMENTS.REVOKED_AT.isNull())
-            .and(ENTITLEMENTS.EXPIRES_AT.isNull()
-                .or(ENTITLEMENTS.EXPIRES_AT.gt(DSL.currentOffsetDateTime())))
-            .orderBy(ENTITLEMENTS.GRANTED_AT.desc())
+            .where(USER_ID.eq(userId))
+            .and(REVOKED_AT.isNull())
+            .and(EXPIRES_AT.isNull()
+                .or(EXPIRES_AT.gt(DSL.currentOffsetDateTime())))
+            .orderBy(GRANTED_AT.desc())
             .fetch(r -> new EntitlementRow(
-                r.get(ENTITLEMENTS.ID),
-                r.get(ENTITLEMENTS.USER_ID),
-                r.get(ENTITLEMENTS.PRODUCT_ID),
-                r.get(ENTITLEMENTS.SOURCE_TYPE),
-                r.get(ENTITLEMENTS.SOURCE_ID),
-                r.get(ENTITLEMENTS.GRANTED_AT),
-                r.get(ENTITLEMENTS.EXPIRES_AT)
+                r.get(ID), r.get(USER_ID), r.get(ENTITY_TYPE), r.get(ENTITY_ID),
+                r.get(SOURCE_TYPE), r.get(SOURCE_ID), r.get(GRANTED_AT), r.get(EXPIRES_AT)
             ));
     }
 
-    public void revoke(UUID userId, UUID productId) {
+    public List<EntitlementRow> findByUserIdAndEntityType(UUID userId, String entityType) {
+        return dsl.select(ID, USER_ID, ENTITY_TYPE, ENTITY_ID, SOURCE_TYPE, SOURCE_ID, GRANTED_AT, EXPIRES_AT)
+            .from(ENTITLEMENTS)
+            .where(USER_ID.eq(userId))
+            .and(ENTITY_TYPE.eq(entityType))
+            .and(REVOKED_AT.isNull())
+            .and(EXPIRES_AT.isNull()
+                .or(EXPIRES_AT.gt(DSL.currentOffsetDateTime())))
+            .orderBy(GRANTED_AT.desc())
+            .fetch(r -> new EntitlementRow(
+                r.get(ID), r.get(USER_ID), r.get(ENTITY_TYPE), r.get(ENTITY_ID),
+                r.get(SOURCE_TYPE), r.get(SOURCE_ID), r.get(GRANTED_AT), r.get(EXPIRES_AT)
+            ));
+    }
+
+    public void revoke(UUID userId, String entityType, UUID entityId) {
         dsl.update(ENTITLEMENTS)
-            .set(ENTITLEMENTS.REVOKED_AT, OffsetDateTime.now())
-            .where(ENTITLEMENTS.USER_ID.eq(userId))
-            .and(ENTITLEMENTS.PRODUCT_ID.eq(productId))
-            .and(ENTITLEMENTS.REVOKED_AT.isNull())
+            .set(REVOKED_AT, OffsetDateTime.now())
+            .where(USER_ID.eq(userId))
+            .and(ENTITY_TYPE.eq(entityType))
+            .and(ENTITY_ID.eq(entityId))
+            .and(REVOKED_AT.isNull())
+            .execute();
+    }
+
+    public void revokeById(UUID entitlementId) {
+        dsl.update(ENTITLEMENTS)
+            .set(REVOKED_AT, OffsetDateTime.now())
+            .where(ID.eq(entitlementId))
+            .and(REVOKED_AT.isNull())
             .execute();
     }
 }

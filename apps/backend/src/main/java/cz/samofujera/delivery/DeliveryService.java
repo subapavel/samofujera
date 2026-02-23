@@ -33,7 +33,7 @@ public class DeliveryService {
                                                            String ipAddress, String userAgent) {
         var content = catalogService.getContentById(contentId);
 
-        if (!entitlementService.hasAccess(userId, content.productId())) {
+        if (!entitlementService.hasProductAccess(userId, content.productId())) {
             throw new AccessDeniedException("No access to this content");
         }
 
@@ -50,14 +50,14 @@ public class DeliveryService {
     }
 
     public List<ProductContentDtos.ContentResponse> getEntitledContent(UUID userId, UUID productId) {
-        if (!entitlementService.hasAccess(userId, productId)) {
+        if (!entitlementService.hasProductAccess(userId, productId)) {
             throw new AccessDeniedException("No access to this product");
         }
         return catalogService.getContentForProduct(productId);
     }
 
     public DeliveryDtos.EventAccessResponse getEntitledEventAccess(UUID userId, UUID productId) {
-        if (!entitlementService.hasAccess(userId, productId)) {
+        if (!entitlementService.hasProductAccess(userId, productId)) {
             throw new AccessDeniedException("No access to this event");
         }
         var event = catalogService.getEventForProduct(productId);

@@ -17,7 +17,7 @@ class EntitlementListener {
     @ApplicationModuleListener
     void on(OrderPaidEvent event) {
         for (var item : event.items()) {
-            entitlementService.grantAccess(
+            entitlementService.grantProductAccess(
                 event.userId(), item.productId(), "PURCHASE", event.orderId(),
                 event.userEmail(), item.productTitle(), item.productType());
         }
