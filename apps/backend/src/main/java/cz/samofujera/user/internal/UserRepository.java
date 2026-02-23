@@ -43,6 +43,25 @@ public class UserRepository {
             .execute();
     }
 
+    public UserRecord findByEmail(String email) {
+        var r = dsl.selectFrom(USERS)
+            .where(USERS.EMAIL.eq(email).and(USERS.DELETED_AT.isNull()))
+            .fetchOne();
+        if (r == null) return null;
+        return new UserRecord(r.getId(), r.getEmail(), r.getName(),
+            r.getRole(), r.getLocale(), r.getAvatarUrl());
+    }
+
+    public UUID createMinimal(String email) {
+        return dsl.insertInto(USERS)
+            .set(USERS.EMAIL, email)
+            .set(USERS.ROLE, "USER")
+            .set(USERS.LOCALE, "cs")
+            .returning(USERS.ID)
+            .fetchOne()
+            .getId();
+    }
+
     public record UserRecord(UUID id, String email, String name,
                              String role, String locale, String avatarUrl) {}
 }

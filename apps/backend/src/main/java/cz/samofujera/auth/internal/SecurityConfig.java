@@ -40,6 +40,7 @@ class SecurityConfig {
                 .requestMatchers("/api/catalog/**").permitAll()
                 .requestMatchers("/api/pages/**").permitAll()
                 .requestMatchers("/api/stripe/webhook").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()

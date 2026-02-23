@@ -10,6 +10,8 @@ export { imageApi } from "./images";
 export { pageAdminApi, pagePublicApi } from "./pages";
 export { productContentApi } from "./product-content";
 export type { ContentResponse as ProductContentResponse } from "./product-content";
+export { leadApi } from "./lead";
+export type { LeadCaptureResponse, UtmParams } from "./lead";
 export { membershipAdminApi, membershipApi } from "./membership";
 export type {
   MembershipPlan,
