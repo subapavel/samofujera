@@ -57,7 +57,7 @@ class CatalogCategoryIntegrationTest {
             .andExpect(jsonPath("$.data.slug").value("e-books-create-test"))
             .andExpect(jsonPath("$.data.sortOrder").isNumber())
             .andExpect(jsonPath("$.data.id").exists())
-            .andExpect(jsonPath("$.data.imageMediaId").isEmpty())
+            .andExpect(jsonPath("$.data.imageId").isEmpty())
             .andExpect(jsonPath("$.data.imageUrl").isEmpty());
     }
 

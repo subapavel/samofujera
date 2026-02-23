@@ -19,14 +19,14 @@ public final class CatalogDtos {
 
     public record CategoryResponse(
         UUID id, String name, String slug, String description,
-        UUID imageMediaId, String imageUrl,
+        UUID imageId, String imageUrl,
         String metaTitle, String metaDescription, int sortOrder
     ) {}
 
     public record CreateCategoryRequest(
         @NotBlank @Size(max = 255) String name,
         @NotBlank @Size(max = 255) String slug,
-        String description, UUID imageMediaId,
+        String description, UUID imageId,
         @Size(max = 255) String metaTitle,
         @Size(max = 500) String metaDescription
     ) {}
@@ -34,7 +34,7 @@ public final class CatalogDtos {
     public record UpdateCategoryRequest(
         @NotBlank @Size(max = 255) String name,
         @NotBlank @Size(max = 255) String slug,
-        String description, UUID imageMediaId,
+        String description, UUID imageId,
         @Size(max = 255) String metaTitle,
         @Size(max = 500) String metaDescription
     ) {}
@@ -125,11 +125,10 @@ public final class CatalogDtos {
 
     // Image DTOs
 
-    public record ImageResponse(UUID mediaItemId, String originalUrl, String thumbUrl,
-        String mediumUrl, String largeUrl, String ogUrl, String altText, int sortOrder) {}
+    public record ImageResponse(UUID imageId, String url, String altText, int panX, int panY, int sortOrder) {}
 
     public record ReorderImagesRequest(
-        @NotNull List<UUID> mediaItemIds
+        @NotNull List<UUID> imageIds
     ) {}
 
     // File DTOs (EBOOK)

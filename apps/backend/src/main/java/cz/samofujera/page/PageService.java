@@ -1,6 +1,6 @@
 package cz.samofujera.page;
 
-import cz.samofujera.media.MediaService;
+import cz.samofujera.image.ImageService;
 import cz.samofujera.page.internal.PageRepository;
 import cz.samofujera.shared.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,11 +20,11 @@ public class PageService {
     private static final ObjectMapper JSON = new ObjectMapper();
 
     private final PageRepository pageRepository;
-    private final MediaService mediaService;
+    private final ImageService imageService;
 
-    PageService(PageRepository pageRepository, MediaService mediaService) {
+    PageService(PageRepository pageRepository, ImageService imageService) {
         this.pageRepository = pageRepository;
-        this.mediaService = mediaService;
+        this.imageService = imageService;
     }
 
     public PageDtos.PageListResponse getPages(String status, String type, String search, int page, int limit) {
@@ -161,8 +161,8 @@ public class PageService {
     private String resolveOgImageUrl(UUID ogImageId) {
         if (ogImageId == null) return null;
         try {
-            var item = mediaService.getById(ogImageId);
-            return item.originalUrl();
+            var item = imageService.getById(ogImageId);
+            return item.url();
         } catch (Exception e) {
             return null;
         }

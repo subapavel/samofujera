@@ -29,15 +29,17 @@ public class ImageAdminController {
     public ResponseEntity<Void> addImage(
             @PathVariable UUID productId,
             @RequestBody AddImageRequest request) {
-        catalogService.addImageToProduct(productId, request.mediaItemId());
+        catalogService.addImageToProduct(productId, request.imageId(),
+            request.panX() != null ? request.panX() : 50,
+            request.panY() != null ? request.panY() : 50);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/{mediaItemId}")
+    @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> removeImage(
             @PathVariable UUID productId,
-            @PathVariable UUID mediaItemId) {
-        catalogService.removeImageFromProduct(productId, mediaItemId);
+            @PathVariable UUID imageId) {
+        catalogService.removeImageFromProduct(productId, imageId);
         return ResponseEntity.noContent().build();
     }
 
@@ -45,9 +47,9 @@ public class ImageAdminController {
     public ResponseEntity<Void> reorderImages(
             @PathVariable UUID productId,
             @RequestBody CatalogDtos.ReorderImagesRequest request) {
-        catalogService.reorderProductImages(productId, request.mediaItemIds());
+        catalogService.reorderProductImages(productId, request.imageIds());
         return ResponseEntity.ok().build();
     }
 
-    record AddImageRequest(UUID mediaItemId) {}
+    record AddImageRequest(UUID imageId, Integer panX, Integer panY) {}
 }

@@ -1,7 +1,7 @@
 package cz.samofujera.catalog;
 
 import cz.samofujera.catalog.internal.*;
-import cz.samofujera.media.MediaService;
+import cz.samofujera.image.ImageService;
 import cz.samofujera.shared.exception.NotFoundException;
 import cz.samofujera.shared.storage.StorageService;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class CatalogService {
     private final EventOccurrenceRepository eventOccurrenceRepository;
     private final StorageService storageService;
     private final ProductCategoryAssignmentRepository assignmentRepository;
-    private final MediaService mediaService;
+    private final ImageService imageService;
 
     CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
                    ProductPriceRepository productPriceRepository,
@@ -40,7 +40,7 @@ public class CatalogService {
                    EventOccurrenceRepository eventOccurrenceRepository,
                    StorageService storageService,
                    ProductCategoryAssignmentRepository assignmentRepository,
-                   MediaService mediaService) {
+                   ImageService imageService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.productPriceRepository = productPriceRepository;
@@ -53,7 +53,7 @@ public class CatalogService {
         this.eventOccurrenceRepository = eventOccurrenceRepository;
         this.storageService = storageService;
         this.assignmentRepository = assignmentRepository;
-        this.mediaService = mediaService;
+        this.imageService = imageService;
     }
 
     // --- Category methods ---
@@ -77,14 +77,14 @@ public class CatalogService {
 
     private CatalogDtos.CategoryResponse toCategoryResponse(CategoryRepository.CategoryRow row) {
         String imageUrl = null;
-        if (row.imageMediaId() != null) {
+        if (row.imageId() != null) {
             try {
-                imageUrl = mediaService.getUrl(row.imageMediaId());
+                imageUrl = imageService.getUrl(row.imageId());
             } catch (Exception ignored) {}
         }
         return new CatalogDtos.CategoryResponse(
             row.id(), row.name(), row.slug(), row.description(),
-            row.imageMediaId(), imageUrl,
+            row.imageId(), imageUrl,
             row.metaTitle(), row.metaDescription(), row.sortOrder()
         );
     }
@@ -96,7 +96,7 @@ public class CatalogService {
         }
         var sortOrder = categoryRepository.findNextSortOrder();
         var id = categoryRepository.create(
-            request.name(), request.slug(), request.description(), request.imageMediaId(),
+            request.name(), request.slug(), request.description(), request.imageId(),
             request.metaTitle(), request.metaDescription(), sortOrder
         );
         var created = categoryRepository.findById(id)
@@ -112,7 +112,7 @@ public class CatalogService {
             throw new IllegalArgumentException("Category with slug '" + request.slug() + "' already exists");
         }
         categoryRepository.update(
-            id, request.name(), request.slug(), request.description(), request.imageMediaId(),
+            id, request.name(), request.slug(), request.description(), request.imageId(),
             request.metaTitle(), request.metaDescription()
         );
         var updated = categoryRepository.findById(id)
@@ -455,29 +455,28 @@ public class CatalogService {
     // --- Product gallery methods ---
 
     @Transactional
-    public void addImageToProduct(UUID productId, UUID mediaItemId) {
+    public void addImageToProduct(UUID productId, UUID imageId, int panX, int panY) {
         int count = galleryRepository.countByProductId(productId);
-        galleryRepository.add(productId, mediaItemId, count);
+        galleryRepository.add(productId, imageId, count, panX, panY);
     }
 
     @Transactional
-    public void removeImageFromProduct(UUID productId, UUID mediaItemId) {
-        galleryRepository.remove(productId, mediaItemId);
+    public void removeImageFromProduct(UUID productId, UUID imageId) {
+        galleryRepository.remove(productId, imageId);
     }
 
     @Transactional
-    public void reorderProductImages(UUID productId, List<UUID> mediaItemIds) {
-        galleryRepository.reorder(productId, mediaItemIds);
+    public void reorderProductImages(UUID productId, List<UUID> imageIds) {
+        galleryRepository.reorder(productId, imageIds);
     }
 
     public List<CatalogDtos.ImageResponse> getImagesForProduct(UUID productId) {
         var entries = galleryRepository.findByProductId(productId);
         return entries.stream().map(entry -> {
-            var mediaItem = mediaService.getById(entry.mediaItemId());
+            var img = imageService.getById(entry.imageId());
             return new CatalogDtos.ImageResponse(
-                mediaItem.id(), mediaItem.originalUrl(), mediaItem.thumbUrl(),
-                mediaItem.mediumUrl(), mediaItem.largeUrl(), mediaItem.ogUrl(),
-                mediaItem.altText(), entry.sortOrder());
+                img.id(), img.url(), img.altText(),
+                entry.panX(), entry.panY(), entry.sortOrder());
         }).toList();
     }
 

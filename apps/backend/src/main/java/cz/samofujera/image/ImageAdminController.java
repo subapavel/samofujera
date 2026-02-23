@@ -1,4 +1,4 @@
-package cz.samofujera.media;
+package cz.samofujera.image;
 
 import cz.samofujera.shared.api.ApiResponse;
 import jakarta.validation.Valid;
@@ -12,62 +12,63 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin/media")
-public class MediaAdminController {
+@RequestMapping("/api/admin/images")
+public class ImageAdminController {
 
-    private final MediaService mediaService;
+    private final ImageService imageService;
 
-    MediaAdminController(MediaService mediaService) {
-        this.mediaService = mediaService;
+    ImageAdminController(ImageService imageService) {
+        this.imageService = imageService;
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<MediaDtos.MediaItemListResponse>> getItems(
+    public ResponseEntity<ApiResponse<ImageDtos.ImageListResponse>> getItems(
             @RequestParam(required = false) String source,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "24") int limit) {
-        var items = mediaService.getItems(source, type, search, page, limit);
+        var items = imageService.getItems(source, type, search, page, limit);
         return ResponseEntity.ok(ApiResponse.ok(items));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<MediaDtos.MediaItemResponse>> getItem(@PathVariable UUID id) {
-        var item = mediaService.getById(id);
+    public ResponseEntity<ApiResponse<ImageDtos.ImageResponse>> getItem(@PathVariable UUID id) {
+        var item = imageService.getById(id);
         return ResponseEntity.ok(ApiResponse.ok(item));
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<MediaDtos.MediaItemResponse>> uploadAndCreate(
+    public ResponseEntity<ApiResponse<ImageDtos.ImageResponse>> uploadAndCreate(
             @RequestParam("file") MultipartFile file,
             @RequestParam(required = false) String altText,
+            @RequestParam(required = false) String title,
             @RequestParam(name = "public", required = false, defaultValue = "false") boolean isPublic)
             throws IOException {
-        MediaDtos.MediaItemResponse response;
+        ImageDtos.ImageResponse response;
         if (isPublic) {
-            response = mediaService.uploadPublicAndCreate(
+            response = imageService.uploadPublicAndCreate(
                 file.getInputStream(), file.getOriginalFilename(),
-                file.getContentType(), file.getSize(), altText);
+                file.getContentType(), file.getSize(), altText, title);
         } else {
-            response = mediaService.uploadAndCreate(
+            response = imageService.uploadAndCreate(
                 file.getInputStream(), file.getOriginalFilename(),
-                file.getContentType(), file.getSize(), altText);
+                file.getContentType(), file.getSize(), altText, title);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(response));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<MediaDtos.MediaItemResponse>> updateItem(
+    public ResponseEntity<ApiResponse<ImageDtos.ImageResponse>> updateItem(
             @PathVariable UUID id,
-            @Valid @RequestBody MediaDtos.UpdateMediaItemRequest request) {
-        var item = mediaService.updateItem(id, request);
+            @Valid @RequestBody ImageDtos.UpdateImageRequest request) {
+        var item = imageService.updateItem(id, request);
         return ResponseEntity.ok(ApiResponse.ok(item));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable UUID id) {
-        mediaService.deleteItem(id);
+        imageService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 }
