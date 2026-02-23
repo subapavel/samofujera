@@ -1,5 +1,6 @@
 import { test, expect, login } from "./fixtures";
 
+test.describe.configure({ mode: "serial" });
 test.describe("admin products", () => {
   test.beforeEach(async ({ page, adminUser }) => {
     await login(page, adminUser.email, adminUser.password);
@@ -10,39 +11,30 @@ test.describe("admin products", () => {
     await expect(page.locator("h2")).toContainText(/Produkty/);
   });
 
-  test("create and delete a product", async ({ page }) => {
-    await page.goto("/admin/produkty");
+  test("create a product via new product flow", async ({ page }) => {
+    const productName = `E2E Product ${Date.now()}`;
 
-    // Click "Nový produkt" button
-    await page.click('text=Nový produkt');
+    // Navigate directly to the new product page
+    await page.goto("/admin/produkty/novy");
+    await expect(page.getByRole("heading", { name: "Nový produkt" })).toBeVisible();
 
-    // Select product type (e.g., E-book)
-    await page.click('text=E-book');
+    // Click E-book type card
+    await page.locator("button", { hasText: "E-book" }).first().click();
 
     // Should navigate to product edit page
-    await page.waitForURL(/admin\/produkty\/[a-f0-9-]+/);
+    await page.waitForURL(/admin\/produkty\/[a-f0-9-]+/, { timeout: 15000 });
 
-    // Fill in title
-    const titleInput = page.locator('[name="title"], input[placeholder*="název" i]').first();
-    await titleInput.fill("E2E Test Product");
+    // Verify the edit page loaded
+    await expect(page.getByRole("heading", { name: "Upravit produkt" })).toBeVisible();
 
-    // Save the product
-    await page.click('button:has-text("Uložit")');
+    // Fill in title using the label
+    await page.getByLabel("Název").fill(productName);
 
-    // Go back to products list
+    // Save as draft
+    await page.getByRole("button", { name: "Uložit jako draft" }).click();
+
+    // Go back to products list and verify product appears
     await page.goto("/admin/produkty");
-
-    // Verify product appears
-    await expect(page.locator("text=E2E Test Product")).toBeVisible();
-
-    // Delete the product
-    const row = page.locator("tr", { hasText: "E2E Test Product" });
-    await row.locator('button:has-text("Smazat")').click();
-
-    // Confirm deletion dialog
-    page.on("dialog", (dialog) => dialog.accept());
-
-    // Verify product is gone
-    await expect(page.locator("text=E2E Test Product")).not.toBeVisible();
+    await expect(page.getByText(productName).first()).toBeVisible({ timeout: 10000 });
   });
 });

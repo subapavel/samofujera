@@ -74,6 +74,9 @@ fix errors until green. No exceptions.
 - E2E: Playwright for full flow verification
 - TDD workflow: red -> green -> refactor
 - Never claim code is done without running tests and showing green output
+- **E2E tests MUST be verified by actually running them.** When writing E2E tests,
+  start the backend and frontend yourself (Docker is always running) and execute
+  the tests to confirm they pass. Never deliver E2E tests without running them.
 
 ### 7. Conventional commits (English, lowercase)
 Format: `<type>(<scope>): <description>`

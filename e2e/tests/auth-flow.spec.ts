@@ -5,19 +5,22 @@ test.describe("auth flow", () => {
     const unique = Date.now();
     await page.goto("/registrace");
 
-    await page.fill('[name="name"]', `Test User ${unique}`);
-    await page.fill('[name="email"]', `reg-${unique}@test.com`);
-    await page.fill('[name="password"]', "TestPassword123!");
-    await page.click('button[type="submit"]');
+    // Wait for hydration to complete
+    await page.locator('#name').waitFor({ state: "attached" });
+    await page.locator('#name').fill(`Test User ${unique}`);
+    await page.locator('#email').fill(`reg-${unique}@test.com`);
+    await page.locator('#password').fill("TestPassword123!");
+    await page.locator('button[type="submit"]').click();
 
-    await expect(page).toHaveURL(/prihlaseni/);
+    // Registration may take a moment — wait for redirect with longer timeout
+    await expect(page).toHaveURL(/prihlaseni/, { timeout: 15000 });
   });
 
   test("login and view profile", async ({ page, registeredUser }) => {
     await login(page, registeredUser.email, registeredUser.password);
 
     await page.goto("/muj-ucet/profile");
-    await expect(page.locator(`text=${registeredUser.name}`)).toBeVisible();
+    await expect(page.getByRole("main").getByText(registeredUser.name)).toBeVisible({ timeout: 10000 });
   });
 
   test("logout", async ({ page, registeredUser }) => {

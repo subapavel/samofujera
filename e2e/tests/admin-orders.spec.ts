@@ -1,5 +1,6 @@
 import { test, expect, login } from "./fixtures";
 
+test.describe.configure({ mode: "serial" });
 test.describe("admin orders", () => {
   test.beforeEach(async ({ page, adminUser }) => {
     await login(page, adminUser.email, adminUser.password);

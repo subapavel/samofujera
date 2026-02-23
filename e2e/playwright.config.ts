@@ -11,4 +11,16 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
   },
+  projects: [
+    {
+      name: "public",
+      testMatch: /auth-flow|catalog|checkout|customer-library/,
+    },
+    {
+      name: "admin",
+      testMatch: /admin-/,
+      fullyParallel: false,
+      workers: 1,
+    },
+  ],
 });

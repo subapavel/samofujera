@@ -25,10 +25,9 @@ export const test = base.extend<{
   },
 
   adminUser: async ({}, use) => {
-    // Use pre-seeded admin account
     await use({
-      email: "admin@samofujera.cz",
-      password: "admin123",
+      email: process.env.E2E_ADMIN_EMAIL ?? "admin@samofujera.cz",
+      password: process.env.E2E_ADMIN_PASSWORD ?? "Admin1234!",
     });
   },
 });
@@ -39,10 +38,28 @@ export async function login(
   password: string,
 ) {
   await page.goto("/prihlaseni");
-  await page.fill('[name="email"]', email);
-  await page.fill('[name="password"]', password);
-  await page.click('button[type="submit"]');
-  await page.waitForURL(/muj-ucet|admin/);
+  // Wait for hydration to complete before interacting
+  const emailInput = page.locator('#email');
+  await emailInput.waitFor({ state: "attached" });
+  await emailInput.fill(email);
+  await page.locator('#password').fill(password);
+  await page.locator('button[type="submit"]').click();
+
+  // Handle session conflict dialog if it appears
+  const forceLoginBtn = page.getByRole("button", { name: "Ano, přihlásit se zde" });
+  const navigated = page.waitForURL(/muj-ucet|admin/, { timeout: 5000 }).catch(() => false);
+  const conflictAppeared = forceLoginBtn.waitFor({ state: "visible", timeout: 5000 }).catch(() => false);
+  const result = await Promise.race([navigated, conflictAppeared]);
+  if (result === false) {
+    // Neither happened — check if we're already on the target URL
+    if (!/muj-ucet|admin/.test(page.url())) {
+      throw new Error(`Login failed — stuck on ${page.url()}`);
+    }
+  }
+  if (await forceLoginBtn.isVisible().catch(() => false)) {
+    await forceLoginBtn.click();
+    await page.waitForURL(/muj-ucet|admin/);
+  }
 }
 
 export { expect };

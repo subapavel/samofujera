@@ -3,7 +3,7 @@ import { test, expect } from "./fixtures";
 test.describe("catalog", () => {
   test("browse products page", async ({ page }) => {
     await page.goto("/katalog");
-    await expect(page.locator("h1, h2")).toContainText(/Katalog|Produkty/);
+    await expect(page.locator("h1")).toContainText(/Obchod/);
   });
 
   test("view product detail", async ({ page }) => {
