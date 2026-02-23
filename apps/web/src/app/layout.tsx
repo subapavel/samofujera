@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Allura, Inter, Josefin_Sans, Open_Sans } from "next/font/google";
+import { I18nProvider } from "@/components/i18n-provider";
 import "@/styles/global.css";
 
 const inter = Inter({
@@ -56,7 +57,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-white text-[var(--foreground)] font-sans antialiased">
-        {children}
+        <I18nProvider locale={locale}>{children}</I18nProvider>
       </body>
     </html>
   );

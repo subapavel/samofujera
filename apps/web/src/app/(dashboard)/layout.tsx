@@ -16,10 +16,8 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
-  const locale = cookieStore.get("NEXT_LOCALE")?.value ?? "cs";
-
   return (
-    <Providers locale={locale}>
+    <Providers>
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
         <SidebarInset>

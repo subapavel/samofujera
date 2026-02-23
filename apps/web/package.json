@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
+    "@lingui/loader": "^5.9.1",
     "@lingui/swc-plugin": "^5.11.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/react": "^19.0.0",
