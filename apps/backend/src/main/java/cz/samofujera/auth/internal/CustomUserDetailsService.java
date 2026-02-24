@@ -7,7 +7,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+
 import static cz.samofujera.generated.jooq.Tables.USERS;
+import static cz.samofujera.generated.jooq.Tables.USER_ROLES;
 
 @Service
 class CustomUserDetailsService implements UserDetailsService {
@@ -29,12 +32,17 @@ class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found: " + email);
         }
 
+        var roles = new HashSet<>(dsl.select(USER_ROLES.ROLE)
+                .from(USER_ROLES)
+                .where(USER_ROLES.USER_ID.eq(record.getId()))
+                .fetchInto(String.class));
+
         return new UserPrincipal(
                 record.getId(),
                 record.getEmail(),
                 record.getName(),
                 record.getPasswordHash(),
-                record.getRole(),
+                roles,
                 record.getBlockedAt() != null,
                 false
         );

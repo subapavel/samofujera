@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
+import static cz.samofujera.generated.jooq.Tables.USER_ROLES;
 
 @Repository
 public class AuthUserRepository {
@@ -25,14 +26,20 @@ public class AuthUserRepository {
     }
 
     public UUID create(String email, String passwordHash, String name) {
-        return dsl.insertInto(USERS)
+        var userId = dsl.insertInto(USERS)
             .set(USERS.EMAIL, email)
             .set(USERS.PASSWORD_HASH, passwordHash)
             .set(USERS.NAME, name)
-            .set(USERS.ROLE, "USER")
             .set(USERS.LOCALE, "cs")
             .returning(USERS.ID)
             .fetchOne()
             .getId();
+
+        dsl.insertInto(USER_ROLES)
+            .set(USER_ROLES.USER_ID, userId)
+            .set(USER_ROLES.ROLE, "USER")
+            .execute();
+
+        return userId;
     }
 }
