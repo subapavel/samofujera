@@ -21,7 +21,7 @@ public class UserService {
         if (user == null) throw new NotFoundException("User not found");
         return new UserDtos.ProfileResponse(
             user.id(), user.email(), user.name(),
-            user.role(), user.locale(), user.avatarUrl()
+            user.roles(), user.locale(), user.avatarUrl()
         );
     }
 

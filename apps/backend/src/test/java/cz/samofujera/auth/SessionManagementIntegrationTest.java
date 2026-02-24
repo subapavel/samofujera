@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USER_SESSIONS;
@@ -43,7 +44,7 @@ class SessionManagementIntegrationTest {
     }
 
     private UserPrincipal createPrincipal(UUID id, String email) {
-        return new UserPrincipal(id, email, "Session Test", "hashed", "USER", false, false);
+        return new UserPrincipal(id, email, "Session Test", "hashed", Set.of("USER"), false, false);
     }
 
     private void insertSession(UUID userId, String sessionId, String device, String ip) {

@@ -30,7 +30,8 @@ class AuthControllerIntegrationTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.email").value("new@example.com"))
             .andExpect(jsonPath("$.data.name").value("New User"))
-            .andExpect(jsonPath("$.data.role").value("USER"));
+            .andExpect(jsonPath("$.data.roles").isArray())
+            .andExpect(jsonPath("$.data.roles[0]").value("USER"));
     }
 
     @Test

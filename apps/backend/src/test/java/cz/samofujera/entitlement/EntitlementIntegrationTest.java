@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
+import static cz.samofujera.generated.jooq.Tables.USER_ROLES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -47,7 +48,10 @@ class EntitlementIntegrationTest {
             .set(USERS.EMAIL, email)
             .set(USERS.NAME, "Test User")
             .set(USERS.PASSWORD_HASH, "$2a$10$dummyhashfortest")
-            .set(USERS.ROLE, "USER")
+            .execute();
+        dsl.insertInto(USER_ROLES)
+            .set(USER_ROLES.USER_ID, id)
+            .set(USER_ROLES.ROLE, "USER")
             .execute();
         return id;
     }

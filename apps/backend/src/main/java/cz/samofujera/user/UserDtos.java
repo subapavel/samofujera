@@ -1,13 +1,15 @@
 package cz.samofujera.user;
 
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.Set;
 import java.util.UUID;
 
 public final class UserDtos {
     private UserDtos() {}
 
     public record ProfileResponse(
-        UUID id, String email, String name, String role,
+        UUID id, String email, String name, Set<String> roles,
         String locale, String avatarUrl
     ) {}
 

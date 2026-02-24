@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
@@ -42,7 +43,7 @@ class AccountBlockingIntegrationTest {
     }
 
     private UserPrincipal createAdminPrincipal() {
-        return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
+        return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", Set.of("ADMIN"), false, false);
     }
 
     @Test
@@ -94,7 +95,7 @@ class AccountBlockingIntegrationTest {
     void adminEndpoints_return401_forRegularUsers() throws Exception {
         var email = "nonadmin@test.com";
         var userId = registerAndGetId(email);
-        var regularUser = new UserPrincipal(userId, email, "Regular", "hashed", "USER", false, false);
+        var regularUser = new UserPrincipal(userId, email, "Regular", "hashed", Set.of("USER"), false, false);
 
         mockMvc.perform(post("/api/admin/users/" + UUID.randomUUID() + "/block")
                 .with(user(regularUser)))
@@ -105,7 +106,7 @@ class AccountBlockingIntegrationTest {
     void deleteAccount_anonymizesDataAndPreventsLogin() throws Exception {
         var email = "gdpr-delete@test.com";
         var userId = registerAndGetId(email);
-        var principal = new UserPrincipal(userId, email, "GDPR Test", "hashed", "USER", false, false);
+        var principal = new UserPrincipal(userId, email, "GDPR Test", "hashed", Set.of("USER"), false, false);
 
         // Delete account
         mockMvc.perform(delete("/api/me").with(user(principal))
@@ -139,7 +140,7 @@ class AccountBlockingIntegrationTest {
     void deleteAccount_rejectsWrongPassword() throws Exception {
         var email = "gdpr-wrong-pw@test.com";
         var userId = registerAndGetId(email);
-        var principal = new UserPrincipal(userId, email, "GDPR Test", "hashed", "USER", false, false);
+        var principal = new UserPrincipal(userId, email, "GDPR Test", "hashed", Set.of("USER"), false, false);
 
         mockMvc.perform(delete("/api/me").with(user(principal))
                 .contentType(MediaType.APPLICATION_JSON)

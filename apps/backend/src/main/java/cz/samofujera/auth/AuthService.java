@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
@@ -74,7 +75,7 @@ public class AuthService {
 
         eventPublisher.publishEvent(new UserRegisteredEvent(userId, request.email(), request.name()));
 
-        return new AuthDtos.UserResponse(userId, request.email(), request.name(), "USER", "cs");
+        return new AuthDtos.UserResponse(userId, request.email(), request.name(), Set.of("USER"), "cs");
     }
 
     public AuthDtos.UserResponse login(AuthDtos.LoginRequest request,
@@ -108,7 +109,7 @@ public class AuthService {
             principal.getId(),
             principal.getUsername(),
             principal.getName(),
-            principal.getAuthorities().iterator().next().getAuthority().replace("ROLE_", ""),
+            principal.getRoles(),
             "cs"
         );
     }

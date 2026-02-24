@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -40,7 +41,7 @@ class UserControllerIntegrationTest {
     }
 
     private UserPrincipal createPrincipal(UUID id, String email) {
-        return new UserPrincipal(id, email, "Test User", "hashed", "USER", false, false);
+        return new UserPrincipal(id, email, "Test User", "hashed", Set.of("USER"), false, false);
     }
 
     @Test

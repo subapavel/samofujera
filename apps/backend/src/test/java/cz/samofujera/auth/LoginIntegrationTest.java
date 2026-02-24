@@ -41,7 +41,8 @@ class LoginIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.email").value(email))
             .andExpect(jsonPath("$.data.name").value("Login Test"))
-            .andExpect(jsonPath("$.data.role").value("USER"));
+            .andExpect(jsonPath("$.data.roles").isArray())
+            .andExpect(jsonPath("$.data.roles[0]").value("USER"));
     }
 
     @Test

@@ -15,9 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.USERS;
+import static cz.samofujera.generated.jooq.Tables.USER_ROLES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -40,7 +42,7 @@ class PaymentIntegrationTest {
     private StripeCheckoutClient stripeCheckoutClient;
 
     private UserPrincipal adminPrincipal() {
-        return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", "ADMIN", false, false);
+        return new UserPrincipal(UUID.randomUUID(), "admin@test.com", "Admin", "hashed", Set.of("ADMIN"), false, false);
     }
 
     private UserPrincipal createTestCustomer() {
@@ -51,9 +53,12 @@ class PaymentIntegrationTest {
             .set(USERS.EMAIL, email)
             .set(USERS.NAME, "Test Customer")
             .set(USERS.PASSWORD_HASH, "$2a$10$dummyhashfortest")
-            .set(USERS.ROLE, "USER")
             .execute();
-        return new UserPrincipal(id, email, "Test Customer", "$2a$10$dummyhashfortest", "USER", false, false);
+        dsl.insertInto(USER_ROLES)
+            .set(USER_ROLES.USER_ID, id)
+            .set(USER_ROLES.ROLE, "USER")
+            .execute();
+        return new UserPrincipal(id, email, "Test Customer", "$2a$10$dummyhashfortest", Set.of("USER"), false, false);
     }
 
     private String createActiveProduct(String title, String slug) throws Exception {
