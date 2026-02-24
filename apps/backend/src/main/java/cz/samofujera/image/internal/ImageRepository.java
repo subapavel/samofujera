@@ -151,11 +151,18 @@ public class ImageRepository {
                 .from(DSL.table("product_categories"))
                 .where(CATEGORY_IMAGE_ID.isNotNull())
         );
-        var inPages = ID.in(
+        var inPagesOg = ID.in(
             DSL.select(DSL.field(DSL.name("pages", "og_image_id"), UUID.class))
                 .from(DSL.table("pages"))
                 .where(DSL.field(DSL.name("pages", "og_image_id"), UUID.class).isNotNull())
         );
+        // Images referenced in page content blocks (JSONB contains the image UUID as text)
+        var inPagesContent = DSL.condition(
+            "images.id::text IN (SELECT DISTINCT m.match[1] FROM pages p2, " +
+            "LATERAL regexp_matches(p2.content::text, '\"mediaItemId\"\\s*:\\s*\"([0-9a-f-]{36})\"', 'g') AS m(match) " +
+            "WHERE p2.content IS NOT NULL)"
+        );
+        var inPages = inPagesOg.or(inPagesContent);
 
         return switch (source) {
             case "products" -> inProductGallery;

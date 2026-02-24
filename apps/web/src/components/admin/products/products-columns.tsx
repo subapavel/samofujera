@@ -46,7 +46,18 @@ function formatPrices(prices: Record<string, number>): string {
   const entries = Object.entries(prices);
   if (entries.length === 0) return "--";
   return entries
-    .map(([currency, amount]) => `${amount} ${currency}`)
+    .map(([currency, amount]) => {
+      try {
+        return new Intl.NumberFormat("cs-CZ", {
+          style: "currency",
+          currency,
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2,
+        }).format(amount);
+      } catch {
+        return `${amount} ${currency}`;
+      }
+    })
     .join(" / ");
 }
 

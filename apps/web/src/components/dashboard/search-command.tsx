@@ -50,7 +50,7 @@ export function SearchCommand() {
           </CommandItem>
           <CommandItem onSelect={() => navigate("/admin/obrazky")}>
             <Image className="mr-2 h-4 w-4" />
-            <span>{t`Knihovna obrázků`}</span>
+            <span>{t`Obrázky`}</span>
           </CommandItem>
           <CommandItem onSelect={() => navigate("/admin/clenstvi")}>
             <Crown className="mr-2 h-4 w-4" />

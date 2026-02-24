@@ -417,7 +417,7 @@ function VariantsTab({
                   <TableHead>{t`Název`}</TableHead>
                   <TableHead>SKU</TableHead>
                   <TableHead className="w-20">{t`Sklad`}</TableHead>
-                  <TableHead className="w-24">CZK</TableHead>
+                  <TableHead className="w-24">Kč</TableHead>
                   <TableHead className="w-24">EUR</TableHead>
                   <TableHead className="w-32">{t`Akce`}</TableHead>
                 </TableRow>
@@ -765,7 +765,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
                         render={({ field }) => (
                           <FormItem className="flex-1">
                             <FormLabel className="text-xs text-[var(--muted-foreground)]">
-                              CZK
+                              Kč
                             </FormLabel>
                             <FormControl>
                               <Input

@@ -21,7 +21,7 @@ function getSegmentLabel(segment: string): string {
     kategorie: () => t`Kategorie`,
     stranky: () => t`Stránky`,
     objednavky: () => t`Objednávky`,
-    obrazky: () => t`Knihovna obrázků`,
+    obrazky: () => t`Obrázky`,
     users: () => t`Uživatelé`,
     profile: () => t`Profil`,
     knihovna: () => t`Knihovna`,

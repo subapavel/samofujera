@@ -182,7 +182,7 @@ export function MembershipPage() {
               <TableHead>{t`Slug`}</TableHead>
               <TableHead>{t`Pořadí`}</TableHead>
               <TableHead>{t`Stav`}</TableHead>
-              <TableHead>{t`Stripe CZK`}</TableHead>
+              <TableHead>{t`Stripe Kč`}</TableHead>
               <TableHead>{t`Stripe EUR`}</TableHead>
               <TableHead className="w-[80px]" />
             </TableRow>
@@ -258,7 +258,7 @@ export function MembershipPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="plan-price-czk">{t`Stripe Price ID (CZK)`}</Label>
+                <Label htmlFor="plan-price-czk">{t`Stripe Price ID (Kč)`}</Label>
                 <Input
                   id="plan-price-czk"
                   value={form.stripePriceIdCzk}

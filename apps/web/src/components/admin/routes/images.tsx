@@ -217,7 +217,7 @@ export function ImagesPage() {
   return (
     <div className="flex flex-1 flex-col gap-4 sm:gap-6">
       <PageHeader
-        title={t`Knihovna obrázků`}
+        title={t`Obrázky`}
         subtitle={
           data
             ? plural(data.totalItems, {
