@@ -136,6 +136,36 @@ public class CatalogService {
         return toProductResponse(product, prices, categories);
     }
 
+    public CatalogDtos.ProductListResponse getProductsByIds(List<UUID> ids) {
+        if (ids.isEmpty()) {
+            return new CatalogDtos.ProductListResponse(List.of(), 1, ids.size(), 0, 0);
+        }
+
+        var items = productRepository.findByIds(ids);
+        var productIds = items.stream().map(ProductRepository.ProductRow::id).toList();
+        var pricesMap = productPriceRepository.findByProductIds(productIds);
+        var categoriesMap = assignmentRepository.findCategoriesForProducts(productIds);
+
+        // Build a map for quick lookup, then order by the input ids list
+        var itemMap = new LinkedHashMap<UUID, ProductRepository.ProductRow>();
+        for (var item : items) {
+            itemMap.put(item.id(), item);
+        }
+
+        var responses = ids.stream()
+            .filter(itemMap::containsKey)
+            .map(id -> {
+                var p = itemMap.get(id);
+                var cats = categoriesMap.getOrDefault(p.id(), List.of()).stream()
+                    .map(c -> new CatalogDtos.CategorySummary(c.id(), c.name(), c.slug()))
+                    .toList();
+                return toProductResponse(p, pricesMap.getOrDefault(p.id(), Map.of()), cats);
+            })
+            .toList();
+
+        return new CatalogDtos.ProductListResponse(responses, 1, ids.size(), responses.size(), 1);
+    }
+
     public CatalogDtos.ProductListResponse getProducts(String status, String categorySlug,
             String productType, String search, int page, int limit) {
         List<UUID> productIdsInCategory = null;

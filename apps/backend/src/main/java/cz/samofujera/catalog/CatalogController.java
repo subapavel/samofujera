@@ -4,7 +4,9 @@ import cz.samofujera.shared.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/catalog")
@@ -28,7 +30,16 @@ public class CatalogController {
             @RequestParam(defaultValue = "20") int limit,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String ids) {
+        if (ids != null && !ids.isBlank()) {
+            var idList = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .map(UUID::fromString)
+                .toList();
+            var result = catalogService.getProductsByIds(idList);
+            return ResponseEntity.ok(ApiResponse.ok(result));
+        }
         var result = catalogService.getProducts("ACTIVE", category, type, search, page, limit);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }

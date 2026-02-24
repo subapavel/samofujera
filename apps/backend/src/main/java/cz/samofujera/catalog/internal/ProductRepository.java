@@ -76,6 +76,33 @@ public class ProductRepository {
             .fetchOne(0, long.class);
     }
 
+    public List<ProductRow> findByIds(List<UUID> ids) {
+        if (ids.isEmpty()) return List.of();
+
+        return dsl.select(
+                PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
+                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
+                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
+                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
+                PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
+            .from(PRODUCTS)
+            .where(PRODUCTS.ID.in(ids).and(PRODUCTS.STATUS.eq("ACTIVE")))
+            .fetch(r -> new ProductRow(
+                r.get(PRODUCTS.ID),
+                r.get(PRODUCTS.TITLE),
+                r.get(PRODUCTS.SLUG),
+                r.get(PRODUCTS.DESCRIPTION),
+                r.get(PRODUCTS.SHORT_DESCRIPTION),
+                r.get(PRODUCTS.PRODUCT_TYPE),
+                r.get(PRODUCTS.STATUS),
+                r.get(PRODUCTS.THUMBNAIL_URL),
+                r.get(PRODUCTS.META_TITLE),
+                r.get(PRODUCTS.META_DESCRIPTION),
+                r.get(PRODUCTS.CREATED_AT),
+                r.get(PRODUCTS.UPDATED_AT)
+            ));
+    }
+
     public Optional<ProductRow> findById(UUID id) {
         return dsl.select(
                 PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
