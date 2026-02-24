@@ -50,7 +50,7 @@ export function CatalogContent() {
           {products.map((product) => (
             <Link
               key={product.id}
-              href={"/katalog/" + product.slug}
+              href={"/produkty/" + product.slug}
               className="group block rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden hover:shadow-md transition-shadow"
             >
               {product.thumbnailUrl ? (

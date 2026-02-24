@@ -15,13 +15,13 @@ export default function CheckoutCancelledPage() {
       </div>
       <h1 className="text-2xl font-bold mb-4">Objednávka byla zrušena</h1>
       <p className="text-[var(--muted-foreground)] mb-8">
-        Platba nebyla provedena. Můžete se vrátit do katalogu a zkusit to znovu.
+        Platba nebyla provedena. Můžete to zkusit znovu.
       </p>
       <Link
-        href="/katalog"
+        href="/"
         className="inline-flex items-center justify-center rounded-md bg-[var(--primary)] text-[var(--primary-foreground)] px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
       >
-        Zpět do katalogu
+        Zpět na hlavní stránku
       </Link>
     </div>
   );

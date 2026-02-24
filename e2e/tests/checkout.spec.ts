@@ -7,8 +7,8 @@ test.describe("checkout", () => {
   }) => {
     await login(page, registeredUser.email, registeredUser.password);
 
-    // Navigate to catalog and find a product
-    await page.goto("/katalog");
+    // Navigate to homepage (catalog is now a CMS block on pages)
+    await page.goto("/");
     const buyButton = page.locator('text=Koupit').first();
 
     // Skip if no products with buy button exist

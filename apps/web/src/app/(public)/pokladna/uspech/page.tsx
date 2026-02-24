@@ -25,10 +25,10 @@ export default function CheckoutSuccessPage() {
           Přejít do knihovny
         </Link>
         <Link
-          href="/katalog"
+          href="/"
           className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
-          Zpět do katalogu
+          Zpět na hlavní stránku
         </Link>
       </div>
     </div>

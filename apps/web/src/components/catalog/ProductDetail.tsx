@@ -50,8 +50,8 @@ export function ProductDetail({ slug }: { slug: string }) {
         <p className="text-lg text-[var(--muted-foreground)]">
           {t`Produkt nebyl nalezen.`}
         </p>
-        <Link href="/katalog" className="mt-4 inline-block">
-          <Button variant="outline">{t`Zpět do katalogu`}</Button>
+        <Link href="/" className="mt-4 inline-block">
+          <Button variant="outline">{t`Zpět na hlavní stránku`}</Button>
         </Link>
       </div>
     );
@@ -64,10 +64,10 @@ export function ProductDetail({ slug }: { slug: string }) {
       {/* Back link */}
       <div className="mb-6">
         <Link
-          href="/katalog"
+          href="/"
           className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
-          &larr; {t`Zpět do katalogu`}
+          &larr; {t`Zpět na hlavní stránku`}
         </Link>
       </div>
 
