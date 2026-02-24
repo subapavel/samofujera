@@ -5,8 +5,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
 
@@ -14,17 +15,17 @@ public class UserPrincipal implements UserDetails {
     private final String email;
     private final String name;
     private final String passwordHash;
-    private final String role;
+    private final Set<String> roles;
     private final boolean blocked;
     private final boolean deleted;
 
     public UserPrincipal(UUID id, String email, String name, String passwordHash,
-                         String role, boolean blocked, boolean deleted) {
+                         Set<String> roles, boolean blocked, boolean deleted) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.passwordHash = passwordHash;
-        this.role = role;
+        this.roles = Set.copyOf(roles);
         this.blocked = blocked;
         this.deleted = deleted;
     }
@@ -32,6 +33,10 @@ public class UserPrincipal implements UserDetails {
     public UUID getId() { return id; }
 
     public String getName() { return name; }
+
+    public Set<String> getRoles() { return roles; }
+
+    public boolean hasRole(String role) { return roles.contains(role); }
 
     @Override
     public String getUsername() { return email; }
@@ -41,7 +46,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return roles.stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
