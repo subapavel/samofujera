@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { productContentApi } from "@samofujera/api-client";
-import type { ContentResponse } from "@samofujera/api-client/src/types";
+import type { ContentResponse } from "@samofujera/api-client";
 import {
   Button,
   Input,
