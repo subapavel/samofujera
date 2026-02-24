@@ -213,7 +213,8 @@ public class CatalogService {
         var slug = "draft-" + UUID.randomUUID().toString().substring(0, 8);
         var id = productRepository.create(
             "Nový produkt", slug, null, null,
-            request.productType(), null, null, null
+            request.productType(), null, null, null,
+            null, null, null, null, null, null, null, null, null, null, null, null, null
         );
         var product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
@@ -228,7 +229,11 @@ public class CatalogService {
 
         var id = productRepository.create(
             request.title(), request.slug(), request.description(), request.shortDescription(),
-            request.productType(), request.thumbnailUrl(), request.metaTitle(), request.metaDescription()
+            request.productType(), request.thumbnailUrl(), request.metaTitle(), request.metaDescription(),
+            request.sku(), request.badge(), request.comparePriceCzk(), request.comparePriceEur(),
+            request.availability(), request.stockLimit(), request.weightKg(),
+            request.dimensionWidthCm(), request.dimensionLengthCm(), request.dimensionHeightCm(),
+            request.unitPriceEnabled(), request.ogImageUrl(), request.variantCategoryName()
         );
 
         // Assign categories
@@ -260,7 +265,11 @@ public class CatalogService {
         productRepository.update(
             id, request.title(), request.slug(), request.description(), request.shortDescription(),
             request.productType(), request.status(), request.thumbnailUrl(),
-            request.metaTitle(), request.metaDescription()
+            request.metaTitle(), request.metaDescription(),
+            request.sku(), request.badge(), request.comparePriceCzk(), request.comparePriceEur(),
+            request.availability(), request.stockLimit(), request.weightKg(),
+            request.dimensionWidthCm(), request.dimensionLengthCm(), request.dimensionHeightCm(),
+            request.unitPriceEnabled(), request.ogImageUrl(), request.variantCategoryName()
         );
 
         // Sync category assignments
@@ -342,7 +351,8 @@ public class CatalogService {
         return variants.stream()
             .map(v -> new CatalogDtos.VariantResponse(
                 v.id(), v.name(), v.sku(), v.stock(), v.sortOrder(),
-                variantPrices.getOrDefault(v.id(), Map.of())
+                variantPrices.getOrDefault(v.id(), Map.of()),
+                v.availability(), v.weightKg(), v.hidden()
             ))
             .toList();
     }
@@ -353,7 +363,8 @@ public class CatalogService {
         var prices = variantPriceRepository.findByVariantIds(List.of(variantId));
         return new CatalogDtos.VariantResponse(
             row.id(), row.name(), row.sku(), row.stock(), row.sortOrder(),
-            prices.getOrDefault(variantId, Map.of())
+            prices.getOrDefault(variantId, Map.of()),
+            row.availability(), row.weightKg(), row.hidden()
         );
     }
 
@@ -369,7 +380,8 @@ public class CatalogService {
             .orElseThrow(() -> new NotFoundException("Product not found"));
 
         var variantId = productVariantRepository.create(
-            productId, request.name(), request.sku(), request.stock(), request.sortOrder());
+            productId, request.name(), request.sku(), request.stock(), request.sortOrder(),
+            request.availability(), request.weightKg(), request.hidden());
         if (request.prices() != null) {
             request.prices().forEach((currency, amount) ->
                 variantPriceRepository.upsert(variantId, currency, amount));
@@ -387,7 +399,8 @@ public class CatalogService {
             throw new IllegalArgumentException("Variant does not belong to product");
         }
 
-        productVariantRepository.update(variantId, request.name(), request.sku(), request.stock(), request.sortOrder());
+        productVariantRepository.update(variantId, request.name(), request.sku(), request.stock(), request.sortOrder(),
+            request.availability(), request.weightKg(), request.hidden());
 
         variantPriceRepository.deleteByVariantId(variantId);
         if (request.prices() != null) {
@@ -458,7 +471,8 @@ public class CatalogService {
                                        List<CatalogDtos.CreateOccurrenceRequest> occurrences) {
         if ("PHYSICAL".equals(productType) && variants != null) {
             for (var v : variants) {
-                var variantId = productVariantRepository.create(productId, v.name(), v.sku(), v.stock(), v.sortOrder());
+                var variantId = productVariantRepository.create(productId, v.name(), v.sku(), v.stock(), v.sortOrder(),
+                    v.availability(), v.weightKg(), v.hidden());
                 if (v.prices() != null) {
                     v.prices().forEach((currency, amount) ->
                         variantPriceRepository.upsert(variantId, currency, amount));
@@ -487,7 +501,8 @@ public class CatalogService {
         if ("PHYSICAL".equals(productType) && variants != null) {
             productVariantRepository.deleteByProductId(productId);
             for (var v : variants) {
-                var variantId = productVariantRepository.create(productId, v.name(), v.sku(), v.stock(), v.sortOrder());
+                var variantId = productVariantRepository.create(productId, v.name(), v.sku(), v.stock(), v.sortOrder(),
+                    v.availability(), v.weightKg(), v.hidden());
                 if (v.prices() != null) {
                     v.prices().forEach((currency, amount) ->
                         variantPriceRepository.upsert(variantId, currency, amount));
@@ -559,7 +574,11 @@ public class CatalogService {
             product.status(), product.thumbnailUrl(),
             product.metaTitle(), product.metaDescription(), categories,
             images, variants, content, eventResp, occurrenceResps,
-            product.createdAt(), product.updatedAt()
+            product.createdAt(), product.updatedAt(),
+            product.sku(), product.badge(), product.comparePriceCzk(), product.comparePriceEur(),
+            product.availability(), product.stockLimit(), product.weightKg(),
+            product.dimensionWidthCm(), product.dimensionLengthCm(), product.dimensionHeightCm(),
+            product.unitPriceEnabled(), product.ogImageUrl(), product.variantCategoryName()
         );
     }
 
@@ -570,7 +589,11 @@ public class CatalogService {
             row.id(), row.title(), row.slug(), row.description(), row.shortDescription(),
             row.productType(), prices, row.status(), row.thumbnailUrl(),
             row.metaTitle(), row.metaDescription(), categories,
-            row.createdAt(), row.updatedAt()
+            row.createdAt(), row.updatedAt(),
+            row.sku(), row.badge(), row.comparePriceCzk(), row.comparePriceEur(),
+            row.availability(), row.stockLimit(), row.weightKg(),
+            row.dimensionWidthCm(), row.dimensionLengthCm(), row.dimensionHeightCm(),
+            row.unitPriceEnabled(), row.ogImageUrl(), row.variantCategoryName()
         );
     }
 

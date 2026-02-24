@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,38 +34,34 @@ public class ProductRepository {
         String metaTitle,
         String metaDescription,
         OffsetDateTime createdAt,
-        OffsetDateTime updatedAt
+        OffsetDateTime updatedAt,
+        // Physical product fields
+        String sku,
+        String badge,
+        BigDecimal comparePriceCzk,
+        BigDecimal comparePriceEur,
+        String availability,
+        Integer stockLimit,
+        BigDecimal weightKg,
+        BigDecimal dimensionWidthCm,
+        BigDecimal dimensionLengthCm,
+        BigDecimal dimensionHeightCm,
+        Boolean unitPriceEnabled,
+        String ogImageUrl,
+        String variantCategoryName
     ) {}
 
     public List<ProductRow> findAll(String status, List<UUID> productIdsInCategory, String productType,
                                     String search, int offset, int limit) {
         var condition = buildCondition(status, productIdsInCategory, productType, search);
 
-        return dsl.select(
-                PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
-                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
-                PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
+        return dsl.select(productFields())
             .from(PRODUCTS)
             .where(condition)
             .orderBy(PRODUCTS.CREATED_AT.desc())
             .offset(offset)
             .limit(limit)
-            .fetch(r -> new ProductRow(
-                r.get(PRODUCTS.ID),
-                r.get(PRODUCTS.TITLE),
-                r.get(PRODUCTS.SLUG),
-                r.get(PRODUCTS.DESCRIPTION),
-                r.get(PRODUCTS.SHORT_DESCRIPTION),
-                r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.STATUS),
-                r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.META_TITLE),
-                r.get(PRODUCTS.META_DESCRIPTION),
-                r.get(PRODUCTS.CREATED_AT),
-                r.get(PRODUCTS.UPDATED_AT)
-            ));
+            .fetch(this::toProductRow);
     }
 
     public long count(String status, List<UUID> productIdsInCategory, String productType, String search) {
@@ -79,82 +76,32 @@ public class ProductRepository {
     public List<ProductRow> findByIds(List<UUID> ids) {
         if (ids.isEmpty()) return List.of();
 
-        return dsl.select(
-                PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
-                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
-                PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
+        return dsl.select(productFields())
             .from(PRODUCTS)
             .where(PRODUCTS.ID.in(ids).and(PRODUCTS.STATUS.eq("ACTIVE")))
-            .fetch(r -> new ProductRow(
-                r.get(PRODUCTS.ID),
-                r.get(PRODUCTS.TITLE),
-                r.get(PRODUCTS.SLUG),
-                r.get(PRODUCTS.DESCRIPTION),
-                r.get(PRODUCTS.SHORT_DESCRIPTION),
-                r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.STATUS),
-                r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.META_TITLE),
-                r.get(PRODUCTS.META_DESCRIPTION),
-                r.get(PRODUCTS.CREATED_AT),
-                r.get(PRODUCTS.UPDATED_AT)
-            ));
+            .fetch(this::toProductRow);
     }
 
     public Optional<ProductRow> findById(UUID id) {
-        return dsl.select(
-                PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
-                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
-                PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
+        return dsl.select(productFields())
             .from(PRODUCTS)
             .where(PRODUCTS.ID.eq(id))
-            .fetchOptional(r -> new ProductRow(
-                r.get(PRODUCTS.ID),
-                r.get(PRODUCTS.TITLE),
-                r.get(PRODUCTS.SLUG),
-                r.get(PRODUCTS.DESCRIPTION),
-                r.get(PRODUCTS.SHORT_DESCRIPTION),
-                r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.STATUS),
-                r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.META_TITLE),
-                r.get(PRODUCTS.META_DESCRIPTION),
-                r.get(PRODUCTS.CREATED_AT),
-                r.get(PRODUCTS.UPDATED_AT)
-            ));
+            .fetchOptional(this::toProductRow);
     }
 
     public Optional<ProductRow> findBySlug(String slug) {
-        return dsl.select(
-                PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
-                PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
-                PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
-                PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
-                PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT)
+        return dsl.select(productFields())
             .from(PRODUCTS)
             .where(PRODUCTS.SLUG.eq(slug))
-            .fetchOptional(r -> new ProductRow(
-                r.get(PRODUCTS.ID),
-                r.get(PRODUCTS.TITLE),
-                r.get(PRODUCTS.SLUG),
-                r.get(PRODUCTS.DESCRIPTION),
-                r.get(PRODUCTS.SHORT_DESCRIPTION),
-                r.get(PRODUCTS.PRODUCT_TYPE),
-                r.get(PRODUCTS.STATUS),
-                r.get(PRODUCTS.THUMBNAIL_URL),
-                r.get(PRODUCTS.META_TITLE),
-                r.get(PRODUCTS.META_DESCRIPTION),
-                r.get(PRODUCTS.CREATED_AT),
-                r.get(PRODUCTS.UPDATED_AT)
-            ));
+            .fetchOptional(this::toProductRow);
     }
 
     public UUID create(String title, String slug, String description, String shortDescription,
-                       String productType, String thumbnailUrl, String metaTitle, String metaDescription) {
+                       String productType, String thumbnailUrl, String metaTitle, String metaDescription,
+                       String sku, String badge, BigDecimal comparePriceCzk, BigDecimal comparePriceEur,
+                       String availability, Integer stockLimit, BigDecimal weightKg,
+                       BigDecimal dimensionWidthCm, BigDecimal dimensionLengthCm, BigDecimal dimensionHeightCm,
+                       Boolean unitPriceEnabled, String ogImageUrl, String variantCategoryName) {
         return dsl.insertInto(PRODUCTS)
             .set(PRODUCTS.TITLE, title)
             .set(PRODUCTS.SLUG, slug)
@@ -164,6 +111,19 @@ public class ProductRepository {
             .set(PRODUCTS.THUMBNAIL_URL, thumbnailUrl)
             .set(PRODUCTS.META_TITLE, metaTitle)
             .set(PRODUCTS.META_DESCRIPTION, metaDescription)
+            .set(PRODUCTS.SKU, sku)
+            .set(PRODUCTS.BADGE, badge)
+            .set(PRODUCTS.COMPARE_PRICE_CZK, comparePriceCzk)
+            .set(PRODUCTS.COMPARE_PRICE_EUR, comparePriceEur)
+            .set(PRODUCTS.AVAILABILITY, availability)
+            .set(PRODUCTS.STOCK_LIMIT, stockLimit)
+            .set(PRODUCTS.WEIGHT_KG, weightKg)
+            .set(PRODUCTS.DIMENSION_WIDTH_CM, dimensionWidthCm)
+            .set(PRODUCTS.DIMENSION_LENGTH_CM, dimensionLengthCm)
+            .set(PRODUCTS.DIMENSION_HEIGHT_CM, dimensionHeightCm)
+            .set(PRODUCTS.UNIT_PRICE_ENABLED, unitPriceEnabled)
+            .set(PRODUCTS.OG_IMAGE_URL, ogImageUrl)
+            .set(PRODUCTS.VARIANT_CATEGORY_NAME, variantCategoryName)
             .returning(PRODUCTS.ID)
             .fetchOne()
             .getId();
@@ -171,7 +131,11 @@ public class ProductRepository {
 
     public void update(UUID id, String title, String slug, String description,
                        String shortDescription, String productType, String status,
-                       String thumbnailUrl, String metaTitle, String metaDescription) {
+                       String thumbnailUrl, String metaTitle, String metaDescription,
+                       String sku, String badge, BigDecimal comparePriceCzk, BigDecimal comparePriceEur,
+                       String availability, Integer stockLimit, BigDecimal weightKg,
+                       BigDecimal dimensionWidthCm, BigDecimal dimensionLengthCm, BigDecimal dimensionHeightCm,
+                       Boolean unitPriceEnabled, String ogImageUrl, String variantCategoryName) {
         dsl.update(PRODUCTS)
             .set(PRODUCTS.TITLE, title)
             .set(PRODUCTS.SLUG, slug)
@@ -182,6 +146,19 @@ public class ProductRepository {
             .set(PRODUCTS.THUMBNAIL_URL, thumbnailUrl)
             .set(PRODUCTS.META_TITLE, metaTitle)
             .set(PRODUCTS.META_DESCRIPTION, metaDescription)
+            .set(PRODUCTS.SKU, sku)
+            .set(PRODUCTS.BADGE, badge)
+            .set(PRODUCTS.COMPARE_PRICE_CZK, comparePriceCzk)
+            .set(PRODUCTS.COMPARE_PRICE_EUR, comparePriceEur)
+            .set(PRODUCTS.AVAILABILITY, availability)
+            .set(PRODUCTS.STOCK_LIMIT, stockLimit)
+            .set(PRODUCTS.WEIGHT_KG, weightKg)
+            .set(PRODUCTS.DIMENSION_WIDTH_CM, dimensionWidthCm)
+            .set(PRODUCTS.DIMENSION_LENGTH_CM, dimensionLengthCm)
+            .set(PRODUCTS.DIMENSION_HEIGHT_CM, dimensionHeightCm)
+            .set(PRODUCTS.UNIT_PRICE_ENABLED, unitPriceEnabled)
+            .set(PRODUCTS.OG_IMAGE_URL, ogImageUrl)
+            .set(PRODUCTS.VARIANT_CATEGORY_NAME, variantCategoryName)
             .set(PRODUCTS.UPDATED_AT, OffsetDateTime.now())
             .where(PRODUCTS.ID.eq(id))
             .execute();
@@ -199,6 +176,53 @@ public class ProductRepository {
         return dsl.fetchExists(
             dsl.selectFrom(PRODUCTS)
                .where(PRODUCTS.SLUG.eq(slug))
+        );
+    }
+
+    private org.jooq.SelectFieldOrAsterisk[] productFields() {
+        return new org.jooq.SelectFieldOrAsterisk[]{
+            PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,
+            PRODUCTS.SHORT_DESCRIPTION, PRODUCTS.PRODUCT_TYPE,
+            PRODUCTS.STATUS, PRODUCTS.THUMBNAIL_URL,
+            PRODUCTS.META_TITLE, PRODUCTS.META_DESCRIPTION,
+            PRODUCTS.CREATED_AT, PRODUCTS.UPDATED_AT,
+            PRODUCTS.SKU, PRODUCTS.BADGE,
+            PRODUCTS.COMPARE_PRICE_CZK, PRODUCTS.COMPARE_PRICE_EUR,
+            PRODUCTS.AVAILABILITY, PRODUCTS.STOCK_LIMIT,
+            PRODUCTS.WEIGHT_KG, PRODUCTS.DIMENSION_WIDTH_CM,
+            PRODUCTS.DIMENSION_LENGTH_CM, PRODUCTS.DIMENSION_HEIGHT_CM,
+            PRODUCTS.UNIT_PRICE_ENABLED, PRODUCTS.OG_IMAGE_URL,
+            PRODUCTS.VARIANT_CATEGORY_NAME
+        };
+    }
+
+    private ProductRow toProductRow(org.jooq.Record r) {
+        return new ProductRow(
+            r.get(PRODUCTS.ID),
+            r.get(PRODUCTS.TITLE),
+            r.get(PRODUCTS.SLUG),
+            r.get(PRODUCTS.DESCRIPTION),
+            r.get(PRODUCTS.SHORT_DESCRIPTION),
+            r.get(PRODUCTS.PRODUCT_TYPE),
+            r.get(PRODUCTS.STATUS),
+            r.get(PRODUCTS.THUMBNAIL_URL),
+            r.get(PRODUCTS.META_TITLE),
+            r.get(PRODUCTS.META_DESCRIPTION),
+            r.get(PRODUCTS.CREATED_AT),
+            r.get(PRODUCTS.UPDATED_AT),
+            r.get(PRODUCTS.SKU),
+            r.get(PRODUCTS.BADGE),
+            r.get(PRODUCTS.COMPARE_PRICE_CZK),
+            r.get(PRODUCTS.COMPARE_PRICE_EUR),
+            r.get(PRODUCTS.AVAILABILITY),
+            r.get(PRODUCTS.STOCK_LIMIT),
+            r.get(PRODUCTS.WEIGHT_KG),
+            r.get(PRODUCTS.DIMENSION_WIDTH_CM),
+            r.get(PRODUCTS.DIMENSION_LENGTH_CM),
+            r.get(PRODUCTS.DIMENSION_HEIGHT_CM),
+            r.get(PRODUCTS.UNIT_PRICE_ENABLED),
+            r.get(PRODUCTS.OG_IMAGE_URL),
+            r.get(PRODUCTS.VARIANT_CATEGORY_NAME)
         );
     }
 

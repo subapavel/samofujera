@@ -70,7 +70,9 @@ class EntitlementIntegrationTest {
             null,
             null,
             null,
-            null
+            null,
+            // Physical product fields
+            null, null, null, null, null, null, null, null, null, null, null, null, null
         ));
         return product.id();
     }

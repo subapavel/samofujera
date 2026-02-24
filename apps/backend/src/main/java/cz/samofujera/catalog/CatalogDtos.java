@@ -52,7 +52,13 @@ public final class CatalogDtos {
         String productType, Map<String, BigDecimal> prices,
         String status, String thumbnailUrl,
         String metaTitle, String metaDescription, List<CategorySummary> categories,
-        OffsetDateTime createdAt, OffsetDateTime updatedAt
+        OffsetDateTime createdAt, OffsetDateTime updatedAt,
+        // Physical product fields
+        String sku, String badge,
+        BigDecimal comparePriceCzk, BigDecimal comparePriceEur,
+        String availability, Integer stockLimit,
+        BigDecimal weightKg, BigDecimal dimensionWidthCm, BigDecimal dimensionLengthCm, BigDecimal dimensionHeightCm,
+        Boolean unitPriceEnabled, String ogImageUrl, String variantCategoryName
     ) {}
 
     public record ProductListResponse(
@@ -69,7 +75,13 @@ public final class CatalogDtos {
         List<ProductContentDtos.ContentResponse> content,
         EventResponse event,
         List<OccurrenceResponse> occurrences,
-        OffsetDateTime createdAt, OffsetDateTime updatedAt
+        OffsetDateTime createdAt, OffsetDateTime updatedAt,
+        // Physical product fields
+        String sku, String badge,
+        BigDecimal comparePriceCzk, BigDecimal comparePriceEur,
+        String availability, Integer stockLimit,
+        BigDecimal weightKg, BigDecimal dimensionWidthCm, BigDecimal dimensionLengthCm, BigDecimal dimensionHeightCm,
+        Boolean unitPriceEnabled, String ogImageUrl, String variantCategoryName
     ) {}
 
     public record CreateDraftRequest(@NotBlank String productType) {}
@@ -87,7 +99,21 @@ public final class CatalogDtos {
         @Size(max = 500) String metaDescription,
         @Valid List<CreateVariantRequest> variants,
         @Valid CreateEventRequest event,
-        @Valid List<CreateOccurrenceRequest> occurrences
+        @Valid List<CreateOccurrenceRequest> occurrences,
+        // Physical product fields
+        @Size(max = 100) String sku,
+        @Size(max = 100) String badge,
+        BigDecimal comparePriceCzk,
+        BigDecimal comparePriceEur,
+        String availability,
+        Integer stockLimit,
+        BigDecimal weightKg,
+        BigDecimal dimensionWidthCm,
+        BigDecimal dimensionLengthCm,
+        BigDecimal dimensionHeightCm,
+        Boolean unitPriceEnabled,
+        String ogImageUrl,
+        @Size(max = 255) String variantCategoryName
     ) {}
 
     public record UpdateProductRequest(
@@ -104,14 +130,29 @@ public final class CatalogDtos {
         @Size(max = 500) String metaDescription,
         @Valid List<CreateVariantRequest> variants,
         @Valid CreateEventRequest event,
-        @Valid List<CreateOccurrenceRequest> occurrences
+        @Valid List<CreateOccurrenceRequest> occurrences,
+        // Physical product fields
+        @Size(max = 100) String sku,
+        @Size(max = 100) String badge,
+        BigDecimal comparePriceCzk,
+        BigDecimal comparePriceEur,
+        String availability,
+        Integer stockLimit,
+        BigDecimal weightKg,
+        BigDecimal dimensionWidthCm,
+        BigDecimal dimensionLengthCm,
+        BigDecimal dimensionHeightCm,
+        Boolean unitPriceEnabled,
+        String ogImageUrl,
+        @Size(max = 255) String variantCategoryName
     ) {}
 
     // Variant DTOs
 
     public record VariantResponse(
         UUID id, String name, String sku, int stock, int sortOrder,
-        Map<String, BigDecimal> prices
+        Map<String, BigDecimal> prices,
+        String availability, BigDecimal weightKg, Boolean hidden
     ) {}
 
     public record CreateVariantRequest(
@@ -119,7 +160,10 @@ public final class CatalogDtos {
         @NotBlank @Size(max = 100) String sku,
         int stock,
         int sortOrder,
-        @NotNull Map<String, @DecimalMin("0.01") BigDecimal> prices
+        @NotNull Map<String, @DecimalMin("0.01") BigDecimal> prices,
+        String availability,
+        BigDecimal weightKg,
+        Boolean hidden
     ) {}
 
     // Image DTOs
