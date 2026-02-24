@@ -19,6 +19,10 @@ import type {
   CategoryResponse,
 } from "@samofujera/api-client";
 import { ProductContentTab } from "./product-content-tab";
+import { SkladTab } from "./sklad-tab";
+import { PodporaProdejeTab } from "./podpora-prodeje-tab";
+import { PokrocileTab } from "./pokrocile-tab";
+import { VariantsTabWebnode } from "./variants-tab-webnode";
 import {
   Button,
   Input,
@@ -83,6 +87,19 @@ const productFormSchema = z.object({
   categoryIds: z.array(z.string()).default([]),
   metaTitle: z.string().optional().default(""),
   metaDescription: z.string().optional().default(""),
+  sku: z.string().optional().default(""),
+  availability: z.string().optional().default("hidden"),
+  stockLimitEnabled: z.boolean().optional().default(false),
+  stockLimit: z.string().optional().default(""),
+  weightKg: z.string().optional().default(""),
+  dimensionWidthCm: z.string().optional().default(""),
+  dimensionLengthCm: z.string().optional().default(""),
+  dimensionHeightCm: z.string().optional().default(""),
+  badge: z.string().optional().default(""),
+  comparePriceCzk: z.string().optional().default(""),
+  unitPriceEnabled: z.boolean().optional().default(false),
+  ogImageUrl: z.string().optional().default(""),
+  variantCategoryName: z.string().optional().default(""),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -549,6 +566,19 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
       categoryIds: [],
       metaTitle: "",
       metaDescription: "",
+      sku: "",
+      availability: "hidden",
+      stockLimitEnabled: false,
+      stockLimit: "",
+      weightKg: "",
+      dimensionWidthCm: "",
+      dimensionLengthCm: "",
+      dimensionHeightCm: "",
+      badge: "",
+      comparePriceCzk: "",
+      unitPriceEnabled: false,
+      ogImageUrl: "",
+      variantCategoryName: "",
     },
   });
 
@@ -577,6 +607,19 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
         categoryIds: product.categories?.map((c) => c.id) ?? [],
         metaTitle: product.metaTitle ?? "",
         metaDescription: product.metaDescription ?? "",
+        sku: product.sku ?? "",
+        availability: product.availability ?? "hidden",
+        stockLimitEnabled: (product.stockLimit ?? 0) > 0,
+        stockLimit: product.stockLimit != null ? String(product.stockLimit) : "",
+        weightKg: product.weightKg != null ? String(product.weightKg) : "",
+        dimensionWidthCm: product.dimensionWidthCm != null ? String(product.dimensionWidthCm) : "",
+        dimensionLengthCm: product.dimensionLengthCm != null ? String(product.dimensionLengthCm) : "",
+        dimensionHeightCm: product.dimensionHeightCm != null ? String(product.dimensionHeightCm) : "",
+        badge: product.badge ?? "",
+        comparePriceCzk: product.comparePriceCzk != null ? String(product.comparePriceCzk) : "",
+        unitPriceEnabled: product.unitPriceEnabled ?? false,
+        ogImageUrl: product.ogImageUrl ?? "",
+        variantCategoryName: product.variantCategoryName ?? "",
       });
       setSlugManual(true);
     }
@@ -614,6 +657,18 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
         metaTitle: values.metaTitle || undefined,
         metaDescription: values.metaDescription || undefined,
         status,
+        sku: values.sku || undefined,
+        badge: values.badge || undefined,
+        comparePriceCzk: values.comparePriceCzk ? Number(values.comparePriceCzk) : undefined,
+        availability: values.availability || undefined,
+        stockLimit: values.stockLimitEnabled && values.stockLimit ? Number(values.stockLimit) : undefined,
+        weightKg: values.weightKg ? Number(values.weightKg) : undefined,
+        dimensionWidthCm: values.dimensionWidthCm ? Number(values.dimensionWidthCm) : undefined,
+        dimensionLengthCm: values.dimensionLengthCm ? Number(values.dimensionLengthCm) : undefined,
+        dimensionHeightCm: values.dimensionHeightCm ? Number(values.dimensionHeightCm) : undefined,
+        unitPriceEnabled: values.unitPriceEnabled,
+        ogImageUrl: values.ogImageUrl || undefined,
+        variantCategoryName: values.variantCategoryName || undefined,
       });
     },
     onSuccess: invalidateProduct,
@@ -639,7 +694,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
 
   const isPending = updateMutation.isPending;
 
-  const showVariantsTab = product?.productType === "PHYSICAL";
+  const isPhysical = product?.productType === "PHYSICAL";
   const showContentTab = product?.productType === "EBOOK" || product?.productType === "AUDIO_VIDEO";
 
   const typeLabel = product
@@ -665,12 +720,194 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
           <div className="text-center text-sm text-destructive">
             {t`Nepodařilo se načíst produkt.`}
           </div>
-        ) : !product ? null : (
+        ) : !product ? null : isPhysical ? (
+          /* ---- PHYSICAL product: Webnode-style tabs ---- */
+          <Tabs defaultValue="produkt" className="w-full">
+            <TabsList>
+              <TabsTrigger value="produkt">{t`Produkt`}</TabsTrigger>
+              <TabsTrigger value="gallery">{t`Galerie`}</TabsTrigger>
+              <TabsTrigger value="sklad">{t`Sklad`}</TabsTrigger>
+              <TabsTrigger value="podpora">{t`Podpora prodeje`}</TabsTrigger>
+              <TabsTrigger value="variants">{t`Varianty`}</TabsTrigger>
+              <TabsTrigger value="pokrocile">{t`Pokročilé`}</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="produkt">
+              <Form {...form}>
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Název`}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            required
+                            disabled={isPending}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              if (!slugManual) {
+                                form.setValue("slug", slugify(e.target.value), { shouldDirty: true });
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div>
+                    <Label>{t`Cena`}</Label>
+                    <div className="mt-1 flex items-center gap-2">
+                      <FormField
+                        control={form.control}
+                        name="priceCZK"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <div className="relative">
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  disabled={isPending}
+                                  className="pr-10"
+                                />
+                                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--muted-foreground)]">
+                                  Kč
+                                </span>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="unitPriceEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormLabel className="!mt-0">{t`Zobrazit cenu za jednotku`}</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="shortDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Krátký popis`}</FormLabel>
+                        <FormControl>
+                          <Input {...field} disabled={isPending} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t`Popis`}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            disabled={isPending}
+                            rows={6}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div>
+                    <Label>{t`Kategorie`}</Label>
+                    <div className="mt-1 max-h-48 space-y-2 overflow-y-auto rounded-md border border-[var(--border)] p-3">
+                      {categories.length === 0 ? (
+                        <p className="text-sm text-[var(--muted-foreground)]">{t`Žádné kategorie`}</p>
+                      ) : (
+                        categories.map((cat) => (
+                          <label key={cat.id} className="flex items-center gap-2 text-sm">
+                            <Checkbox
+                              checked={categoryIds.includes(cat.id)}
+                              onCheckedChange={() => toggleCategory(cat.id)}
+                              disabled={isPending}
+                            />
+                            {cat.name}
+                          </label>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {updateMutation.isError && (
+                    <p className="text-sm text-[var(--destructive)]">
+                      {t`Nepodařilo se uložit změny. Zkuste to prosím znovu.`}
+                    </p>
+                  )}
+
+                  {updateMutation.isSuccess && (
+                    <p className="text-sm text-green-600">{t`Produkt byl úspěšně uložen.`}</p>
+                  )}
+                </div>
+              </Form>
+            </TabsContent>
+
+            <TabsContent value="gallery">
+              <GalleryTab
+                productId={productId!}
+                images={product.images ?? []}
+                onInvalidate={invalidateProduct}
+              />
+            </TabsContent>
+
+            <TabsContent value="sklad">
+              <SkladTab form={form} disabled={isPending} />
+            </TabsContent>
+
+            <TabsContent value="podpora">
+              <PodporaProdejeTab form={form} disabled={isPending} />
+            </TabsContent>
+
+            <TabsContent value="variants">
+              <VariantsTabWebnode
+                productId={productId!}
+                variants={product.variants ?? []}
+                variantCategoryName={product.variantCategoryName ?? ""}
+                onInvalidate={invalidateProduct}
+                onCategoryNameChange={(name) => form.setValue("variantCategoryName", name, { shouldDirty: true })}
+              />
+            </TabsContent>
+
+            <TabsContent value="pokrocile">
+              <PokrocileTab form={form} disabled={isPending} slug={form.watch("slug")} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          /* ---- Non-PHYSICAL: original tab structure ---- */
           <Tabs defaultValue="info" className="w-full">
             <TabsList>
               <TabsTrigger value="info">{t`Základní info`}</TabsTrigger>
               <TabsTrigger value="gallery">{t`Galerie`}</TabsTrigger>
-              {showVariantsTab && <TabsTrigger value="variants">{t`Varianty`}</TabsTrigger>}
               {showContentTab && <TabsTrigger value="content">{t`Obsah`}</TabsTrigger>}
               <TabsTrigger value="seo">SEO</TabsTrigger>
             </TabsList>
@@ -847,16 +1084,6 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
               />
             </TabsContent>
 
-            {showVariantsTab && (
-              <TabsContent value="variants">
-                <VariantsTab
-                  productId={productId!}
-                  variants={product.variants ?? []}
-                  onInvalidate={invalidateProduct}
-                />
-              </TabsContent>
-            )}
-
             {showContentTab && (
               <TabsContent value="content">
                 <ProductContentTab
@@ -908,12 +1135,16 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
         )}
 
         {product && (
-          <div className="flex justify-end gap-2 border-t pt-4">
+          <div className="flex items-center justify-between border-t pt-4">
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:underline"
+            >
+              {t`Zavřít`}
+            </button>
             <Button type="button" onClick={handlePublish} disabled={isPending}>
-              {isPending ? t`Ukládám...` : t`Publikovat`}
-            </Button>
-            <Button type="button" variant="outline" onClick={handleSaveAsDraft} disabled={isPending}>
-              {t`Uložit jako draft`}
+              {isPending ? t`Ukládám...` : product.status === "DRAFT" ? t`Vytvořit` : t`Uložit`}
             </Button>
           </div>
         )}
