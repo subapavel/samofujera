@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { ProductsBlockRenderer } from "./ProductsBlockRenderer";
 
 interface SerializedNode {
   type: string;
@@ -61,7 +62,17 @@ interface ButtonBlockData extends BlockBase {
   openInNewTab?: boolean;
 }
 
-type BlockData = TextBlockData | ImageBlockData | SeparatorBlockData | ButtonBlockData;
+interface ProductsBlockData extends BlockBase {
+  type: "products";
+  mode: "category" | "manual";
+  categoryId: string | null;
+  productIds: string[];
+  appearance: string;
+  columns: number;
+  showCategoryFilter: boolean;
+}
+
+type BlockData = TextBlockData | ImageBlockData | SeparatorBlockData | ButtonBlockData | ProductsBlockData;
 
 interface SectionData {
   id: string;
@@ -230,6 +241,8 @@ export function PageRenderer({ content }: PageRendererProps) {
                     return <div key={block.id} className="image-block">{renderBlock(block)}</div>;
                   case "button":
                     return <div key={block.id}>{renderBlock(block)}</div>;
+                  case "products":
+                    return <div key={block.id} className="products-block"><ProductsBlockRenderer block={block as ProductsBlockData} /></div>;
                   default:
                     return null;
                 }
