@@ -16,6 +16,7 @@ export const catalogApi = {
     category?: string;
     type?: string;
     search?: string;
+    ids?: string[];
   }) => {
     const searchParams = new URLSearchParams();
     if (params?.page) searchParams.set("page", String(params.page));
@@ -23,6 +24,7 @@ export const catalogApi = {
     if (params?.category) searchParams.set("category", params.category);
     if (params?.type) searchParams.set("type", params.type);
     if (params?.search) searchParams.set("search", params.search);
+    if (params?.ids?.length) searchParams.set("ids", params.ids.join(","));
     const qs = searchParams.toString();
     return apiFetch<ApiResponse<ProductListResponse>>(
       `/api/catalog/products${qs ? `?${qs}` : ""}`,
