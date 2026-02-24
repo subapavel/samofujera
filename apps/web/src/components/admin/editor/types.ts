@@ -6,6 +6,8 @@ export type ImageAlignment = "left" | "center" | "right" | "full";
 export type SeparatorMargin = "standard" | "minimal";
 export type ButtonVariant = "style1" | "style2" | "style3" | "style4" | "style5";
 export type ButtonAlignment = "left" | "center" | "right";
+export type ProductsAppearance = "default" | "large-photo" | "slider" | "carousel";
+export type ProductsColumns = 3 | 4 | 5;
 
 interface BlockBase {
   id: string;
@@ -43,7 +45,17 @@ export interface ButtonBlock extends BlockBase {
   openInNewTab: boolean;
 }
 
-export type ContentBlock = TextBlock | ImageBlock | SeparatorBlock | ButtonBlock;
+export interface ProductsBlock extends BlockBase {
+  type: "products";
+  mode: "category" | "manual";
+  categoryId: string | null;
+  productIds: string[];
+  appearance: ProductsAppearance;
+  columns: ProductsColumns;
+  showCategoryFilter: boolean;
+}
+
+export type ContentBlock = TextBlock | ImageBlock | SeparatorBlock | ButtonBlock | ProductsBlock;
 export type BlockType = ContentBlock["type"];
 
 // ── Section / Page ──
@@ -92,6 +104,19 @@ export function createButtonBlock(): ButtonBlock {
     variant: "style1",
     alignment: "center",
     openInNewTab: false,
+  };
+}
+
+export function createProductsBlock(): ProductsBlock {
+  return {
+    id: crypto.randomUUID(),
+    type: "products",
+    mode: "category",
+    categoryId: null,
+    productIds: [],
+    appearance: "default",
+    columns: 4,
+    showCategoryFilter: true,
   };
 }
 

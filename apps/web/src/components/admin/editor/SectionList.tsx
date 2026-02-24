@@ -9,6 +9,7 @@ import {
   createImageBlock,
   createSeparatorBlock,
   createButtonBlock,
+  createProductsBlock,
 } from "./types";
 import type { ElementType } from "./plugins/ElementPickerPopover";
 import { SectionWrapper } from "./SectionWrapper";
@@ -18,6 +19,7 @@ import {
   ImageBlockEditor,
   SeparatorBlockEditor,
   ButtonBlockEditor,
+  ProductsBlockEditor,
 } from "./blocks";
 import type { SectionEditorHandle } from "./PageEditor";
 
@@ -46,6 +48,8 @@ function createBlockFromType(type: ElementType): ContentBlock {
       return createSeparatorBlock();
     case "button":
       return createButtonBlock();
+    case "products":
+      return createProductsBlock();
   }
 }
 
@@ -300,6 +304,18 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                       )}
                       {block.type === "button" && (
                         <ButtonBlockEditor
+                          block={block}
+                          onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
+                          onDelete={requestDelete}
+                          onCopy={() => handleCopyBlock(sectionIndex, blockIndex)}
+                          onActiveChange={(active) => {
+                            if (active) setActiveBlockId(block.id);
+                            else if (activeBlockId === block.id) setActiveBlockId(null);
+                          }}
+                        />
+                      )}
+                      {block.type === "products" && (
+                        <ProductsBlockEditor
                           block={block}
                           onChange={(updated) => handleBlockChange(sectionIndex, blockIndex, updated)}
                           onDelete={requestDelete}

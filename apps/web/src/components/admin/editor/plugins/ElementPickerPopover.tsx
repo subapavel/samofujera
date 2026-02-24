@@ -1,9 +1,9 @@
 "use client";
 
 import { Popover, PopoverContent, PopoverAnchor } from "@samofujera/ui";
-import { Type, ImageIcon, Minus, MousePointerClick } from "lucide-react";
+import { Type, ImageIcon, Minus, MousePointerClick, LayoutGrid } from "lucide-react";
 
-export type ElementType = "paragraph" | "image" | "separator" | "button";
+export type ElementType = "paragraph" | "image" | "separator" | "button" | "products";
 
 interface ElementPickerPopoverProps {
   open: boolean;
@@ -21,6 +21,7 @@ const ELEMENT_OPTIONS: {
   { type: "image", label: "Obrázek", icon: ImageIcon },
   { type: "separator", label: "Dělicí čára", icon: Minus },
   { type: "button", label: "Tlačítko", icon: MousePointerClick },
+  { type: "products", label: "Výpis produktů", icon: LayoutGrid },
 ];
 
 export function ElementPickerPopover({
