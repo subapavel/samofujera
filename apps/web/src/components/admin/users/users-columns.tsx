@@ -6,7 +6,7 @@ import { t } from "@lingui/core/macro";
 import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import type { MessageDescriptor } from "@lingui/core";
-import { MoreHorizontal, Shield, User } from "lucide-react";
+import { Eye, MoreHorizontal, Shield, User } from "lucide-react";
 import {
   Badge,
   Button,
@@ -47,6 +47,7 @@ interface UseUsersColumnsOptions {
   onEdit?: (user: UserRow) => void;
   onBlock?: (user: UserRow) => void;
   onDelete?: (user: UserRow) => void;
+  onImpersonate?: (user: UserRow) => void;
 }
 
 export function useUsersColumns(
@@ -155,6 +156,12 @@ export function useUsersColumns(
                 <DropdownMenuItem onClick={() => options?.onEdit?.(user)}>
                   {t`Upravit`}
                 </DropdownMenuItem>
+                {user.role !== "ADMIN" && (
+                  <DropdownMenuItem onClick={() => options?.onImpersonate?.(user)}>
+                    <Eye className="mr-2 h-3.5 w-3.5" />
+                    {t`Prohlížet jako`}
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => options?.onBlock?.(user)}>
                   {user.status === "ACTIVE" ? t`Zablokovat` : t`Odblokovat`}
                 </DropdownMenuItem>
@@ -175,5 +182,5 @@ export function useUsersColumns(
 
     return columns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_, options?.onEdit, options?.onBlock, options?.onDelete]);
+  }, [_, options?.onEdit, options?.onBlock, options?.onDelete, options?.onImpersonate]);
 }

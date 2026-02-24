@@ -446,6 +446,15 @@ export interface SchedulePublishRequest {
   scheduledPublishAt: string;
 }
 
+// Impersonation
+
+export interface ImpersonationStatus {
+  active: boolean;
+  userId: string | null;
+  email: string | null;
+  name: string | null;
+}
+
 export interface RevisionResponse {
   id: string;
   version: number;

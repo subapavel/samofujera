@@ -3,7 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { t } from "@lingui/core/macro";
-import { Pencil, LayoutDashboard, ChevronUp, ChevronDown } from "lucide-react";
+import { Pencil, LayoutDashboard, ChevronUp, ChevronDown, Eye } from "lucide-react";
 import { Button } from "@samofujera/ui";
 import { usePublicAuth } from "./PublicAuthProvider";
 import { usePageId } from "./PageIdProvider";
@@ -31,7 +31,7 @@ function getServerSnapshot(): boolean {
 }
 
 export function AdminBar() {
-  const { isEditor, isLoading } = usePublicAuth();
+  const { isEditor, isLoading, impersonating, stopImpersonation } = usePublicAuth();
   const { pageId } = usePageId();
   const visible = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
@@ -41,6 +41,26 @@ export function AdminBar() {
   }, []);
 
   if (isLoading || !isEditor) return null;
+
+  // Impersonation mode: orange bar with stop button, no admin controls
+  if (impersonating) {
+    return (
+      <div className="flex h-12 items-center border-b border-orange-300 bg-orange-50 px-4">
+        <div className="flex flex-1 items-center gap-2 text-sm text-orange-800">
+          <Eye className="h-3.5 w-3.5" />
+          {t`Prohlížíte jako: ${impersonating.name}`}
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={stopImpersonation}
+          className="h-7 text-xs text-orange-800 hover:bg-orange-100"
+        >
+          {t`Ukončit`}
+        </Button>
+      </div>
+    );
+  }
 
   // Collapsed state: small toggle button in top-right, same X position as in expanded bar
   if (!visible) {

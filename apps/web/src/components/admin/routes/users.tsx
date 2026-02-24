@@ -1,6 +1,8 @@
 "use client";
 
+import { useCallback } from "react";
 import { t } from "@lingui/core/macro";
+import { impersonationApi } from "@samofujera/api-client";
 import { DataTable } from "@/components/data-table";
 import type { FilterConfig } from "@/components/data-table";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -39,7 +41,16 @@ const MOCK_USERS: UserRow[] = [
 ];
 
 export function UsersPage() {
-  const columns = useUsersColumns();
+  const handleImpersonate = useCallback(async (user: UserRow) => {
+    try {
+      await impersonationApi.start(user.id);
+      window.location.href = "/";
+    } catch {
+      // silently ignore — impersonation failed
+    }
+  }, []);
+
+  const columns = useUsersColumns({ onImpersonate: handleImpersonate });
 
   const statusOptions = [
     { label: t`Aktivní`, value: "ACTIVE" },
