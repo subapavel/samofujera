@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Service
-class ImageProcessingService {
+public class ImageProcessingService {
 
     private static final int MAX_DIMENSION = 2400;
 

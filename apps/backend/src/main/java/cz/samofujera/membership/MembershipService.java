@@ -1,6 +1,5 @@
 package cz.samofujera.membership;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.StripeException;
 import com.stripe.param.checkout.SessionCreateParams;
 import cz.samofujera.membership.internal.PlanRepository;
@@ -27,19 +26,16 @@ public class MembershipService {
     private final PlanRepository planRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final StripeSubscriptionClient stripeSubscriptionClient;
-    private final ObjectMapper objectMapper;
 
     @Value("${app.frontend.url:http://localhost:4321}")
     private String frontendUrl;
 
     MembershipService(PlanRepository planRepository,
                       SubscriptionRepository subscriptionRepository,
-                      StripeSubscriptionClient stripeSubscriptionClient,
-                      ObjectMapper objectMapper) {
+                      StripeSubscriptionClient stripeSubscriptionClient) {
         this.planRepository = planRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.stripeSubscriptionClient = stripeSubscriptionClient;
-        this.objectMapper = objectMapper;
     }
 
     public List<MembershipDtos.PlanResponse> getPlans() {
@@ -154,13 +150,12 @@ public class MembershipService {
         var userId = UUID.fromString(metadata.get("user_id"));
         var planId = UUID.fromString(metadata.get("plan_id"));
 
-        var periodStart = toOffsetDateTime(stripeSubscription.getCurrentPeriodStart());
-        var periodEnd = toOffsetDateTime(stripeSubscription.getCurrentPeriodEnd());
+        var period = extractPeriodFromItems(stripeSubscription);
 
         var id = subscriptionRepository.create(
             userId, planId, stripeSubscription.getId(),
             mapStripeStatus(stripeSubscription.getStatus()),
-            periodStart, periodEnd
+            period[0], period[1]
         );
 
         log.info("Created subscription {} for user {} plan {} (Stripe: {})",
@@ -175,13 +170,12 @@ public class MembershipService {
             return;
         }
 
-        var periodStart = toOffsetDateTime(stripeSubscription.getCurrentPeriodStart());
-        var periodEnd = toOffsetDateTime(stripeSubscription.getCurrentPeriodEnd());
+        var period = extractPeriodFromItems(stripeSubscription);
         var status = mapStripeStatus(stripeSubscription.getStatus());
 
-        subscriptionRepository.update(sub.id(), status, periodStart, periodEnd, null);
+        subscriptionRepository.update(sub.id(), status, period[0], period[1], null);
         log.info("Updated subscription {} status={} period={}-{}",
-            sub.id(), status, periodStart, periodEnd);
+            sub.id(), status, period[0], period[1]);
     }
 
     @Transactional
@@ -257,6 +251,24 @@ public class MembershipService {
             case "canceled", "unpaid" -> "CANCELLED";
             case "incomplete", "incomplete_expired" -> "INCOMPLETE";
             default -> stripeStatus.toUpperCase();
+        };
+    }
+
+    private OffsetDateTime[] extractPeriodFromItems(com.stripe.model.Subscription stripeSubscription) {
+        // In Stripe SDK v30+, period is on SubscriptionItem, not Subscription
+        var items = stripeSubscription.getItems();
+        if (items != null && items.getData() != null && !items.getData().isEmpty()) {
+            var firstItem = items.getData().getFirst();
+            return new OffsetDateTime[]{
+                toOffsetDateTime(firstItem.getCurrentPeriodStart()),
+                toOffsetDateTime(firstItem.getCurrentPeriodEnd())
+            };
+        }
+        // Fallback: use subscription created time + 30 days
+        var start = toOffsetDateTime(stripeSubscription.getCreated());
+        return new OffsetDateTime[]{
+            start,
+            start != null ? start.plusDays(30) : null
         };
     }
 

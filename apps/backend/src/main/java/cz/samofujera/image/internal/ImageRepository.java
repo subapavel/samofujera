@@ -17,21 +17,21 @@ public class ImageRepository {
 
     // String-based DSL references for the renamed table
     private static final Table<?> IMAGES = DSL.table("images");
-    private static final Field<UUID> ID = DSL.field("images.id", UUID.class);
-    private static final Field<String> ORIGINAL_FILENAME = DSL.field("images.original_filename", String.class);
-    private static final Field<String> STORAGE_KEY = DSL.field("images.storage_key", String.class);
-    private static final Field<String> MIME_TYPE = DSL.field("images.mime_type", String.class);
-    private static final Field<Long> FILE_SIZE_BYTES = DSL.field("images.file_size_bytes", Long.class);
-    private static final Field<Integer> WIDTH = DSL.field("images.width", Integer.class);
-    private static final Field<Integer> HEIGHT = DSL.field("images.height", Integer.class);
-    private static final Field<String> ALT_TEXT = DSL.field("images.alt_text", String.class);
-    private static final Field<String> TITLE = DSL.field("images.title", String.class);
-    private static final Field<OffsetDateTime> CREATED_AT = DSL.field("images.created_at", OffsetDateTime.class);
-    private static final Field<OffsetDateTime> UPDATED_AT = DSL.field("images.updated_at", OffsetDateTime.class);
+    private static final Field<UUID> ID = DSL.field(DSL.name("images", "id"), UUID.class);
+    private static final Field<String> ORIGINAL_FILENAME = DSL.field(DSL.name("images", "original_filename"), String.class);
+    private static final Field<String> STORAGE_KEY = DSL.field(DSL.name("images", "storage_key"), String.class);
+    private static final Field<String> MIME_TYPE = DSL.field(DSL.name("images", "mime_type"), String.class);
+    private static final Field<Long> FILE_SIZE_BYTES = DSL.field(DSL.name("images", "file_size_bytes"), Long.class);
+    private static final Field<Integer> WIDTH = DSL.field(DSL.name("images", "width"), Integer.class);
+    private static final Field<Integer> HEIGHT = DSL.field(DSL.name("images", "height"), Integer.class);
+    private static final Field<String> ALT_TEXT = DSL.field(DSL.name("images", "alt_text"), String.class);
+    private static final Field<String> TITLE = DSL.field(DSL.name("images", "title"), String.class);
+    private static final Field<OffsetDateTime> CREATED_AT = DSL.field(DSL.name("images", "created_at"), OffsetDateTime.class);
+    private static final Field<OffsetDateTime> UPDATED_AT = DSL.field(DSL.name("images", "updated_at"), OffsetDateTime.class);
 
     // String-based DSL for renamed FK columns
-    private static final Field<UUID> GALLERY_IMAGE_ID = DSL.field("product_gallery.image_id", UUID.class);
-    private static final Field<UUID> CATEGORY_IMAGE_ID = DSL.field("product_categories.image_id", UUID.class);
+    private static final Field<UUID> GALLERY_IMAGE_ID = DSL.field(DSL.name("product_gallery", "image_id"), UUID.class);
+    private static final Field<UUID> CATEGORY_IMAGE_ID = DSL.field(DSL.name("product_categories", "image_id"), UUID.class);
 
     private final DSLContext dsl;
 

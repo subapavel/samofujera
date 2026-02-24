@@ -14,12 +14,12 @@ public class ProductGalleryRepository {
 
     // String-based DSL for renamed columns
     private static final Table<?> PG = DSL.table("product_gallery");
-    private static final Field<UUID> PG_ID = DSL.field("product_gallery.id", UUID.class);
-    private static final Field<UUID> PG_PRODUCT_ID = DSL.field("product_gallery.product_id", UUID.class);
-    private static final Field<UUID> PG_IMAGE_ID = DSL.field("product_gallery.image_id", UUID.class);
-    private static final Field<Integer> PG_SORT_ORDER = DSL.field("product_gallery.sort_order", Integer.class);
-    private static final Field<Integer> PG_PAN_X = DSL.field("product_gallery.pan_x", Integer.class);
-    private static final Field<Integer> PG_PAN_Y = DSL.field("product_gallery.pan_y", Integer.class);
+    private static final Field<UUID> PG_ID = DSL.field(DSL.name("product_gallery", "id"), UUID.class);
+    private static final Field<UUID> PG_PRODUCT_ID = DSL.field(DSL.name("product_gallery", "product_id"), UUID.class);
+    private static final Field<UUID> PG_IMAGE_ID = DSL.field(DSL.name("product_gallery", "image_id"), UUID.class);
+    private static final Field<Integer> PG_SORT_ORDER = DSL.field(DSL.name("product_gallery", "sort_order"), Integer.class);
+    private static final Field<Integer> PG_PAN_X = DSL.field(DSL.name("product_gallery", "pan_x"), Integer.class);
+    private static final Field<Integer> PG_PAN_Y = DSL.field(DSL.name("product_gallery", "pan_y"), Integer.class);
 
     public record GalleryEntry(UUID id, UUID productId, UUID imageId, int panX, int panY, int sortOrder) {}
 

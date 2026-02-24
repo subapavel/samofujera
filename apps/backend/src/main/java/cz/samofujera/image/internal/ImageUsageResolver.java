@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-class ImageUsageResolver {
+public class ImageUsageResolver {
 
     private final DSLContext dsl;
 

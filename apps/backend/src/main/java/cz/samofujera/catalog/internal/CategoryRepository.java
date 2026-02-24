@@ -16,16 +16,16 @@ public class CategoryRepository {
 
     // String-based DSL for the renamed column and table
     private static final Table<?> PC = DSL.table("product_categories");
-    private static final Field<UUID> PC_ID = DSL.field("product_categories.id", UUID.class);
-    private static final Field<String> PC_NAME = DSL.field("product_categories.name", String.class);
-    private static final Field<String> PC_SLUG = DSL.field("product_categories.slug", String.class);
-    private static final Field<String> PC_DESCRIPTION = DSL.field("product_categories.description", String.class);
-    private static final Field<UUID> PC_IMAGE_ID = DSL.field("product_categories.image_id", UUID.class);
-    private static final Field<String> PC_META_TITLE = DSL.field("product_categories.meta_title", String.class);
-    private static final Field<String> PC_META_DESCRIPTION = DSL.field("product_categories.meta_description", String.class);
-    private static final Field<Integer> PC_SORT_ORDER = DSL.field("product_categories.sort_order", Integer.class);
-    private static final Field<OffsetDateTime> PC_CREATED_AT = DSL.field("product_categories.created_at", OffsetDateTime.class);
-    private static final Field<OffsetDateTime> PC_UPDATED_AT = DSL.field("product_categories.updated_at", OffsetDateTime.class);
+    private static final Field<UUID> PC_ID = DSL.field(DSL.name("product_categories", "id"), UUID.class);
+    private static final Field<String> PC_NAME = DSL.field(DSL.name("product_categories", "name"), String.class);
+    private static final Field<String> PC_SLUG = DSL.field(DSL.name("product_categories", "slug"), String.class);
+    private static final Field<String> PC_DESCRIPTION = DSL.field(DSL.name("product_categories", "description"), String.class);
+    private static final Field<UUID> PC_IMAGE_ID = DSL.field(DSL.name("product_categories", "image_id"), UUID.class);
+    private static final Field<String> PC_META_TITLE = DSL.field(DSL.name("product_categories", "meta_title"), String.class);
+    private static final Field<String> PC_META_DESCRIPTION = DSL.field(DSL.name("product_categories", "meta_description"), String.class);
+    private static final Field<Integer> PC_SORT_ORDER = DSL.field(DSL.name("product_categories", "sort_order"), Integer.class);
+    private static final Field<OffsetDateTime> PC_CREATED_AT = DSL.field(DSL.name("product_categories", "created_at"), OffsetDateTime.class);
+    private static final Field<OffsetDateTime> PC_UPDATED_AT = DSL.field(DSL.name("product_categories", "updated_at"), OffsetDateTime.class);
 
     private final DSLContext dsl;
 

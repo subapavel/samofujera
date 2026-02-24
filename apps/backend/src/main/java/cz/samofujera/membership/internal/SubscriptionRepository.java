@@ -12,16 +12,16 @@ import java.util.UUID;
 public class SubscriptionRepository {
 
     private static final org.jooq.Table<?> SUBSCRIPTIONS = DSL.table("subscriptions");
-    private static final org.jooq.Field<UUID> ID = DSL.field("subscriptions.id", UUID.class);
-    private static final org.jooq.Field<UUID> USER_ID = DSL.field("subscriptions.user_id", UUID.class);
-    private static final org.jooq.Field<UUID> PLAN_ID = DSL.field("subscriptions.plan_id", UUID.class);
-    private static final org.jooq.Field<String> STRIPE_SUBSCRIPTION_ID = DSL.field("subscriptions.stripe_subscription_id", String.class);
-    private static final org.jooq.Field<String> STATUS = DSL.field("subscriptions.status", String.class);
-    private static final org.jooq.Field<OffsetDateTime> CURRENT_PERIOD_START = DSL.field("subscriptions.current_period_start", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> CURRENT_PERIOD_END = DSL.field("subscriptions.current_period_end", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> CANCELLED_AT = DSL.field("subscriptions.cancelled_at", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> CREATED_AT = DSL.field("subscriptions.created_at", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> UPDATED_AT = DSL.field("subscriptions.updated_at", OffsetDateTime.class);
+    private static final org.jooq.Field<UUID> ID = DSL.field(DSL.name("subscriptions", "id"), UUID.class);
+    private static final org.jooq.Field<UUID> USER_ID = DSL.field(DSL.name("subscriptions", "user_id"), UUID.class);
+    private static final org.jooq.Field<UUID> PLAN_ID = DSL.field(DSL.name("subscriptions", "plan_id"), UUID.class);
+    private static final org.jooq.Field<String> STRIPE_SUBSCRIPTION_ID = DSL.field(DSL.name("subscriptions", "stripe_subscription_id"), String.class);
+    private static final org.jooq.Field<String> STATUS = DSL.field(DSL.name("subscriptions", "status"), String.class);
+    private static final org.jooq.Field<OffsetDateTime> CURRENT_PERIOD_START = DSL.field(DSL.name("subscriptions", "current_period_start"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> CURRENT_PERIOD_END = DSL.field(DSL.name("subscriptions", "current_period_end"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> CANCELLED_AT = DSL.field(DSL.name("subscriptions", "cancelled_at"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> CREATED_AT = DSL.field(DSL.name("subscriptions", "created_at"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> UPDATED_AT = DSL.field(DSL.name("subscriptions", "updated_at"), OffsetDateTime.class);
 
     private final DSLContext dsl;
 

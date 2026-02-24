@@ -10,11 +10,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/products/{productId}/images")
-public class ImageAdminController {
+public class ProductImageAdminController {
 
     private final CatalogService catalogService;
 
-    ImageAdminController(CatalogService catalogService) {
+    ProductImageAdminController(CatalogService catalogService) {
         this.catalogService = catalogService;
     }
 

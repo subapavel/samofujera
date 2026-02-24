@@ -12,15 +12,15 @@ import java.util.UUID;
 public class EntitlementRepository {
 
     private static final org.jooq.Table<?> ENTITLEMENTS = DSL.table("entitlements");
-    private static final org.jooq.Field<UUID> ID = DSL.field("entitlements.id", UUID.class);
-    private static final org.jooq.Field<UUID> USER_ID = DSL.field("entitlements.user_id", UUID.class);
-    private static final org.jooq.Field<String> ENTITY_TYPE = DSL.field("entitlements.entity_type", String.class);
-    private static final org.jooq.Field<UUID> ENTITY_ID = DSL.field("entitlements.entity_id", UUID.class);
-    private static final org.jooq.Field<String> SOURCE_TYPE = DSL.field("entitlements.source_type", String.class);
-    private static final org.jooq.Field<UUID> SOURCE_ID = DSL.field("entitlements.source_id", UUID.class);
-    private static final org.jooq.Field<OffsetDateTime> GRANTED_AT = DSL.field("entitlements.granted_at", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> EXPIRES_AT = DSL.field("entitlements.expires_at", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> REVOKED_AT = DSL.field("entitlements.revoked_at", OffsetDateTime.class);
+    private static final org.jooq.Field<UUID> ID = DSL.field(DSL.name("entitlements", "id"), UUID.class);
+    private static final org.jooq.Field<UUID> USER_ID = DSL.field(DSL.name("entitlements", "user_id"), UUID.class);
+    private static final org.jooq.Field<String> ENTITY_TYPE = DSL.field(DSL.name("entitlements", "entity_type"), String.class);
+    private static final org.jooq.Field<UUID> ENTITY_ID = DSL.field(DSL.name("entitlements", "entity_id"), UUID.class);
+    private static final org.jooq.Field<String> SOURCE_TYPE = DSL.field(DSL.name("entitlements", "source_type"), String.class);
+    private static final org.jooq.Field<UUID> SOURCE_ID = DSL.field(DSL.name("entitlements", "source_id"), UUID.class);
+    private static final org.jooq.Field<OffsetDateTime> GRANTED_AT = DSL.field(DSL.name("entitlements", "granted_at"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> EXPIRES_AT = DSL.field(DSL.name("entitlements", "expires_at"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> REVOKED_AT = DSL.field(DSL.name("entitlements", "revoked_at"), OffsetDateTime.class);
 
     private final DSLContext dsl;
 

@@ -86,7 +86,7 @@ class DeliveryIntegrationTest {
         var file = new MockMultipartFile(
             "file", "guide.pdf", "application/pdf", "PDF content".getBytes());
 
-        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/files", productId)
+        var uploadResult = mockMvc.perform(multipart("/api/admin/products/{productId}/content/upload", productId)
                 .file(file)
                 .with(user(adminPrincipal())))
             .andExpect(status().isCreated())
@@ -163,7 +163,7 @@ class DeliveryIntegrationTest {
         var productId = createProductWithFile(suffix);
         var customer = createTestCustomer();
 
-        mockMvc.perform(get("/api/library/{productId}/files", productId)
+        mockMvc.perform(get("/api/library/{productId}/content", productId)
                 .with(user(customer)))
             .andExpect(status().isForbidden());
     }
@@ -178,11 +178,11 @@ class DeliveryIntegrationTest {
         entitlementService.grantProductAccess(customer.getId(), productId, "PURCHASE", UUID.randomUUID(),
             customer.getUsername(), "Delivery Product " + suffix, "EBOOK");
 
-        mockMvc.perform(get("/api/library/{productId}/files", productId)
+        mockMvc.perform(get("/api/library/{productId}/content", productId)
                 .with(user(customer)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isArray())
             .andExpect(jsonPath("$.data.length()").value(1))
-            .andExpect(jsonPath("$.data[0].fileName").value("guide.pdf"));
+            .andExpect(jsonPath("$.data[0].title").value("guide.pdf"));
     }
 }

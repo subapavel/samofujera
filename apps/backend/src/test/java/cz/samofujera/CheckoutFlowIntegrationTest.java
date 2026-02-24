@@ -187,8 +187,8 @@ class CheckoutFlowIntegrationTest {
                 .andExpect(jsonPath("$.data[0].productType").value("EBOOK"));
         });
 
-        // Step 10: Verify library files endpoint works (even if no files uploaded)
-        mockMvc.perform(get("/api/library/{productId}/files", productId)
+        // Step 10: Verify library content endpoint works (even if no files uploaded)
+        mockMvc.perform(get("/api/library/{productId}/content", productId)
                 .with(user(customer)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isArray());

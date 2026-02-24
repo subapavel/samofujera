@@ -1,7 +1,7 @@
 package cz.samofujera.membership.internal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
@@ -15,17 +15,17 @@ import java.util.UUID;
 public class PlanRepository {
 
     private static final org.jooq.Table<?> PLANS = DSL.table("membership_plans");
-    private static final org.jooq.Field<UUID> ID = DSL.field("membership_plans.id", UUID.class);
-    private static final org.jooq.Field<String> NAME = DSL.field("membership_plans.name", String.class);
-    private static final org.jooq.Field<String> SLUG = DSL.field("membership_plans.slug", String.class);
-    private static final org.jooq.Field<String> DESCRIPTION = DSL.field("membership_plans.description", String.class);
-    private static final org.jooq.Field<String> STRIPE_PRICE_ID_CZK = DSL.field("membership_plans.stripe_price_id_czk", String.class);
-    private static final org.jooq.Field<String> STRIPE_PRICE_ID_EUR = DSL.field("membership_plans.stripe_price_id_eur", String.class);
-    private static final org.jooq.Field<JSONB> FEATURES = DSL.field("membership_plans.features", JSONB.class);
-    private static final org.jooq.Field<Integer> SORT_ORDER = DSL.field("membership_plans.sort_order", Integer.class);
-    private static final org.jooq.Field<Boolean> ACTIVE = DSL.field("membership_plans.active", Boolean.class);
-    private static final org.jooq.Field<OffsetDateTime> CREATED_AT = DSL.field("membership_plans.created_at", OffsetDateTime.class);
-    private static final org.jooq.Field<OffsetDateTime> UPDATED_AT = DSL.field("membership_plans.updated_at", OffsetDateTime.class);
+    private static final org.jooq.Field<UUID> ID = DSL.field(DSL.name("membership_plans", "id"), UUID.class);
+    private static final org.jooq.Field<String> NAME = DSL.field(DSL.name("membership_plans", "name"), String.class);
+    private static final org.jooq.Field<String> SLUG = DSL.field(DSL.name("membership_plans", "slug"), String.class);
+    private static final org.jooq.Field<String> DESCRIPTION = DSL.field(DSL.name("membership_plans", "description"), String.class);
+    private static final org.jooq.Field<String> STRIPE_PRICE_ID_CZK = DSL.field(DSL.name("membership_plans", "stripe_price_id_czk"), String.class);
+    private static final org.jooq.Field<String> STRIPE_PRICE_ID_EUR = DSL.field(DSL.name("membership_plans", "stripe_price_id_eur"), String.class);
+    private static final org.jooq.Field<JSONB> FEATURES = DSL.field(DSL.name("membership_plans", "features"), JSONB.class);
+    private static final org.jooq.Field<Integer> SORT_ORDER = DSL.field(DSL.name("membership_plans", "sort_order"), Integer.class);
+    private static final org.jooq.Field<Boolean> ACTIVE = DSL.field(DSL.name("membership_plans", "active"), Boolean.class);
+    private static final org.jooq.Field<OffsetDateTime> CREATED_AT = DSL.field(DSL.name("membership_plans", "created_at"), OffsetDateTime.class);
+    private static final org.jooq.Field<OffsetDateTime> UPDATED_AT = DSL.field(DSL.name("membership_plans", "updated_at"), OffsetDateTime.class);
 
     private final DSLContext dsl;
     private final ObjectMapper objectMapper;
@@ -108,7 +108,7 @@ public class PlanRepository {
         if (featuresJsonb != null) {
             try {
                 features = objectMapper.readValue(featuresJsonb.data(), Object.class);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 features = featuresJsonb.data();
             }
         }
@@ -131,7 +131,7 @@ public class PlanRepository {
         if (value == null) return JSONB.jsonb("{}");
         try {
             return JSONB.jsonb(objectMapper.writeValueAsString(value));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Failed to serialize features to JSON", e);
         }
     }
