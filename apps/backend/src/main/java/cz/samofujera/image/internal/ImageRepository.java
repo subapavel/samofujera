@@ -151,11 +151,17 @@ public class ImageRepository {
                 .from(DSL.table("product_categories"))
                 .where(CATEGORY_IMAGE_ID.isNotNull())
         );
+        var inPages = ID.in(
+            DSL.select(DSL.field(DSL.name("pages", "og_image_id"), UUID.class))
+                .from(DSL.table("pages"))
+                .where(DSL.field(DSL.name("pages", "og_image_id"), UUID.class).isNotNull())
+        );
 
         return switch (source) {
             case "products" -> inProductGallery;
             case "product_categories" -> inProductCategories;
-            case "unlinked" -> inProductGallery.not().and(inProductCategories.not());
+            case "pages" -> inPages;
+            case "unlinked" -> inProductGallery.not().and(inProductCategories.not()).and(inPages.not());
             default -> DSL.trueCondition();
         };
     }

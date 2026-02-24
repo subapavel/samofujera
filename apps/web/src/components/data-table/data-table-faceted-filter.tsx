@@ -2,7 +2,7 @@
 
 import type { Column } from "@tanstack/react-table";
 import { Check, PlusCircle } from "lucide-react";
-import { t } from "@lingui/core/macro";
+import { t, plural } from "@lingui/core/macro";
 import {
   cn,
   Badge,
@@ -61,7 +61,12 @@ export function DataTableFacetedFilter<TData, TValue>({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    {t`${selectedValues.size} vybráno`}
+                    {plural(selectedValues.size, {
+                      one: "# vybráno",
+                      few: "# vybrány",
+                      many: "# vybráno",
+                      other: "# vybráno",
+                    })}
                   </Badge>
                 ) : (
                   options
