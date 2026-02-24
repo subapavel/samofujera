@@ -41,7 +41,7 @@ class SecurityConfig {
                 .requestMatchers("/api/pages/**").permitAll()
                 .requestMatchers("/api/stripe/webhook").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasAnyRole("SUPERADMIN", "ADMIN", "EDITOR", "REVIEWER")
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
             )
