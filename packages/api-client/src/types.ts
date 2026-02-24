@@ -93,6 +93,19 @@ export interface ProductResponse {
   metaTitle: string | null;
   metaDescription: string | null;
   categories: CategorySummary[];
+  sku: string | null;
+  badge: string | null;
+  comparePriceCzk: number | null;
+  comparePriceEur: number | null;
+  availability: string | null;
+  stockLimit: number | null;
+  weightKg: number | null;
+  dimensionWidthCm: number | null;
+  dimensionLengthCm: number | null;
+  dimensionHeightCm: number | null;
+  unitPriceEnabled: boolean;
+  ogImageUrl: string | null;
+  variantCategoryName: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -112,6 +125,9 @@ export interface VariantResponse {
   stock: number;
   sortOrder: number;
   prices: Record<string, number>;
+  availability: string | null;
+  weightKg: number | null;
+  hidden: boolean;
 }
 
 export interface ContentResponse {
@@ -287,6 +303,9 @@ export interface CreateVariantRequest {
   stock: number;
   sortOrder: number;
   prices: Record<string, number>;
+  availability?: string;
+  weightKg?: number;
+  hidden?: boolean;
 }
 
 export interface CreateEventRequest {
@@ -327,6 +346,19 @@ export interface CreateProductRequest {
   event?: CreateEventRequest;
   occurrences?: CreateOccurrenceRequest[];
   status?: string;
+  sku?: string;
+  badge?: string;
+  comparePriceCzk?: number;
+  comparePriceEur?: number;
+  availability?: string;
+  stockLimit?: number;
+  weightKg?: number;
+  dimensionWidthCm?: number;
+  dimensionLengthCm?: number;
+  dimensionHeightCm?: number;
+  unitPriceEnabled?: boolean;
+  ogImageUrl?: string;
+  variantCategoryName?: string;
 }
 
 export interface UpdateProductRequest extends CreateProductRequest {
