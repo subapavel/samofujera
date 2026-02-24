@@ -47,7 +47,7 @@ public class PageService {
             throw new NotFoundException("Page not found");
         }
         return new PageDtos.PublicPageResponse(
-            row.slug(), row.title(), rawContent(row.content()),
+            row.id(), row.slug(), row.title(), rawContent(row.content()),
             row.metaTitle(), row.metaDescription(),
             row.metaKeywords(), row.ogTitle(), row.ogDescription(),
             resolveOgImageUrl(row.ogImageId()), row.noindex(), row.nofollow()
@@ -58,7 +58,7 @@ public class PageService {
         var row = pageRepository.findBySlug(slug)
             .orElseThrow(() -> new NotFoundException("Page not found"));
         return new PageDtos.PublicPageResponse(
-            row.slug(), row.title(), rawContent(row.content()),
+            row.id(), row.slug(), row.title(), rawContent(row.content()),
             row.metaTitle(), row.metaDescription(),
             row.metaKeywords(), row.ogTitle(), row.ogDescription(),
             resolveOgImageUrl(row.ogImageId()), row.noindex(), row.nofollow()

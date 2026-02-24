@@ -60,7 +60,7 @@ public final class PageDtos {
     public record SchedulePublishRequest(@NotNull Instant scheduledPublishAt) {}
 
     public record PublicPageResponse(
-        String slug, String title, @JsonRawValue String content,
+        UUID id, String slug, String title, @JsonRawValue String content,
         String metaTitle, String metaDescription,
         String metaKeywords, String ogTitle, String ogDescription,
         String ogImageUrl, boolean noindex, boolean nofollow

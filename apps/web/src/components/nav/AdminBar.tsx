@@ -3,7 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { t } from "@lingui/core/macro";
-import { Pencil, LayoutDashboard, EyeOff, Settings } from "lucide-react";
+import { Pencil, LayoutDashboard, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@samofujera/ui";
 import { usePublicAuth } from "./PublicAuthProvider";
 import { usePageId } from "./PageIdProvider";
@@ -42,17 +42,19 @@ export function AdminBar() {
 
   if (isLoading || !isAdmin) return null;
 
-  // Collapsed state: small fixed button in top-right corner
+  // Collapsed state: small toggle button in top-right, same X position as in expanded bar
   if (!visible) {
     return (
-      <button
-        type="button"
-        onClick={toggleVisibility}
-        className="fixed top-2 right-2 z-50 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-        title={t`Zobrazit admin panel`}
-      >
-        <Settings className="h-4 w-4" />
-      </button>
+      <div className="relative h-0 overflow-visible">
+        <button
+          type="button"
+          onClick={toggleVisibility}
+          className="absolute right-4 top-1.5 z-50 flex h-7 w-7 items-center justify-center rounded-md bg-[var(--accent)] text-[var(--foreground)] hover:bg-[var(--border)] transition-colors"
+          title={t`Zobrazit admin bar`}
+        >
+          <ChevronDown className="h-3.5 w-3.5" />
+        </button>
+      </div>
     );
   }
 
@@ -82,9 +84,9 @@ export function AdminBar() {
           type="button"
           onClick={toggleVisibility}
           className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
-          title={t`Skrýt admin panel`}
+          title={t`Skrýt admin bar`}
         >
-          <EyeOff className="h-3.5 w-3.5" />
+          <ChevronUp className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>
