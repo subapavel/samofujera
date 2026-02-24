@@ -21,7 +21,10 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
       try {
         const response = await userApi.getProfile();
         if (!cancelled) {
-          if (requiredRole && response.data.role !== requiredRole) {
+          const roles = response.data.roles;
+          const isSuperadmin = roles.includes("SUPERADMIN");
+
+          if (requiredRole && !roles.includes(requiredRole) && !isSuperadmin) {
             setState("redirecting");
             router.push("/muj-ucet");
           } else {

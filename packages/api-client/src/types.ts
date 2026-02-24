@@ -7,7 +7,7 @@ export interface UserResponse {
   id: string;
   email: string;
   name: string;
-  role: string;
+  roles: string[];
   locale: string;
 }
 
@@ -36,7 +36,7 @@ export interface ProfileResponse {
   id: string;
   email: string;
   name: string;
-  role: string;
+  roles: string[];
   locale: string;
   avatarUrl: string | null;
 }

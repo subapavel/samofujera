@@ -5,20 +5,30 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 import { userApi } from "@samofujera/api-client";
 
+const hasAnyRole = (roles: string[] | undefined, ...check: string[]) =>
+  roles?.some((r) => check.includes(r)) ?? false;
+
 interface PublicAuthState {
-  user: { email: string; role: string } | null;
+  user: { email: string; roles: string[] } | null;
   isAdmin: boolean;
+  isEditor: boolean;
   isLoading: boolean;
+  hasRole: (role: string) => boolean;
 }
+
+const defaultHasRole = () => false;
 
 const PublicAuthContext = createContext<PublicAuthState>({
   user: null,
   isAdmin: false,
+  isEditor: false,
   isLoading: true,
+  hasRole: defaultHasRole,
 });
 
 export function usePublicAuth() {
@@ -26,9 +36,15 @@ export function usePublicAuth() {
 }
 
 export function PublicAuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<PublicAuthState>({
+  const [innerState, setInnerState] = useState<{
+    user: { email: string; roles: string[] } | null;
+    isAdmin: boolean;
+    isEditor: boolean;
+    isLoading: boolean;
+  }>({
     user: null,
     isAdmin: false,
+    isEditor: false,
     isLoading: true,
   });
 
@@ -39,15 +55,22 @@ export function PublicAuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await userApi.getProfile();
         if (!cancelled) {
-          setState({
+          const roles = response.data.roles;
+          setInnerState({
             user: response.data,
-            isAdmin: response.data.role === "ADMIN",
+            isAdmin: hasAnyRole(roles, "ADMIN", "SUPERADMIN"),
+            isEditor: hasAnyRole(roles, "ADMIN", "SUPERADMIN", "EDITOR"),
             isLoading: false,
           });
         }
       } catch {
         if (!cancelled) {
-          setState({ user: null, isAdmin: false, isLoading: false });
+          setInnerState({
+            user: null,
+            isAdmin: false,
+            isEditor: false,
+            isLoading: false,
+          });
         }
       }
     }
@@ -57,6 +80,16 @@ export function PublicAuthProvider({ children }: { children: ReactNode }) {
       cancelled = true;
     };
   }, []);
+
+  const hasRole = useCallback(
+    (role: string) => innerState.user?.roles?.includes(role) ?? false,
+    [innerState.user],
+  );
+
+  const state: PublicAuthState = {
+    ...innerState,
+    hasRole,
+  };
 
   return (
     <PublicAuthContext value={state}>

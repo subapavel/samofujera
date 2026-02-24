@@ -31,7 +31,7 @@ function getServerSnapshot(): boolean {
 }
 
 export function AdminBar() {
-  const { isAdmin, isLoading } = usePublicAuth();
+  const { isEditor, isLoading } = usePublicAuth();
   const { pageId } = usePageId();
   const visible = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
@@ -40,7 +40,7 @@ export function AdminBar() {
     window.dispatchEvent(new Event(SYNC_EVENT));
   }, []);
 
-  if (isLoading || !isAdmin) return null;
+  if (isLoading || !isEditor) return null;
 
   // Collapsed state: small toggle button in top-right, same X position as in expanded bar
   if (!visible) {
