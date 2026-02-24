@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { pageAdminApi } from "@samofujera/api-client";
+import { useAutosave } from "../../../hooks/useAutosave";
 import type { SerializedEditorState } from "lexical";
 import { EditorToolbar } from "./EditorToolbar";
 import { SettingsDrawer } from "./SettingsDrawer";
@@ -112,27 +113,68 @@ export function FullPageEditor() {
     setInitialized(true);
   }
 
-  // Mutations
-  const saveMutation = useMutation({
-    mutationFn: () =>
-      pageAdminApi.updatePage(pageId, {
-        slug,
-        title,
-        content: serializeContent(sections) as unknown as Record<string, unknown>,
-        metaTitle: metaTitle || null,
-        metaDescription: metaDescription || null,
-        ogImageId: ogImageId || null,
-        showInNav,
-        metaKeywords: metaKeywords || null,
-        ogTitle: ogTitle || null,
-        ogDescription: ogDescription || null,
-        noindex,
-        nofollow,
-      }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["admin", "pages"] }),
+  // Autosave hook — refs to keep onSave closure current without re-creating the hook
+  const sectionsRef = useRef(sections);
+  sectionsRef.current = sections;
+  const titleRef = useRef(title);
+  titleRef.current = title;
+  const slugRef = useRef(slug);
+  slugRef.current = slug;
+  const metaTitleRef = useRef(metaTitle);
+  metaTitleRef.current = metaTitle;
+  const metaDescriptionRef = useRef(metaDescription);
+  metaDescriptionRef.current = metaDescription;
+  const ogImageIdRef = useRef(ogImageId);
+  ogImageIdRef.current = ogImageId;
+  const showInNavRef = useRef(showInNav);
+  showInNavRef.current = showInNav;
+  const metaKeywordsRef = useRef(metaKeywords);
+  metaKeywordsRef.current = metaKeywords;
+  const ogTitleRef = useRef(ogTitle);
+  ogTitleRef.current = ogTitle;
+  const ogDescriptionRef = useRef(ogDescription);
+  ogDescriptionRef.current = ogDescription;
+  const noindexRef = useRef(noindex);
+  noindexRef.current = noindex;
+  const nofollowRef = useRef(nofollow);
+  nofollowRef.current = nofollow;
+
+  const { markDirty, isDirty, isSaving: isAutosaving, lastSavedAt, saveNow } = useAutosave({
+    onSave: async () => {
+      await pageAdminApi.updatePage(pageId, {
+        slug: slugRef.current,
+        title: titleRef.current,
+        content: serializeContent(sectionsRef.current) as unknown as Record<string, unknown>,
+        metaTitle: metaTitleRef.current || null,
+        metaDescription: metaDescriptionRef.current || null,
+        ogImageId: ogImageIdRef.current || null,
+        showInNav: showInNavRef.current,
+        metaKeywords: metaKeywordsRef.current || null,
+        ogTitle: ogTitleRef.current || null,
+        ogDescription: ogDescriptionRef.current || null,
+        noindex: noindexRef.current,
+        nofollow: nofollowRef.current,
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin", "pages"] });
+    },
+    debounceMs: 3000,
+    fallbackMs: 30000,
   });
 
+  // Track changes — mark dirty whenever editor state changes (skip initial load)
+  const isInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!initialized) return;
+    if (!isInitializedRef.current) {
+      // First render after initialization — don't mark dirty
+      isInitializedRef.current = true;
+      return;
+    }
+    markDirty();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections, title, slug, metaTitle, metaDescription, ogImageId, showInNav, metaKeywords, ogTitle, ogDescription, noindex, nofollow]);
+
+  // Mutations (publish/unpublish/schedule only — save handled by autosave)
   const publishMutation = useMutation({
     mutationFn: () => pageAdminApi.publishPage(pageId),
     onSuccess: () =>
@@ -159,27 +201,21 @@ export function FullPageEditor() {
   });
 
   // Handlers
-  const handleSave = useCallback(() => {
-    saveMutation.mutate();
-  }, [saveMutation]);
-
-  const handlePublish = useCallback(() => {
-    saveMutation.mutate(undefined, {
-      onSuccess: () => publishMutation.mutate(),
-    });
-  }, [saveMutation, publishMutation]);
+  const handlePublish = useCallback(async () => {
+    await saveNow();
+    publishMutation.mutate();
+  }, [saveNow, publishMutation]);
 
   const handleUnpublish = useCallback(() => {
     unpublishMutation.mutate();
   }, [unpublishMutation]);
 
   const handleSchedule = useCallback(
-    (date: string) => {
-      saveMutation.mutate(undefined, {
-        onSuccess: () => scheduleMutation.mutate(date),
-      });
+    async (date: string) => {
+      await saveNow();
+      scheduleMutation.mutate(date);
     },
-    [saveMutation, scheduleMutation],
+    [saveNow, scheduleMutation],
   );
 
   const handleCancelSchedule = useCallback(() => {
@@ -256,16 +292,18 @@ export function FullPageEditor() {
           onTitleChange={setTitle}
           status={status}
           scheduledPublishAt={scheduledPublishAt}
-          onSave={handleSave}
-          onPublish={handlePublish}
+          onSaveNow={() => void saveNow()}
+          onPublish={() => void handlePublish()}
           onUnpublish={handleUnpublish}
-          onSchedule={handleSchedule}
+          onSchedule={(date) => void handleSchedule(date)}
           onCancelSchedule={handleCancelSchedule}
           onUndo={handleUndo}
           onRedo={handleRedo}
           canUndo={canUndo || sectionListCanUndo}
           canRedo={canRedo || sectionListCanRedo}
-          isSaving={saveMutation.isPending}
+          isDirty={isDirty}
+          isAutosaving={isAutosaving}
+          lastSavedAt={lastSavedAt}
           onSettingsToggle={() => setShowSettings(!showSettings)}
         />
 

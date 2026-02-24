@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button, Input } from "@samofujera/ui";
 import { ArrowLeft, Undo2, Redo2, Settings, Save, Eye } from "lucide-react";
+import { t } from "@lingui/core/macro";
 import { PublishSplitButton } from "./PublishSplitButton";
 
 interface EditorToolbarProps {
@@ -11,7 +12,7 @@ interface EditorToolbarProps {
   onTitleChange: (title: string) => void;
   status: string;
   scheduledPublishAt: string | null;
-  onSave: () => void;
+  onSaveNow: () => void;
   onPublish: () => void;
   onUnpublish: () => void;
   onSchedule: (date: string) => void;
@@ -20,8 +21,47 @@ interface EditorToolbarProps {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  isSaving: boolean;
+  isDirty: boolean;
+  isAutosaving: boolean;
+  lastSavedAt: Date | null;
   onSettingsToggle: () => void;
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" });
+}
+
+function SaveStatus({
+  isDirty,
+  isAutosaving,
+  lastSavedAt,
+}: {
+  isDirty: boolean;
+  isAutosaving: boolean;
+  lastSavedAt: Date | null;
+}) {
+  if (isAutosaving) {
+    return (
+      <span className="text-xs text-[var(--muted-foreground)]">
+        {t`Ukládání...`}
+      </span>
+    );
+  }
+  if (!isDirty && lastSavedAt) {
+    return (
+      <span className="text-xs text-[var(--muted-foreground)]">
+        {t`Uloženo v ${formatTime(lastSavedAt)}`}
+      </span>
+    );
+  }
+  if (isDirty) {
+    return (
+      <span className="text-xs text-[var(--warning)]">
+        {t`Neuložené změny`}
+      </span>
+    );
+  }
+  return null;
 }
 
 export function EditorToolbar({
@@ -30,7 +70,7 @@ export function EditorToolbar({
   onTitleChange,
   status,
   scheduledPublishAt,
-  onSave,
+  onSaveNow,
   onPublish,
   onUnpublish,
   onSchedule,
@@ -39,7 +79,9 @@ export function EditorToolbar({
   onRedo,
   canUndo,
   canRedo,
-  isSaving,
+  isDirty,
+  isAutosaving,
+  lastSavedAt,
   onSettingsToggle,
 }: EditorToolbarProps) {
   return (
@@ -61,6 +103,9 @@ export function EditorToolbar({
         placeholder="Název stránky"
         className="max-w-xs border-none bg-transparent font-semibold focus-visible:ring-0"
       />
+
+      {/* Save status indicator */}
+      <SaveStatus isDirty={isDirty} isAutosaving={isAutosaving} lastSavedAt={lastSavedAt} />
 
       {/* Spacer */}
       <div className="flex-1" />
@@ -104,9 +149,9 @@ export function EditorToolbar({
       </Button>
 
       {/* Save */}
-      <Button size="sm" onClick={onSave} disabled={isSaving}>
+      <Button size="sm" onClick={onSaveNow} disabled={isAutosaving || !isDirty}>
         <Save className="h-4 w-4" />
-        {isSaving ? "Ukládání..." : "Uložit"}
+        {isAutosaving ? t`Ukládání...` : t`Uložit`}
       </Button>
     </div>
   );
