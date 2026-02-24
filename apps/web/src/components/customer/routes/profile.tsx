@@ -5,10 +5,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
 import { Button, Input, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
+import { useImpersonation } from "@/components/auth/ImpersonationGuard";
 import { SettingsLayout } from "../settings-layout";
 
 export function ProfilePage() {
   const queryClient = useQueryClient();
+  const { active: isImpersonating } = useImpersonation();
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [locale, setLocale] = useState<string>("");
@@ -123,7 +125,7 @@ export function ProfilePage() {
                 <p className="text-sm font-medium text-muted-foreground">{t`Jméno`}</p>
                 <div className="flex items-center gap-3">
                   <p className="text-sm">{profileQuery.data.data.name}</p>
-                  <Button variant="outline" size="sm" onClick={handleEdit}>
+                  <Button variant="outline" size="sm" onClick={handleEdit} disabled={isImpersonating}>
                     {t`Upravit`}
                   </Button>
                 </div>
@@ -135,7 +137,7 @@ export function ProfilePage() {
                 <Button
                   variant={locale === "cs" ? "default" : "outline"}
                   size="sm"
-                  disabled={localeMutation.isPending}
+                  disabled={isImpersonating || localeMutation.isPending}
                   onClick={() => localeMutation.mutate("cs")}
                 >
                   Čeština
@@ -143,7 +145,7 @@ export function ProfilePage() {
                 <Button
                   variant={locale === "sk" ? "default" : "outline"}
                   size="sm"
-                  disabled={localeMutation.isPending}
+                  disabled={isImpersonating || localeMutation.isPending}
                   onClick={() => localeMutation.mutate("sk")}
                 >
                   Slovenčina

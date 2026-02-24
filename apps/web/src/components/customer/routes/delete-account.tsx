@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { userApi } from "@samofujera/api-client";
+import { useImpersonation } from "@/components/auth/ImpersonationGuard";
 import {
   Button,
   Input,
@@ -25,6 +26,7 @@ import {
 import { SettingsLayout } from "../settings-layout";
 
 export function DeleteAccountPage() {
+  const { active: isImpersonating } = useImpersonation();
   const [password, setPassword] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -75,7 +77,7 @@ export function DeleteAccountPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t`Vaše heslo`}
-              disabled={deleteMutation.isPending}
+              disabled={isImpersonating || deleteMutation.isPending}
             />
           </div>
 
@@ -89,7 +91,7 @@ export function DeleteAccountPage() {
             <DialogTrigger asChild>
               <Button
                 variant="destructive"
-                disabled={!password.trim() || deleteMutation.isPending}
+                disabled={isImpersonating || !password.trim() || deleteMutation.isPending}
               >
                 {t`Smazat můj účet`}
               </Button>

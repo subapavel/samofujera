@@ -5,6 +5,10 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { Header } from "@/components/dashboard/header";
 import { MainContent } from "@/components/dashboard/main-content";
 import { Providers } from "@/components/dashboard/Providers";
+import {
+  ImpersonationProvider,
+  ImpersonationBar,
+} from "@/components/auth/ImpersonationGuard";
 
 export const metadata: Metadata = {
   robots: "noindex, nofollow",
@@ -19,13 +23,16 @@ export default async function DashboardLayout({
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
   return (
     <Providers>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          <MainContent>{children}</MainContent>
-        </SidebarInset>
-      </SidebarProvider>
+      <ImpersonationProvider>
+        <ImpersonationBar />
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AppSidebar />
+          <SidebarInset>
+            <Header />
+            <MainContent>{children}</MainContent>
+          </SidebarInset>
+        </SidebarProvider>
+      </ImpersonationProvider>
     </Providers>
   );
 }

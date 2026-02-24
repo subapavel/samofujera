@@ -24,6 +24,7 @@ interface PublicAuthState {
   isAdmin: boolean;
   isEditor: boolean;
   isLoading: boolean;
+  isReadOnly: boolean;
   hasRole: (role: string) => boolean;
   impersonating: ImpersonatingUser | null;
   stopImpersonation: () => void;
@@ -37,6 +38,7 @@ const PublicAuthContext = createContext<PublicAuthState>({
   isAdmin: false,
   isEditor: false,
   isLoading: true,
+  isReadOnly: false,
   hasRole: defaultHasRole,
   impersonating: null,
   stopImpersonation: defaultStopImpersonation,
@@ -119,6 +121,7 @@ export function PublicAuthProvider({ children }: { children: ReactNode }) {
 
   const state: PublicAuthState = {
     ...innerState,
+    isReadOnly: innerState.impersonating !== null,
     hasRole,
     stopImpersonation,
   };

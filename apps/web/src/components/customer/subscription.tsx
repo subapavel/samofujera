@@ -10,6 +10,7 @@ import {
   type MembershipPlan,
   type SubscriptionInfo,
 } from "@samofujera/api-client";
+import { useImpersonation } from "@/components/auth/ImpersonationGuard";
 import {
   Badge,
   Button,
@@ -62,6 +63,7 @@ function statusVariant(status: string): "default" | "secondary" | "destructive" 
 
 export function SubscriptionPage() {
   const queryClient = useQueryClient();
+  const { active: isImpersonating } = useImpersonation();
   const searchParams = useSearchParams();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
@@ -169,6 +171,7 @@ export function SubscriptionPage() {
               <Button
                 variant="destructive"
                 onClick={() => setCancelDialogOpen(true)}
+                disabled={isImpersonating}
               >
                 {t`Zrušit předplatné`}
               </Button>
@@ -218,7 +221,7 @@ export function SubscriptionPage() {
                 <Button
                   className="w-full"
                   onClick={() => handleSubscribe(plan)}
-                  disabled={subscribeMutation.isPending}
+                  disabled={isImpersonating || subscribeMutation.isPending}
                 >
                   {subscribeMutation.isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

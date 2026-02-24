@@ -537,3 +537,10 @@
 .public-cta:hover {
   border-color: rgba(0, 0, 0, 0.9);
 }
+
+/* ── Impersonation: push sidebar down below the bar ── */
+[data-slot="sidebar-container"] {
+  top: var(--impersonation-offset, 0px);
+  height: calc(100svh - var(--impersonation-offset, 0px));
+}
+

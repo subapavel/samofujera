@@ -40,9 +40,10 @@ export function AdminBar() {
     window.dispatchEvent(new Event(SYNC_EVENT));
   }, []);
 
-  if (isLoading || !isEditor) return null;
+  if (isLoading) return null;
 
   // Impersonation mode: orange bar with stop button, no admin controls
+  // Must be checked before isEditor — impersonated user may not have editor role
   if (impersonating) {
     return (
       <div className="flex h-12 items-center border-b border-orange-300 bg-orange-50 px-4">
@@ -61,6 +62,8 @@ export function AdminBar() {
       </div>
     );
   }
+
+  if (!isEditor) return null;
 
   // Collapsed state: small toggle button in top-right, same X position as in expanded bar
   if (!visible) {

@@ -9,10 +9,12 @@ import {
   Card,
   CardContent,
 } from "@samofujera/ui";
+import { useImpersonation } from "@/components/auth/ImpersonationGuard";
 import { SettingsLayout } from "../settings-layout";
 
 export function SessionsPage() {
   const queryClient = useQueryClient();
+  const { active: isImpersonating } = useImpersonation();
 
   const sessionsQuery = useQuery({
     queryKey: ["sessions"],
@@ -68,7 +70,7 @@ export function SessionsPage() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        disabled={revokeMutation.isPending}
+                        disabled={isImpersonating || revokeMutation.isPending}
                         onClick={() =>
                           revokeMutation.mutate(session.sessionId)
                         }
