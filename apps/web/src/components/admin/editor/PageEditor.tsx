@@ -53,6 +53,8 @@ interface PageEditorProps {
   onActiveChange?: (active: boolean) => void;
   onDelete?: () => void;
   onCopy?: () => void;
+  /** "floating" (default) uses absolute positioning; "fixed" uses fixed positioning (for use inside overflow containers) */
+  toolbarMode?: "floating" | "fixed";
 }
 
 function isValidEditorState(
@@ -143,6 +145,7 @@ function FocusPlugin({
   onActiveChange?: (active: boolean) => void;
 }) {
   const [editor] = useLexicalComposerContext();
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return editor.registerCommand(
@@ -170,25 +173,40 @@ function FocusPlugin({
       // (toolbar is a sibling, we check via closest parent)
       const wrapper = rootElement!.closest("[data-text-block-wrapper]");
       if (relatedTarget && wrapper?.contains(relatedTarget)) return;
-      // Stay active if focus moved to Radix portal
+      // Stay active if focus moved to Radix portal or portaled toolbar
       if (relatedTarget instanceof HTMLElement) {
         const portal = relatedTarget.closest(
-          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content]",
+          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content], [data-lexical-toolbar]",
         );
         if (portal) return;
       }
-      onActiveChange?.(false);
+      // Delay to allow toolbar interactions to complete
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = setTimeout(() => {
+        const activeEl = document.activeElement as HTMLElement | null;
+        if (activeEl) {
+          // Check if focus ended up in toolbar or Radix portal
+          if (activeEl.closest("[data-lexical-toolbar], [data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content]")) return;
+          // Check if focus is inside the wrapper
+          const w = rootElement!.closest("[data-text-block-wrapper]");
+          if (w?.contains(activeEl)) return;
+        }
+        onActiveChange?.(false);
+      }, 150);
     }
 
     rootElement.addEventListener("focusout", handleFocusOut);
-    return () => rootElement.removeEventListener("focusout", handleFocusOut);
+    return () => {
+      rootElement.removeEventListener("focusout", handleFocusOut);
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+    };
   }, [editor, onActiveChange]);
 
   return null;
 }
 
 export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
-  function PageEditor({ initialContent, onChange, onFocus, onActiveChange, onDelete, onCopy }, ref) {
+  function PageEditor({ initialContent, onChange, onFocus, onActiveChange, onDelete, onCopy, toolbarMode = "floating" }, ref) {
     const validContent = isValidEditorState(initialContent)
       ? initialContent
       : null;
@@ -250,7 +268,7 @@ export const PageEditor = forwardRef<SectionEditorHandle, PageEditorProps>(
     return (
       <LexicalComposer initialConfig={initialConfig}>
         <div data-text-block-wrapper="" className="page-content">
-          <ToolbarPlugin onDelete={onDelete} onCopy={onCopy} />
+          <ToolbarPlugin onDelete={onDelete} onCopy={onCopy} mode={toolbarMode} />
           <LinkEditorPlugin />
           <RichTextPlugin
             contentEditable={

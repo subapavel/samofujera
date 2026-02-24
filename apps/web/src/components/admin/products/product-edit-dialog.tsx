@@ -168,6 +168,17 @@ function GalleryTab({
     setPickerOpen(false);
   }
 
+  async function handlePickerSelectMultiple(results: ImagePickerResult[]) {
+    const newResults = results.filter(
+      (r) => !images.some((img) => img.imageId === r.imageId),
+    );
+    for (const result of newResults) {
+      await adminApi.linkImage(productId, result.imageId);
+    }
+    await onInvalidate();
+    setPickerOpen(false);
+  }
+
   function handleDragStart(index: number) {
     setDragSourceIndex(index);
   }
@@ -278,6 +289,8 @@ function GalleryTab({
             open={pickerOpen}
             onOpenChange={setPickerOpen}
             onSelect={handlePickerSelect}
+            onSelectMultiple={handlePickerSelectMultiple}
+            multiple
           />
         </div>
 
@@ -693,7 +706,10 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
         variantCategoryName: values.variantCategoryName || undefined,
       });
     },
-    onSuccess: invalidateProduct,
+    onSuccess: async () => {
+      await invalidateProduct();
+      onOpenChange(false);
+    },
   });
 
   function handleSaveAsDraft() {
@@ -744,6 +760,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
           </div>
         ) : !product ? null : isPhysical ? (
           /* ---- PHYSICAL product: Webnode-style tabs ---- */
+          <Form {...form}>
           <Tabs defaultValue="produkt" className="w-full">
             <TabsList>
               <TabsTrigger value="produkt">{t`Produkt`}</TabsTrigger>
@@ -755,7 +772,6 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
             </TabsList>
 
             <TabsContent value="produkt">
-              <Form {...form}>
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
@@ -849,6 +865,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
                       <PageEditor
                         key={descriptionEditorKey}
                         initialContent={initialDescription}
+                        toolbarMode="fixed"
                         onChange={(state) => {
                           form.setValue("description", JSON.stringify(state), { shouldDirty: true });
                         }}
@@ -886,7 +903,6 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
                     <p className="text-sm text-green-600">{t`Produkt byl úspěšně uložen.`}</p>
                   )}
                 </div>
-              </Form>
             </TabsContent>
 
             <TabsContent value="gallery">
@@ -919,6 +935,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
               <PokrocileTab form={form} disabled={isPending} slug={form.watch("slug")} />
             </TabsContent>
           </Tabs>
+          </Form>
         ) : (
           /* ---- Non-PHYSICAL: original tab structure ---- */
           <Tabs defaultValue="info" className="w-full">

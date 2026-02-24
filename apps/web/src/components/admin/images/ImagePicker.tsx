@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
 import { imageApi } from "@samofujera/api-client";
 import type { ImageDetailResponse } from "@samofujera/api-client";
+import { Check } from "lucide-react";
 import {
   Button,
   Dialog,
@@ -29,6 +30,8 @@ interface ImagePickerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (result: ImagePickerResult) => void;
+  onSelectMultiple?: (results: ImagePickerResult[]) => void;
+  multiple?: boolean;
   targetAspectRatio?: number;
 }
 
@@ -38,10 +41,13 @@ export function ImagePicker({
   open,
   onOpenChange,
   onSelect,
+  onSelectMultiple,
+  multiple = false,
   targetAspectRatio,
 }: ImagePickerProps) {
   const [search, setSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<ImageDetailResponse | null>(null);
+  const [selectedItems, setSelectedItems] = useState<ImageDetailResponse[]>([]);
   const [step, setStep] = useState<PickerStep>("select");
   const [panX, setPanX] = useState(50);
   const [panY, setPanY] = useState(50);
@@ -74,10 +80,32 @@ export function ImagePicker({
   }
 
   function handleSelectImage(item: ImageDetailResponse) {
-    setSelectedItem(item);
+    if (multiple) {
+      setSelectedItems((prev) => {
+        const exists = prev.some((i) => i.id === item.id);
+        if (exists) {
+          return prev.filter((i) => i.id !== item.id);
+        }
+        return [...prev, item];
+      });
+    } else {
+      setSelectedItem(item);
+    }
   }
 
   function handleConfirmSelect() {
+    if (multiple) {
+      if (selectedItems.length === 0) return;
+      const results = selectedItems.map((item) => ({
+        imageId: item.id,
+        panX: 50,
+        panY: 50,
+      }));
+      onSelectMultiple?.(results);
+      handleReset();
+      return;
+    }
+
     if (!selectedItem) return;
 
     // Check if we need the pan step
@@ -110,6 +138,7 @@ export function ImagePicker({
 
   function handleReset() {
     setSelectedItem(null);
+    setSelectedItems([]);
     setSearch("");
     setStep("select");
     setPanX(50);
@@ -138,15 +167,21 @@ export function ImagePicker({
     selectedItem.height != null &&
     selectedItem.width / selectedItem.height < targetAspectRatio;
 
+  const hasSelection = multiple ? selectedItems.length > 0 : selectedItem != null;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-4xl">
         {step === "select" ? (
           <>
             <DialogHeader>
-              <DialogTitle>{t`Vybrat obrázek`}</DialogTitle>
+              <DialogTitle>
+                {multiple ? t`Vybrat obrázky` : t`Vybrat obrázek`}
+              </DialogTitle>
               <DialogDescription>
-                {t`Vyberte obrázek z knihovny nebo nahrajte nový.`}
+                {multiple
+                  ? t`Vyberte obrázky z knihovny nebo nahrajte nové.`
+                  : t`Vyberte obrázek z knihovny nebo nahrajte nový.`}
               </DialogDescription>
             </DialogHeader>
 
@@ -176,19 +211,26 @@ export function ImagePicker({
               {imagesQuery.isSuccess && items.length > 0 && (
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   {items.map((item) => {
-                    const isSelected = item.id === selectedItem?.id;
+                    const isSelected = multiple
+                      ? selectedItems.some((i) => i.id === item.id)
+                      : item.id === selectedItem?.id;
 
                     return (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => handleSelectImage(item)}
-                        className={`rounded-md border p-2 text-left transition-colors hover:bg-accent ${
+                        className={`relative rounded-md border p-2 text-left transition-colors hover:bg-accent ${
                           isSelected
                             ? "border-primary ring-2 ring-primary"
                             : "border-[var(--border)]"
                         }`}
                       >
+                        {multiple && isSelected && (
+                          <div className="absolute right-3 top-3 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            <Check className="h-3 w-3" />
+                          </div>
+                        )}
                         <div className="aspect-square w-full overflow-hidden rounded bg-muted">
                           <img
                             src={item.url}
@@ -253,9 +295,11 @@ export function ImagePicker({
                   type="button"
                   size="sm"
                   onClick={handleConfirmSelect}
-                  disabled={!selectedItem}
+                  disabled={!hasSelection}
                 >
-                  {t`Vybrat`}
+                  {multiple && selectedItems.length > 0
+                    ? t`Vybrat (${selectedItems.length})`
+                    : t`Vybrat`}
                 </Button>
               </div>
             </div>

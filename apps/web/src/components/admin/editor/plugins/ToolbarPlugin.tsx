@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $getSelection,
@@ -130,13 +131,17 @@ const FONT_SIZE_OPTIONS = [
 interface ToolbarPluginProps {
   onDelete?: () => void;
   onCopy?: () => void;
+  /** "floating" uses absolute positioning (default); "fixed" uses fixed positioning for overflow containers */
+  mode?: "floating" | "fixed";
 }
 
-export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
+export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [showToolbar, setShowToolbar] = useState(false);
-  const [toolbarPosition, setToolbarPosition] = useState({ left: 0 });
+  const isToolbarInteractingRef = useRef(false);
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [toolbarPosition, setToolbarPosition] = useState({ left: 0, top: 0 });
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isLink, setIsLink] = useState(false);
@@ -151,7 +156,10 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if (!$isRangeSelection(selection)) {
-      setShowToolbar(false);
+      // Don't hide during toolbar interaction (e.g. format commands)
+      if (!isToolbarInteractingRef.current) {
+        setShowToolbar(false);
+      }
       return;
     }
 
@@ -203,9 +211,17 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
     const editorRoot = editor.getRootElement();
     if (editorRoot) {
       const editorRect = editorRoot.getBoundingClientRect();
-      setToolbarPosition({
-        left: editorRect.width / 2,
-      });
+      if (mode === "fixed") {
+        setToolbarPosition({
+          left: editorRect.left + editorRect.width / 2,
+          top: editorRect.top,
+        });
+      } else {
+        setToolbarPosition({
+          left: editorRect.width / 2,
+          top: 0,
+        });
+      }
       setShowToolbar(true);
     } else {
       setShowToolbar(false);
@@ -231,27 +247,80 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
     });
   }, [editor, updateToolbar]);
 
-  // Hide toolbar when focus leaves the editor entirely
+  // Stable handler refs so capture-phase listeners don't need re-registration
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
+
+  // Module-level-stable handlers (closed over refs, not state)
+  const [stableHandlers] = useState(() => ({
+    mouseDown: (e: MouseEvent) => {
+      isToolbarInteractingRef.current = true;
+      e.preventDefault();
+    },
+    mouseUp: () => {
+      isToolbarInteractingRef.current = false;
+      editorRef.current.focus();
+    },
+  }));
+
+  // Capture-phase mousedown on toolbar to prevent focus leaving editor.
+  // Uses a callback ref so the listener is attached as soon as the DOM element
+  // appears (portals may mount after the initial render cycle).
+  const toolbarCallbackRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      // Clean up previous element
+      const prev = toolbarRef.current;
+      if (prev) {
+        prev.removeEventListener("mousedown", stableHandlers.mouseDown, true);
+        prev.removeEventListener("mouseup", stableHandlers.mouseUp, true);
+      }
+      toolbarRef.current = el;
+      if (el) {
+        el.addEventListener("mousedown", stableHandlers.mouseDown, { capture: true });
+        el.addEventListener("mouseup", stableHandlers.mouseUp, { capture: true });
+      }
+    },
+    [stableHandlers],
+  );
+
+  // Hide toolbar when focus leaves the editor entirely (with delay for toolbar interaction)
   useEffect(() => {
     const rootElement = editor.getRootElement();
     if (!rootElement) return;
 
     function handleBlur(e: FocusEvent) {
       const relatedTarget = e.relatedTarget as Node | null;
-      // If focus moved to toolbar, stay visible
+      // If focus moved to toolbar (including portaled toolbar), stay visible
       if (relatedTarget && toolbarRef.current?.contains(relatedTarget)) return;
       // If focus moved to a Radix portal (dropdown menu, popover), stay visible
       if (relatedTarget instanceof HTMLElement) {
         const portal = relatedTarget.closest(
-          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content], [data-radix-popover-content]",
+          "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content], [data-radix-popover-content], [data-lexical-toolbar]",
         );
         if (portal) return;
       }
-      setShowToolbar(false);
+      // Delay hide to allow toolbar mousedown to set the interacting flag
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = setTimeout(() => {
+        if (isToolbarInteractingRef.current) return;
+        // Check if focus is now inside toolbar or a Radix portal opened by the toolbar
+        const activeEl = document.activeElement as HTMLElement | null;
+        if (activeEl) {
+          if (toolbarRef.current?.contains(activeEl)) return;
+          const inPortal = activeEl.closest(
+            "[data-radix-popper-content-wrapper], [role='menu'], [data-radix-menu-content], [data-radix-popover-content], [data-lexical-toolbar]",
+          );
+          if (inPortal) return;
+        }
+        setShowToolbar(false);
+      }, 150);
     }
 
     rootElement.addEventListener("focusout", handleBlur);
-    return () => rootElement.removeEventListener("focusout", handleBlur);
+    return () => {
+      rootElement.removeEventListener("focusout", handleBlur);
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+    };
   }, [editor]);
 
   function formatBlock(type: BlockType) {
@@ -319,7 +388,7 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
     });
   }
 
-  if (!showToolbar) return null;
+  const isFixed = mode === "fixed";
 
   // Current alignment icon
   const CurrentAlignIcon = ALIGNMENT_ICON[elementFormat] ?? AlignLeft;
@@ -341,14 +410,31 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
     }
   }
 
-  return (
+  // Always render toolbar (never unmount) so ref + capture listeners stay attached.
+  // Use CSS to hide/show — unmounting destroys the ref and makes capture-phase
+  // mousedown impossible (toolbar vanishes before we can prevent focus loss).
+  const toolbarEl = (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
-      ref={toolbarRef}
-      className="absolute z-50 flex flex-col items-center gap-1"
+      ref={toolbarCallbackRef}
+      data-lexical-toolbar=""
+      className={isFixed
+        ? "fixed z-[9999] flex flex-col items-center gap-1"
+        : "absolute z-50 flex flex-col items-center gap-1"}
       style={{
-        bottom: "calc(100% + 6px)",
-        left: "50%",
-        transform: "translateX(-50%)",
+        ...(isFixed ? {
+          top: `${toolbarPosition.top - 6}px`,
+          left: `${toolbarPosition.left}px`,
+          transform: "translate(-50%, -100%)",
+        } : {
+          bottom: "calc(100% + 6px)",
+          left: "50%",
+          transform: "translateX(-50%)",
+        }),
+        // CSS-based show/hide — keeps element in DOM so ref + listeners persist
+        opacity: showToolbar ? 1 : 0,
+        pointerEvents: showToolbar ? "auto" : "none",
+        visibility: showToolbar ? "visible" : "hidden",
       }}
     >
       {/* Main toolbar row */}
@@ -511,38 +597,44 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
           <ChevronRight className={`h-4 w-4 transition-transform ${showExtras ? "rotate-90" : ""}`} />
         </Button>
 
-        <div className="mx-0.5 h-4 w-px bg-white/20" />
+        {(onDelete || onCopy) && (
+          <div className="mx-0.5 h-4 w-px bg-white/20" />
+        )}
 
-        {/* Delete */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
-          onClick={() => { onDelete?.(); requestAnimationFrame(() => setShowToolbar(false)); }}
-          title="Odstranit"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        {/* Delete — only shown when onDelete is provided */}
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+            onClick={() => { onDelete(); requestAnimationFrame(() => setShowToolbar(false)); }}
+            title="Odstranit"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
 
-        {/* More options (three dots) */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
-              title="Více možností"
-            >
-              <EllipsisVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="border-gray-700 bg-gray-800">
-            <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" onClick={onCopy}>
-              <Copy className="mr-2 h-4 w-4" />
-              Zkopírovat
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* More options (three dots) — only shown when onCopy is provided */}
+        {onCopy && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+                title="Více možností"
+              >
+                <EllipsisVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="border-gray-700 bg-gray-800">
+              <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" onClick={onCopy}>
+                <Copy className="mr-2 h-4 w-4" />
+                Zkopírovat
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         {/* Arrow pointer — only when extras row is closed */}
         {!showExtras && (
@@ -671,4 +763,9 @@ export function ToolbarPlugin({ onDelete, onCopy }: ToolbarPluginProps) {
       )}
     </div>
   );
+
+  if (isFixed && typeof document !== "undefined") {
+    return createPortal(toolbarEl, document.body);
+  }
+  return toolbarEl;
 }
