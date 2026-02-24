@@ -57,6 +57,8 @@ import {
 } from "@samofujera/ui";
 import { ImagePicker } from "../images/ImagePicker";
 import type { ImagePickerResult } from "../images/ImagePicker";
+import { PageEditor } from "../editor/PageEditor";
+import type { SerializedEditorState } from "lexical";
 
 
 function slugify(text: string): string {
@@ -553,6 +555,8 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
   const queryClient = useQueryClient();
 
   const [slugManual, setSlugManual] = useState(false);
+  const [initialDescription, setInitialDescription] = useState<SerializedEditorState | null>(null);
+  const [descriptionEditorKey, setDescriptionEditorKey] = useState(0);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -622,6 +626,24 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
         variantCategoryName: product.variantCategoryName ?? "",
       });
       setSlugManual(true);
+
+      // Parse description as Lexical editor state for PHYSICAL products
+      if (product.productType === "PHYSICAL" && product.description) {
+        try {
+          const parsed = JSON.parse(product.description) as SerializedEditorState;
+          if (parsed?.root) {
+            setInitialDescription(parsed);
+          } else {
+            setInitialDescription(null);
+          }
+        } catch {
+          // Legacy plain text or invalid JSON — editor starts empty
+          setInitialDescription(null);
+        }
+      } else {
+        setInitialDescription(null);
+      }
+      setDescriptionEditorKey((k) => k + 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id]);
@@ -821,23 +843,18 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t`Popis`}</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            disabled={isPending}
-                            rows={6}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <Label>{t`Popis`}</Label>
+                    <div className="mt-1 rounded-md border border-[var(--border)] min-h-[200px]">
+                      <PageEditor
+                        key={descriptionEditorKey}
+                        initialContent={initialDescription}
+                        onChange={(state) => {
+                          form.setValue("description", JSON.stringify(state), { shouldDirty: true });
+                        }}
+                      />
+                    </div>
+                  </div>
 
                   <div>
                     <Label>{t`Kategorie`}</Label>
