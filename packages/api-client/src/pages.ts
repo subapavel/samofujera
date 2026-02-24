@@ -7,6 +7,7 @@ import type {
   UpdatePageRequest,
   SchedulePublishRequest,
   PublicPageResponse,
+  RevisionResponse,
 } from "./types";
 
 export const pageAdminApi = {
@@ -61,6 +62,17 @@ export const pageAdminApi = {
 
   deletePage: (id: string) =>
     apiFetch<void>(`/api/admin/pages/${id}`, { method: "DELETE" }),
+
+  getRevisions: (pageId: string) =>
+    apiFetch<ApiResponse<RevisionResponse[]>>(
+      `/api/admin/pages/${pageId}/revisions`,
+    ),
+
+  restoreRevision: (pageId: string, revisionId: string) =>
+    apiFetch<ApiResponse<PageDetailResponse>>(
+      `/api/admin/pages/${pageId}/revisions/${revisionId}/restore`,
+      { method: "POST" },
+    ),
 };
 
 export const pagePublicApi = {

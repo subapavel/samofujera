@@ -348,6 +348,7 @@ export function FullPageEditor() {
       <SettingsDrawer
         open={showSettings}
         onOpenChange={setShowSettings}
+        pageId={pageId}
         title={title}
         slug={slug}
         onSlugChange={setSlug}

@@ -14,13 +14,16 @@ import {
 } from "@samofujera/ui";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { t } from "@lingui/core/macro";
 import { imageApi } from "@samofujera/api-client";
 import { ImagePicker } from "../images/ImagePicker";
 import type { ImagePickerResult } from "../images/ImagePicker";
+import { RevisionList } from "./RevisionList";
 
 interface SettingsDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  pageId: string;
   // Obecné tab
   title: string;
   slug: string;
@@ -150,6 +153,7 @@ function SocialPreview({
 export function SettingsDrawer({
   open,
   onOpenChange,
+  pageId,
   title,
   slug,
   onSlugChange,
@@ -191,6 +195,9 @@ export function SettingsDrawer({
             </TabsTrigger>
             <TabsTrigger value="seo" className="flex-1">
               SEO
+            </TabsTrigger>
+            <TabsTrigger value="historie" className="flex-1">
+              {t`Historie`}
             </TabsTrigger>
           </TabsList>
 
@@ -400,6 +407,14 @@ export function SettingsDrawer({
                 </label>
               </div>
             </div>
+          </TabsContent>
+
+          {/* ── Historie tab ── */}
+          <TabsContent value="historie" className="space-y-4 pt-4">
+            <p className="text-sm text-[var(--muted-foreground)]">
+              {t`Předchozí publikované verze stránky`}
+            </p>
+            <RevisionList pageId={pageId} />
           </TabsContent>
         </Tabs>
       </SheetContent>

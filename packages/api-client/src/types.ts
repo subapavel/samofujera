@@ -446,6 +446,15 @@ export interface SchedulePublishRequest {
   scheduledPublishAt: string;
 }
 
+export interface RevisionResponse {
+  id: string;
+  version: number;
+  title: string;
+  slug: string;
+  createdBy: string | null;
+  createdAt: string;
+}
+
 export interface PublicPageResponse {
   slug: string;
   title: string;
