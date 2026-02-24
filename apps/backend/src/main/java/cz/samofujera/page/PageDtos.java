@@ -59,6 +59,18 @@ public final class PageDtos {
 
     public record SchedulePublishRequest(@NotNull Instant scheduledPublishAt) {}
 
+    public record RevisionResponse(
+        UUID id, int version, String title, String slug,
+        UUID createdBy, OffsetDateTime createdAt
+    ) {}
+
+    public record RevisionDetailResponse(
+        UUID id, int version, String title, String slug,
+        @JsonRawValue String content,
+        String metaTitle, String metaDescription,
+        UUID createdBy, OffsetDateTime createdAt
+    ) {}
+
     public record PublicPageResponse(
         UUID id, String slug, String title, @JsonRawValue String content,
         String metaTitle, String metaDescription,
