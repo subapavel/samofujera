@@ -1,43 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { userApi } from "@samofujera/api-client";
 import { Info, Mail, Phone } from "lucide-react";
-
-interface AuthState {
-  authenticated: boolean;
-  role?: string;
-}
+import { usePublicAuth } from "./PublicAuthProvider";
 
 export function TopBar() {
-  const [auth, setAuth] = useState<AuthState | null>(null);
+  const { user, isLoading } = usePublicAuth();
   const pathname = usePathname();
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function checkAuth() {
-      try {
-        const response = await userApi.getProfile();
-        if (!cancelled) {
-          setAuth({ authenticated: true, role: response.data.role });
-        }
-      } catch {
-        if (!cancelled) {
-          setAuth({ authenticated: false });
-        }
-      }
-    }
-
-    void checkAuth();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const activeColor = "text-[rgb(230,188,145)]";
 
   function authLinkClass(href: string) {
     const isActive = pathname.startsWith(href);
@@ -72,19 +42,12 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-4 mx-auto nav:mx-0 nav:ml-auto">
-          {auth === null ? (
+          {isLoading ? (
             <span className="h-4" />
-          ) : auth.authenticated ? (
-            <>
-              {auth.role === "ADMIN" && (
-                <Link href="/admin" className={authLinkClass("/admin")}>
-                  Administrace
-                </Link>
-              )}
-              <Link href="/muj-ucet" className={authLinkClass("/muj-ucet")}>
-                Můj účet
-              </Link>
-            </>
+          ) : user ? (
+            <Link href="/muj-ucet" className={authLinkClass("/muj-ucet")}>
+              Můj účet
+            </Link>
           ) : (
             <>
               <Link href="/prihlaseni" className={authLinkClass("/prihlaseni")}>

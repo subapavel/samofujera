@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageRenderer } from "@/components/page-renderer/PageRenderer";
 import { PagePreview } from "@/components/page-renderer/PagePreview";
+import { SetPageId } from "@/components/nav/PageIdProvider";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -86,6 +87,7 @@ export default async function CmsPageRoute({
       className="bg-repeat pb-12 sm:pb-16"
       style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
     >
+      {page.id && <SetPageId id={page.id} />}
       {page.content && <PageRenderer content={page.content} />}
     </div>
   );

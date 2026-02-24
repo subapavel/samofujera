@@ -34,7 +34,11 @@ export function LoginForm() {
 
     try {
       await authApi.login({ email, password, force });
-      const redirect = searchParams.get("redirect") ?? "/muj-ucet";
+      const redirect =
+        searchParams.get("redirect") ??
+        sessionStorage.getItem("redirectAfterLogin") ??
+        "/";
+      sessionStorage.removeItem("redirectAfterLogin");
       router.push(redirect);
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {

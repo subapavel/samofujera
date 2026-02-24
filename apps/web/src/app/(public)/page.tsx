@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageRenderer } from "@/components/page-renderer/PageRenderer";
+import { SetPageId } from "@/components/nav/PageIdProvider";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -70,6 +71,7 @@ export default async function HomePage() {
       className="bg-repeat pb-12 sm:pb-16"
       style={{ backgroundImage: "url('/images/bg-body-texture.png')" }}
     >
+      {page.id && <SetPageId id={page.id} />}
       {page.content && <PageRenderer content={page.content} />}
     </div>
   );
