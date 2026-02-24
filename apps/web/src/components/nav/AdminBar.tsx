@@ -60,7 +60,7 @@ export function AdminBar() {
 
   // Expanded state: full bar above TopBar
   return (
-    <div className="flex h-10 items-center border-b border-[var(--border)] bg-white px-4">
+    <div className="flex h-12 items-center border-b border-[var(--border)] bg-white px-4">
       <div className="flex flex-1 items-center gap-2">
         {pageId && (
           <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" asChild>
