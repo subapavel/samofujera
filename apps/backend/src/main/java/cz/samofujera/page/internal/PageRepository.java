@@ -30,7 +30,7 @@ public class PageRepository {
         int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt,
         OffsetDateTime publishedAt, UUID createdBy,
-        OffsetDateTime scheduledPublishAt
+        OffsetDateTime scheduledPublishAt, UUID publishedRevisionId
     ) {}
 
     public record PageListRow(
@@ -48,7 +48,7 @@ public class PageRepository {
                 PAGES.NOINDEX, PAGES.NOFOLLOW,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
-                PAGES.SCHEDULED_PUBLISH_AT)
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID)
             .from(PAGES)
             .where(PAGES.ID.eq(id))
             .fetchOptional(r -> new PageRow(
@@ -61,7 +61,7 @@ public class PageRepository {
                 r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
                 r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
-                r.get(PAGES.SCHEDULED_PUBLISH_AT)
+                r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID)
             ));
     }
 
@@ -73,7 +73,7 @@ public class PageRepository {
                 PAGES.NOINDEX, PAGES.NOFOLLOW,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
-                PAGES.SCHEDULED_PUBLISH_AT)
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID)
             .from(PAGES)
             .where(PAGES.SLUG.eq(slug))
             .fetchOptional(r -> new PageRow(
@@ -86,7 +86,7 @@ public class PageRepository {
                 r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
                 r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
-                r.get(PAGES.SCHEDULED_PUBLISH_AT)
+                r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID)
             ));
     }
 
@@ -188,7 +188,7 @@ public class PageRepository {
                 PAGES.NOINDEX, PAGES.NOFOLLOW,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
-                PAGES.SCHEDULED_PUBLISH_AT)
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID)
             .from(PAGES)
             .where(PAGES.SCHEDULED_PUBLISH_AT.le(now))
             .and(PAGES.STATUS.eq("DRAFT"))
@@ -202,8 +202,16 @@ public class PageRepository {
                 r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
                 r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
                 r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
-                r.get(PAGES.SCHEDULED_PUBLISH_AT)
+                r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID)
             ));
+    }
+
+    public void setPublishedRevisionId(UUID id, UUID revisionId) {
+        dsl.update(PAGES)
+            .set(PAGES.PUBLISHED_REVISION_ID, revisionId)
+            .set(PAGES.UPDATED_AT, OffsetDateTime.now())
+            .where(PAGES.ID.eq(id))
+            .execute();
     }
 
     public void delete(UUID id) {

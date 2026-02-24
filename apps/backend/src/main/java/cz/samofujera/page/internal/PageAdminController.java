@@ -1,13 +1,16 @@
 package cz.samofujera.page.internal;
 
+import cz.samofujera.auth.UserPrincipal;
 import cz.samofujera.page.PageDtos;
 import cz.samofujera.page.PageService;
 import cz.samofujera.shared.api.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -53,8 +56,9 @@ class PageAdminController {
     }
 
     @PutMapping("/{id}/publish")
-    ResponseEntity<Void> publishPage(@PathVariable UUID id) {
-        pageService.publishPage(id);
+    ResponseEntity<Void> publishPage(@PathVariable UUID id, Authentication authentication) {
+        UUID publishedBy = extractUserId(authentication);
+        pageService.publishPage(id, publishedBy);
         return ResponseEntity.noContent().build();
     }
 
@@ -82,5 +86,25 @@ class PageAdminController {
     ResponseEntity<Void> deletePage(@PathVariable UUID id) {
         pageService.deletePage(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/revisions")
+    ResponseEntity<ApiResponse<List<PageDtos.RevisionResponse>>> getRevisions(@PathVariable UUID id) {
+        var revisions = pageService.getRevisions(id);
+        return ResponseEntity.ok(ApiResponse.ok(revisions));
+    }
+
+    @PostMapping("/{id}/revisions/{revisionId}/restore")
+    ResponseEntity<ApiResponse<PageDtos.PageDetailResponse>> restoreRevision(
+            @PathVariable UUID id, @PathVariable UUID revisionId) {
+        var page = pageService.restoreRevision(id, revisionId);
+        return ResponseEntity.ok(ApiResponse.ok(page));
+    }
+
+    private UUID extractUserId(Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal principal) {
+            return principal.getId();
+        }
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package cz.samofujera.page;
 
 import cz.samofujera.image.ImageService;
 import cz.samofujera.page.internal.PageRepository;
+import cz.samofujera.page.internal.PageRevisionRepository;
 import cz.samofujera.shared.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,10 +22,13 @@ public class PageService {
     private static final ObjectMapper JSON = new ObjectMapper();
 
     private final PageRepository pageRepository;
+    private final PageRevisionRepository pageRevisionRepository;
     private final ImageService imageService;
 
-    PageService(PageRepository pageRepository, ImageService imageService) {
+    PageService(PageRepository pageRepository, PageRevisionRepository pageRevisionRepository,
+                ImageService imageService) {
         this.pageRepository = pageRepository;
+        this.pageRevisionRepository = pageRevisionRepository;
         this.imageService = imageService;
     }
 
@@ -45,6 +50,17 @@ public class PageService {
             .orElseThrow(() -> new NotFoundException("Page not found"));
         if (!"PUBLISHED".equals(row.status())) {
             throw new NotFoundException("Page not found");
+        }
+        // Read from published revision if available, otherwise fall back to page content
+        if (row.publishedRevisionId() != null) {
+            var revision = pageRevisionRepository.findById(row.publishedRevisionId())
+                .orElseThrow(() -> new NotFoundException("Published revision not found"));
+            return new PageDtos.PublicPageResponse(
+                row.id(), revision.slug(), revision.title(), rawContent(revision.content()),
+                revision.metaTitle(), revision.metaDescription(),
+                revision.metaKeywords(), revision.ogTitle(), revision.ogDescription(),
+                resolveOgImageUrl(revision.ogImageId()), revision.noindex(), revision.nofollow()
+            );
         }
         return new PageDtos.PublicPageResponse(
             row.id(), row.slug(), row.title(), rawContent(row.content()),
@@ -90,9 +106,17 @@ public class PageService {
     }
 
     @Transactional
-    public void publishPage(UUID id) {
-        pageRepository.findById(id)
+    public void publishPage(UUID id, UUID publishedBy) {
+        var page = pageRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Page not found"));
+        // Create revision snapshot from current draft
+        var revisionId = pageRevisionRepository.create(
+            page.id(), page.content(), page.title(), page.slug(),
+            page.metaTitle(), page.metaDescription(), page.metaKeywords(),
+            page.ogTitle(), page.ogDescription(), page.ogImageId(),
+            page.noindex(), page.nofollow(), publishedBy
+        );
+        pageRepository.setPublishedRevisionId(id, revisionId);
         pageRepository.updateStatus(id, "PUBLISHED");
         pageRepository.clearScheduledPublishAt(id);
     }
@@ -132,9 +156,44 @@ public class PageService {
     public void publishDuePages() {
         var duePages = pageRepository.findDueForPublish(OffsetDateTime.now());
         for (var page : duePages) {
+            var revisionId = pageRevisionRepository.create(
+                page.id(), page.content(), page.title(), page.slug(),
+                page.metaTitle(), page.metaDescription(), page.metaKeywords(),
+                page.ogTitle(), page.ogDescription(), page.ogImageId(),
+                page.noindex(), page.nofollow(), page.createdBy()
+            );
+            pageRepository.setPublishedRevisionId(page.id(), revisionId);
             pageRepository.updateStatus(page.id(), "PUBLISHED");
             pageRepository.clearScheduledPublishAt(page.id());
         }
+    }
+
+    public List<PageDtos.RevisionResponse> getRevisions(UUID pageId) {
+        pageRepository.findById(pageId)
+            .orElseThrow(() -> new NotFoundException("Page not found"));
+        return pageRevisionRepository.findByPageId(pageId).stream()
+            .map(r -> new PageDtos.RevisionResponse(
+                r.id(), r.version(), r.title(), r.slug(),
+                r.createdBy(), r.createdAt()
+            ))
+            .toList();
+    }
+
+    @Transactional
+    public PageDtos.PageDetailResponse restoreRevision(UUID pageId, UUID revisionId) {
+        var page = pageRepository.findById(pageId)
+            .orElseThrow(() -> new NotFoundException("Page not found"));
+        var revision = pageRevisionRepository.findById(revisionId)
+            .orElseThrow(() -> new NotFoundException("Revision not found"));
+        if (!revision.pageId().equals(pageId)) {
+            throw new NotFoundException("Revision not found");
+        }
+        // Copy revision content back into the page draft — do NOT change status or published_revision_id
+        pageRepository.update(pageId, revision.slug(), revision.title(), revision.content(),
+            revision.metaTitle(), revision.metaDescription(), revision.ogImageId(),
+            page.showInNav(), revision.metaKeywords(), revision.ogTitle(),
+            revision.ogDescription(), revision.noindex(), revision.nofollow());
+        return getPageById(pageId);
     }
 
     private PageDtos.PageResponse toPageResponse(PageRepository.PageListRow row) {
