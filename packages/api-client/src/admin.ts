@@ -66,6 +66,12 @@ export const adminApi = {
   deleteProduct: (id: string) =>
     apiFetch<void>(`/api/admin/products/${id}`, { method: "DELETE" }),
 
+  deleteProducts: (ids: string[]) =>
+    apiFetch<void>("/api/admin/products/bulk", {
+      method: "DELETE",
+      body: JSON.stringify({ ids }),
+    }),
+
   // Images (linked via image library)
 
   linkImage: (productId: string, imageId: string) =>

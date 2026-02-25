@@ -33,6 +33,8 @@ interface DataTableProps<TData, TValue> {
   searchKey?: string;
   searchPlaceholder?: string;
   filters?: FilterConfig[];
+  enableRowSelection?: boolean;
+  renderBulkActions?: (selectedRows: TData[], clearSelection: () => void) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -41,6 +43,8 @@ export function DataTable<TData, TValue>({
   searchKey,
   searchPlaceholder,
   filters,
+  enableRowSelection,
+  renderBulkActions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -56,6 +60,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
     },
+    enableRowSelection: enableRowSelection ?? false,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -68,8 +73,14 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  const selectedRows = table.getFilteredSelectedRowModel().rows.map((r) => r.original);
+  const clearSelection = () => setRowSelection({});
+
   return (
     <div className="space-y-4">
+      {renderBulkActions && selectedRows.length > 0 && (
+        renderBulkActions(selectedRows, clearSelection)
+      )}
       <DataTableToolbar
         table={table}
         searchKey={searchKey}

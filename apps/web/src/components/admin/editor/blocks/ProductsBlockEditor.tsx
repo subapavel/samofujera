@@ -292,7 +292,7 @@ function ProductCard({
 }) {
   const price = product.prices.CZK;
   return (
-    <div className="product-card">
+    <a href={`/produkty/${product.slug}`} className="product-card">
       {product.thumbnailUrl ? (
         <img
           src={product.thumbnailUrl}
@@ -308,7 +308,7 @@ function ProductCard({
       {price != null && (
         <div className="product-card-price">{formatPrice(price)}</div>
       )}
-    </div>
+    </a>
   );
 }
 

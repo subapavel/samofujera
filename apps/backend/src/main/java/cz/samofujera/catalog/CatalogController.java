@@ -2,6 +2,8 @@ package cz.samofujera.catalog;
 
 import cz.samofujera.shared.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -46,8 +48,20 @@ public class CatalogController {
 
     @GetMapping("/products/{slug}")
     public ResponseEntity<ApiResponse<CatalogDtos.ProductDetailResponse>> getProductBySlug(
-            @PathVariable String slug) {
+            @PathVariable String slug,
+            @RequestParam(defaultValue = "false") boolean preview,
+            Authentication authentication) {
+        if (preview && isAdmin(authentication)) {
+            var product = catalogService.getProductBySlugNoFilter(slug);
+            return ResponseEntity.ok(ApiResponse.ok(product));
+        }
         var product = catalogService.getProductBySlug(slug);
         return ResponseEntity.ok(ApiResponse.ok(product));
+    }
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 }

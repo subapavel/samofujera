@@ -9,6 +9,7 @@ import { PublishSplitButton } from "./PublishSplitButton";
 interface EditorToolbarProps {
   slug: string;
   title: string;
+  pageType?: string;
   onTitleChange: (title: string) => void;
   status: string;
   scheduledPublishAt: string | null;
@@ -67,6 +68,7 @@ function SaveStatus({
 export function EditorToolbar({
   slug,
   title,
+  pageType,
   onTitleChange,
   status,
   scheduledPublishAt,
@@ -84,6 +86,9 @@ export function EditorToolbar({
   lastSavedAt,
   onSettingsToggle,
 }: EditorToolbarProps) {
+  const previewUrl = pageType === "PRODUCT"
+    ? `/produkty/${slug}?preview=true`
+    : `/${slug}?preview=true`;
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex h-12 items-center gap-2 border-b border-[var(--border)] bg-white px-4">
       {/* Back button */}
@@ -138,7 +143,7 @@ export function EditorToolbar({
 
       {/* Preview */}
       <Button variant="ghost" size="icon" asChild>
-        <Link href={`/${slug}?preview=true`} target="_blank" title="Náhled">
+        <Link href={previewUrl} target="_blank" title="Náhled">
           <Eye className="h-4 w-4" />
         </Link>
       </Button>

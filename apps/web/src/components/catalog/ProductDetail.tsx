@@ -1,190 +1,206 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import { t } from "@lingui/core/macro";
-import { useLingui } from "@lingui/react";
-import { catalogApi, checkoutApi } from "@samofujera/api-client";
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@samofujera/ui";
-import { formatPrices, productTypeDescriptor, formatFileSize, primaryPrice, formatPrice } from "./utils";
+import type { ProductDetailResponse } from "@samofujera/api-client";
+import { formatPrice, formatPrices, primaryPrice } from "./utils";
+import { renderLexicalContent } from "@/components/page-renderer/PageRenderer";
 
-export function ProductDetail({ slug }: { slug: string }) {
-  const { _ } = useLingui();
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+interface ProductDetailProps {
+  product: ProductDetailResponse;
+}
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["product", slug],
-    queryFn: () => catalogApi.getProduct(slug),
-    enabled: !!slug,
-  });
+export function ProductDetail({ product }: ProductDetailProps) {
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
 
-  const product = data?.data;
-
-  const checkoutMutation = useMutation({
-    mutationFn: () =>
-      checkoutApi.createCheckout({
-        items: [{ productId: product!.id, quantity: 1 }],
-      }),
-    onSuccess: (response) => {
-      window.location.href = response.data.checkoutUrl;
-    },
-    onError: () => {
-      setCheckoutError(t`Nepodařilo se vytvořit objednávku. Zkuste to prosím znovu.`);
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="h-8 w-48 animate-pulse rounded bg-[var(--muted)]" />
-        <div className="h-64 animate-pulse rounded-lg bg-[var(--muted)]" />
-        <div className="h-32 animate-pulse rounded-lg bg-[var(--muted)]" />
-      </div>
-    );
-  }
-
-  if (isError || !product) {
-    return (
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-12 text-center">
-        <p className="text-lg text-[var(--muted-foreground)]">
-          {t`Produkt nebyl nalezen.`}
-        </p>
-        <Link href="/" className="mt-4 inline-block">
-          <Button variant="outline">{t`Zpět na hlavní stránku`}</Button>
-        </Link>
-      </div>
-    );
-  }
-
+  const images = product.images?.length
+    ? [...product.images].sort((a, b) => a.sortOrder - b.sortOrder)
+    : [];
+  const currentImage = images[selectedImageIndex] || null;
   const price = primaryPrice(product.prices);
+  const hasVariants = product.variants && product.variants.length > 0;
+  const isPhysical = product.productType === "PHYSICAL";
+
+  const selectedVariant = hasVariants && selectedVariantId
+    ? product.variants!.find((v) => v.id === selectedVariantId)
+    : null;
+
+  const displayPrice = selectedVariant
+    ? primaryPrice(selectedVariant.prices)
+    : price;
 
   return (
-    <div>
-      {/* Back link */}
-      <div className="mb-6">
-        <Link
-          href="/"
-          className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-        >
-          &larr; {t`Zpět na hlavní stránku`}
-        </Link>
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Main content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Thumbnail */}
-          {product.thumbnailUrl && (
-            <div className="aspect-video w-full overflow-hidden rounded-lg bg-[var(--muted)]">
-              <img
+    <div className="product-detail">
+      <div className="product-detail-grid">
+        {/* Left column: Images */}
+        <div className="product-detail-images">
+          <div className="product-detail-main-image">
+            {currentImage ? (
+              <Image
+                src={currentImage.url}
+                alt={currentImage.altText || product.title}
+                fill
+                className="object-cover"
+                style={{
+                  objectPosition: `${currentImage.panX}% ${currentImage.panY}%`,
+                }}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            ) : product.thumbnailUrl ? (
+              <Image
                 src={product.thumbnailUrl}
                 alt={product.title}
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
               />
-            </div>
-          )}
-
-          {/* Title and metadata */}
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="inline-block rounded-full bg-[var(--secondary)] px-3 py-1 text-xs font-medium text-[var(--secondary-foreground)]">
-                {_(productTypeDescriptor(product.productType))}
-              </span>
-              {product.categories?.length > 0 &&
-                product.categories.map((cat) => (
-                  <span key={cat.id} className="inline-block rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted-foreground)]">
-                    {cat.name}
-                  </span>
-                ))}
-            </div>
-            <h1 className="text-3xl font-bold">{product.title}</h1>
+            ) : (
+              <div className="flex h-full items-center justify-center text-[var(--muted-foreground)]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+              </div>
+            )}
           </div>
 
-          {/* Description */}
-          {product.description && (
-            <div className="prose max-w-none">
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6">
-                <p className="whitespace-pre-wrap text-[var(--foreground)]">
-                  {product.description}
-                </p>
-              </div>
+          {images.length > 1 && (
+            <div className="product-detail-thumbnails">
+              {images.map((img, index) => (
+                <button
+                  key={img.imageId}
+                  type="button"
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`product-detail-thumbnail${
+                    index === selectedImageIndex
+                      ? " product-detail-thumbnail-active"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.altText || `${product.title} ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    style={{
+                      objectPosition: `${img.panX}% ${img.panY}%`,
+                    }}
+                    sizes="10vw"
+                  />
+                </button>
+              ))}
             </div>
-          )}
-
-          {/* Content preview (files, audio, video) */}
-          {product.content && product.content.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">{t`Obsah`}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="divide-y divide-[var(--border)]">
-                  {product.content.map((item) => (
-                    <li key={item.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-                      <span className="text-[var(--muted-foreground)]">
-                        {item.contentType === "VIDEO" ? "\u{1F3AC}" : item.contentType === "AUDIO" ? "\u{1F3B5}" : "\u{1F4C4}"}
-                      </span>
-                      <div>
-                        <p className="text-sm font-medium">{item.title}</p>
-                        <p className="text-xs text-[var(--muted-foreground)]">
-                          {item.contentType === "FILE" && item.mimeType && item.fileSizeBytes != null
-                            ? `${item.mimeType} \u00b7 ${formatFileSize(item.fileSizeBytes)}`
-                            : item.durationSeconds != null
-                              ? formatDuration(item.durationSeconds)
-                              : null}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
           )}
         </div>
 
-        {/* Sidebar - purchase card */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-8">
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <p className="text-3xl font-bold text-[var(--primary)]">
-                  {price ? formatPrice(price.amount, price.currency) : formatPrices(product.prices)}
-                </p>
-                {Object.keys(product.prices).length > 1 && (
-                  <p className="text-sm text-[var(--muted-foreground)]">
-                    {formatPrices(product.prices)}
-                  </p>
-                )}
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={() => checkoutMutation.mutate()}
-                  disabled={checkoutMutation.isPending}
-                >
-                  {checkoutMutation.isPending ? t`Zpracovávám...` : t`Koupit`}
-                </Button>
-                {checkoutError && (
-                  <p className="text-sm text-[var(--destructive)]">{checkoutError}</p>
-                )}
-                <p className="text-xs text-center text-[var(--muted-foreground)]">
-                  {t`Budete přesměrováni na bezpečnou platební bránu Stripe`}
-                </p>
-              </CardContent>
-            </Card>
+        {/* Right column: Product info */}
+        <div className="product-detail-info">
+          {product.categories && product.categories.length > 0 && (
+            <div className="product-detail-categories">
+              {product.categories.map((cat) => (
+                <span key={cat.id} className="product-detail-category">
+                  {cat.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <h1 className="product-detail-title">{product.title}</h1>
+
+          {product.shortDescription && (
+            <p className="product-detail-short-desc">
+              {product.shortDescription}
+            </p>
+          )}
+
+          <div className="product-detail-price-section">
+            <p className="product-detail-price">
+              {displayPrice
+                ? formatPrice(displayPrice.amount, displayPrice.currency)
+                : formatPrices(product.prices)}
+            </p>
+            {Object.keys(product.prices).length > 1 && (
+              <p className="product-detail-price-secondary">
+                {formatPrices(product.prices)}
+              </p>
+            )}
           </div>
+
+          {isPhysical && hasVariants && (
+            <div className="product-detail-variants">
+              <label
+                htmlFor="variant-select"
+                className="product-detail-variant-label"
+              >
+                {t`Varianta`}
+              </label>
+              <select
+                id="variant-select"
+                value={selectedVariantId || ""}
+                onChange={(e) =>
+                  setSelectedVariantId(e.target.value || null)
+                }
+                className="product-detail-variant-select"
+              >
+                <option value="">{t`Vyberte variantu`}</option>
+                {product.variants!.map((variant) => (
+                  <option key={variant.id} value={variant.id}>
+                    {variant.name}
+                    {variant.stock <= 0 ? ` (${t`Vyprodáno`})` : ""}
+                  </option>
+                ))}
+              </select>
+              {selectedVariant && selectedVariant.stock <= 0 && (
+                <p className="product-detail-sold-out">
+                  {t`Tato varianta je momentálně vyprodána.`}
+                </p>
+              )}
+            </div>
+          )}
+
+          <Link
+            href="/pokladna"
+            className="btn-style4 w-full justify-center text-center"
+          >
+            {t`Koupit`}
+          </Link>
+
+          {product.description && (
+            <div className="product-detail-description">
+              <h2 className="product-detail-description-title">{t`Popis`}</h2>
+              <div className="page-content product-detail-description-content">
+                {(() => {
+                  try {
+                    const parsed = JSON.parse(product.description);
+                    if (parsed?.root) {
+                      return renderLexicalContent(parsed);
+                    }
+                  } catch {
+                    // Not JSON — render as plain text
+                  }
+                  return <p className="whitespace-pre-wrap">{product.description}</p>;
+                })()}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
-
-function formatDuration(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  if (hours > 0) {
-    return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  }
-  return `${minutes}:${String(secs).padStart(2, "0")}`;
 }

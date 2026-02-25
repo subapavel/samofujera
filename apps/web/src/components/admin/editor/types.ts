@@ -55,7 +55,12 @@ export interface ProductsBlock extends BlockBase {
   showCategoryFilter: boolean;
 }
 
-export type ContentBlock = TextBlock | ImageBlock | SeparatorBlock | ButtonBlock | ProductsBlock;
+export interface ProductBlock extends BlockBase {
+  type: "product";
+  productId: string;
+}
+
+export type ContentBlock = TextBlock | ImageBlock | SeparatorBlock | ButtonBlock | ProductsBlock | ProductBlock;
 export type BlockType = ContentBlock["type"];
 
 // ── Section / Page ──
@@ -105,6 +110,10 @@ export function createButtonBlock(): ButtonBlock {
     alignment: "center",
     openInNewTab: false,
   };
+}
+
+export function createProductBlock(productId: string): ProductBlock {
+  return { id: crypto.randomUUID(), type: "product", productId };
 }
 
 export function createProductsBlock(): ProductsBlock {
@@ -166,5 +175,13 @@ export function createEmptySection(): PageSection {
   return {
     id: crypto.randomUUID(),
     blocks: [createTextBlock()],
+  };
+}
+
+/** Create a product page section with a product block + empty text block */
+export function createProductSection(productId: string): PageSection {
+  return {
+    id: crypto.randomUUID(),
+    blocks: [createProductBlock(productId), createTextBlock()],
   };
 }

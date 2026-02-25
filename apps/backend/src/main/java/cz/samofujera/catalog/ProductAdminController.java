@@ -58,6 +58,13 @@ public class ProductAdminController {
         return ResponseEntity.ok(ApiResponse.ok(product));
     }
 
+    @DeleteMapping("/bulk")
+    public ResponseEntity<Void> deleteProducts(
+            @Valid @RequestBody CatalogDtos.BulkDeleteRequest request) {
+        catalogService.deleteProducts(request.ids());
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         catalogService.archiveProduct(id);

@@ -203,4 +203,6 @@ public final class CatalogDtos {
         @NotNull OffsetDateTime endsAt,
         String streamUrl
     ) {}
+
+    public record BulkDeleteRequest(@NotNull List<UUID> ids) {}
 }

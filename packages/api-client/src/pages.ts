@@ -73,6 +73,11 @@ export const pageAdminApi = {
       `/api/admin/pages/${pageId}/revisions/${revisionId}/restore`,
       { method: "POST" },
     ),
+
+  getPageByProduct: (productId: string) =>
+    apiFetch<ApiResponse<PageDetailResponse>>(
+      `/api/admin/pages/by-product/${productId}`,
+    ),
 };
 
 export const pagePublicApi = {
@@ -80,4 +85,8 @@ export const pagePublicApi = {
     apiFetch<ApiResponse<PublicPageResponse>>(`/api/pages/${slug}`),
   getPagePreview: (slug: string) =>
     apiFetch<ApiResponse<PublicPageResponse>>(`/api/pages/${slug}?preview=true`),
+  getProductPage: (productSlug: string) =>
+    apiFetch<ApiResponse<PublicPageResponse>>(`/api/pages/product/${productSlug}`),
+  getProductPagePreview: (productSlug: string) =>
+    apiFetch<ApiResponse<PublicPageResponse>>(`/api/pages/product/${productSlug}?preview=true`),
 };

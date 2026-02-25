@@ -161,6 +161,9 @@ export function useProductsColumns(
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => window.open(`/produkty/${product.slug}`, "_blank")}>
+                  {t`Zobrazit`}
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => options?.onEdit?.(product.id)}>
                   {t`Upravit`}
                 </DropdownMenuItem>

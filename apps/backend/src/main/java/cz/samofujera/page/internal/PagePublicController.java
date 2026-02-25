@@ -18,6 +18,19 @@ class PagePublicController {
         this.pageService = pageService;
     }
 
+    @GetMapping("/product/{productSlug}")
+    ResponseEntity<ApiResponse<PageDtos.PublicPageResponse>> getProductPage(
+            @PathVariable String productSlug,
+            @RequestParam(defaultValue = "false") boolean preview,
+            Authentication authentication) {
+        if (preview && isAdmin(authentication)) {
+            var page = pageService.getPageByProductSlug(productSlug);
+            return ResponseEntity.ok(ApiResponse.ok(page));
+        }
+        var page = pageService.getPublishedPageByProductSlug(productSlug);
+        return ResponseEntity.ok(ApiResponse.ok(page));
+    }
+
     @GetMapping("/{slug}")
     ResponseEntity<ApiResponse<PageDtos.PublicPageResponse>> getPage(
             @PathVariable String slug,

@@ -6,7 +6,9 @@ import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import type { MessageDescriptor } from "@lingui/core";
 import { Loader2 } from "lucide-react";
-import { adminApi } from "@samofujera/api-client";
+import { adminApi, pageAdminApi } from "@samofujera/api-client";
+import { createProductSection, createTextBlock } from "@/components/admin/editor/types";
+import type { SectionPageContent } from "@/components/admin/editor/types";
 import type { ProductType } from "@samofujera/api-client";
 import {
   Button,
@@ -41,7 +43,28 @@ export function ProductCreateDialog({
   const queryClient = useQueryClient();
 
   const createDraftMutation = useMutation({
-    mutationFn: (productType: string) => adminApi.createDraft(productType),
+    mutationFn: async (productType: string) => {
+      const response = await adminApi.createDraft(productType);
+      const product = response.data;
+      // Auto-create a page linked to this product
+      const pageResponse = await pageAdminApi.createPage({
+        slug: product.slug,
+        title: product.title,
+        pageType: "PRODUCT",
+        productId: product.id,
+      });
+      // Populate page with product block + empty text block
+      const content: SectionPageContent = {
+        version: 3,
+        sections: [createProductSection(product.id)],
+      };
+      await pageAdminApi.updatePage(pageResponse.data.id, {
+        slug: product.slug,
+        title: product.title,
+        content: content as unknown as Record<string, unknown>,
+      });
+      return response;
+    },
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       onOpenChange(false);

@@ -11,6 +11,7 @@ interface BlockWrapperProps {
   children: ReactNode | ((requestDelete: () => void) => ReactNode);
   isActive?: boolean;
   hideOutline?: boolean;
+  locked?: boolean;
   onDelete: () => void;
   onAddBefore: (type: ElementType) => void;
   onAddAfter: (type: ElementType) => void;
@@ -20,6 +21,7 @@ export function BlockWrapper({
   children,
   isActive,
   hideOutline,
+  locked,
   onDelete,
   onAddBefore,
   onAddAfter,
@@ -118,8 +120,8 @@ export function BlockWrapper({
     >
       {typeof children === "function" ? children(requestDelete) : children}
 
-      {/* Delete confirmation popup — centered above block */}
-      {confirmingDelete && (
+      {/* Delete confirmation popup — centered above block (hidden for locked blocks) */}
+      {confirmingDelete && !locked && (
         <div className="absolute left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-0.5 rounded-md bg-gray-800 px-2 py-1.5 shadow-lg" style={{ bottom: "calc(100% + 4px)" }}>
           <span style={{ color: "white", fontSize: "10px" }}>Opravdu smazat?</span>
           <button
@@ -137,8 +139,8 @@ export function BlockWrapper({
         </div>
       )}
 
-      {/* Top edge: pin icon + dashed line (line only when not active/editing) */}
-      {isHovered && edgePosition === "top" && !pickerOpen && (
+      {/* Top edge: pin icon + dashed line (hidden for locked blocks) */}
+      {isHovered && edgePosition === "top" && !pickerOpen && !locked && (
         <div
           className="absolute inset-x-0 top-0 flex -translate-y-1/2 items-center"
         >

@@ -179,6 +179,10 @@ public class ProductRepository {
         );
     }
 
+    public void delete(UUID id) {
+        dsl.deleteFrom(PRODUCTS).where(PRODUCTS.ID.eq(id)).execute();
+    }
+
     private org.jooq.SelectFieldOrAsterisk[] productFields() {
         return new org.jooq.SelectFieldOrAsterisk[]{
             PRODUCTS.ID, PRODUCTS.TITLE, PRODUCTS.SLUG, PRODUCTS.DESCRIPTION,

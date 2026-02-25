@@ -17,7 +17,7 @@ public final class PageDtos {
         String metaTitle, String metaDescription, UUID ogImageId,
         int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt,
-        OffsetDateTime scheduledPublishAt
+        OffsetDateTime scheduledPublishAt, UUID productId
     ) {}
 
     public record PageDetailResponse(
@@ -27,7 +27,7 @@ public final class PageDtos {
         boolean noindex, boolean nofollow,
         int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime publishedAt,
-        OffsetDateTime scheduledPublishAt
+        OffsetDateTime scheduledPublishAt, UUID productId
     ) {}
 
     public record PageListResponse(
@@ -38,7 +38,8 @@ public final class PageDtos {
     public record CreatePageRequest(
         @NotBlank @Size(max = 255) String slug,
         @NotBlank @Size(max = 500) String title,
-        String pageType
+        String pageType,
+        UUID productId
     ) {}
 
     // Content comes as raw JSON from frontend — use Object so Jackson deserializes it as a Map/tree
@@ -49,12 +50,12 @@ public final class PageDtos {
         @Size(max = 200) String metaTitle,
         @Size(max = 500) String metaDescription,
         UUID ogImageId,
-        boolean showInNav,
+        Boolean showInNav,
         @Size(max = 300) String metaKeywords,
         @Size(max = 200) String ogTitle,
         @Size(max = 500) String ogDescription,
-        boolean noindex,
-        boolean nofollow
+        Boolean noindex,
+        Boolean nofollow
     ) {}
 
     public record SchedulePublishRequest(@NotNull Instant scheduledPublishAt) {}

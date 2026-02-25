@@ -289,6 +289,7 @@ export function FullPageEditor() {
         <EditorToolbar
           slug={slug}
           title={title}
+          pageType={pageData?.pageType}
           onTitleChange={setTitle}
           status={status}
           scheduledPublishAt={scheduledPublishAt}

@@ -3,6 +3,8 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { ProductsBlockRenderer } from "./ProductsBlockRenderer";
+import { ProductDetailBlockRenderer } from "./ProductDetailBlockRenderer";
+import type { ProductDetailResponse } from "@samofujera/api-client";
 
 interface SerializedNode {
   type: string;
@@ -72,7 +74,12 @@ interface ProductsBlockData extends BlockBase {
   showCategoryFilter: boolean;
 }
 
-type BlockData = TextBlockData | ImageBlockData | SeparatorBlockData | ButtonBlockData | ProductsBlockData;
+interface ProductBlockData extends BlockBase {
+  type: "product";
+  productId: string;
+}
+
+type BlockData = TextBlockData | ImageBlockData | SeparatorBlockData | ButtonBlockData | ProductsBlockData | ProductBlockData;
 
 interface SectionData {
   id: string;
@@ -94,9 +101,10 @@ function getAlignmentClass(format: string | number | undefined): string {
 
 interface PageRendererProps {
   content: Record<string, unknown>;
+  productData?: Record<string, ProductDetailResponse>;
 }
 
-function renderLexicalContent(lexicalState: Record<string, unknown> | null | undefined) {
+export function renderLexicalContent(lexicalState: Record<string, unknown> | null | undefined) {
   if (!lexicalState) return null;
   const root = (lexicalState as Record<string, unknown>).root as { children: SerializedNode[] } | undefined;
   if (!root?.children) return null;
@@ -217,7 +225,7 @@ function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {
   );
 }
 
-export function PageRenderer({ content }: PageRendererProps) {
+export function PageRenderer({ content, productData }: PageRendererProps) {
   const c = content as Record<string, unknown>;
 
   // Version 3: block-based section format
@@ -243,6 +251,12 @@ export function PageRenderer({ content }: PageRendererProps) {
                     return <div key={block.id}>{renderBlock(block)}</div>;
                   case "products":
                     return <div key={block.id} className="products-block"><ProductsBlockRenderer block={block as ProductsBlockData} /></div>;
+                  case "product": {
+                    const productBlock = block as ProductBlockData;
+                    const product = productData?.[productBlock.productId];
+                    if (!product) return null;
+                    return <div key={block.id}><ProductDetailBlockRenderer product={product} /></div>;
+                  }
                   default:
                     return null;
                 }

@@ -34,6 +34,12 @@ class PageAdminController {
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
+    @GetMapping("/by-product/{productId}")
+    ResponseEntity<ApiResponse<PageDtos.PageDetailResponse>> getPageByProduct(@PathVariable UUID productId) {
+        var detail = pageService.getPageByProductId(productId);
+        return ResponseEntity.ok(ApiResponse.ok(detail));
+    }
+
     @GetMapping("/{id}")
     ResponseEntity<ApiResponse<PageDtos.PageDetailResponse>> getPage(@PathVariable UUID id) {
         var detail = pageService.getPageById(id);

@@ -35,4 +35,9 @@ export const catalogApi = {
     apiFetch<ApiResponse<ProductDetailResponse>>(
       `/api/catalog/products/${slug}`,
     ),
+
+  getProductPreview: (slug: string) =>
+    apiFetch<ApiResponse<ProductDetailResponse>>(
+      `/api/catalog/products/${slug}?preview=true`,
+    ),
 };

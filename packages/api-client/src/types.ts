@@ -434,6 +434,7 @@ export interface PageResponse {
   updatedAt: string;
   publishedAt: string | null;
   scheduledPublishAt: string | null;
+  productId: string | null;
 }
 
 export interface PageDetailResponse extends PageResponse {
@@ -457,6 +458,7 @@ export interface CreatePageRequest {
   slug: string;
   title: string;
   pageType?: string;
+  productId?: string;
 }
 
 export interface UpdatePageRequest {

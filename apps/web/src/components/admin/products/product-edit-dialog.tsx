@@ -9,8 +9,9 @@ import type { MessageDescriptor } from "@lingui/core";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
-import { adminApi, catalogApi, imageApi } from "@samofujera/api-client";
+import { Loader2, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { adminApi, catalogApi, imageApi, pageAdminApi } from "@samofujera/api-client";
 import type {
   ProductType,
   ProductImageResponse,
@@ -566,6 +567,13 @@ interface ProductEditDialogProps {
 export function ProductEditDialog({ productId, open, onOpenChange }: ProductEditDialogProps) {
   const { _ } = useLingui();
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const pageQuery = useQuery({
+    queryKey: ["admin", "pages", "by-product", productId],
+    queryFn: () => pageAdminApi.getPageByProduct(productId!),
+    enabled: !!productId,
+  });
 
   const [slugManual, setSlugManual] = useState(false);
   const [initialDescription, setInitialDescription] = useState<SerializedEditorState | null>(null);
@@ -638,7 +646,8 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
         ogImageUrl: product.ogImageUrl ?? "",
         variantCategoryName: product.variantCategoryName ?? "",
       });
-      setSlugManual(true);
+      // Keep auto-generation active for draft slugs so title changes update the slug
+      setSlugManual(!product.slug.startsWith("draft-"));
 
       // Parse description as Lexical editor state for PHYSICAL products
       if (product.productType === "PHYSICAL" && product.description) {
@@ -707,6 +716,20 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
       });
     },
     onSuccess: async () => {
+      // Sync page slug/title with product
+      const values = form.getValues();
+      const page = pageQuery.data?.data;
+      if (page && (page.slug !== values.slug || page.title !== values.title)) {
+        try {
+          await pageAdminApi.updatePage(page.id, {
+            slug: values.slug,
+            title: values.title,
+            content: page.content,
+          });
+        } catch {
+          // Non-critical — page sync failure shouldn't block product save
+        }
+      }
       await invalidateProduct();
       onOpenChange(false);
     },
@@ -746,8 +769,25 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t`Upravit produkt`}</DialogTitle>
-          <DialogDescription>{typeLabelStr}</DialogDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle>{t`Upravit produkt`}</DialogTitle>
+              <DialogDescription>{typeLabelStr}</DialogDescription>
+            </div>
+            {pageQuery.data?.data?.id && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onOpenChange(false);
+                  router.push(`/admin/stranky/${pageQuery.data!.data.id}/edit`);
+                }}
+              >
+                <FileText className="mr-1.5 h-3.5 w-3.5" />
+                {t`Upravit stránku`}
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         {productQuery.isLoading ? (

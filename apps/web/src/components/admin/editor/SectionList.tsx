@@ -20,6 +20,7 @@ import {
   SeparatorBlockEditor,
   ButtonBlockEditor,
   ProductsBlockEditor,
+  ProductBlockEditor,
 } from "./blocks";
 import type { SectionEditorHandle } from "./PageEditor";
 
@@ -247,6 +248,7 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                   key={block.id}
                   isActive={activeBlockId === block.id}
                   hideOutline={block.type === "image"}
+                  locked={block.type === "product"}
                   onDelete={() => handleDeleteBlock(sectionIndex, blockIndex)}
                   onAddBefore={(type) => handleAddBlockBefore(sectionIndex, blockIndex, type)}
                   onAddAfter={(type) => handleAddBlock(sectionIndex, blockIndex, type)}
@@ -325,6 +327,9 @@ export const SectionList = forwardRef<SectionListHandle, SectionListProps>(
                             else if (activeBlockId === block.id) setActiveBlockId(null);
                           }}
                         />
+                      )}
+                      {block.type === "product" && (
+                        <ProductBlockEditor block={block} />
                       )}
                     </>
                   )}

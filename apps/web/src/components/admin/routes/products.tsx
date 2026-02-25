@@ -3,8 +3,9 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Trash2 } from "lucide-react";
 import { adminApi } from "@samofujera/api-client";
+import type { ProductResponse } from "@samofujera/api-client";
 import { Button } from "@samofujera/ui";
 import { DataTable } from "@/components/data-table";
 import type { FilterConfig } from "@/components/data-table";
@@ -25,6 +26,13 @@ export function ProductsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminApi.deleteProduct(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: string[]) => adminApi.deleteProducts(ids),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
     },
@@ -92,6 +100,34 @@ export function ProductsPage() {
           searchKey="title"
           searchPlaceholder={t`Filtrovat produkty...`}
           filters={filters}
+          enableRowSelection
+          renderBulkActions={(selectedRows: ProductResponse[], clearSelection) => (
+            <div className="flex items-center gap-3 rounded-md border border-[var(--border)] bg-[var(--muted)]/50 px-4 py-2">
+              <span className="text-sm text-[var(--muted-foreground)]">
+                {t`${selectedRows.length} vybráno`}
+              </span>
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={bulkDeleteMutation.isPending}
+                onClick={() => {
+                  if (window.confirm(t`Opravdu chcete smazat ${selectedRows.length} produktů?`)) {
+                    bulkDeleteMutation.mutate(
+                      selectedRows.map((r) => r.id),
+                      { onSuccess: () => clearSelection() },
+                    );
+                  }
+                }}
+              >
+                {bulkDeleteMutation.isPending ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                {t`Smazat vybrané`}
+              </Button>
+            </div>
+          )}
         />
       )}
 

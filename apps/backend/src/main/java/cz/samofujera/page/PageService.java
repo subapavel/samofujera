@@ -86,9 +86,50 @@ public class PageService {
         var pageType = request.pageType() != null ? request.pageType() : "CUSTOM";
         var id = pageRepository.create(
             request.slug(), request.title(), pageType,
-            JSONB.valueOf("{}"), null, null, null, createdBy
+            JSONB.valueOf("{}"), null, null, null, createdBy, request.productId()
         );
         return getPageById(id);
+    }
+
+    public PageDtos.PageDetailResponse getPageByProductId(UUID productId) {
+        var row = pageRepository.findByProductId(productId)
+            .orElseThrow(() -> new NotFoundException("Page not found for product"));
+        return toDetailResponse(row);
+    }
+
+    public PageDtos.PublicPageResponse getPublishedPageByProductSlug(String productSlug) {
+        var row = pageRepository.findByProductSlug(productSlug)
+            .orElseThrow(() -> new NotFoundException("Page not found for product"));
+        if (!"PUBLISHED".equals(row.status())) {
+            throw new NotFoundException("Page not found");
+        }
+        if (row.publishedRevisionId() != null) {
+            var revision = pageRevisionRepository.findById(row.publishedRevisionId())
+                .orElseThrow(() -> new NotFoundException("Published revision not found"));
+            return new PageDtos.PublicPageResponse(
+                row.id(), revision.slug(), revision.title(), rawContent(revision.content()),
+                revision.metaTitle(), revision.metaDescription(),
+                revision.metaKeywords(), revision.ogTitle(), revision.ogDescription(),
+                resolveOgImageUrl(revision.ogImageId()), revision.noindex(), revision.nofollow()
+            );
+        }
+        return new PageDtos.PublicPageResponse(
+            row.id(), row.slug(), row.title(), rawContent(row.content()),
+            row.metaTitle(), row.metaDescription(),
+            row.metaKeywords(), row.ogTitle(), row.ogDescription(),
+            resolveOgImageUrl(row.ogImageId()), row.noindex(), row.nofollow()
+        );
+    }
+
+    public PageDtos.PublicPageResponse getPageByProductSlug(String productSlug) {
+        var row = pageRepository.findByProductSlug(productSlug)
+            .orElseThrow(() -> new NotFoundException("Page not found for product"));
+        return new PageDtos.PublicPageResponse(
+            row.id(), row.slug(), row.title(), rawContent(row.content()),
+            row.metaTitle(), row.metaDescription(),
+            row.metaKeywords(), row.ogTitle(), row.ogDescription(),
+            resolveOgImageUrl(row.ogImageId()), row.noindex(), row.nofollow()
+        );
     }
 
     @Transactional
@@ -100,8 +141,8 @@ public class PageService {
             : JSONB.valueOf("{}");
         pageRepository.update(id, request.slug(), request.title(), contentJsonb,
             request.metaTitle(), request.metaDescription(), request.ogImageId(),
-            request.showInNav(), request.metaKeywords(), request.ogTitle(),
-            request.ogDescription(), request.noindex(), request.nofollow());
+            Boolean.TRUE.equals(request.showInNav()), request.metaKeywords(), request.ogTitle(),
+            request.ogDescription(), Boolean.TRUE.equals(request.noindex()), Boolean.TRUE.equals(request.nofollow()));
         return getPageById(id);
     }
 
@@ -135,7 +176,17 @@ public class PageService {
         if ("SYSTEM".equals(page.pageType())) {
             throw new IllegalArgumentException("System pages cannot be deleted");
         }
+        if ("PRODUCT".equals(page.pageType())) {
+            throw new IllegalArgumentException("Product pages cannot be deleted directly");
+        }
         pageRepository.delete(id);
+    }
+
+    @Transactional
+    public void deletePageByProductId(UUID productId) {
+        pageRepository.findByProductId(productId).ifPresent(page ->
+            pageRepository.delete(page.id())
+        );
     }
 
     @Transactional
@@ -201,7 +252,7 @@ public class PageService {
             row.id(), row.slug(), row.title(), row.status(), row.pageType(),
             null, null, null, row.sortOrder(), row.showInNav(),
             row.createdAt(), row.updatedAt(), row.publishedAt(),
-            row.scheduledPublishAt()
+            row.scheduledPublishAt(), null
         );
     }
 
@@ -213,7 +264,7 @@ public class PageService {
             row.noindex(), row.nofollow(),
             row.sortOrder(), row.showInNav(),
             row.createdAt(), row.updatedAt(), row.publishedAt(),
-            row.scheduledPublishAt()
+            row.scheduledPublishAt(), row.productId()
         );
     }
 

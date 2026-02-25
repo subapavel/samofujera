@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static cz.samofujera.generated.jooq.Tables.PAGES;
+import static cz.samofujera.generated.jooq.Tables.PRODUCTS;
 
 @Repository
 public class PageRepository {
@@ -30,7 +31,8 @@ public class PageRepository {
         int sortOrder, boolean showInNav,
         OffsetDateTime createdAt, OffsetDateTime updatedAt,
         OffsetDateTime publishedAt, UUID createdBy,
-        OffsetDateTime scheduledPublishAt, UUID publishedRevisionId
+        OffsetDateTime scheduledPublishAt, UUID publishedRevisionId,
+        UUID productId
     ) {}
 
     public record PageListRow(
@@ -48,21 +50,10 @@ public class PageRepository {
                 PAGES.NOINDEX, PAGES.NOFOLLOW,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
-                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID)
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID, PAGES.PRODUCT_ID)
             .from(PAGES)
             .where(PAGES.ID.eq(id))
-            .fetchOptional(r -> new PageRow(
-                r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
-                r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
-                r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
-                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
-                r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
-                r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
-                r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
-                r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
-                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
-                r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID)
-            ));
+            .fetchOptional(this::toPageRow);
     }
 
     public Optional<PageRow> findBySlug(String slug) {
@@ -73,21 +64,10 @@ public class PageRepository {
                 PAGES.NOINDEX, PAGES.NOFOLLOW,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
-                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID)
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID, PAGES.PRODUCT_ID)
             .from(PAGES)
             .where(PAGES.SLUG.eq(slug))
-            .fetchOptional(r -> new PageRow(
-                r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
-                r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
-                r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
-                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
-                r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
-                r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
-                r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
-                r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
-                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
-                r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID)
-            ));
+            .fetchOptional(this::toPageRow);
     }
 
     public List<PageListRow> findAll(String status, String type, String search, int page, int limit) {
@@ -117,8 +97,9 @@ public class PageRepository {
     }
 
     public UUID create(String slug, String title, String pageType, JSONB content,
-                       String metaTitle, String metaDescription, UUID ogImageId, UUID createdBy) {
-        return dsl.insertInto(PAGES)
+                       String metaTitle, String metaDescription, UUID ogImageId, UUID createdBy,
+                       UUID productId) {
+        var insert = dsl.insertInto(PAGES)
             .set(PAGES.SLUG, slug)
             .set(PAGES.TITLE, title)
             .set(PAGES.PAGE_TYPE, pageType)
@@ -126,8 +107,11 @@ public class PageRepository {
             .set(PAGES.META_TITLE, metaTitle)
             .set(PAGES.META_DESCRIPTION, metaDescription)
             .set(PAGES.OG_IMAGE_ID, ogImageId)
-            .set(PAGES.CREATED_BY, createdBy)
-            .returning(PAGES.ID)
+            .set(PAGES.CREATED_BY, createdBy);
+        if (productId != null) {
+            insert = insert.set(PAGES.PRODUCT_ID, productId);
+        }
+        return insert.returning(PAGES.ID)
             .fetchOne()
             .getId();
     }
@@ -180,6 +164,35 @@ public class PageRepository {
             .execute();
     }
 
+    public Optional<PageRow> findByProductSlug(String productSlug) {
+        return dsl.select(
+                PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
+                PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
+                PAGES.OG_IMAGE_ID, PAGES.META_KEYWORDS, PAGES.OG_TITLE, PAGES.OG_DESCRIPTION,
+                PAGES.NOINDEX, PAGES.NOFOLLOW,
+                PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
+                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID, PAGES.PRODUCT_ID)
+            .from(PAGES)
+            .join(PRODUCTS).on(PAGES.PRODUCT_ID.eq(PRODUCTS.ID))
+            .where(PRODUCTS.SLUG.eq(productSlug))
+            .fetchOptional(this::toPageRow);
+    }
+
+    public Optional<PageRow> findByProductId(UUID productId) {
+        return dsl.select(
+                PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
+                PAGES.CONTENT, PAGES.META_TITLE, PAGES.META_DESCRIPTION,
+                PAGES.OG_IMAGE_ID, PAGES.META_KEYWORDS, PAGES.OG_TITLE, PAGES.OG_DESCRIPTION,
+                PAGES.NOINDEX, PAGES.NOFOLLOW,
+                PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
+                PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID, PAGES.PRODUCT_ID)
+            .from(PAGES)
+            .where(PAGES.PRODUCT_ID.eq(productId))
+            .fetchOptional(this::toPageRow);
+    }
+
     public List<PageRow> findDueForPublish(OffsetDateTime now) {
         return dsl.select(
                 PAGES.ID, PAGES.SLUG, PAGES.TITLE, PAGES.STATUS, PAGES.PAGE_TYPE,
@@ -188,22 +201,11 @@ public class PageRepository {
                 PAGES.NOINDEX, PAGES.NOFOLLOW,
                 PAGES.SORT_ORDER, PAGES.SHOW_IN_NAV,
                 PAGES.CREATED_AT, PAGES.UPDATED_AT, PAGES.PUBLISHED_AT, PAGES.CREATED_BY,
-                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID)
+                PAGES.SCHEDULED_PUBLISH_AT, PAGES.PUBLISHED_REVISION_ID, PAGES.PRODUCT_ID)
             .from(PAGES)
             .where(PAGES.SCHEDULED_PUBLISH_AT.le(now))
             .and(PAGES.STATUS.eq("DRAFT"))
-            .fetch(r -> new PageRow(
-                r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
-                r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
-                r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
-                r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
-                r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
-                r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
-                r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
-                r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
-                r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
-                r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID)
-            ));
+            .fetch(this::toPageRow);
     }
 
     public void setPublishedRevisionId(UUID id, UUID revisionId) {
@@ -219,7 +221,8 @@ public class PageRepository {
     }
 
     private Condition buildCondition(String status, String type, String search) {
-        Condition condition = DSL.trueCondition();
+        // Exclude PRODUCT pages from the admin pages list by default
+        Condition condition = PAGES.PAGE_TYPE.ne("PRODUCT");
         if (status != null && !status.isBlank()) {
             condition = condition.and(PAGES.STATUS.eq(status));
         }
@@ -233,5 +236,21 @@ public class PageRepository {
             );
         }
         return condition;
+    }
+
+    private PageRow toPageRow(org.jooq.Record r) {
+        return new PageRow(
+            r.get(PAGES.ID), r.get(PAGES.SLUG), r.get(PAGES.TITLE),
+            r.get(PAGES.STATUS), r.get(PAGES.PAGE_TYPE),
+            r.get(PAGES.CONTENT), r.get(PAGES.META_TITLE), r.get(PAGES.META_DESCRIPTION),
+            r.get(PAGES.OG_IMAGE_ID), r.get(PAGES.META_KEYWORDS),
+            r.get(PAGES.OG_TITLE), r.get(PAGES.OG_DESCRIPTION),
+            r.get(PAGES.NOINDEX), r.get(PAGES.NOFOLLOW),
+            r.get(PAGES.SORT_ORDER), r.get(PAGES.SHOW_IN_NAV),
+            r.get(PAGES.CREATED_AT), r.get(PAGES.UPDATED_AT),
+            r.get(PAGES.PUBLISHED_AT), r.get(PAGES.CREATED_BY),
+            r.get(PAGES.SCHEDULED_PUBLISH_AT), r.get(PAGES.PUBLISHED_REVISION_ID),
+            r.get(PAGES.PRODUCT_ID)
+        );
     }
 }

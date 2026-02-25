@@ -2,6 +2,7 @@ package cz.samofujera.catalog;
 
 import cz.samofujera.catalog.internal.*;
 import cz.samofujera.image.ImageService;
+import cz.samofujera.page.PageService;
 import cz.samofujera.shared.exception.NotFoundException;
 import cz.samofujera.shared.storage.StorageService;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class CatalogService {
     private final ProductCategoryAssignmentRepository assignmentRepository;
     private final ImageService imageService;
     private final ProductContentService productContentService;
+    private final PageService pageService;
 
     CatalogService(CategoryRepository categoryRepository, ProductRepository productRepository,
                    ProductPriceRepository productPriceRepository,
@@ -38,7 +40,8 @@ public class CatalogService {
                    StorageService storageService,
                    ProductCategoryAssignmentRepository assignmentRepository,
                    ImageService imageService,
-                   ProductContentService productContentService) {
+                   ProductContentService productContentService,
+                   PageService pageService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.productPriceRepository = productPriceRepository;
@@ -52,6 +55,7 @@ public class CatalogService {
         this.assignmentRepository = assignmentRepository;
         this.imageService = imageService;
         this.productContentService = productContentService;
+        this.pageService = pageService;
     }
 
     // --- Category methods ---
@@ -199,6 +203,15 @@ public class CatalogService {
     public CatalogDtos.ProductDetailResponse getProductBySlug(String slug) {
         var product = productRepository.findBySlug(slug)
             .orElseThrow(() -> new NotFoundException("Product not found"));
+        if (!"ACTIVE".equals(product.status())) {
+            throw new NotFoundException("Product not found");
+        }
+        return buildDetailResponse(product);
+    }
+
+    public CatalogDtos.ProductDetailResponse getProductBySlugNoFilter(String slug) {
+        var product = productRepository.findBySlug(slug)
+            .orElseThrow(() -> new NotFoundException("Product not found"));
         return buildDetailResponse(product);
     }
 
@@ -299,6 +312,17 @@ public class CatalogService {
         productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Product not found"));
         productRepository.updateStatus(id, "ARCHIVED");
+    }
+
+    @Transactional
+    public void deleteProducts(List<UUID> ids) {
+        for (var id : ids) {
+            // Delete associated page first (pages.product_id has ON DELETE SET NULL, but we want full cleanup)
+            pageService.deletePageByProductId(id);
+            // Clean up non-cascading FKs before deleting the product
+            assignmentRepository.removeAllForProduct(id);
+            productRepository.delete(id);
+        }
     }
 
     // --- Price lookup (used by order module) ---
