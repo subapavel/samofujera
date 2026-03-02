@@ -46,7 +46,7 @@ class EmailService {
         var html = loadTemplate(templateKey, locale);
 
         if (override != null && override.getCustomBodyHtml() != null) {
-            html = override.getCustomBodyHtml();
+            html = html.replace("</body>", override.getCustomBodyHtml() + "</body>");
         }
 
         for (var entry : vars.entrySet()) {
@@ -77,11 +77,11 @@ class EmailService {
         var html = loadTemplate(templateKey, locale);
 
         if (override != null && override.getCustomBodyHtml() != null) {
-            html = override.getCustomBodyHtml();
+            html = html.replace("</body>", override.getCustomBodyHtml() + "</body>");
         }
 
         for (var entry : sampleVars.entrySet()) {
-            html = html.replace("{{" + entry.getKey() + "}}", entry.getValue());
+            html = html.replace("{{" + entry.getKey() + "}}", entry.getValue() != null ? entry.getValue() : "");
         }
         return html;
     }
