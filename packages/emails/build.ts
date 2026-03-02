@@ -21,13 +21,18 @@ const templates = [
   { name: "account-deleted", component: AccountDeleted },
   { name: "order-confirmation", component: OrderConfirmation },
   { name: "digital-delivery", component: DigitalDelivery },
-];
+] as const;
+
+const locales = ["cs", "sk"] as const;
 
 async function build() {
   for (const { name, component: Component } of templates) {
-    const html = await render(React.createElement(Component));
-    writeFileSync(`${OUTPUT_DIR}/${name}.html`, html);
-    console.log(`built ${name}.html`);
+    for (const locale of locales) {
+      const html = await render(React.createElement(Component as any, { locale }));
+      const outputPath = `${OUTPUT_DIR}/${name}.${locale}.html`;
+      writeFileSync(outputPath, html);
+      console.log(`built ${name}.${locale}.html`);
+    }
   }
 }
 
