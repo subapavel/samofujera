@@ -13,32 +13,87 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+msgid "—"
+msgstr ""
+
+#. placeholder {0}: data.totalItems
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "{0, plural, one {# obrázek celkem} few {# obrázky celkem} many {# obrázků celkem} other {# obrázků celkem}}"
+msgstr ""
+
+#. placeholder {0}: selectedValues.size
+#: ../../apps/web/src/components/data-table/data-table-faceted-filter.tsx
+msgid "{0, plural, one {# vybráno} few {# vybrány} many {# vybráno} other {# vybráno}}"
+msgstr ""
+
+#. placeholder {0}: selectedIds.size
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "{0, plural, one {Opravdu chcete smazat # vybraný obrázek?} few {Opravdu chcete smazat # vybrané obrázky?} many {Opravdu chcete smazat # vybraných obrázků?} other {Opravdu chcete smazat # vybraných obrázků?}}"
+msgstr ""
+
+#. placeholder {0}: selectedIds.size
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "{0, plural, one {Vybrán # obrázek} few {Vybrány # obrázky} many {Vybráno # obrázků} other {Vybráno # obrázků}}"
+msgstr ""
+
+#. placeholder {0}: selectedRows.length
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "{0} vybráno"
+msgstr ""
+
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "{type}"
 msgstr "{type}"
 
 #: ../../apps/web/src/components/dashboard/app-sidebar.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/nav/AdminBar.tsx
 msgid "Administrace"
 msgstr "Administrácia"
 
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Administrátor"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Akce"
 msgstr "Akcie"
 
-#: ../../apps/web/src/components/customer/routes/sessions.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Aktivní"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+#: ../../apps/web/src/components/customer/settings-layout.tsx
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
 msgid "Aktivní sezení"
 msgstr "Aktívne relácie"
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Aktivní uživatelé"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Aktualizace varianty se nezdařila. Zkuste to prosím znovu."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
 msgid "Aktualizováno"
 msgstr "Aktualizované"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+msgid "Aktuální obsah stránky bude nahrazen obsahem z této verze. Tuto akci nelze vrátit zpět."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
 msgid "Alt text"
 msgstr "Alt text"
 
@@ -50,54 +105,70 @@ msgstr "Áno, prihlásiť sa tu"
 msgid "Ano, smazat účet"
 msgstr "Áno, zmazať účet"
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Ano, zrušit"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Archivováno"
 msgstr "Archivované"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "Audio"
 msgstr "Audio"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "Audio/Video"
 msgstr "Audio/Video"
 
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
-msgid "Budete přesměrováni na bezpečnou platební bránu Stripe"
-msgstr "Budete presmerovaní na bezpečnú platobnú bránu Stripe"
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+msgid "Automaticky generovano z nazvu. Muzete upravit rucne."
+msgstr ""
 
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+msgid "automaticky-z-nazvu"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Čeká na platbu"
 msgstr "Čaká na platbu"
 
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/admin/routes/orders.tsx
 msgid "Čekající"
 msgstr "Čakajúci"
 
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
-#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
-#: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Celkem"
 msgstr "Celkom"
 
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Celkové tržby"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 msgid "Cena"
 msgstr "Cena"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Cena s DPH"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Ceny"
 msgstr "Ceny"
 
@@ -105,27 +176,45 @@ msgstr "Ceny"
 msgid "Chcete se přihlásit zde a odhlásit druhé zařízení?"
 msgstr "Chcete sa prihlásiť tu a odhlásiť druhé zariadenie?"
 
+#: ../../apps/web/src/components/admin/images/UploadProgress.tsx
+msgid "Chyba"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Chybí alt text — důležité pro přístupnost a SEO."
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Číslo zásilky"
 msgstr "Číslo zásielky"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/customer/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Členství"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
 msgid "Další"
 msgstr "Ďalší"
 
+#: ../../apps/web/src/components/data-table/data-table-pagination.tsx
+msgid "Další stránka"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
-#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
-#: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Datum"
 msgstr "Dátum"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Delka"
+msgstr ""
+
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
 msgid "Detail"
 msgstr "Detail"
 
@@ -133,18 +222,15 @@ msgstr "Detail"
 msgid "Detail objednávky"
 msgstr "Detail objednávky"
 
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Detail obrázku"
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Digitální"
 msgstr "Digitálny"
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Digitální soubory ke stažení"
-msgstr "Digitálne súbory na stiahnutie"
-
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Dokumenty"
-msgstr "Dokumenty"
-
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Doprava"
 msgstr "Doprava"
@@ -163,21 +249,26 @@ msgstr "Doručenie"
 msgid "Doručeno"
 msgstr "Doručené"
 
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Dostupnost"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Draft"
 msgstr "Draft"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "E-book"
 msgstr "E-book"
 
-#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
 #: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
 #: ../../apps/web/src/components/auth/LoginForm.tsx
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
@@ -189,53 +280,104 @@ msgstr "E-mail"
 msgid "E-mail odeslán"
 msgstr "E-mail odoslaný"
 
-#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
+msgid "Emaily"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Filtrovat kategorie..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Filtrovat objednávky..."
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Filtrovat produkty..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Filtrovat stranky..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+msgid "Filtrovat uživatele..."
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-toolbar.tsx
+msgid "Filtrovat..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Funkce (JSON)"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Fyzický"
 msgstr "Fyzický"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "Fyzický produkt"
 msgstr "Fyzický produkt"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Galerie"
 msgstr "Galéria"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Galerie obrázků"
 msgstr "Galéria obrázkov"
 
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
 #: ../../apps/web/src/components/auth/LoginForm.tsx
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
 msgid "Heslo"
 msgstr "Heslo"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/editor/SettingsDrawer.tsx
+msgid "Historie"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Hledat podle názvu..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/dashboard/search-trigger.tsx
 msgid "Hledat..."
 msgstr "Hľadať..."
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Hmotný produkt s variantami a skladem"
-msgstr "Hmotný produkt s variantmi a skladom"
+#: ../../apps/web/src/components/admin/images/UploadProgress.tsx
+msgid "Hotovo"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+msgid "Impersonaci se nepodařilo spustit."
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Informace o objednávce"
 msgstr "Informácie o objednávke"
 
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
 msgid "Jan Novák"
 msgstr "Ján Novák"
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Jednorázová online událost"
-msgstr "Jednorazová online udalosť"
+#: ../../apps/web/src/components/customer/routes/profile.tsx
+msgid "Jazyk"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+msgid "Jazykové verze"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Jednotková cena"
@@ -245,7 +387,8 @@ msgstr "Jednotková cena"
 msgid "jiné zařízení"
 msgstr "iné zariadenie"
 
-#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
@@ -256,11 +399,14 @@ msgstr "Meno"
 msgid "K tomuto produktu nemáte přístup."
 msgstr "K tomuto produktu nemáte prístup."
 
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-list.tsx
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 #: ../../apps/web/src/components/catalog/CategoryFilter.tsx
 #: ../../apps/web/src/components/catalog/CategoryFilter.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Kategorie"
 msgstr "Kategórie"
@@ -273,21 +419,37 @@ msgstr "Kategória bola úspešne uložená."
 msgid "Kategorie nenalezena."
 msgstr "Kategória nenájdená."
 
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Kategorie variant"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Klicova slova"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
 #: ../../apps/web/src/components/customer/routes/library.tsx
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 msgid "Knihovna"
 msgstr "Knižnica"
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
 msgid "Koncept"
 msgstr "Koncept"
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Konec období"
+msgstr ""
 
 #: ../../apps/web/src/components/catalog/ProductDetail.tsx
 msgid "Koupit"
 msgstr "Kúpiť"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Krátký popis"
 msgstr "Krátky popis"
 
@@ -295,32 +457,27 @@ msgstr "Krátky popis"
 msgid "Máte aktivní sezení na zařízení:"
 msgstr "Máte aktívnu reláciu na zariadení:"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
 #: ../../apps/web/src/components/customer/routes/delete-account.tsx
 msgid "Mazání..."
 msgstr "Mazanie..."
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Mažu..."
+msgstr ""
+
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
-#: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Média"
 msgstr "Médiá"
 
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-msgid "Měna"
-msgstr "Mena"
-
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
 msgid "Meta popis"
 msgstr "Meta popis"
 
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
 msgid "Meta titulek"
 msgstr "Meta titulok"
 
@@ -333,33 +490,35 @@ msgstr "Miesto"
 msgid "Množství"
 msgstr "Množstvo"
 
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Momentálně nejsou dostupné žádné členské plány."
+msgstr ""
+
 #: ../../apps/web/src/components/dashboard/app-sidebar.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 msgid "Můj účet"
 msgstr "Môj účet"
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Na objednavku"
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-pagination.tsx
+msgid "Na poslední stránku"
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-pagination.tsx
+msgid "Na první stránku"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 msgid "Načítání kategorie..."
 msgstr "Načítavanie kategórie..."
 
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
-msgid "Načítání kategorií..."
-msgstr "Načítavanie kategórií..."
-
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-msgid "Načítání objednávek..."
-msgstr "Načítavanie objednávok..."
-
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Načítání objednávky..."
 msgstr "Načítavanie objednávky..."
-
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Načítání produktu..."
-msgstr "Načítavanie produktu..."
-
-#: ../../apps/web/src/components/admin/routes/products.tsx
-msgid "Načítání produktů..."
-msgstr "Načítavanie produktov..."
 
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 msgid "Načítání profilu..."
@@ -369,78 +528,159 @@ msgstr "Načítavanie profilu..."
 msgid "Načítání sezení..."
 msgstr "Načítavanie relácií..."
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Načítání stránek..."
-msgstr "Načítavanie stránok..."
-
-#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
 msgid "Načítání..."
 msgstr "Načítavanie..."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Náhled"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Náhled emailu"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Nahled ve vyhledavaci"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Nahráno"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Nahrát"
 msgstr "Nahrať"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Nahrát obrázek"
 msgstr "Nahrať obrázok"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Nahrát obrázky"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "Nahrát soubor"
 msgstr "Nahrať súbor"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Nahrát soubory"
-msgstr "Nahrať súbory"
-
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 msgid "Nahrávám..."
 msgstr "Nahrávam..."
+
+#: ../../apps/web/src/components/admin/images/UploadProgress.tsx
+msgid "Nahrávání"
+msgstr ""
 
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
 msgid "Nákupy"
 msgstr "Nákupy"
 
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+msgid "Naposledy upraveno"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/podpora-prodeje-tab.tsx
+msgid "napr. Novinka"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Např. premium"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Např. Premium"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "např. Velikosti"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/settings-layout.tsx
+msgid "Nastavení"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Nastavení variant"
+msgstr ""
+
 #: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
 msgid "Nastavit nové heslo"
 msgstr "Nastaviť nové heslo"
 
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Nastavte, která část obrázku bude viditelná v cílovém formátu."
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/dashboard.tsx
 #: ../../apps/web/src/components/customer/routes/dashboard.tsx
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Nástěnka"
 msgstr "Nástenka"
 
+#: ../../apps/web/src/components/admin/categories/categories-columns.tsx
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+msgid "Nazev"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
 msgid "Název"
 msgstr "Názov"
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Název stránky"
-msgstr "Názov stránky"
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Neaktivní"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "nebo klikněte pro výběr"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/LoginForm.tsx
 msgid "Nemáte účet?"
 msgstr "Nemáte účet?"
 
+#: ../../apps/web/src/components/data-table/data-table-faceted-filter.tsx
+msgid "Nenalezeno."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Neni skladem"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Není skladem"
+msgstr ""
+
 #: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
 msgid "Neplatný nebo chybějící odkaz pro obnovení hesla."
 msgstr "Neplatný alebo chýbajúci odkaz na obnovenie hesla."
 
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Nepodařilo se načíst informace o předplatném. Zkuste to prosím znovu."
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/category-list.tsx
-msgid "Nepodařilo se načíst kategorie. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa načítať kategórie. Skúste to prosím znova."
+msgid "Nepodarilo se nacist kategorie. Zkuste to prosim znovu."
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 msgid "Nepodařilo se načíst kategorii. Zkuste to prosím znovu."
@@ -460,9 +700,17 @@ msgstr "Nepodarilo sa načítať objednávku. Skúste to prosím znova."
 msgid "Nepodařilo se načíst objednávky. Zkuste to prosím znovu."
 msgstr "Nepodarilo sa načítať objednávky. Skúste to prosím znova."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Nepodařilo se načíst produkt. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa načítať produkt. Skúste to prosím znova."
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Nepodařilo se načíst obrázky. Zkuste to prosím znovu."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Nepodařilo se načíst plány. Zkuste to prosím znovu."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+msgid "Nepodařilo se načíst produkt."
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/catalog/CatalogContent.tsx
@@ -473,27 +721,27 @@ msgstr "Nepodarilo sa načítať produkty. Skúste to prosím znova."
 msgid "Nepodařilo se načíst profil. Zkuste to prosím znovu."
 msgstr "Nepodarilo sa načítať profil. Skúste to prosím znova."
 
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+msgid "Nepodařilo se načíst šablony. Zkuste to prosím znovu."
+msgstr ""
+
 #: ../../apps/web/src/components/customer/routes/sessions.tsx
 msgid "Nepodařilo se načíst sezení. Zkuste to prosím znovu."
 msgstr "Nepodarilo sa načítať relácie. Skúste to prosím znova."
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Nepodařilo se načíst soubory. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa načítať súbory. Skúste to prosím znova."
-
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Nepodařilo se načíst stránky. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa načítať stránky. Skúste to prosím znova."
+msgid "Nepodarilo se nacist stranky. Zkuste to prosim znovu."
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Nepodařilo se nahrát soubor. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa nahrať súbor. Skúste to prosím znova."
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Nepodařilo se odeslat. Zkuste to prosím znovu."
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "Nepodařilo se přidat médium."
 msgstr "Nepodarilo sa pridať médium."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Nepodařilo se přidat obrázek. Zkuste to prosím znovu."
 msgstr "Nepodarilo sa pridať obrázok. Skúste to prosím znova."
 
@@ -510,8 +758,9 @@ msgstr "Nepodarilo sa stiahnuť súbor. Skúste to znova."
 msgid "Nepodařilo se uložit údaje o dopravě."
 msgstr "Nepodarilo sa uložiť údaje o doprave."
 
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 msgid "Nepodařilo se uložit změny. Zkuste to prosím znovu."
 msgstr "Nepodarilo sa uložiť zmeny. Skúste to prosím znova."
@@ -520,40 +769,69 @@ msgstr "Nepodarilo sa uložiť zmeny. Skúste to prosím znova."
 msgid "Nepodařilo se vytvořit kategorii. Zkuste to prosím znovu."
 msgstr "Nepodarilo sa vytvoriť kategóriu. Skúste to prosím znova."
 
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
-msgid "Nepodařilo se vytvořit objednávku. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa vytvoriť objednávku. Skúste to prosím znova."
-
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Nepodařilo se vytvořit produkt. Zkuste to prosím znovu."
-msgstr "Nepodarilo sa vytvoriť produkt. Skúste to prosím znova."
-
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Nepřiřazeno"
-msgstr "Nepriradené"
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Nepřiřazené"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/LoginForm.tsx
 msgid "Nesprávný e-mail nebo heslo."
 msgstr "Nesprávny e-mail alebo heslo."
 
+#: ../../apps/web/src/components/admin/editor/EditorToolbar.tsx
+msgid "Neuložené změny"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Neúplné"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Nezobrazovat"
+msgstr ""
+
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+msgid "Nová"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Nova kategorie"
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
 msgid "Nová kategorie"
 msgstr "Nová kategória"
 
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Nová stránka"
-msgstr "Nová stránka"
+msgid "Nova stranka"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
 msgid "Nové heslo"
 msgstr "Nové heslo"
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+msgid "Nový"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Nový členský plán"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Nový plán"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Nový produkt"
 msgstr "Nový produkt"
+
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+msgid "Nový uživatel"
+msgstr ""
 
 #: ../../apps/web/src/components/catalog/CatalogContent.tsx
 msgid "Obchod"
@@ -564,19 +842,26 @@ msgstr "Obchod"
 msgid "Obecné"
 msgstr "Všeobecné"
 
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
-#: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Objednávka"
 msgstr "Objednávka"
 
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
 msgid "Objednávka nenalezena."
 msgstr "Objednávka nenájdená."
 
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
 #: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
 #: ../../apps/web/src/components/customer/routes/orders.tsx
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Objednávky"
 msgstr "Objednávky"
@@ -589,26 +874,58 @@ msgstr "Obnovenie hesla"
 msgid "Obnovení hesla se nezdařilo. Zkuste to prosím znovu."
 msgstr "Obnovenie hesla sa nepodarilo. Skúste to prosím znova."
 
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+msgid "Obnovit"
+msgstr ""
+
+#. placeholder {0}: rev.version
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+msgid "Obnovit verzi {0}?"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Obnovit výchozí"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+msgid "Obnovuji..."
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
 msgid "Obrázek"
 msgstr "Obrázok"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Obrázky"
 msgstr "Obrázky"
 
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Obsah"
 msgstr "Obsah"
 
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
 msgid "Obsah produktu"
 msgstr "Obsah produktu"
 
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Odblokovat"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Odebrat"
+msgstr ""
+
 #: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
 msgid "Odesílám..."
 msgstr "Odosielam..."
 
@@ -616,8 +933,13 @@ msgstr "Odosielam..."
 msgid "Odeslání se nezdařilo. Zkuste to prosím znovu."
 msgstr "Odoslanie sa nepodarilo. Skúste to prosím znova."
 
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Odesláno"
 msgstr "Odoslané"
 
@@ -629,86 +951,150 @@ msgstr "Odoslať odkaz"
 msgid "Odhlásit se"
 msgstr "Odhlásiť sa"
 
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Odkaz pro přístup k obsahu jsme vám poslali na {email}."
+msgstr ""
+
 #: ../../apps/web/src/components/customer/routes/sessions.tsx
 msgid "Odvolat"
 msgstr "Odvolať"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "Offline událost"
 msgstr "Offline udalosť"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "OG obrazek"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "OG obrázek"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Omezit dostupnost"
+msgstr ""
+
+#: ../../apps/web/src/components/catalog/ProductDetailView.tsx
+msgid "Omlouváme se, tento produkt neexistuje nebo byl odstraněn."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "Online událost"
 msgstr "Online udalosť"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/catalog/utils.ts
 msgid "Opakovaná událost"
 msgstr "Opakovaná udalosť"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
 msgid "Operace se nezdařila. Zkuste to prosím znovu."
 msgstr "Operácia sa nepodarila. Skúste to prosím znova."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Opravdu chcete odebrat tento obrázek z galerie?"
 msgstr "Naozaj chcete odstrániť tento obrázok z galérie?"
 
-#. placeholder {0}: media.title
+#. placeholder {0}: item.title
 #. placeholder {0}: selectedItem.originalFilename
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 msgid "Opravdu chcete smazat \"{0}\"?"
 msgstr "Naozaj chcete zmazať \"{0}\"?"
 
-#. placeholder {0}: cat.name
+#. placeholder {0}: selectedRows.length
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Opravdu chcete smazat {0} produktů?"
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/category-list.tsx
-msgid "Opravdu chcete smazat kategorii \"{0}\"?"
-msgstr "Naozaj chcete zmazať kategóriu \"{0}\"?"
+msgid "Opravdu chcete smazat kategorii \"{name}\"?"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Opravdu chcete smazat produkt \"{title}\"?"
 msgstr "Naozaj chcete zmazať produkt \"{title}\"?"
 
-#. placeholder {0}: file.fileName
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Opravdu chcete smazat soubor \"{0}\"?"
-msgstr "Naozaj chcete zmazať súbor \"{0}\"?"
-
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Opravdu chcete smazat stránku \"{title}\"?"
-msgstr "Naozaj chcete zmazať stránku \"{title}\"?"
+msgid "Opravdu chcete smazat stranku \"{title}\"?"
+msgstr ""
 
 #: ../../apps/web/src/components/customer/routes/delete-account.tsx
 msgid "Opravdu chcete smazat svůj účet?"
 msgstr "Naozaj chcete zmazať svoj účet?"
 
 #. placeholder {0}: row.name
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Opravdu chcete smazat variantu \"{0}\"?"
 msgstr "Naozaj chcete zmazať variant \"{0}\"?"
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Opravdu chcete smazat variantu \"{variantName}\"?"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Opravdu chcete smazat všechny varianty?"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Opravdu chcete zrušit své předplatné? Přístup k obsahu ztratíte na konci aktuálního období."
+msgstr ""
 
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 msgid "Osobní údaje"
 msgstr "Osobné údaje"
 
+#: ../../apps/web/src/components/admin/categories/categories-columns.tsx
+msgid "Otevrit menu"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Otevřít menu"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Otevřít originál"
+msgstr ""
+
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
 msgid "Otevřít stream"
 msgstr "Otvoriť stream"
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Platba byla zrušena. Můžete to zkusit znovu."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Po splatnosti"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/podpora-prodeje-tab.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+msgid "Podpora prodeje"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+msgid "Pokročilé"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
 msgid "Pokud účet s tímto e-mailem existuje, odeslali jsme vám odkaz pro obnovení hesla. Zkontrolujte svou e-mailovou schránku."
@@ -719,13 +1105,38 @@ msgstr "Ak účet s týmto e-mailom existuje, odoslali sme vám odkaz na obnoven
 msgid "Položky"
 msgstr "Položky"
 
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Pomocí navigace vlevo můžete spravovat svůj profil, objednávky, knihovnu nebo účet."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
 msgid "Popis"
 msgstr "Popis"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Popis neni nastaven"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Popis obrázku pro čtečky obrazovky"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Popisek stranky"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/categories/categories-columns.tsx
+msgid "Poradi"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
 msgid "Pořadí"
 msgstr "Poradie"
 
@@ -733,21 +1144,63 @@ msgstr "Poradie"
 msgid "Poslední aktivita"
 msgstr "Posledná aktivita"
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Pravidelně se opakující událost"
-msgstr "Pravidelne sa opakujúca udalosť"
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Potvrdit"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Prázdná stránka"
-msgstr "Prázdna stránka"
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+msgid "Potvrzení hesla"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-#: ../../apps/web/src/components/customer/routes/orders.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Použito v"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
 msgid "Předchozí"
 msgstr "Predchádzajúci"
+
+#: ../../apps/web/src/components/admin/editor/SettingsDrawer.tsx
+msgid "Předchozí publikované verze stránky"
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-pagination.tsx
+msgid "Předchozí stránka"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Předmět"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Předplatit"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+msgid "Předplatné"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Předplatné bylo úspěšně aktivováno!"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Přehled vašeho obchodu."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Přehled vašich objednávek a jejich stavu."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/orders.tsx
+msgid "Přehled vašich objednávek."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/orders.tsx
+msgid "Přehled všech objednávek."
+msgstr ""
 
 #: ../../apps/web/src/components/dashboard/theme-switch.tsx
 msgid "Přepnout téma"
@@ -757,20 +1210,31 @@ msgstr "Prepnúť tému"
 msgid "Přesměrování..."
 msgstr "Presmerovanie..."
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Prezenční událost na místě"
-msgstr "Prezenčná udalosť na mieste"
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Přetáhněte obrázky sem"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "Přidat médium"
 msgstr "Pridať médium"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+msgid "Přidat stream médium"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+msgid "Přidat uživatele"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Přidat variantu"
 msgstr "Pridať variant"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+msgid "Přidat video/audio"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "Přidávám..."
 msgstr "Pridávam..."
 
@@ -810,46 +1274,83 @@ msgstr "Pre tento produkt nie je dostupný žiadny obsah."
 msgid "Prodej"
 msgstr "Predaj"
 
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 msgid "Produkt"
 msgstr "Produkt"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Produkt byl úspěšně uložen."
 msgstr "Produkt bol úspešne uložený."
 
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
-msgid "Produkt nebyl nalezen."
-msgstr "Produkt nebol nájdený."
+#: ../../apps/web/src/components/admin/editor/blocks/ProductBlockEditor.tsx
+#: ../../apps/web/src/components/catalog/ProductDetailView.tsx
+msgid "Produkt nebyl nalezen"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Produkt nenalezen."
-msgstr "Produkt nenájdený."
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Produktove cislo"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Produktové číslo"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Produkty"
 msgstr "Produkty"
 
-#: ../../apps/web/src/components/customer/routes/profile.tsx
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+#: ../../apps/web/src/components/customer/settings-layout.tsx
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
 #: ../../apps/web/src/components/dashboard/nav-user.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 msgid "Profil"
 msgstr "Profil"
 
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Prohlížet jako"
+msgstr ""
+
+#. placeholder {0}: impersonating.name
+#. placeholder {0}: name ?? ""
+#: ../../apps/web/src/components/auth/ImpersonationGuard.tsx
+#: ../../apps/web/src/components/nav/AdminBar.tsx
+msgid "Prohlížíte jako: {0}"
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Publikovano"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Publikováno"
 msgstr "Publikované"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Publikovat"
-msgstr "Publikovať"
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Pusťte soubory zde"
+msgstr ""
 
+#: ../../apps/web/src/components/admin/products/podpora-prodeje-tab.tsx
+msgid "Puvodni cena"
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-pagination.tsx
+msgid "Řádků na stránku"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
 msgid "Registrace"
 msgstr "Registrácia"
@@ -862,13 +1363,62 @@ msgstr "Registrácia sa nepodarila. Skúste to prosím znova."
 msgid "Registruji..."
 msgstr "Registrujem..."
 
+#: ../../apps/web/src/components/data-table/data-table-toolbar.tsx
+msgid "Resetovat"
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
 msgid "Role"
 msgstr "Rola"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Rozmery"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Rozměry"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+msgid "Šablona"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "SEO nastaveni stranky"
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-column-header.tsx
+msgid "Sestupně"
+msgstr ""
+
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+msgid "Sezení"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Sirka"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Sklad"
 msgstr "Sklad"
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Skladem"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+#: ../../apps/web/src/components/data-table/data-table-column-header.tsx
+msgid "Skrýt"
+msgstr ""
+
+#: ../../apps/web/src/components/nav/AdminBar.tsx
+msgid "Skrýt admin bar"
+msgstr ""
 
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 msgid "Sledovací číslo"
@@ -879,11 +1429,18 @@ msgstr "Sledovacie číslo"
 msgid "Sleva"
 msgstr "Zľava"
 
+#: ../../apps/web/src/components/data-table/data-table-view-options.tsx
+msgid "Sloupce"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/categories/categories-columns.tsx
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
 msgid "Slug"
 msgstr "Slug"
 
@@ -891,12 +1448,13 @@ msgstr "Slug"
 msgid "Smazání účtu je nevratná akce. Všechna vaše data, včetně historie objednávek, členství a přístupu k zakoupenému obsahu, budou trvale odstraněna. Tuto akci nelze vrátit zpět."
 msgstr "Zmazanie účtu je nevratná akcia. Všetky vaše dáta, vrátane histórie objednávok, členstva a prístupu k zakúpenému obsahu, budú trvale odstránené. Túto akciu nie je možné vrátiť späť."
 
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/categories/categories-columns.tsx
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
 msgid "Smazat"
 msgstr "Zmazať"
 
@@ -904,78 +1462,117 @@ msgstr "Zmazať"
 msgid "Smazat můj účet"
 msgstr "Zmazať môj účet"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Smazat soubor"
-msgstr "Zmazať súbor"
-
-#: ../../apps/web/src/components/customer/routes/delete-account.tsx
+#: ../../apps/web/src/components/customer/settings-layout.tsx
 #: ../../apps/web/src/components/dashboard/customer-sidebar-data.ts
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
 msgid "Smazat účet"
 msgstr "Zmazať účet"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Soubory"
-msgstr "Súbory"
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Smazat všechny varianty"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Smazat vybrané"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+msgid "Soubor"
+msgstr ""
+
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
 msgid "Soubory ke stažení"
 msgstr "Súbory na stiahnutie"
 
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Správa členských plánů a předplatného."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/emails.tsx
+msgid "Správa emailových šablon."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Sprava skladu"
+msgstr ""
+
 #: ../../apps/web/src/components/admin/routes/users.tsx
-msgid "Správa uživatelů bude implementována zde."
-msgstr "Správa používateľov bude implementovaná tu."
+msgid "Správa uživatelských účtů."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Správa vašeho členského předplatného."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/category-list.tsx
+msgid "Spravujte kategorie produktu."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Spravujte obrázky pro produkty a stránky."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/products.tsx
+msgid "Spravujte produkty a jejich ceny."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Spravujte stranky webu."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Spravujte svá přihlášená zařízení."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/settings-layout.tsx
+msgid "Spravujte svůj účet a nastavení."
+msgstr ""
 
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
 msgid "Stáhnout"
 msgstr "Stiahnuť"
 
-#: ../../apps/web/src/components/admin/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
 #: ../../apps/web/src/components/admin/routes/orders.tsx
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 #: ../../apps/web/src/components/admin/routes/users.tsx
-#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Stav"
 msgstr "Stav"
 
-#. placeholder {0}: data.page
-#. placeholder {1}: data.totalPages
-#: ../../apps/web/src/components/customer/routes/orders.tsx
-msgid "Strana {0} z {1}"
-msgstr "Strana {0} z {1}"
+#: ../../apps/web/src/components/admin/products/podpora-prodeje-tab.tsx
+msgid "Stitek produktu"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Stránka"
+msgstr ""
 
 #. placeholder {0}: data.page
 #. placeholder {1}: data.totalPages
 #. placeholder {2}: data.totalItems
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-msgid "Stránka {0} z {1} ({2} objednávek)"
-msgstr "Stránka {0} z {1} ({2} objednávok)"
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Stránka {0} z {1} ({2, plural, one {# obrázek} few {# obrázky} many {# obrázků} other {# obrázků}})"
+msgstr ""
 
-#. placeholder {0}: data.page
-#. placeholder {1}: data.totalPages
-#. placeholder {2}: data.totalItems
-#: ../../apps/web/src/components/admin/routes/products.tsx
-msgid "Stránka {0} z {1} ({2} produktů)"
-msgstr "Stránka {0} z {1} ({2} produktov)"
-
-#. placeholder {0}: data.page
-#. placeholder {1}: data.totalPages
-#. placeholder {2}: data.totalItems
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Stránka {0} z {1} ({2} souborů)"
-msgstr "Stránka {0} z {1} ({2} súborov)"
-
-#. placeholder {0}: data.page
-#. placeholder {1}: data.totalPages
-#. placeholder {2}: data.totalItems
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Stránka {0} z {1} ({2} stránek)"
-msgstr "Stránka {0} z {1} ({2} stránok)"
+#: ../../apps/web/src/components/data-table/data-table-pagination.tsx
+msgid "Stránka {currentPage} z {totalPages}"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/pages-list.tsx
+msgid "Stranky"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Stránky"
 msgstr "Stránky"
@@ -984,13 +1581,29 @@ msgstr "Stránky"
 msgid "Streaming"
 msgstr "Streaming"
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Streamovaný obsah přes Cloudflare"
-msgstr "Streamovaný obsah cez Cloudflare"
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Stripe EUR"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Stripe Kč"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Stripe Price ID (EUR)"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Stripe Price ID (Kč)"
+msgstr ""
 
 #: ../../apps/web/src/components/dashboard/theme-switch.tsx
 msgid "Světlý"
 msgstr "Svetlý"
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Svislá pozice"
+msgstr ""
 
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 #: ../../apps/web/src/components/dashboard/theme-switch.tsx
@@ -1001,9 +1614,29 @@ msgstr "Systém"
 msgid "Tato akce je nevratná. Všechna vaše data budou trvale odstraněna a nebude možné je obnovit."
 msgstr "Táto akcia je nevratná. Všetky vaše dáta budú trvale odstránené a nebude možné ich obnoviť."
 
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Tato varianta je momentálně vyprodána."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Tělo emailu (HTML override)"
+msgstr ""
+
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
 msgid "Termíny"
 msgstr "Termíny"
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Titulek"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Titulek obrázku"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Titulek stranky"
+msgstr ""
 
 #: ../../apps/web/src/components/dashboard/theme-switch.tsx
 msgid "Tmavý"
@@ -1017,8 +1650,15 @@ msgstr "Toto zariadenie"
 msgid "Trvalé smazání účtu"
 msgstr "Trvalé zmazanie účtu"
 
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Tvorba variant"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
 #: ../../apps/web/src/components/admin/routes/products.tsx
 msgid "Typ"
 msgstr "Typ"
@@ -1036,43 +1676,52 @@ msgstr "Údaje o doprave boli uložené."
 msgid "Údaje o kategorii"
 msgstr "Údaje o kategórii"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Údaje o produktu"
-msgstr "Údaje o produkte"
-
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/library-product.tsx
 msgid "Událost"
 msgstr "Udalosť"
 
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+msgid "Ukázka"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 #: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
 msgid "Ukládám..."
 msgstr "Ukladám..."
 
+#: ../../apps/web/src/components/admin/editor/EditorToolbar.tsx
+#: ../../apps/web/src/components/admin/editor/EditorToolbar.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 msgid "Ukládání..."
 msgstr "Ukladanie..."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/auth/ImpersonationGuard.tsx
+#: ../../apps/web/src/components/nav/AdminBar.tsx
+msgid "Ukončit"
+msgstr ""
+
+#. placeholder {0}: formatTime(lastSavedAt)
+#: ../../apps/web/src/components/admin/editor/EditorToolbar.tsx
+msgid "Uloženo v {0}"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/editor/EditorToolbar.tsx
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 msgid "Uložit"
 msgstr "Uložiť"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-msgid "Uložit alt text"
-msgstr "Uložiť alt text"
-
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "Uložit dopravu"
 msgstr "Uložiť dopravu"
-
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Uložit jako draft"
-msgstr "Uložiť ako draft"
 
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 msgid "Uložit změny"
@@ -1082,10 +1731,12 @@ msgstr "Uložiť zmeny"
 msgid "Upozornění"
 msgstr "Upozornenie"
 
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
+#: ../../apps/web/src/components/admin/categories/categories-columns.tsx
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
 msgid "Upravit"
 msgstr "Upraviť"
 
@@ -1093,28 +1744,75 @@ msgstr "Upraviť"
 msgid "Upravit kategorii"
 msgstr "Upraviť kategóriu"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Upravit plán"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Upravit pozici"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Upravit produkt"
 msgstr "Upraviť produkt"
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/nav/AdminBar.tsx
+msgid "Upravit stránku"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Upravte své osobní údaje a nastavení."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "URL identifikator stranky"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 msgid "URL sledování"
 msgstr "URL sledovania"
+
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+msgid "url-adresa-stranky"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
 msgid "Už máte účet?"
 msgstr "Už máte účet?"
 
 #: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/dashboard/dashboard-breadcrumbs.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
 #: ../../apps/web/src/components/dashboard/sidebar-data.ts
 msgid "Uživatelé"
 msgstr "Používatelia"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Vaha"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Váha"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Varianta"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Varianty"
 msgstr "Varianty"
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Varianty produktu"
+msgstr ""
+
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Váš email"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
 #: ../../apps/web/src/components/auth/LoginForm.tsx
@@ -1130,59 +1828,160 @@ msgstr "Vaše heslo"
 msgid "Vaše jméno"
 msgstr "Vaše meno"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Vaše zakoupené produkty a obsah ke stažení."
+msgstr ""
+
+#: ../../apps/web/src/components/customer/routes/library.tsx
+msgid "Vaše zakoupené produkty a obsah."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Velikost"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+msgid "Verze"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "Video"
 msgstr "Video"
 
-#: ../../apps/web/src/components/admin/routes/dashboard.tsx
-msgid "Vítejte v administraci Sámo Fujera. Vyberte sekci z navigace vlevo."
-msgstr "Vitajte v administrácii Sámo Fujera. Vyberte sekciu z navigácie vľavo."
+#: ../../apps/web/src/components/customer/routes/dashboard.tsx
+msgid "Vítejte"
+msgstr ""
 
 #: ../../apps/web/src/components/customer/routes/dashboard.tsx
-msgid "Vítejte ve svém zákaznickém panelu. Pomocí navigace vlevo můžete spravovat svůj profil, aktivní sezení nebo účet."
-msgstr "Vitajte vo svojom zákazníckom paneli. Pomocou navigácie vľavo môžete spravovať svoj profil, aktívne relácie alebo účet."
+msgid "Vítejte ve svém zákaznickém panelu."
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Vložte HTML obsah, který bude přidán do těla emailu..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Vodorovná pozice"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 msgid "volitelné"
 msgstr "voliteľné"
 
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+msgid "Volitelny popis kategorie"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Vráceno"
 msgstr "Vrátené"
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
+#: ../../apps/web/src/components/admin/routes/images.tsx
 #: ../../apps/web/src/components/catalog/CategoryFilter.tsx
 msgid "Vše"
 msgstr "Všetko"
 
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-msgid "Všechny stavy"
-msgstr "Všetky stavy"
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Vyberte obrázek z knihovny nebo nahrajte nový."
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/media.tsx
-#: ../../apps/web/src/components/admin/routes/products.tsx
-msgid "Všechny typy"
-msgstr "Všetky typy"
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Vyberte obrázky z knihovny nebo nahrajte nové."
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Vyberte typ produktu"
-msgstr "Vyberte typ produktu"
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+msgid "Vyberte roli"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Vytvářím produkt..."
-msgstr "Vytváram produkt..."
+#: ../../apps/web/src/components/admin/products/product-create-dialog.tsx
+msgid "Vyberte typ produktu, který chcete vytvořit."
+msgstr ""
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Vyberte variantu"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Vybrat"
+msgstr ""
+
+#. placeholder {0}: selectedItems.length
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Vybrat ({0})"
+msgstr ""
+
+#. placeholder {0}: item.originalFilename
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Vybrat {0}"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Vybrat obrazek"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Vybrat obrázek"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Vybrat obrázky"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Vybrat řádek"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/pages-columns.tsx
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Vybrat vše"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+msgid "Vybrat z knihovny"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Výchozí predmet..."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/emails/edit-email-template-dialog.tsx
+msgid "Výchozí předmět..."
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-faceted-filter.tsx
+msgid "Vymazat filtry"
+msgstr ""
+
+#: ../../apps/web/src/components/catalog/ProductDetail.tsx
+msgid "Vyprodáno"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/sklad-tab.tsx
+msgid "Vyska"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
 msgid "Vytvářím..."
 msgstr "Vytváram..."
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+msgid "Vytvorit"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
 msgid "Vytvořit"
 msgstr "Vytvoriť"
 
@@ -1190,13 +1989,66 @@ msgstr "Vytvoriť"
 msgid "Vytvořit kategorii"
 msgstr "Vytvoriť kategóriu"
 
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Vytvořit první plán"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Vytvořit první variantu"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+msgid "Vytvorte novou kategorii produktu."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+msgid "Vytvořte nový uživatelský účet."
+msgstr ""
+
 #: ../../apps/web/src/components/auth/RegisterForm.tsx
 msgid "Vytvořte si účet pro přístup ke všem materiálům."
 msgstr "Vytvorte si účet pre prístup ku všetkým materiálom."
 
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Zadejte název stránky"
-msgstr "Zadajte názov stránky"
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Vytvořte varianty a prodávejte produkty v různých barvách či velikostech. Nastavte pro každou variantu vlastní cenu a skladovou dostupnost."
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-column-header.tsx
+msgid "Vzestupně"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Zablokovaný"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Zablokovat"
+msgstr ""
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Začátek období"
+msgstr ""
+
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Zadáním emailu souhlasíte se zpracováním osobních údajů."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+msgid "Zadejte nazev a slug nove stranky. Po vytvoreni budete presmerovani do editoru."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+msgid "Zadejte nazev kategorie"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/pages/page-create-sheet.tsx
+msgid "Zadejte nazev stranky"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/variants-tab-webnode.tsx
+msgid "Zadejte název varianty"
+msgstr ""
 
 #: ../../apps/web/src/components/auth/ResetPasswordForm.tsx
 msgid "Zadejte své nové heslo."
@@ -1214,43 +2066,44 @@ msgstr "Zadajte svoj e-mail a my vám pošleme odkaz na obnovenie hesla."
 msgid "Žádná aktivní sezení."
 msgstr "Žiadne aktívne relácie."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Žádná přidaná média."
-msgstr "Žiadne pridané médiá."
-
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Žádné kategorie"
 msgstr "Žiadne kategórie"
 
-#: ../../apps/web/src/components/admin/routes/category-list.tsx
-msgid "Žádné kategorie."
-msgstr "Žiadne kategórie."
-
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Žádné nahrané obrázky."
 msgstr "Žiadne nahrané obrázky."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-msgid "Žádné nahrané soubory."
-msgstr "Žiadne nahrané súbory."
+#: ../../apps/web/src/components/admin/images/ImageGrid.tsx
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+msgid "Žádné obrázky nenalezeny."
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/orders.tsx
-msgid "Žádné objednávky."
-msgstr "Žiadne objednávky."
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+msgid "Žádné předchozí verze"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/products.tsx
-msgid "Žádné produkty."
-msgstr "Žiadne produkty."
-
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
-msgid "Žádné stránky."
-msgstr "Žiadne stránky."
-
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Žádné varianty. Přidejte první variantu níže."
 msgstr "Žiadne varianty. Pridajte prvý variant nižšie."
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
+#: ../../apps/web/src/components/dashboard/search-command.tsx
+#: ../../apps/web/src/components/data-table/data-table.tsx
+msgid "Žádné výsledky."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
+msgid "Žádný nahraný obsah."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/users.tsx
+#: ../../apps/web/src/components/admin/users/user-create-dialog.tsx
+#: ../../apps/web/src/components/admin/users/users-columns.tsx
+msgid "Zákazník"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
 msgid "Základní info"
 msgstr "Základné info"
 
@@ -1258,8 +2111,10 @@ msgstr "Základné info"
 msgid "Zakoupeno"
 msgstr "Zakúpené"
 
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/orders.tsx
 msgid "Zaplaceno"
@@ -1285,51 +2140,100 @@ msgstr "Zaregistrujte sa"
 msgid "Zásilkovna, PPL, DPD..."
 msgstr "Zásielkovňa, PPL, DPD..."
 
-#: ../../apps/web/src/components/customer/routes/orders.tsx
-msgid "Zatím nemáte žádné objednávky."
-msgstr "Zatiaľ nemáte žiadne objednávky."
+#: ../../apps/web/src/components/admin/routes/membership.tsx
+msgid "Zatím nemáte žádné členské plány."
+msgstr ""
 
 #: ../../apps/web/src/components/customer/routes/library.tsx
 msgid "Zatím nemáte žádné zakoupené produkty."
 msgstr "Zatiaľ nemáte žiadne zakúpené produkty."
 
-#: ../../apps/web/src/components/admin/media/MediaGrid.tsx
-msgid "Zatím žádné soubory."
-msgstr "Zatiaľ žiadne súbory."
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Zatím žádné objednávky"
+msgstr ""
 
-#: ../../apps/web/src/components/admin/routes/users.tsx
-msgid "Zatím žádní uživatelé."
-msgstr "Zatiaľ žiadni používatelia."
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Zatím žádné obrázky."
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Zatím žádné produkty"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Zatím žádné tržby"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/dashboard.tsx
+msgid "Zatím žádní uživatelé"
+msgstr ""
 
 #: ../../apps/web/src/components/catalog/CatalogContent.tsx
 msgid "Zatím zde nejsou žádné produkty."
 msgstr "Zatiaľ tu nie sú žiadne produkty."
 
+#: ../../apps/web/src/components/admin/images/UploadProgress.tsx
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+msgid "Zavřít"
+msgstr ""
+
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Získat zdarma"
+msgstr ""
+
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Získejte zdarma: {productTitle}"
+msgstr ""
+
+#: ../../apps/web/src/components/public/lead-capture-form.tsx
+msgid "Zkontrolujte svůj email"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/pokrocile-tab.tsx
+msgid "Zmenit"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/category-edit.tsx
+#: ../../apps/web/src/components/admin/routes/category-new.tsx
+msgid "Změnit"
+msgstr ""
+
+#: ../../apps/web/src/components/data-table/data-table-view-options.tsx
+msgid "Zobrazení"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/products-columns.tsx
 #: ../../apps/web/src/components/customer/routes/library.tsx
 msgid "Zobrazit"
 msgstr "Zobraziť"
 
+#: ../../apps/web/src/components/nav/AdminBar.tsx
+msgid "Zobrazit admin bar"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/products/product-edit-dialog.tsx
+msgid "Zobrazit cenu za jednotku"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
+msgid "Zobrazit detail"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
-#: ../../apps/web/src/components/admin/routes/pages-list.tsx
+#: ../../apps/web/src/components/customer/routes/library-product.tsx
+#: ../../apps/web/src/components/customer/routes/order-detail.tsx
+#: ../../apps/web/src/components/customer/subscription.tsx
 msgid "Zpět"
 msgstr "Späť"
 
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
-msgid "Zpět do katalogu"
-msgstr "Späť do katalógu"
+#: ../../apps/web/src/components/catalog/ProductDetailView.tsx
+msgid "Zpět na hlavní stránku"
+msgstr ""
 
 #: ../../apps/web/src/components/admin/routes/category-edit.tsx
 msgid "Zpět na kategorie"
 msgstr "Späť na kategórie"
-
-#: ../../apps/web/src/components/customer/routes/library-product.tsx
-msgid "Zpět na knihovnu"
-msgstr "Späť na knižnicu"
-
-#: ../../apps/web/src/components/customer/routes/order-detail.tsx
-msgid "Zpět na objednávky"
-msgstr "Späť na objednávky"
 
 #: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
 #: ../../apps/web/src/components/auth/ForgotPasswordForm.tsx
@@ -1337,24 +2241,37 @@ msgstr "Späť na objednávky"
 msgid "Zpět na přihlášení"
 msgstr "Späť na prihlásenie"
 
-#: ../../apps/web/src/components/admin/routes/product-edit.tsx
-#: ../../apps/web/src/components/admin/routes/product-new.tsx
-msgid "Zpět na produkty"
-msgstr "Späť na produkty"
-
-#: ../../apps/web/src/components/catalog/ProductDetail.tsx
-msgid "Zpracovávám..."
-msgstr "Spracovávam..."
-
+#: ../../apps/web/src/components/admin/orders/orders-columns.tsx
 #: ../../apps/web/src/components/admin/routes/order-detail.tsx
 #: ../../apps/web/src/components/admin/routes/orders.tsx
+#: ../../apps/web/src/components/customer/orders/customer-orders-columns.tsx
 #: ../../apps/web/src/components/customer/routes/order-detail.tsx
 #: ../../apps/web/src/components/customer/routes/orders.tsx
+#: ../../apps/web/src/components/customer/subscription.tsx
+#: ../../apps/web/src/components/customer/subscription.tsx
 msgid "Zrušeno"
 msgstr "Zrušené"
 
+#: ../../apps/web/src/components/admin/categories/category-create-dialog.tsx
+msgid "Zrusit"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/editor/RevisionList.tsx
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+#: ../../apps/web/src/components/admin/images/ImagePicker.tsx
+#: ../../apps/web/src/components/admin/products/product-content-tab.tsx
 #: ../../apps/web/src/components/admin/routes/category-new.tsx
+#: ../../apps/web/src/components/admin/routes/membership.tsx
 #: ../../apps/web/src/components/customer/routes/delete-account.tsx
 #: ../../apps/web/src/components/customer/routes/profile.tsx
 msgid "Zrušit"
 msgstr "Zrušiť"
+
+#: ../../apps/web/src/components/customer/subscription.tsx
+#: ../../apps/web/src/components/customer/subscription.tsx
+msgid "Zrušit předplatné"
+msgstr ""
+
+#: ../../apps/web/src/components/admin/routes/images.tsx
+msgid "Zrušit výběr"
+msgstr ""

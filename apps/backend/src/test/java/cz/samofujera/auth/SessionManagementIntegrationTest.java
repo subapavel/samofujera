@@ -1,5 +1,6 @@
 package cz.samofujera.auth;
 
+import com.resend.Resend;
 import cz.samofujera.TestcontainersConfig;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestcontainersConfig.class)
 class SessionManagementIntegrationTest {
 
+    @MockitoBean private Resend resend;
     @Autowired private MockMvc mockMvc;
     @Autowired private DSLContext dsl;
 

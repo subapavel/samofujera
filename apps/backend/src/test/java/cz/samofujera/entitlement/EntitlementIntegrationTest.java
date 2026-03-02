@@ -1,5 +1,6 @@
 package cz.samofujera.entitlement;
 
+import com.resend.Resend;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.catalog.CatalogDtos;
 import cz.samofujera.catalog.CatalogService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
@@ -24,6 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Import(TestcontainersConfig.class)
 class EntitlementIntegrationTest {
+
+    @MockitoBean
+    private Resend resend;
 
     @Autowired
     private EntitlementService entitlementService;

@@ -1,5 +1,6 @@
 package cz.samofujera.page;
 
+import com.resend.Resend;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Set;
@@ -22,6 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Import(TestcontainersConfig.class)
 class PageRevisionIntegrationTest {
+
+    @MockitoBean
+    private Resend resend;
 
     @Autowired
     private MockMvc mockMvc;

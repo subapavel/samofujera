@@ -1,5 +1,6 @@
 package cz.samofujera.payment;
 
+import com.resend.Resend;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import cz.samofujera.TestcontainersConfig;
@@ -37,6 +38,9 @@ class PaymentIntegrationTest {
 
     @Autowired
     private DSLContext dsl;
+
+    @MockitoBean
+    private Resend resend;
 
     @MockitoBean
     private StripeCheckoutClient stripeCheckoutClient;
