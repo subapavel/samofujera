@@ -16,6 +16,9 @@ import type {
   UpdateShippingRequest,
   ProductImageResponse,
   VariantResponse,
+  EmailTemplateListItem,
+  UpdateEmailOverrideRequest,
+  EmailDefaultSubjectsResponse,
 } from "./types";
 
 export const adminApi = {
@@ -176,5 +179,32 @@ export const adminApi = {
         method: "PUT",
         body: JSON.stringify(data),
       },
+    ),
+
+  // Email Templates
+
+  getEmailTemplates: () =>
+    apiFetch<EmailTemplateListItem[]>("/api/admin/email-templates"),
+
+  getEmailTemplatePreview: (key: string, locale: "cs" | "sk") =>
+    apiFetch<string>(
+      `/api/admin/email-templates/${key}/preview?locale=${locale}`,
+    ),
+
+  updateEmailOverride: (key: string, data: UpdateEmailOverrideRequest) =>
+    apiFetch<void>(`/api/admin/email-templates/${key}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  deleteEmailOverride: (key: string, locale: "cs" | "sk") =>
+    apiFetch<void>(
+      `/api/admin/email-templates/${key}?locale=${locale}`,
+      { method: "DELETE" },
+    ),
+
+  getEmailDefaultSubjects: (key: string) =>
+    apiFetch<EmailDefaultSubjectsResponse>(
+      `/api/admin/email-templates/${key}/default-subject`,
     ),
 };

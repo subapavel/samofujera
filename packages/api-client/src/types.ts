@@ -511,3 +511,28 @@ export interface PublicPageResponse {
   noindex: boolean;
   nofollow: boolean;
 }
+
+// Email Templates
+
+export interface EmailTemplateOverrideStatus {
+  cs: boolean;
+  sk: boolean;
+}
+
+export interface EmailTemplateListItem {
+  key: string;
+  nameCzech: string;
+  overrides: EmailTemplateOverrideStatus;
+  updatedAt: string | null;
+}
+
+export interface UpdateEmailOverrideRequest {
+  locale: "cs" | "sk";
+  customSubject: string | null;
+  customBodyHtml: string | null;
+}
+
+export interface EmailDefaultSubjectsResponse {
+  cs: string;
+  sk: string;
+}
