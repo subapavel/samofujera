@@ -1,4 +1,4 @@
-import { apiFetch } from "./client";
+import { apiFetch, BASE_URL } from "./client";
 import type {
   ApiResponse,
   ProductResponse,
@@ -19,6 +19,7 @@ import type {
   EmailTemplateListItem,
   UpdateEmailOverrideRequest,
   EmailDefaultSubjectsResponse,
+  EmailCurrentOverrideResponse,
 } from "./types";
 
 export const adminApi = {
@@ -206,5 +207,25 @@ export const adminApi = {
   getEmailDefaultSubjects: (key: string) =>
     apiFetch<EmailDefaultSubjectsResponse>(
       `/api/admin/email-templates/${key}/default-subject`,
+    ),
+
+  getEmailTemplateSource: async (key: string, locale: "cs" | "sk"): Promise<string> => {
+    const res = await fetch(
+      `${BASE_URL}/api/admin/email-templates/${key}/source?locale=${locale}`,
+      { credentials: "include" },
+    );
+    if (!res.ok) throw new Error("Failed to fetch template source");
+    return res.text();
+  },
+
+  getEmailCurrentOverride: (key: string, locale: "cs" | "sk") =>
+    apiFetch<EmailCurrentOverrideResponse>(
+      `/api/admin/email-templates/${key}/current-override?locale=${locale}`,
+    ),
+
+  sendTestEmail: (key: string, locale: "cs" | "sk") =>
+    apiFetch<void>(
+      `/api/admin/email-templates/${key}/test?locale=${locale}`,
+      { method: "POST" },
     ),
 };

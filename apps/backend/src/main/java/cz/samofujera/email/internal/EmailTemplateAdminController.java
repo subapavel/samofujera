@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ class EmailTemplateAdminController {
     record TemplateMeta(String key, String nameCzech, String defaultSubjectCs, String defaultSubjectSk) {}
     record OverrideStatus(boolean cs, boolean sk) {}
     record TemplateListItem(String key, String nameCzech, OverrideStatus overrides, OffsetDateTime updatedAt) {}
+    record CurrentOverrideResponse(String customSubject, String customBodyHtml) {}
     record UpdateOverrideRequest(
         @NotNull @Pattern(regexp = "^(cs|sk)$") String locale,
         @Size(max = 500) String customSubject,
@@ -127,5 +129,41 @@ class EmailTemplateAdminController {
             .findFirst()
             .map(m -> ResponseEntity.ok(Map.of("cs", m.defaultSubjectCs(), "sk", m.defaultSubjectSk())))
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/{key}/source", produces = MediaType.TEXT_HTML_VALUE)
+    ResponseEntity<String> getTemplateSource(@PathVariable String key, @RequestParam(defaultValue = "cs") String locale) {
+        if (TEMPLATES.stream().noneMatch(m -> m.key().equals(key))) {
+            return ResponseEntity.badRequest().build();
+        }
+        var html = emailService.loadTemplate(key, locale);
+        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(html);
+    }
+
+    @GetMapping("/{key}/current-override")
+    ResponseEntity<CurrentOverrideResponse> getCurrentOverride(@PathVariable String key, @RequestParam(defaultValue = "cs") String locale) {
+        if (TEMPLATES.stream().noneMatch(m -> m.key().equals(key))) {
+            return ResponseEntity.badRequest().build();
+        }
+        var override = dsl.selectFrom(EMAIL_TEMPLATE_OVERRIDES)
+            .where(EMAIL_TEMPLATE_OVERRIDES.TEMPLATE_KEY.eq(key))
+            .and(EMAIL_TEMPLATE_OVERRIDES.LOCALE.eq(locale))
+            .fetchOne();
+        if (override == null) {
+            return ResponseEntity.ok(new CurrentOverrideResponse(null, null));
+        }
+        return ResponseEntity.ok(new CurrentOverrideResponse(override.getCustomSubject(), override.getCustomBodyHtml()));
+    }
+
+    @PostMapping("/{key}/test")
+    ResponseEntity<Void> sendTestEmail(@PathVariable String key, @RequestParam(defaultValue = "cs") String locale, Principal principal) {
+        if (TEMPLATES.stream().noneMatch(m -> m.key().equals(key))) {
+            return ResponseEntity.badRequest().build();
+        }
+        var meta = TEMPLATES.stream().filter(m -> m.key().equals(key)).findFirst().orElseThrow();
+        var defaultSubject = "cs".equals(locale) ? meta.defaultSubjectCs() : meta.defaultSubjectSk();
+        var sampleVars = SAMPLE_VARS.getOrDefault(key, Map.of());
+        emailService.send(principal.getName(), defaultSubject, key, locale, sampleVars);
+        return ResponseEntity.ok().build();
     }
 }

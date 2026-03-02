@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "@lingui/core/macro";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import { adminApi } from "@samofujera/api-client";
 import type { EmailTemplateListItem } from "@samofujera/api-client";
 import {
@@ -44,30 +44,37 @@ export function EditEmailTemplateDialog({
 }: EditEmailTemplateDialogProps) {
   const queryClient = useQueryClient();
   const [activeLocale, setActiveLocale] = useState<Locale>("cs");
+  const [isLoading, setIsLoading] = useState(true);
+  const [testSentLocale, setTestSentLocale] = useState<Locale | null>(null);
   const [localeState, setLocaleState] = useState<Record<Locale, LocaleState>>({
     cs: { customSubject: "", customBodyHtml: "" },
     sk: { customSubject: "", customBodyHtml: "" },
   });
 
-  // Load default subjects
-  const defaultSubjectsQuery = useQuery({
-    queryKey: ["admin", "email-templates", template.key, "default-subject"],
-    queryFn: () => adminApi.getEmailDefaultSubjects(template.key),
-    enabled: open,
-  });
-
-  // Load preview for active locale
-  const previewQuery = useQuery({
-    queryKey: [
-      "admin",
-      "email-templates",
-      template.key,
-      "preview",
-      activeLocale,
-    ],
-    queryFn: () => adminApi.getEmailTemplatePreview(template.key, activeLocale),
-    enabled: open,
-  });
+  useEffect(() => {
+    if (!open) return;
+    setIsLoading(true);
+    setTestSentLocale(null);
+    Promise.all([
+      adminApi.getEmailDefaultSubjects(template.key),
+      adminApi.getEmailCurrentOverride(template.key, "cs"),
+      adminApi.getEmailCurrentOverride(template.key, "sk"),
+      adminApi.getEmailTemplateSource(template.key, "cs"),
+      adminApi.getEmailTemplateSource(template.key, "sk"),
+    ]).then(([defaults, csOverride, skOverride, csSource, skSource]) => {
+      setLocaleState({
+        cs: {
+          customSubject: csOverride.customSubject ?? defaults.cs,
+          customBodyHtml: csOverride.customBodyHtml ?? csSource,
+        },
+        sk: {
+          customSubject: skOverride.customSubject ?? defaults.sk,
+          customBodyHtml: skOverride.customBodyHtml ?? skSource,
+        },
+      });
+      setIsLoading(false);
+    });
+  }, [open, template.key]);
 
   const saveMutation = useMutation({
     mutationFn: (params: { locale: Locale; subject: string; body: string }) =>
@@ -93,6 +100,14 @@ export function EditEmailTemplateDialog({
     },
   });
 
+  const testMutation = useMutation({
+    mutationFn: () => adminApi.sendTestEmail(template.key, activeLocale),
+    onSuccess: () => {
+      setTestSentLocale(activeLocale);
+      setTimeout(() => setTestSentLocale(null), 3000);
+    },
+  });
+
   function handleSave() {
     const state = localeState[activeLocale];
     saveMutation.mutate({
@@ -106,15 +121,8 @@ export function EditEmailTemplateDialog({
     resetMutation.mutate(activeLocale);
   }
 
-  const defaultSubjects = defaultSubjectsQuery.data;
-  const csPlaceholder = defaultSubjects?.cs ?? t`Výchozí předmět...`;
-  const skPlaceholder = defaultSubjects?.sk ?? t`Výchozí predmet...`;
-  const subjectPlaceholder =
-    activeLocale === "cs" ? csPlaceholder : skPlaceholder;
-
-  void subjectPlaceholder;
-
-  const isBusy = saveMutation.isPending || resetMutation.isPending;
+  const isBusy =
+    saveMutation.isPending || resetMutation.isPending || testMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,88 +131,84 @@ export function EditEmailTemplateDialog({
           <DialogTitle>{template.nameCzech}</DialogTitle>
         </DialogHeader>
 
-        <Tabs
-          value={activeLocale}
-          onValueChange={(v) => setActiveLocale(v as Locale)}
-          className="flex-1 flex flex-col min-h-0"
-        >
-          <TabsList>
-            <TabsTrigger value="cs">Česky</TabsTrigger>
-            <TabsTrigger value="sk">Slovensky</TabsTrigger>
-          </TabsList>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <Tabs
+            value={activeLocale}
+            onValueChange={(v) => setActiveLocale(v as Locale)}
+            className="flex-1 flex flex-col min-h-0"
+          >
+            <TabsList>
+              <TabsTrigger value="cs">Česky</TabsTrigger>
+              <TabsTrigger value="sk">Slovensky</TabsTrigger>
+            </TabsList>
 
-          {(["cs", "sk"] as Locale[]).map((locale) => (
-            <TabsContent
-              key={locale}
-              value={locale}
-              className="flex-1 flex flex-col gap-4 min-h-0"
-            >
-              <div className="space-y-2">
-                <Label htmlFor={`subject-${locale}`}>{t`Předmět`}</Label>
-                <Input
-                  id={`subject-${locale}`}
-                  placeholder={
-                    locale === "cs" ? csPlaceholder : skPlaceholder
-                  }
-                  value={localeState[locale].customSubject}
-                  onChange={(e) =>
-                    setLocaleState((prev) => ({
-                      ...prev,
-                      [locale]: {
-                        ...prev[locale],
-                        customSubject: e.target.value,
-                      },
-                    }))
-                  }
-                />
-              </div>
+            {(["cs", "sk"] as Locale[]).map((locale) => (
+              <TabsContent
+                key={locale}
+                value={locale}
+                className="flex-1 flex flex-col gap-4 min-h-0"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor={`subject-${locale}`}>{t`Předmět`}</Label>
+                  <Input
+                    id={`subject-${locale}`}
+                    value={localeState[locale].customSubject}
+                    onChange={(e) =>
+                      setLocaleState((prev) => ({
+                        ...prev,
+                        [locale]: {
+                          ...prev[locale],
+                          customSubject: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`body-${locale}`}>
-                  {t`Tělo emailu (HTML override)`}
-                </Label>
-                <Textarea
-                  id={`body-${locale}`}
-                  className="font-mono text-sm"
-                  rows={6}
-                  placeholder={t`Vložte HTML obsah, který bude přidán do těla emailu...`}
-                  value={localeState[locale].customBodyHtml}
-                  onChange={(e) =>
-                    setLocaleState((prev) => ({
-                      ...prev,
-                      [locale]: {
-                        ...prev[locale],
-                        customBodyHtml: e.target.value,
-                      },
-                    }))
-                  }
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`body-${locale}`}>
+                    {t`Tělo emailu (HTML override)`}
+                  </Label>
+                  <Textarea
+                    id={`body-${locale}`}
+                    className="font-mono text-sm"
+                    rows={6}
+                    value={localeState[locale].customBodyHtml}
+                    onChange={(e) =>
+                      setLocaleState((prev) => ({
+                        ...prev,
+                        [locale]: {
+                          ...prev[locale],
+                          customBodyHtml: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
 
-              <div className="space-y-2 flex-1 min-h-0">
-                <Label>{t`Náhled`}</Label>
-                {previewQuery.isLoading && activeLocale === locale ? (
-                  <div className="flex items-center justify-center h-64 border rounded-md">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (
+                <div className="space-y-2 flex-1 min-h-0">
+                  <Label>{t`Náhled`}</Label>
                   <iframe
-                    srcDoc={previewQuery.data ?? ""}
+                    srcDoc={localeState[locale].customBodyHtml}
                     className="w-full h-64 rounded-md border bg-white"
                     title={t`Náhled emailu`}
                     sandbox="allow-same-origin"
                   />
-                )}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        )}
 
         <DialogFooter className="gap-2">
           <Button
             variant="outline"
             onClick={handleReset}
-            disabled={isBusy}
+            disabled={isBusy || isLoading}
           >
             {resetMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -212,7 +216,23 @@ export function EditEmailTemplateDialog({
               t`Obnovit výchozí`
             )}
           </Button>
-          <Button onClick={handleSave} disabled={isBusy}>
+          <Button
+            variant="outline"
+            onClick={() => testMutation.mutate()}
+            disabled={isBusy || isLoading}
+          >
+            {testMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : testSentLocale === activeLocale ? (
+              <>
+                <CheckCircle2 className="h-4 w-4 mr-1 text-green-600" />
+                {t`Odesláno`}
+              </>
+            ) : (
+              t`Odeslat testovací email`
+            )}
+          </Button>
+          <Button onClick={handleSave} disabled={isBusy || isLoading}>
             {saveMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

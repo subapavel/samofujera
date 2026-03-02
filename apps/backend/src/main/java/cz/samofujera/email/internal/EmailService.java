@@ -38,7 +38,7 @@ class EmailService {
         var html = loadTemplate(templateKey, locale);
 
         if (override != null && override.getCustomBodyHtml() != null) {
-            html = html.replace("</body>", override.getCustomBodyHtml() + "</body>");
+            html = override.getCustomBodyHtml();
         }
 
         for (var entry : vars.entrySet()) {
@@ -58,7 +58,7 @@ class EmailService {
         var html = loadTemplate(templateKey, locale);
 
         if (override != null && override.getCustomBodyHtml() != null) {
-            html = html.replace("</body>", override.getCustomBodyHtml() + "</body>");
+            html = override.getCustomBodyHtml();
         }
 
         for (var entry : sampleVars.entrySet()) {
@@ -67,7 +67,7 @@ class EmailService {
         return html;
     }
 
-    private String loadTemplate(String templateKey, String locale) {
+    String loadTemplate(String templateKey, String locale) {
         var resourcePath = "/templates/email/" + templateKey + "." + locale + ".html";
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
             if (is == null) throw new RuntimeException("Email template not found: " + resourcePath);

@@ -536,3 +536,8 @@ export interface EmailDefaultSubjectsResponse {
   cs: string;
   sk: string;
 }
+
+export interface EmailCurrentOverrideResponse {
+  customSubject: string | null;
+  customBodyHtml: string | null;
+}
