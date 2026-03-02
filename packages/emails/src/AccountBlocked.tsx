@@ -14,8 +14,8 @@ export const AccountBlocked = ({ locale = "cs" }: AccountBlockedProps) => {
       </Heading>
       <Text style={paragraph}>
         {locale === "cs"
-          ? "Váš účet na platformě Sámo Fujera byl dočasně pozastaven. Pokud si myslíte, že jde o chybu, kontaktujte nás."
-          : "Váš účet na platforme Sámo Fujera bol dočasne pozastavený. Ak si myslíte, že ide o chybu, kontaktujte nás."}
+          ? "Váš účet na stránce Sámo Fujera byl dočasně pozastaven. Pokud si myslíte, že jde o chybu, kontaktujte nás."
+          : "Váš účet na stránke Sámo Fujera bol dočasne pozastavený. Ak si myslíte, že ide o chybu, kontaktujte nás."}
       </Text>
       <Text style={closing}>{tr.closing}</Text>
     </Layout>

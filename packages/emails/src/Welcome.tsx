@@ -14,8 +14,8 @@ export const Welcome = ({ locale = "cs" }: WelcomeProps) => {
       </Heading>
       <Text style={paragraph}>
         {locale === "cs"
-          ? "Děkujeme za registraci na platformě Sámo Fujera. Jsme rádi, že jste se k nám přidali."
-          : "Ďakujeme za registráciu na platforme Sámo Fujera. Sme radi, že ste sa k nám pridali."}
+          ? "Děkujeme za registraci na stránce Sámo Fujera. Jsme rádi, že jste se k nám přidali."
+          : "Ďakujeme za registráciu na stránke Sámo Fujera. Sme radi, že ste sa k nám pridali."}
       </Text>
       <Text style={paragraph}>
         {locale === "cs"

@@ -14,8 +14,8 @@ export const AccountUnblocked = ({ locale = "cs" }: AccountUnblockedProps) => {
       </Heading>
       <Text style={paragraph}>
         {locale === "cs"
-          ? "Váš účet na platformě Sámo Fujera byl úspěšně obnoven. Nyní se můžete znovu přihlásit."
-          : "Váš účet na platforme Sámo Fujera bol úspešne obnovený. Teraz sa môžete znovu prihlásiť."}
+          ? "Váš účet na stránce Sámo Fujera byl úspěšně obnoven. Nyní se můžete znovu přihlásit."
+          : "Váš účet na stránke Sámo Fujera bol úspešne obnovený. Teraz sa môžete znovu prihlásiť."}
       </Text>
       <Text style={closing}>{tr.closing}</Text>
     </Layout>
