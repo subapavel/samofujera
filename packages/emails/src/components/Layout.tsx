@@ -20,7 +20,6 @@ interface LayoutProps {
 export const Layout = ({ preview, children, locale = "cs" }: LayoutProps) => (
   <Html lang={locale}>
     <Head>
-      {preview && <Preview>{preview}</Preview>}
       <Font
         fontFamily="Inter"
         fallbackFontFamily="Arial"
@@ -32,6 +31,7 @@ export const Layout = ({ preview, children, locale = "cs" }: LayoutProps) => (
         fontStyle="normal"
       />
     </Head>
+    {preview && <Preview>{preview}</Preview>}
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
@@ -44,7 +44,8 @@ export const Layout = ({ preview, children, locale = "cs" }: LayoutProps) => (
 
         <Section style={footer}>
           <Text style={footerText}>
-            &copy; 2026 Sámo Fujera. Všechna práva vyhrazena.
+            &copy; 2026 Sámo Fujera.{" "}
+            {locale === "cs" ? "Všechna práva vyhrazena." : "Všetky práva vyhradené."}
           </Text>
           <Text style={footerText}>
             <a href="https://www.samofujera.cz" style={footerLink}>

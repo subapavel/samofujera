@@ -8,9 +8,9 @@ export type PasswordResetProps = { locale?: Locale };
 export const PasswordReset = ({ locale = "cs" }: PasswordResetProps) => {
   const tr = t(locale);
   return (
-    <Layout preview={locale === "cs" ? "Obnova hesla" : "Obnova hesla"} locale={locale}>
+    <Layout preview="Obnova hesla" locale={locale}>
       <Heading as="h2" style={heading}>
-        {locale === "cs" ? "Obnova hesla" : "Obnova hesla"}
+        Obnova hesla
       </Heading>
       <Text style={paragraph}>
         {locale === "cs"

@@ -18,7 +18,7 @@ export const OrderConfirmation = ({ locale = "cs" }: OrderConfirmationProps) => 
           : "Vaša objednávka č. {{orderId}} bola úspešne zaplatená."}
       </Text>
       <Hr style={divider} />
-      <Text style={label}>{locale === "cs" ? "Položky:" : "Položky:"}</Text>
+      <Text style={label}>Položky:</Text>
       <Text style={paragraph}>{"{{items}}"}</Text>
       <Hr style={divider} />
       <Text style={total}>
