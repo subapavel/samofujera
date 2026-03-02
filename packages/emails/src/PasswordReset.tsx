@@ -1,63 +1,51 @@
 import { Heading, Text, Button, Section } from "@react-email/components";
 import * as React from "react";
 import { Layout } from "./components/Layout";
+import { t, type Locale } from "./translations";
 
-export const PasswordReset = () => (
-  <Layout preview="Obnovení hesla - Sámo Fujera">
-    <Heading as="h2" style={heading}>
-      Obnovení hesla
-    </Heading>
-    <Text style={paragraph}>
-      Obdrželi jsme žádost o obnovení vašeho hesla. Klikněte na tlačítko níže
-      pro nastavení nového hesla.
-    </Text>
-    <Section style={buttonContainer}>
-      <Button href="{{resetLink}}" style={button}>
-        Obnovit heslo
-      </Button>
-    </Section>
-    <Text style={warning}>
-      Tento odkaz je platný pouze 1 hodinu. Pokud jste o obnovení hesla
-      nežádali, tento e-mail můžete ignorovat.
-    </Text>
-  </Layout>
-);
+export type PasswordResetProps = { locale?: Locale };
 
-const heading: React.CSSProperties = {
-  margin: "0 0 16px",
-  color: "#18181b",
-  fontSize: "22px",
+export const PasswordReset = ({ locale = "cs" }: PasswordResetProps) => {
+  const tr = t(locale);
+  return (
+    <Layout preview={locale === "cs" ? "Obnova hesla" : "Obnova hesla"} locale={locale}>
+      <Heading as="h2" style={heading}>
+        {locale === "cs" ? "Obnova hesla" : "Obnova hesla"}
+      </Heading>
+      <Text style={paragraph}>
+        {locale === "cs"
+          ? "{{name}}, obdrželi jsme požadavek na obnovu hesla k vašemu účtu."
+          : "{{name}}, obdržali sme požiadavku na obnovu hesla k vášmu účtu."}
+      </Text>
+      <Section style={buttonSection}>
+        <Button href="{{resetLink}}" style={button}>
+          {locale === "cs" ? "Obnovit heslo" : "Obnoviť heslo"}
+        </Button>
+      </Section>
+      <Text style={small}>
+        {locale === "cs"
+          ? "Odkaz je platný 1 hodinu. Pokud jste o obnovu hesla nepožádali, tento e-mail ignorujte."
+          : "Odkaz je platný 1 hodinu. Ak ste o obnovu hesla nepožiadali, tento e-mail ignorujte."}
+      </Text>
+      <Text style={closing}>{tr.closing}</Text>
+    </Layout>
+  );
 };
 
-const paragraph: React.CSSProperties = {
-  margin: "0 0 16px",
-  color: "#3f3f46",
-  fontSize: "15px",
-  lineHeight: "1.6",
-};
-
-const buttonContainer: React.CSSProperties = {
-  textAlign: "center" as const,
-  margin: "24px 0",
-};
-
+const heading: React.CSSProperties = { margin: "0 0 16px", color: "#3D3530", fontSize: "22px", fontWeight: "700" };
+const paragraph: React.CSSProperties = { margin: "0 0 24px", color: "#3D3530", fontSize: "15px", lineHeight: "1.6" };
+const buttonSection: React.CSSProperties = { textAlign: "center" as const, margin: "0 0 24px" };
 const button: React.CSSProperties = {
-  backgroundColor: "#18181b",
+  backgroundColor: "#8B7355",
   color: "#ffffff",
   padding: "12px 24px",
   borderRadius: "6px",
-  textDecoration: "none",
-  fontWeight: "600",
   fontSize: "15px",
+  fontWeight: "600",
+  textDecoration: "none",
   display: "inline-block",
 };
-
-const warning: React.CSSProperties = {
-  margin: "16px 0 0",
-  color: "#a1a1aa",
-  fontSize: "13px",
-  lineHeight: "1.5",
-  fontStyle: "italic",
-};
+const small: React.CSSProperties = { margin: "0 0 16px", color: "#7A7068", fontSize: "13px", lineHeight: "1.5" };
+const closing: React.CSSProperties = { margin: "24px 0 0", color: "#7A7068", fontSize: "14px", lineHeight: "1.6", whiteSpace: "pre-line" as const };
 
 export default PasswordReset;

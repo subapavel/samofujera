@@ -1,34 +1,29 @@
 import { Heading, Text } from "@react-email/components";
 import * as React from "react";
 import { Layout } from "./components/Layout";
+import { t, type Locale } from "./translations";
 
-export const AccountUnblocked = () => (
-  <Layout preview="Váš účet byl obnoven - Sámo Fujera">
-    <Heading as="h2" style={heading}>
-      Účet byl obnoven
-    </Heading>
-    <Text style={paragraph}>
-      S radostí vám oznamujeme, že váš účet na platformě Sámo Fujera byl
-      obnoven. Nyní se můžete opět přihlásit a využívat všechny služby.
-    </Text>
-    <Text style={paragraph}>
-      Děkujeme za vaši trpělivost. Pokud máte jakékoli dotazy, neváhejte se na
-      nás obrátit.
-    </Text>
-  </Layout>
-);
+export type AccountUnblockedProps = { locale?: Locale };
 
-const heading: React.CSSProperties = {
-  margin: "0 0 16px",
-  color: "#18181b",
-  fontSize: "22px",
+export const AccountUnblocked = ({ locale = "cs" }: AccountUnblockedProps) => {
+  const tr = t(locale);
+  return (
+    <Layout preview={locale === "cs" ? "Váš účet byl obnoven" : "Váš účet bol obnovený"} locale={locale}>
+      <Heading as="h2" style={heading}>
+        {locale === "cs" ? "Váš účet byl obnoven" : "Váš účet bol obnovený"}
+      </Heading>
+      <Text style={paragraph}>
+        {locale === "cs"
+          ? "Váš účet na platformě Sámo Fujera byl úspěšně obnoven. Nyní se můžete znovu přihlásit."
+          : "Váš účet na platforme Sámo Fujera bol úspešne obnovený. Teraz sa môžete znovu prihlásiť."}
+      </Text>
+      <Text style={closing}>{tr.closing}</Text>
+    </Layout>
+  );
 };
 
-const paragraph: React.CSSProperties = {
-  margin: "0 0 16px",
-  color: "#3f3f46",
-  fontSize: "15px",
-  lineHeight: "1.6",
-};
+const heading: React.CSSProperties = { margin: "0 0 16px", color: "#3D3530", fontSize: "22px", fontWeight: "700" };
+const paragraph: React.CSSProperties = { margin: "0 0 16px", color: "#3D3530", fontSize: "15px", lineHeight: "1.6" };
+const closing: React.CSSProperties = { margin: "24px 0 0", color: "#7A7068", fontSize: "14px", lineHeight: "1.6", whiteSpace: "pre-line" as const };
 
 export default AccountUnblocked;

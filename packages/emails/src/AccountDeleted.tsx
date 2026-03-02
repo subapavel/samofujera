@@ -1,37 +1,29 @@
 import { Heading, Text } from "@react-email/components";
 import * as React from "react";
 import { Layout } from "./components/Layout";
+import { t, type Locale } from "./translations";
 
-export const AccountDeleted = () => (
-  <Layout preview="Váš účet byl smazán - Sámo Fujera">
-    <Heading as="h2" style={heading}>
-      Účet byl smazán
-    </Heading>
-    <Text style={paragraph}>
-      {"Vážený/á {{name}}, váš účet na platformě Sámo Fujera byl úspěšně smazán."}
-    </Text>
-    <Text style={paragraph}>
-      Všechna vaše osobní data byla odstraněna v souladu s našimi zásadami
-      ochrany osobních údajů.
-    </Text>
-    <Text style={paragraph}>
-      Pokud byste se v budoucnu rozhodli vrátit, budeme vás rádi opět vítat.
-      Děkujeme, že jste byli součástí naší komunity.
-    </Text>
-  </Layout>
-);
+export type AccountDeletedProps = { locale?: Locale };
 
-const heading: React.CSSProperties = {
-  margin: "0 0 16px",
-  color: "#18181b",
-  fontSize: "22px",
+export const AccountDeleted = ({ locale = "cs" }: AccountDeletedProps) => {
+  const tr = t(locale);
+  return (
+    <Layout preview={locale === "cs" ? "Váš účet byl smazán" : "Váš účet bol vymazaný"} locale={locale}>
+      <Heading as="h2" style={heading}>
+        {locale === "cs" ? "Váš účet byl smazán" : "Váš účet bol vymazaný"}
+      </Heading>
+      <Text style={paragraph}>
+        {locale === "cs"
+          ? "Potvrzujeme, že váš účet {{name}} byl úspěšně smazán. Všechna vaše osobní data byla anonymizována."
+          : "Potvrdzujeme, že váš účet {{name}} bol úspešne vymazaný. Všetky vaše osobné údaje boli anonymizované."}
+      </Text>
+      <Text style={closing}>{tr.closing}</Text>
+    </Layout>
+  );
 };
 
-const paragraph: React.CSSProperties = {
-  margin: "0 0 16px",
-  color: "#3f3f46",
-  fontSize: "15px",
-  lineHeight: "1.6",
-};
+const heading: React.CSSProperties = { margin: "0 0 16px", color: "#3D3530", fontSize: "22px", fontWeight: "700" };
+const paragraph: React.CSSProperties = { margin: "0 0 16px", color: "#3D3530", fontSize: "15px", lineHeight: "1.6" };
+const closing: React.CSSProperties = { margin: "24px 0 0", color: "#7A7068", fontSize: "14px", lineHeight: "1.6", whiteSpace: "pre-line" as const };
 
 export default AccountDeleted;

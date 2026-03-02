@@ -7,6 +7,7 @@ import {
   Text,
   Hr,
   Font,
+  Preview,
 } from "@react-email/components";
 import * as React from "react";
 
@@ -19,6 +20,7 @@ interface LayoutProps {
 export const Layout = ({ preview, children, locale = "cs" }: LayoutProps) => (
   <Html lang={locale}>
     <Head>
+      {preview && <Preview>{preview}</Preview>}
       <Font
         fontFamily="Inter"
         fallbackFontFamily="Arial"
