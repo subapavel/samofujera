@@ -20,37 +20,39 @@ class EmailListener {
     private final String frontendUrl;
 
     EmailListener(EmailService emailService,
-                  @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:4321}") String frontendUrl) {
+                  @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:3000}") String frontendUrl) {
         this.emailService = emailService;
         this.frontendUrl = frontendUrl;
     }
 
     @ApplicationModuleListener
     void on(UserRegisteredEvent event) {
-        emailService.send(event.email(), "Vítejte na Samo Fujera", "welcome",
+        emailService.send(event.email(), "Vítejte na Sámo Fujera", "welcome", "cs",
             Map.of("name", event.name()));
     }
 
     @ApplicationModuleListener
     void on(PasswordResetRequestedEvent event) {
-        emailService.send(event.email(), "Obnovení hesla", "password-reset",
-            Map.of("token", event.token(),
+        emailService.send(event.email(), "Obnova hesla", "password-reset", "cs",
+            Map.of("name", event.email(),
                    "resetLink", frontendUrl + "/reset-hesla?token=" + event.token()));
     }
 
     @ApplicationModuleListener
     void on(UserBlockedEvent event) {
-        emailService.send(event.email(), "Váš účet byl zablokován", "account-blocked", Map.of());
+        emailService.send(event.email(), "Váš účet byl pozastaven", "account-blocked", "cs",
+            Map.of());
     }
 
     @ApplicationModuleListener
     void on(UserUnblockedEvent event) {
-        emailService.send(event.email(), "Váš účet byl obnoven", "account-unblocked", Map.of());
+        emailService.send(event.email(), "Váš účet byl obnoven", "account-unblocked", "cs",
+            Map.of());
     }
 
     @ApplicationModuleListener
     void on(UserDeletedEvent event) {
-        emailService.send(event.originalEmail(), "Váš účet byl smazán", "account-deleted",
+        emailService.send(event.originalEmail(), "Váš účet byl smazán", "account-deleted", "cs",
             Map.of("name", event.name()));
     }
 
@@ -60,7 +62,7 @@ class EmailListener {
             .map(i -> i.quantity() + "× " + i.productTitle())
             .collect(Collectors.joining("<br>"));
 
-        emailService.send(event.userEmail(), "Potvrzení objednávky", "order-confirmation",
+        emailService.send(event.userEmail(), "Potvrzení objednávky", "order-confirmation", "cs",
             Map.of(
                 "name", event.userName(),
                 "orderId", event.orderId().toString(),
@@ -74,8 +76,9 @@ class EmailListener {
     void on(EntitlementGrantedEvent event) {
         if ("PRODUCT".equals(event.entityType()) &&
             ("DIGITAL".equals(event.entitySubType()) || "STREAMING".equals(event.entitySubType()))) {
-            emailService.send(event.userEmail(), "Váš digitální obsah je připraven", "digital-delivery",
+            emailService.send(event.userEmail(), "Váš digitální obsah je připraven", "digital-delivery", "cs",
                 Map.of(
+                    "name", event.userEmail(),
                     "productTitle", event.entityTitle(),
                     "libraryUrl", frontendUrl + "/muj-ucet/knihovna"
                 ));
