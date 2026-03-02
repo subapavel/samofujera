@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   Users,
   Crown,
+  Mail,
 } from "lucide-react";
 import { msg } from "@lingui/core/macro";
 import type { SidebarData } from "./types";
@@ -39,6 +40,7 @@ export const adminSidebarData: SidebarData = {
       title: msg`Systém`,
       items: [
         { title: msg`Uživatelé`, url: "/admin/users", icon: Users },
+        { title: msg`Emaily`, url: "/admin/emaily", icon: Mail },
       ],
     },
   ],
