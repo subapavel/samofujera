@@ -17,7 +17,7 @@ import java.util.Map;
 import static cz.samofujera.generated.jooq.Tables.EMAIL_TEMPLATE_OVERRIDES;
 
 @Service
-public class EmailService {
+class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
@@ -68,7 +68,7 @@ public class EmailService {
         }
     }
 
-    public String renderPreview(String templateKey, String locale, Map<String, String> sampleVars) {
+    String renderPreview(String templateKey, String locale, Map<String, String> sampleVars) {
         var override = dsl.selectFrom(EMAIL_TEMPLATE_OVERRIDES)
             .where(EMAIL_TEMPLATE_OVERRIDES.TEMPLATE_KEY.eq(templateKey))
             .and(EMAIL_TEMPLATE_OVERRIDES.LOCALE.eq(locale))

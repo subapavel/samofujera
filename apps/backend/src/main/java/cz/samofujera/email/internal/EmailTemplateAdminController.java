@@ -1,6 +1,9 @@
-package cz.samofujera.email;
+package cz.samofujera.email.internal;
 
-import cz.samofujera.email.internal.EmailService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.jooq.DSLContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +25,11 @@ class EmailTemplateAdminController {
     record TemplateMeta(String key, String nameCzech, String defaultSubjectCs, String defaultSubjectSk) {}
     record OverrideStatus(boolean cs, boolean sk) {}
     record TemplateListItem(String key, String nameCzech, OverrideStatus overrides, OffsetDateTime updatedAt) {}
-    record UpdateOverrideRequest(String locale, String customSubject, String customBodyHtml) {}
+    record UpdateOverrideRequest(
+        @NotNull @Pattern(regexp = "^(cs|sk)$") String locale,
+        @Size(max = 500) String customSubject,
+        @Size(max = 500000) String customBodyHtml
+    ) {}
 
     private static final List<TemplateMeta> TEMPLATES = List.of(
         new TemplateMeta("welcome", "Uvítací email", "Vítejte na Sámo Fujera", "Vitajte na Sámo Fujera"),
@@ -73,6 +80,9 @@ class EmailTemplateAdminController {
 
     @GetMapping(value = "/{key}/preview", produces = MediaType.TEXT_HTML_VALUE)
     ResponseEntity<String> previewTemplate(@PathVariable String key, @RequestParam(defaultValue = "cs") String locale) {
+        if (TEMPLATES.stream().noneMatch(m -> m.key().equals(key))) {
+            return ResponseEntity.badRequest().build();
+        }
         var sampleVars = SAMPLE_VARS.getOrDefault(key, Map.of());
         var html = emailService.renderPreview(key, locale, sampleVars);
         return ResponseEntity.ok()
@@ -81,7 +91,10 @@ class EmailTemplateAdminController {
     }
 
     @PutMapping("/{key}")
-    ResponseEntity<Void> updateOverride(@PathVariable String key, @RequestBody UpdateOverrideRequest request) {
+    ResponseEntity<Void> updateOverride(@PathVariable String key, @Valid @RequestBody UpdateOverrideRequest request) {
+        if (TEMPLATES.stream().noneMatch(m -> m.key().equals(key))) {
+            return ResponseEntity.badRequest().build();
+        }
         dsl.insertInto(EMAIL_TEMPLATE_OVERRIDES)
             .set(EMAIL_TEMPLATE_OVERRIDES.ID, UUID.randomUUID())
             .set(EMAIL_TEMPLATE_OVERRIDES.TEMPLATE_KEY, key)
