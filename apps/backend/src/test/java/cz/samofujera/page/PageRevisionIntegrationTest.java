@@ -1,6 +1,6 @@
 package cz.samofujera.page;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PageRevisionIntegrationTest {
 
     @MockitoBean
-    private Resend resend;
+    private EmailSender emailSender;
 
     @Autowired
     private MockMvc mockMvc;

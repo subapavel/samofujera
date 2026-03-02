@@ -1,6 +1,6 @@
 package cz.samofujera.order;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
 import org.jooq.DSLContext;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrderIntegrationTest {
 
     @MockitoBean
-    private Resend resend;
+    private EmailSender emailSender;
 
     @Autowired
     private MockMvc mockMvc;

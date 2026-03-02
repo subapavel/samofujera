@@ -1,12 +1,8 @@
 package cz.samofujera.email.internal;
 
-import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,16 +17,12 @@ class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
-    private final Resend resend;
+    private final EmailSender emailSender;
     private final DSLContext dsl;
-    private final String fromAddress;
 
-    EmailService(Resend resend,
-                 DSLContext dsl,
-                 @Value("${app.mail.from:Sámo Fujera <noreply@mail.samofujera.cz>}") String fromAddress) {
-        this.resend = resend;
+    EmailService(EmailSender emailSender, DSLContext dsl) {
+        this.emailSender = emailSender;
         this.dsl = dsl;
-        this.fromAddress = fromAddress;
     }
 
     void send(String to, String defaultSubject, String templateKey, String locale, Map<String, String> vars) {
@@ -54,18 +46,7 @@ class EmailService {
             subject = subject.replace("{{" + entry.getKey() + "}}", entry.getValue() != null ? entry.getValue() : "");
         }
 
-        try {
-            var options = CreateEmailOptions.builder()
-                .from(fromAddress)
-                .to(to)
-                .subject(subject)
-                .html(html)
-                .build();
-            resend.emails().send(options);
-        } catch (ResendException e) {
-            log.error("Failed to send email via Resend to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send email", e);
-        }
+        emailSender.send(to, subject, html);
     }
 
     String renderPreview(String templateKey, String locale, Map<String, String> sampleVars) {

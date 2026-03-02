@@ -1,6 +1,6 @@
 package cz.samofujera.delivery;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
 import cz.samofujera.shared.storage.StorageService;
@@ -43,7 +43,7 @@ class DeliveryIntegrationTest {
     private EntitlementService entitlementService;
 
     @MockitoBean
-    private Resend resend;
+    private EmailSender emailSender;
 
     @MockitoBean
     private StorageService storageService;

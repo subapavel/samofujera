@@ -1,6 +1,6 @@
 package cz.samofujera.auth;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestcontainersConfig.class)
 class PasswordResetIntegrationTest {
 
-    @MockitoBean private Resend resend;
+    @MockitoBean private EmailSender emailSender;
     @Autowired private MockMvc mockMvc;
     @Autowired private DSLContext dsl;
 

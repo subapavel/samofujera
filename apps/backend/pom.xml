@@ -108,7 +108,11 @@
             <artifactId>spring-session-data-redis</artifactId>
         </dependency>
 
-        <!-- Mail (Resend) -->
+        <!-- Mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.resend</groupId>
             <artifactId>resend-java</artifactId>

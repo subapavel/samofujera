@@ -1,6 +1,6 @@
 package cz.samofujera.user;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.auth.UserPrincipal;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestcontainersConfig.class)
 class UserControllerIntegrationTest {
 
-    @MockitoBean private Resend resend;
+    @MockitoBean private EmailSender emailSender;
     @Autowired private MockMvc mockMvc;
 
     private UUID registerAndGetId(String email) throws Exception {

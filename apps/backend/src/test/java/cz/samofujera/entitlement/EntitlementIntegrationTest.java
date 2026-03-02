@@ -1,6 +1,6 @@
 package cz.samofujera.entitlement;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import cz.samofujera.catalog.CatalogDtos;
 import cz.samofujera.catalog.CatalogService;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EntitlementIntegrationTest {
 
     @MockitoBean
-    private Resend resend;
+    private EmailSender emailSender;
 
     @Autowired
     private EntitlementService entitlementService;

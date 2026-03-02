@@ -1,6 +1,6 @@
 package cz.samofujera.auth;
 
-import com.resend.Resend;
+import cz.samofujera.email.internal.EmailSender;
 import cz.samofujera.TestcontainersConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthControllerIntegrationTest {
 
     @MockitoBean
-    private Resend resend;
+    private EmailSender emailSender;
 
     @Autowired
     private MockMvc mockMvc;
