@@ -183,8 +183,6 @@
   --color-destructive: oklch(0.55 0.20 27);
   --color-input: oklch(0.87 0.02 145);
   --color-ring: oklch(0.38 0.10 145);
-  color: oklch(0.20 0.02 145);
-  background-color: oklch(1 0 0);
 }
 
 /* ========================================
@@ -296,8 +294,8 @@
 
 /* All hr elements inside page-content */
 .page-content hr {
-  color: var(--muted-foreground);
-  border-color: var(--border);
+  color: gray;
+  border-color: rgba(0, 0, 0, 0.2);
   /* Extend hr beyond text content in editor (BlockWrapper has 6rem padding) */
   width: calc(100% + 10rem);
   margin-left: -5rem;

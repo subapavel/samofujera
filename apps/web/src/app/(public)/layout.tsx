@@ -17,7 +17,7 @@ export default function PublicLayout({
           {/* AdminBar follows dark theme (admin chrome) */}
           <AdminBar />
           {/* Rest of public page always renders in light mode */}
-          <div className="public-chrome flex flex-col flex-1">
+          <div className="public-chrome flex flex-col flex-1 bg-white">
             <TopBar />
             <div className="px-2 mt-2 nav:mt-4 nav:px-4">
               <PublicNav />
