@@ -122,11 +122,11 @@ export function BlockWrapper({
 
       {/* Delete confirmation popup — centered above block (hidden for locked blocks) */}
       {confirmingDelete && !locked && (
-        <div className="absolute left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-0.5 rounded-md bg-gray-800 px-2 py-1.5 shadow-lg" style={{ bottom: "calc(100% + 4px)" }}>
-          <span style={{ color: "white", fontSize: "10px" }}>Opravdu smazat?</span>
+        <div className="editor-confirm-popup absolute left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-0.5 rounded-md px-2 py-1.5" style={{ bottom: "calc(100% + 4px)" }}>
+          <span className="text-popover-foreground" style={{ fontSize: "10px" }}>Opravdu smazat?</span>
           <button
             type="button"
-            className="rounded bg-red-400 px-3 py-0.5 font-medium text-white transition-colors hover:bg-red-500"
+            className="rounded bg-destructive px-3 py-0.5 font-medium text-destructive-foreground transition-colors hover:bg-destructive/90"
             style={{ fontSize: "10px" }}
             onClick={() => {
               setConfirmingDelete(false);
@@ -135,7 +135,7 @@ export function BlockWrapper({
           >
             Odstranit
           </button>
-          <div className="absolute left-1/2 -bottom-1 -translate-x-1/2 h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-gray-800" />
+          <div className="editor-toolbar-arrow absolute left-1/2 -bottom-1 -translate-x-1/2" />
         </div>
       )}
 

@@ -183,9 +183,9 @@ function SeparatorBlockRenderer({ block }: { block: SeparatorBlockData }) {
   if (block.separatorStyle === "ornamental") {
     return (
       <div className="my-8 flex items-center justify-center gap-3">
-        <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
-        <span className="text-[rgb(6,93,77)]">&#10043;</span>
-        <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
+        <div className="h-px flex-1 bg-primary/30" />
+        <span className="text-primary">&#10043;</span>
+        <div className="h-px flex-1 bg-primary/30" />
       </div>
     );
   }
@@ -204,8 +204,8 @@ const BUTTON_VARIANT_CLASSES: Record<string, string> = {
   style4: "btn-style4",
   style5: "btn-style5",
   // Legacy fallbacks
-  primary: "bg-[rgb(6,93,77)] text-white hover:bg-[rgb(5,78,64)] px-8 py-3 rounded-lg font-semibold text-lg inline-block",
-  secondary: "border-2 border-[rgb(6,93,77)] text-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)] hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block",
+  primary: "bg-primary text-white hover:bg-primary/90 px-8 py-3 rounded-lg font-semibold text-lg inline-block",
+  secondary: "border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block",
 };
 
 function ButtonBlockRenderer({ block }: { block: ButtonBlockData }) {
@@ -398,7 +398,7 @@ function QuoteRenderer({ node }: { node: SerializedNode }) {
   const align = getAlignmentClass(node.format);
   const indentStyle = getIndentStyle(node.indent);
   return (
-    <blockquote className={`border-l-4 border-[#065d4d] pl-4 italic text-black ${align}`} style={indentStyle}>
+    <blockquote className={`border-l-4 border-primary pl-4 italic text-foreground ${align}`} style={indentStyle}>
       {renderChildren(node)}
     </blockquote>
   );
@@ -422,7 +422,7 @@ function LinkRenderer({ node }: { node: SerializedNode }) {
   return (
     <a
       href={node.url ?? "#"}
-      className="text-[rgb(6,93,77)] underline hover:no-underline"
+      className="text-primary underline hover:no-underline"
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
     >
@@ -451,8 +451,8 @@ function LegacyButtonRenderer({ node }: { node: SerializedNode }) {
   const variant = node.variant ?? "primary";
   const className =
     variant === "primary"
-      ? "bg-[rgb(6,93,77)] text-white hover:bg-[rgb(5,78,64)] px-8 py-3 rounded-lg font-semibold text-lg inline-block"
-      : "border-2 border-[rgb(6,93,77)] text-[rgb(6,93,77)] hover:bg-[rgb(6,93,77)] hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block";
+      ? "bg-primary text-white hover:bg-primary/90 px-8 py-3 rounded-lg font-semibold text-lg inline-block"
+      : "border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-lg font-semibold text-lg inline-block";
   return (
     <div className="my-6 text-center">
       <a href={node.url ?? "#"} className={className}>
@@ -466,9 +466,9 @@ function LegacySeparatorRenderer({ node }: { node: SerializedNode }) {
   if (node.separatorStyle === "ornamental") {
     return (
       <div className="my-8 flex items-center justify-center gap-3">
-        <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
-        <span className="text-[rgb(6,93,77)]">&#10043;</span>
-        <div className="h-px flex-1 bg-[rgb(6,93,77)]/30" />
+        <div className="h-px flex-1 bg-primary/30" />
+        <span className="text-primary">&#10043;</span>
+        <div className="h-px flex-1 bg-primary/30" />
       </div>
     );
   }

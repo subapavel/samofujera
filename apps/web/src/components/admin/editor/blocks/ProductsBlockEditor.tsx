@@ -533,12 +533,12 @@ export function ProductsBlockEditor({
         >
           {/* Layout sub-toolbar */}
           {showLayoutBar && (
-            <div className="mb-1 flex items-center rounded-lg bg-gray-800 px-1 py-1.5 shadow-lg">
+            <div className="editor-toolbar mb-1 flex items-center rounded-lg">
               {/* Appearance dropdown */}
               <div className="relative">
                 <button
                   type="button"
-                  className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+                  className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowAppearanceDropdown(!showAppearanceDropdown);
@@ -550,15 +550,15 @@ export function ProductsBlockEditor({
                   <ChevronDown className="h-3 w-3" />
                 </button>
                 {showAppearanceDropdown && (
-                  <div className="absolute left-0 top-full mt-1 z-50 w-40 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+                  <div className="editor-toolbar-dropdown absolute left-0 top-full mt-1 z-50 w-40 rounded-lg">
                     {APPEARANCE_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         type="button"
-                        className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
+                        className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
                           block.appearance === opt.value
-                            ? "text-white font-medium"
-                            : "text-white/70"
+                            ? "editor-toolbar-dropdown-item-active"
+                            : "editor-toolbar-dropdown-item"
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -576,13 +576,13 @@ export function ProductsBlockEditor({
                 )}
               </div>
 
-              <div className="mx-0.5 h-4 w-px bg-white/20" />
+              <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
               {/* Columns dropdown */}
               <div className="relative">
                 <button
                   type="button"
-                  className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+                  className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowColumnsDropdown(!showColumnsDropdown);
@@ -594,15 +594,15 @@ export function ProductsBlockEditor({
                   <ChevronDown className="h-3 w-3" />
                 </button>
                 {showColumnsDropdown && (
-                  <div className="absolute left-0 top-full mt-1 z-50 w-40 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+                  <div className="editor-toolbar-dropdown absolute left-0 top-full mt-1 z-50 w-40 rounded-lg">
                     {COLUMNS_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         type="button"
-                        className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
+                        className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
                           block.columns === opt.value
-                            ? "text-white font-medium"
-                            : "text-white/70"
+                            ? "editor-toolbar-dropdown-item-active"
+                            : "editor-toolbar-dropdown-item"
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -620,7 +620,7 @@ export function ProductsBlockEditor({
                 )}
               </div>
 
-              <div className="mx-0.5 h-4 w-px bg-white/20" />
+              <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
               {/* Category dropdown (only for category mode) */}
               {block.mode === "category" && (
@@ -628,7 +628,7 @@ export function ProductsBlockEditor({
                   <div className="relative">
                     <button
                       type="button"
-                      className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+                      className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowCategoryDropdown(!showCategoryDropdown);
@@ -640,13 +640,13 @@ export function ProductsBlockEditor({
                       <ChevronDown className="h-3 w-3" />
                     </button>
                     {showCategoryDropdown && (
-                      <div className="absolute left-0 top-full mt-1 z-50 w-48 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+                      <div className="editor-toolbar-dropdown absolute left-0 top-full mt-1 z-50 w-48 rounded-lg">
                         <button
                           type="button"
-                          className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
+                          className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
                             block.categoryId === null
-                              ? "text-white font-medium"
-                              : "text-white/70"
+                              ? "editor-toolbar-dropdown-item-active"
+                              : "editor-toolbar-dropdown-item"
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -663,10 +663,10 @@ export function ProductsBlockEditor({
                           <button
                             key={cat.id}
                             type="button"
-                            className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
+                            className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
                               block.categoryId === cat.id
-                                ? "text-white font-medium"
-                                : "text-white/70"
+                                ? "editor-toolbar-dropdown-item-active"
+                                : "editor-toolbar-dropdown-item"
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -683,17 +683,17 @@ export function ProductsBlockEditor({
                       </div>
                     )}
                   </div>
-                  <div className="mx-0.5 h-4 w-px bg-white/20" />
+                  <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
                 </>
               )}
 
               {/* Filter toggle */}
               <button
                 type="button"
-                className={`flex items-center gap-1 rounded px-2.5 py-1 text-xs transition-colors hover:bg-white/10 whitespace-nowrap ${
+                className={`flex items-center gap-1 rounded px-2.5 py-1 text-xs transition-colors hover:bg-accent whitespace-nowrap ${
                   block.showCategoryFilter
-                    ? "text-white font-medium"
-                    : "text-white/70"
+                    ? "editor-toolbar-dropdown-item-active"
+                    : "editor-toolbar-dropdown-item"
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -712,11 +712,11 @@ export function ProductsBlockEditor({
           )}
 
           {/* Main toolbar */}
-          <div className="relative flex items-center rounded-lg bg-gray-800 px-1 py-1.5 shadow-lg">
+          <div className="editor-toolbar relative flex items-center rounded-lg">
             {/* Add product */}
             <button
               type="button"
-              className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+              className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open("/admin/produkty/novy", "_blank");
@@ -729,7 +729,7 @@ export function ProductsBlockEditor({
             {/* Manage products */}
             <button
               type="button"
-              className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+              className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open("/admin/produkty", "_blank");
@@ -739,13 +739,13 @@ export function ProductsBlockEditor({
               Správa produktů
             </button>
 
-            <div className="mx-0.5 h-4 w-px bg-white/20" />
+            <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
             {/* Layout toggle */}
             <button
               type="button"
-              className={`flex items-center gap-1 rounded px-2.5 py-1 text-xs transition-colors hover:bg-white/10 whitespace-nowrap ${
-                showLayoutBar ? "text-white font-medium" : "text-white/90"
+              className={`flex items-center gap-1 rounded px-2.5 py-1 text-xs transition-colors hover:bg-accent whitespace-nowrap ${
+                showLayoutBar ? "editor-toolbar-dropdown-item-active" : "editor-toolbar-btn"
               }`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -757,12 +757,12 @@ export function ProductsBlockEditor({
               Rozložení
             </button>
 
-            <div className="mx-0.5 h-4 w-px bg-white/20" />
+            <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
             {/* Delete */}
             <button
               type="button"
-              className="flex items-center rounded px-2 py-1 text-white/90 transition-colors hover:bg-white/10"
+              className="editor-toolbar-btn flex items-center rounded px-2 py-1"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsSelected(false);
@@ -778,7 +778,7 @@ export function ProductsBlockEditor({
             <div className="relative">
               <button
                 type="button"
-                className="flex items-center rounded px-1.5 py-1 text-white/90 transition-colors hover:bg-white/10"
+                className="editor-toolbar-btn flex items-center rounded px-1.5 py-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowMoreMenu(!showMoreMenu);
@@ -787,10 +787,10 @@ export function ProductsBlockEditor({
                 <MoreVertical className="h-3.5 w-3.5" />
               </button>
               {showMoreMenu && (
-                <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+                <div className="editor-toolbar-dropdown absolute right-0 top-full mt-1 z-50 w-36 rounded-lg">
                   <button
                     type="button"
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-white/70 transition-colors hover:bg-white/10"
+                    className="editor-toolbar-dropdown-item flex w-full items-center gap-2 px-3 py-1.5 text-xs"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsSelected(false);
@@ -807,7 +807,7 @@ export function ProductsBlockEditor({
             </div>
 
             {/* Arrow pointer */}
-            <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+            <div className="editor-toolbar-arrow absolute left-1/2 -bottom-1.5 -translate-x-1/2" />
           </div>
         </div>
       )}

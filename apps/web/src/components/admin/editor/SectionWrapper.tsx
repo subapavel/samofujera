@@ -100,7 +100,7 @@ export function SectionWrapper({
     <>
       {/* Dark placeholder above section */}
       {placeholder === "top" && (
-        <div className="mb-2 flex h-20 items-center justify-center bg-gray-900" style={{ color: "white", fontSize: "14px", opacity: 0.6 }}>
+        <div className="editor-section-placeholder mb-2 flex h-20 items-center justify-center">
           Nová sekce
         </div>
       )}
@@ -134,10 +134,10 @@ export function SectionWrapper({
                   <Settings className="h-4 w-4" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-48 border-gray-700 bg-gray-800 p-2 shadow-lg" side="left" align="start">
+              <PopoverContent className="editor-confirm-popup w-48 p-2" side="left" align="start">
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-white/90 transition-colors hover:bg-white/10"
+                  className="editor-toolbar-btn flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm"
                   onClick={handleDeleteClick}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -165,15 +165,14 @@ export function SectionWrapper({
                   <Plus className="h-4 w-4" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-56 border-gray-700 bg-gray-800 p-3 shadow-lg" side="top" align="center">
-                <p className="mb-2 text-sm font-semibold" style={{ color: "white" }}>Přidat sekci</p>
+              <PopoverContent className="editor-toolbar w-56 p-3" side="top" align="center">
+                <p className="mb-2 text-sm font-semibold text-popover-foreground">Přidat sekci</p>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 rounded-lg border border-gray-600 p-3 text-sm font-medium transition-colors hover:border-white/40 hover:bg-white/10"
-                  style={{ color: "white" }}
+                  className="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-sm font-medium text-popover-foreground transition-colors hover:border-border/40 hover:bg-accent"
                   onClick={() => handleAdd("top")}
                 >
-                  <LayoutTemplate className="h-5 w-5 text-white/60" />
+                  <LayoutTemplate className="h-5 w-5 text-muted-foreground" />
                   Výchozí
                 </button>
               </PopoverContent>
@@ -198,15 +197,14 @@ export function SectionWrapper({
                   <Plus className="h-4 w-4" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-56 border-gray-700 bg-gray-800 p-3 shadow-lg" side="bottom" align="center">
-                <p className="mb-2 text-sm font-semibold" style={{ color: "white" }}>Přidat sekci</p>
+              <PopoverContent className="editor-toolbar w-56 p-3" side="bottom" align="center">
+                <p className="mb-2 text-sm font-semibold text-popover-foreground">Přidat sekci</p>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-3 rounded-lg border border-gray-600 p-3 text-sm font-medium transition-colors hover:border-white/40 hover:bg-white/10"
-                  style={{ color: "white" }}
+                  className="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-sm font-medium text-popover-foreground transition-colors hover:border-border/40 hover:bg-accent"
                   onClick={() => handleAdd("bottom")}
                 >
-                  <LayoutTemplate className="h-5 w-5 text-white/60" />
+                  <LayoutTemplate className="h-5 w-5 text-muted-foreground" />
                   Výchozí
                 </button>
               </PopoverContent>
@@ -217,24 +215,24 @@ export function SectionWrapper({
 
       {/* Dark placeholder below section */}
       {placeholder === "bottom" && (
-        <div className="mt-2 flex h-20 items-center justify-center bg-gray-900" style={{ color: "white", fontSize: "14px", opacity: 0.6 }}>
+        <div className="editor-section-placeholder mt-2 flex h-20 items-center justify-center">
           Nová sekce
         </div>
       )}
 
       {/* Delete confirmation alert dialog */}
       <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
-        <AlertDialogContent className="max-w-md border-gray-700 bg-gray-800">
+        <AlertDialogContent className="editor-confirm-popup max-w-md">
           <AlertDialogHeader>
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-white/40 text-white/60">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-border/40 text-muted-foreground">
                 <AlertTriangle className="h-6 w-6" />
               </div>
               <div>
-                <AlertDialogTitle className="text-lg font-bold" style={{ color: "white" }}>
+                <AlertDialogTitle className="text-lg font-bold text-popover-foreground">
                   Opravdu chcete odstranit tuto sekci?
                 </AlertDialogTitle>
-                <AlertDialogDescription className="mt-1 text-white/60">
+                <AlertDialogDescription className="mt-1 text-muted-foreground">
                   Varování: Smazaný obsah bude nenávratně pryč.
                 </AlertDialogDescription>
               </div>
@@ -242,12 +240,12 @@ export function SectionWrapper({
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4 sm:justify-start">
             <AlertDialogAction
-              className="bg-red-500 text-white hover:bg-red-600 px-8"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-8"
               onClick={handleConfirmDelete}
             >
               Odstranit
             </AlertDialogAction>
-            <AlertDialogCancel className="border-gray-600 bg-transparent px-8 text-white/80 hover:bg-white/10 hover:text-white">
+            <AlertDialogCancel className="border-border bg-transparent px-8 text-foreground/80 hover:bg-accent hover:text-foreground">
               Zavřít
             </AlertDialogCancel>
           </AlertDialogFooter>

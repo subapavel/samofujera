@@ -55,11 +55,11 @@ export function LinkEditorPanel({
           }}
           placeholder="např. www.google.cz"
           autoFocus
-          className="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2.5 pr-9 text-sm text-white placeholder-white/40 outline-none focus:border-white/40"
+          className="w-full rounded-lg border border-border bg-input px-3 py-2.5 pr-9 text-sm text-foreground placeholder-muted-foreground/40 outline-none focus:border-ring"
         />
         <button
           type="button"
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white/70"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/40 transition-colors hover:text-muted-foreground/70"
           onClick={() => setShowPagePicker(!showPagePicker)}
           title="Vybrat stránku"
         >
@@ -69,9 +69,9 @@ export function LinkEditorPanel({
 
       {/* Page picker dropdown */}
       {showPagePicker && (
-        <div className="mb-3 max-h-40 overflow-y-auto rounded-lg border border-gray-600 bg-gray-700">
+        <div className="mb-3 max-h-40 overflow-y-auto rounded-lg border border-border bg-input">
           {pagesQuery.isLoading && (
-            <p className="p-2 text-xs text-white/50">Načítání...</p>
+            <p className="p-2 text-xs text-muted-foreground/50">Načítání...</p>
           )}
           {pagesQuery.data?.data?.items
             ?.filter((page) => page.id !== currentPageId)
@@ -79,26 +79,26 @@ export function LinkEditorPanel({
               <button
                 key={page.id}
                 type="button"
-                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm text-white/80 transition-colors hover:bg-white/10"
+                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm text-foreground/80 transition-colors hover:bg-accent"
                 onClick={() => handleSelectPage(page.slug)}
               >
                 <span className="truncate">{page.title}</span>
-                <span className="shrink-0 text-xs text-white/50">/{page.slug}</span>
+                <span className="shrink-0 text-xs text-muted-foreground/50">/{page.slug}</span>
               </button>
             ))}
           {pagesQuery.data?.data?.items?.filter((p) => p.id !== currentPageId).length === 0 && !pagesQuery.isLoading && (
-            <p className="p-2 text-xs text-white/50">Žádné stránky</p>
+            <p className="p-2 text-xs text-muted-foreground/50">Žádné stránky</p>
           )}
         </div>
       )}
 
       {/* Open in new tab checkbox */}
-      <label className="mb-4 flex items-center gap-2 text-sm text-white/70">
+      <label className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
         <input
           type="checkbox"
           checked={openInNewTab}
           onChange={(e) => setOpenInNewTab(e.target.checked)}
-          className="h-4 w-4 rounded border-gray-600"
+          className="h-4 w-4 rounded border-border"
         />
         Otevřít v novém okně
       </label>
@@ -115,7 +115,7 @@ export function LinkEditorPanel({
         </button>
         <button
           type="button"
-          className="rounded-lg border border-gray-600 bg-transparent px-6 py-2 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+          className="rounded-lg border border-border bg-transparent px-6 py-2 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground"
           onClick={onCancel}
         >
           {cancelLabel}

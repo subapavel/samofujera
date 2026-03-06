@@ -4,13 +4,10 @@ import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { t } from "@lingui/core/macro";
-import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
-import type { MessageDescriptor } from "@lingui/core";
 import { MoreHorizontal } from "lucide-react";
 import type { OrderResponse } from "@samofujera/api-client";
 import {
-  Badge,
   Button,
   DropdownMenu,
   DropdownMenuTrigger,
@@ -18,25 +15,7 @@ import {
   DropdownMenuItem,
 } from "@samofujera/ui";
 import { DataTableColumnHeader } from "@/components/data-table";
-
-const STATUS_LABELS: Record<string, MessageDescriptor> = {
-  PENDING: msg`Čekající`,
-  PAID: msg`Zaplaceno`,
-  SHIPPED: msg`Odesláno`,
-  CANCELLED: msg`Zrušeno`,
-  REFUNDED: msg`Vráceno`,
-};
-
-const STATUS_VARIANT: Record<
-  string,
-  "secondary" | "default" | "outline" | "destructive"
-> = {
-  PENDING: "secondary",
-  PAID: "default",
-  SHIPPED: "outline",
-  CANCELLED: "destructive",
-  REFUNDED: "destructive",
-};
+import { StatusBadge } from "@/components/dashboard/status-badge";
 
 export function useOrdersColumns(): ColumnDef<OrderResponse>[] {
   const { _ } = useLingui();
@@ -63,11 +42,7 @@ export function useOrdersColumns(): ColumnDef<OrderResponse>[] {
         ),
         cell: ({ row }) => {
           const status = row.getValue("status") as string;
-          return (
-            <Badge variant={STATUS_VARIANT[status] ?? "secondary"}>
-              {_(STATUS_LABELS[status]) ?? status}
-            </Badge>
-          );
+          return <StatusBadge status={status} />;
         },
         filterFn: "arrIncludesSome",
       },

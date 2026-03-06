@@ -438,18 +438,18 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
       }}
     >
       {/* Main toolbar row */}
-      <div className="relative flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
+      <div className="editor-toolbar relative flex items-center gap-0.5 rounded-lg p-1 shadow-lg">
         {/* Block type dropdown — H1-H6, Odstavec, Citace */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-white/90 hover:bg-white/10 hover:text-white">
+            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs editor-toolbar-btn">
               {dropdownLabel}
-              <ChevronDown className="h-3 w-3 text-white/50" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="border-gray-700 bg-gray-800">
+          <DropdownMenuContent className="editor-toolbar-dropdown">
             {BLOCK_TYPE_OPTIONS.map(({ type, label }) => (
-              <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" key={type} onClick={() => formatBlock(type)}>
+              <DropdownMenuItem className="editor-toolbar-dropdown-item" key={type} onClick={() => formatBlock(type)}>
                 {type === "quote" && <TextQuote className="mr-2 h-4 w-4" />}
                 {label}
               </DropdownMenuItem>
@@ -457,13 +457,13 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-4 w-px bg-white/20" />
+        <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
 
         {/* Bold */}
         <Button
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isBold ? "bg-white/20" : ""}`}
+          className={`h-8 w-8 p-0 editor-toolbar-btn ${isBold ? "bg-accent" : ""}`}
           onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
           title="Tučné"
         >
@@ -474,14 +474,14 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
         <Button
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isItalic ? "bg-white/20" : ""}`}
+          className={`h-8 w-8 p-0 editor-toolbar-btn ${isItalic ? "bg-accent" : ""}`}
           onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
           title="Kurzíva"
         >
           <Italic className="h-4 w-4" />
         </Button>
 
-        <div className="mx-0.5 h-4 w-px bg-white/20" />
+        <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
 
         {/* Alignment dropdown — one icon with arrow */}
         <DropdownMenu>
@@ -489,18 +489,18 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 gap-0.5 px-1.5 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat && elementFormat !== "left" ? "bg-white/20" : ""}`}
+              className={`h-8 gap-0.5 px-1.5 editor-toolbar-btn ${elementFormat && elementFormat !== "left" ? "bg-accent" : ""}`}
               title="Zarovnání"
             >
               <CurrentAlignIcon className="h-4 w-4" />
-              <ChevronDown className="h-3 w-3 text-white/50" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="flex min-w-0 gap-1 border-gray-700 bg-gray-800 p-1">
+          <DropdownMenuContent className="flex min-w-0 gap-1 editor-toolbar-dropdown p-1">
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "" || elementFormat === "left" ? "bg-white/20" : ""}`}
+              className={`h-8 w-8 p-0 editor-toolbar-btn ${elementFormat === "" || elementFormat === "left" ? "bg-accent" : ""}`}
               onClick={() => formatAlignment("left")}
               title="Vlevo"
             >
@@ -509,7 +509,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "center" ? "bg-white/20" : ""}`}
+              className={`h-8 w-8 p-0 editor-toolbar-btn ${elementFormat === "center" ? "bg-accent" : ""}`}
               onClick={() => formatAlignment("center")}
               title="Na střed"
             >
@@ -518,7 +518,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "right" ? "bg-white/20" : ""}`}
+              className={`h-8 w-8 p-0 editor-toolbar-btn ${elementFormat === "right" ? "bg-accent" : ""}`}
               onClick={() => formatAlignment("right")}
               title="Vpravo"
             >
@@ -527,7 +527,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${elementFormat === "justify" ? "bg-white/20" : ""}`}
+              className={`h-8 w-8 p-0 editor-toolbar-btn ${elementFormat === "justify" ? "bg-accent" : ""}`}
               onClick={() => formatAlignment("justify")}
               title="Do bloku"
             >
@@ -542,18 +542,18 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 gap-0.5 px-1.5 text-white/90 hover:bg-white/10 hover:text-white ${isList ? "bg-white/20" : ""}`}
+              className={`h-8 gap-0.5 px-1.5 editor-toolbar-btn ${isList ? "bg-accent" : ""}`}
               title="Seznam"
             >
               <CurrentListIcon className="h-4 w-4" />
-              <ChevronDown className="h-3 w-3 text-white/50" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="flex min-w-0 gap-1 border-gray-700 bg-gray-800 p-1">
+          <DropdownMenuContent className="flex min-w-0 gap-1 editor-toolbar-dropdown p-1">
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isList && listType === "ul" ? "bg-white/20" : ""}`}
+              className={`h-8 w-8 p-0 editor-toolbar-btn ${isList && listType === "ul" ? "bg-accent" : ""}`}
               onClick={() => formatBlock("ul")}
               title="Seznam"
             >
@@ -562,7 +562,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isList && listType === "ol" ? "bg-white/20" : ""}`}
+              className={`h-8 w-8 p-0 editor-toolbar-btn ${isList && listType === "ol" ? "bg-accent" : ""}`}
               onClick={() => formatBlock("ol")}
               title="Číslovaný seznam"
             >
@@ -571,26 +571,26 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-4 w-px bg-white/20" />
+        <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
 
         {/* Link */}
         <Button
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${isLink ? "bg-white/20" : ""}`}
+          className={`h-8 w-8 p-0 editor-toolbar-btn ${isLink ? "bg-accent" : ""}`}
           onClick={insertLink}
           title="Odkaz"
         >
           <Link className="h-4 w-4" />
         </Button>
 
-        <div className="mx-0.5 h-4 w-px bg-white/20" />
+        <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
 
         {/* Toggle extras arrow */}
         <Button
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white ${showExtras ? "bg-white/20" : ""}`}
+          className={`h-8 w-8 p-0 editor-toolbar-btn ${showExtras ? "bg-accent" : ""}`}
           onClick={() => setShowExtras(!showExtras)}
           title="Další možnosti"
         >
@@ -598,7 +598,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
         </Button>
 
         {(onDelete || onCopy) && (
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
         )}
 
         {/* Delete — only shown when onDelete is provided */}
@@ -606,7 +606,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+            className="h-8 w-8 p-0 editor-toolbar-btn"
             onClick={() => { onDelete(); requestAnimationFrame(() => setShowToolbar(false)); }}
             title="Odstranit"
           >
@@ -621,14 +621,14 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+                className="h-8 w-8 p-0 editor-toolbar-btn"
                 title="Více možností"
               >
                 <EllipsisVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="border-gray-700 bg-gray-800">
-              <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" onClick={onCopy}>
+            <DropdownMenuContent className="editor-toolbar-dropdown">
+              <DropdownMenuItem className="editor-toolbar-dropdown-item" onClick={onCopy}>
                 <Copy className="mr-2 h-4 w-4" />
                 Zkopírovat
               </DropdownMenuItem>
@@ -638,20 +638,20 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
 
         {/* Arrow pointer — only when extras row is closed */}
         {!showExtras && (
-          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent editor-toolbar-arrow" />
         )}
       </div>
 
       {/* Extras row — font color, font size, indent */}
       {showExtras && (
-        <div className="relative flex items-center gap-0.5 rounded-lg bg-gray-800 p-1 shadow-lg">
+        <div className="editor-toolbar relative flex items-center gap-0.5 rounded-lg p-1 shadow-lg">
           {/* Font color — "A" with color indicator + dropdown */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-0.5 px-1.5 text-white/90 hover:bg-white/10 hover:text-white"
+                className="h-8 gap-0.5 px-1.5 editor-toolbar-btn"
                 title="Barva písma"
               >
                 <span className="relative flex flex-col items-center">
@@ -661,7 +661,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
                     style={{ backgroundColor: effectiveColor }}
                   />
                 </span>
-                <ChevronDown className="h-3 w-3 text-white/50" />
+                <ChevronDown className="h-3 w-3 text-muted-foreground" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-3" side="bottom" align="start">
@@ -692,13 +692,13 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
             </PopoverContent>
           </Popover>
 
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
 
           {/* Font size: A- | percentage dropdown | A+ */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+            className="h-8 w-8 p-0 editor-toolbar-btn"
             onClick={() => adjustFontSize("down")}
             title="Zmenšit písmo"
           >
@@ -707,17 +707,17 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 gap-0.5 px-1.5 text-xs text-white/90 hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="sm" className="h-8 gap-0.5 px-1.5 text-xs editor-toolbar-btn">
                 {fontSizeDisplay}
-                <ChevronDown className="h-3 w-3 text-white/50" />
+                <ChevronDown className="h-3 w-3 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-60 overflow-y-auto border-gray-700 bg-gray-800">
-              <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" onClick={() => applyFontSize(null)}>
+            <DropdownMenuContent className="max-h-60 overflow-y-auto editor-toolbar-dropdown">
+              <DropdownMenuItem className="editor-toolbar-dropdown-item" onClick={() => applyFontSize(null)}>
                 Výchozí
               </DropdownMenuItem>
               {FONT_SIZE_OPTIONS.map((size) => (
-                <DropdownMenuItem className="text-white/90 focus:bg-white/10 focus:text-white" key={size} onClick={() => applyFontSize(size)}>
+                <DropdownMenuItem className="editor-toolbar-dropdown-item" key={size} onClick={() => applyFontSize(size)}>
                   {size}
                 </DropdownMenuItem>
               ))}
@@ -727,20 +727,20 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+            className="h-8 w-8 p-0 editor-toolbar-btn"
             onClick={() => adjustFontSize("up")}
             title="Zvětšit písmo"
           >
             <span style={{ fontSize: "12px", fontWeight: "bold", color: "inherit" }}>A+</span>
           </Button>
 
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="mx-0.5 h-4 w-px editor-toolbar-separator" />
 
           {/* Indent / Outdent */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+            className="h-8 w-8 p-0 editor-toolbar-btn"
             onClick={() => editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)}
             title="Zmenšit odsazení"
           >
@@ -750,7 +750,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-white/90 hover:bg-white/10 hover:text-white"
+            className="h-8 w-8 p-0 editor-toolbar-btn"
             onClick={() => editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)}
             title="Zvětšit odsazení"
           >
@@ -758,7 +758,7 @@ export function ToolbarPlugin({ onDelete, onCopy, mode = "floating" }: ToolbarPl
           </Button>
 
           {/* Arrow pointer */}
-          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent editor-toolbar-arrow" />
         </div>
       )}
     </div>

@@ -23,9 +23,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Skeleton,
 } from "@samofujera/ui";
+import { FileX } from "lucide-react";
 import { DataTableToolbar, type FilterConfig } from "./data-table-toolbar";
 import { DataTablePagination } from "./data-table-pagination";
+import { EmptyState } from "@/components/dashboard/empty-state";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,6 +37,10 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string;
   filters?: FilterConfig[];
   enableRowSelection?: boolean;
+  isLoading?: boolean;
+  emptyIcon?: React.ReactNode;
+  emptyTitle?: string;
+  emptyDescription?: string;
   renderBulkActions?: (selectedRows: TData[], clearSelection: () => void) => React.ReactNode;
 }
 
@@ -44,6 +51,10 @@ export function DataTable<TData, TValue>({
   searchPlaceholder,
   filters,
   enableRowSelection,
+  isLoading,
+  emptyIcon,
+  emptyTitle,
+  emptyDescription,
   renderBulkActions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -106,7 +117,17 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, rowIdx) => (
+                <TableRow key={rowIdx}>
+                  {Array.from({ length: columns.length }).map((_, colIdx) => (
+                    <TableCell key={colIdx}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -126,9 +147,13 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-48"
                 >
-                  {t`Žádné výsledky.`}
+                  <EmptyState
+                    icon={emptyIcon ?? <FileX className="h-6 w-6" />}
+                    title={emptyTitle ?? t`Žádné výsledky`}
+                    description={emptyDescription ?? t`Nebyla nalezena žádná data.`}
+                  />
                 </TableCell>
               </TableRow>
             )}

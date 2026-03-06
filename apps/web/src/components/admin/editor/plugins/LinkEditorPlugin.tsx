@@ -178,22 +178,22 @@ export function LinkEditorPlugin() {
     >
       {/* Arrow */}
       <div className="flex justify-center">
-        <div className="h-0 w-0 border-x-8 border-b-8 border-x-transparent border-b-gray-800" />
+        <div className="h-0 w-0 border-x-8 border-b-8 border-x-transparent" style={{ borderBottomColor: "var(--popover)" }} />
       </div>
 
       {mode === "view" && linkData && (
-        <div className="flex items-center gap-1 rounded-lg border border-gray-700 bg-gray-800 p-1 shadow-lg">
-          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-white/90 transition-colors hover:bg-white/10" onClick={handleVisitLink}>
+        <div className="editor-toolbar flex items-center gap-1 rounded-lg p-1 shadow-lg">
+          <button type="button" className="editor-toolbar-btn flex items-center gap-1.5 rounded px-3 py-1.5 text-xs transition-colors" onClick={handleVisitLink}>
             <ExternalLink className="h-3.5 w-3.5" />
             Přejít na odkaz
           </button>
-          <div className="h-5 w-px bg-white/20" />
-          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-white/90 transition-colors hover:bg-white/10" onClick={handleEditExisting}>
+          <div className="h-5 w-px editor-toolbar-separator" />
+          <button type="button" className="editor-toolbar-btn flex items-center gap-1.5 rounded px-3 py-1.5 text-xs transition-colors" onClick={handleEditExisting}>
             <Pencil className="h-3.5 w-3.5" />
             Upravit odkaz
           </button>
-          <div className="h-5 w-px bg-white/20" />
-          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-red-400 transition-colors hover:bg-white/10 hover:text-red-300" onClick={handleRemoveLink}>
+          <div className="h-5 w-px editor-toolbar-separator" />
+          <button type="button" className="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs text-red-400 transition-colors hover:bg-accent hover:text-red-300" onClick={handleRemoveLink}>
             <Trash2 className="h-3.5 w-3.5" />
             Odstranit odkaz
           </button>
@@ -201,8 +201,8 @@ export function LinkEditorPlugin() {
       )}
 
       {mode === "edit" && (
-        <div className="w-80 rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-lg">
-          <p className="mb-2 text-sm font-semibold text-white">Odkaz:</p>
+        <div className="editor-confirm-popup w-80 rounded-lg p-4 shadow-lg">
+          <p className="mb-2 text-sm font-semibold text-popover-foreground">Odkaz:</p>
           <LinkEditorPanel
             initialUrl={linkData?.url}
             initialOpenInNewTab={linkData?.target === "_blank"}

@@ -14,13 +14,17 @@ export default function PublicLayout({
     <PublicAuthProvider>
       <PageIdProvider>
         <div className="flex flex-col min-h-screen">
+          {/* AdminBar follows dark theme (admin chrome) */}
           <AdminBar />
-          <TopBar />
-          <div className="px-2 mt-2 nav:mt-4 nav:px-4">
-            <PublicNav />
+          {/* Rest of public page always renders in light mode */}
+          <div className="public-chrome flex flex-col flex-1">
+            <TopBar />
+            <div className="px-2 mt-2 nav:mt-4 nav:px-4">
+              <PublicNav />
+            </div>
+            <main className="flex-1 px-2 py-2 nav:px-4 nav:py-4">{children}</main>
+            <Footer />
           </div>
-          <main className="flex-1 px-2 py-2 nav:px-4 nav:py-4">{children}</main>
-          <Footer />
         </div>
       </PageIdProvider>
     </PublicAuthProvider>

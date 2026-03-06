@@ -90,7 +90,7 @@ export function EditorToolbar({
     ? `/produkty/${slug}?preview=true`
     : `/${slug}?preview=true`;
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex h-12 items-center gap-2 border-b border-[var(--border)] bg-white px-4">
+    <div className="fixed top-0 left-0 right-0 z-50 flex h-12 items-center gap-2 border-b border-border bg-background px-4">
       {/* Back button */}
       <Button variant="ghost" size="sm" asChild>
         <Link href="/admin/stranky">

@@ -122,13 +122,13 @@ function SizePopover({
   return (
     <div
       ref={ref}
-      className="absolute left-0 top-full mt-1 z-50 rounded-lg border border-gray-600 bg-gray-800 p-3 shadow-lg"
+      className="editor-toolbar absolute left-0 top-full mt-1 z-50 rounded-lg p-3"
       style={{ minWidth: "200px" }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 flex items-center gap-2">
         <div className="flex flex-col gap-2">
-          <label className="flex items-center gap-2 text-xs text-white/80">
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="w-10 shrink-0">Šířka</span>
             <input
               type="number"
@@ -136,11 +136,11 @@ function SizePopover({
               value={wStr}
               onChange={(e) => handleWidthChange(e.target.value)}
               onFocus={(e) => e.target.select()}
-              className="w-20 rounded bg-gray-700 px-2 py-1 text-xs text-white outline-none"
+              className="w-20 rounded bg-input px-2 py-1 text-xs text-foreground outline-none"
             />
-            <span className="text-white/40">px</span>
+            <span className="text-muted-foreground">px</span>
           </label>
-          <label className="flex items-center gap-2 text-xs text-white/80">
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="w-10 shrink-0">Výška</span>
             <input
               type="number"
@@ -148,14 +148,14 @@ function SizePopover({
               value={hStr}
               onChange={(e) => handleHeightChange(e.target.value)}
               onFocus={(e) => e.target.select()}
-              className="w-20 rounded bg-gray-700 px-2 py-1 text-xs text-white outline-none"
+              className="w-20 rounded bg-input px-2 py-1 text-xs text-foreground outline-none"
             />
-            <span className="text-white/40">px</span>
+            <span className="text-muted-foreground">px</span>
           </label>
         </div>
         <button
           type="button"
-          className="ml-1 rounded p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white/90"
+          className="editor-toolbar-btn ml-1 rounded p-1 opacity-60"
           title={locked ? "Odemknout poměr stran" : "Zamknout poměr stran"}
           onClick={() => setLocked(!locked)}
         >
@@ -165,14 +165,14 @@ function SizePopover({
       <div className="flex gap-2">
         <button
           type="button"
-          className="flex-1 rounded bg-white/10 px-2 py-1 text-xs text-white/80 hover:bg-white/20"
+          className="editor-toolbar-btn flex-1 rounded px-2 py-1 text-xs"
           onClick={handleSave}
         >
           OK
         </button>
         <button
           type="button"
-          className="flex-1 rounded bg-white/5 px-2 py-1 text-xs text-white/60 hover:bg-white/10"
+          className="editor-toolbar-btn flex-1 rounded px-2 py-1 text-xs opacity-60"
           onClick={onClose}
         >
           Zrušit
@@ -379,14 +379,14 @@ export function ImageBlockEditor({
             {/* ── Dark floating toolbar ── */}
             {isSelected && (
               <div
-                className="absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg bg-gray-800 px-1 py-1.5 shadow-lg"
+                className="editor-toolbar absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg"
                 style={{ bottom: "calc(100% + 8px)" }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Upravit */}
                 <button
                   type="button"
-                  className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+                  className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePickerOpen();
@@ -396,13 +396,13 @@ export function ImageBlockEditor({
                   Upravit
                 </button>
 
-                <div className="mx-0.5 h-4 w-px bg-white/20" />
+                <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
                 {/* Velikost */}
                 <div className="relative">
                   <button
                     type="button"
-                    className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+                    className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
                     onClick={() => {
                       setShowSizePopover(!showSizePopover);
                       setShowMoreMenu(false);
@@ -426,12 +426,12 @@ export function ImageBlockEditor({
                   )}
                 </div>
 
-                <div className="mx-0.5 h-4 w-px bg-white/20" />
+                <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
                 {/* Obnovit */}
                 <button
                   type="button"
-                  className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+                  className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
                   onClick={() => {
                     onChange({ ...block, width: null, height: null, panX: 50, panY: 50 });
                   }}
@@ -440,12 +440,12 @@ export function ImageBlockEditor({
                   Obnovit
                 </button>
 
-                <div className="mx-0.5 h-4 w-px bg-white/20" />
+                <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
                 {/* Delete */}
                 <button
                   type="button"
-                  className="flex items-center rounded px-2 py-1 text-white/90 transition-colors hover:bg-white/10"
+                  className="editor-toolbar-btn flex items-center rounded px-2 py-1"
                   onClick={() => {
                     closeAllDropdowns();
                     onDelete();
@@ -458,7 +458,7 @@ export function ImageBlockEditor({
                 <div className="relative">
                   <button
                     type="button"
-                    className="flex items-center rounded px-1.5 py-1 text-white/90 transition-colors hover:bg-white/10"
+                    className="editor-toolbar-btn flex items-center rounded px-1.5 py-1"
                     onClick={() => {
                       setShowMoreMenu(!showMoreMenu);
                       setShowSizePopover(false);
@@ -467,10 +467,10 @@ export function ImageBlockEditor({
                     <MoreVertical className="h-3.5 w-3.5" />
                   </button>
                   {showMoreMenu && (
-                    <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+                    <div className="editor-toolbar-dropdown absolute right-0 top-full mt-1 z-50 w-36 rounded-lg">
                       <button
                         type="button"
-                        className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-white/70 transition-colors hover:bg-white/10"
+                        className="editor-toolbar-dropdown-item flex w-full items-center gap-2 px-3 py-1.5 text-xs"
                         onClick={() => {
                           setIsSelected(false);
                           closeAllDropdowns();
@@ -486,7 +486,7 @@ export function ImageBlockEditor({
                 </div>
 
                 {/* Arrow pointer */}
-                <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+                <div className="editor-toolbar-arrow absolute left-1/2 -bottom-1.5 -translate-x-1/2" />
               </div>
             )}
 
@@ -549,7 +549,7 @@ export function ImageBlockEditor({
                             writingMode: "vertical-lr",
                             direction: "rtl",
                             height: "100%",
-                            accentColor: "rgba(255,255,255,0.5)",
+                            accentColor: "var(--primary)",
                             opacity: 0.6,
                           }}
                           className="cursor-pointer hover:opacity-100 transition-opacity"
@@ -574,7 +574,7 @@ export function ImageBlockEditor({
                           }
                           style={{
                             width: "100%",
-                            accentColor: "rgba(255,255,255,0.5)",
+                            accentColor: "var(--primary)",
                             opacity: 0.6,
                           }}
                           className="cursor-pointer hover:opacity-100 transition-opacity"

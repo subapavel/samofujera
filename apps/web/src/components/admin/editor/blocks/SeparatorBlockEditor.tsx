@@ -57,11 +57,11 @@ export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange
 
       {/* Floating toolbar */}
       {showToolbar && (
-        <div className="absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg bg-gray-800 px-1 py-1.5 shadow-lg" style={{ bottom: "calc(100% + 8px)" }}>
+        <div className="editor-toolbar absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg" style={{ bottom: "calc(100% + 8px)" }}>
           {/* Delete button */}
           <button
             type="button"
-            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/90 transition-colors hover:bg-white/10"
+            className="editor-toolbar-btn flex items-center gap-1 rounded px-2 py-1 text-xs"
             onClick={(e) => {
               e.stopPropagation();
               setShowToolbar(false);
@@ -72,12 +72,12 @@ export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange
             <Trash2 className="h-3 w-3" />
             Odstranit
           </button>
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
           {/* Margin height dropdown */}
           <div className="relative">
             <button
               type="button"
-              className="flex items-center gap-1 rounded px-2 py-1 text-xs text-white/90 transition-colors hover:bg-white/10"
+              className="editor-toolbar-btn flex items-center gap-1 rounded px-2 py-1 text-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowDropdown(!showDropdown);
@@ -88,15 +88,15 @@ export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange
             </button>
 
             {showDropdown && (
-              <div className="absolute left-0 top-full mt-1 z-50 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+              <div className="editor-toolbar-dropdown absolute left-0 top-full mt-1 z-50 w-36 rounded-lg">
                 {MARGIN_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
-                    className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
+                    className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
                       block.marginHeight === opt.value
-                        ? "text-white font-medium"
-                        : "text-white/70"
+                        ? "editor-toolbar-dropdown-item-active"
+                        : "editor-toolbar-dropdown-item"
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -114,7 +114,7 @@ export function SeparatorBlockEditor({ block, onChange, onDelete, onActiveChange
           </div>
 
           {/* Arrow pointer */}
-          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+          <div className="editor-toolbar-arrow absolute left-1/2 -bottom-1.5 -translate-x-1/2" />
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   SidebarMenu,
@@ -17,12 +18,16 @@ export function BrandHeader({ section }: BrandHeaderProps) {
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
           <Link href="/">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)]">
-              <span className="font-bold text-sm">SF</span>
-            </div>
+            <Image
+              src="/images/logo.png"
+              alt="Sámo Fujera"
+              width={32}
+              height={32}
+              className="size-8 shrink-0 object-contain"
+            />
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Sámo Fujera</span>
-              <span className="truncate text-xs text-[var(--muted-foreground)]">{section}</span>
+              <span className="truncate font-heading font-semibold">Sámo Fujera</span>
+              <span className="truncate text-xs text-muted-foreground">{section}</span>
             </div>
           </Link>
         </SidebarMenuButton>

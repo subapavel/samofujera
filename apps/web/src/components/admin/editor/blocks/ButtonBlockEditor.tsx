@@ -64,15 +64,15 @@ function InsertDialog({ onConfirm, onCancel }: {
 
   return (
     <div className="flex justify-center py-4">
-      <div ref={dialogRef} className="w-full max-w-md rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-2xl">
+      <div ref={dialogRef} className="editor-toolbar w-full max-w-md rounded-xl p-6">
         {/* Header */}
         <div className="mb-5 flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-white/40 text-white/60">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-border/40 text-muted-foreground">
             <Link2 className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-lg font-bold text-white">Vložit tlačítko</p>
-            <p className="mt-1 text-sm text-white/60">Zadejte odkaz pro nové tlačítko.</p>
+            <p className="text-lg font-bold text-popover-foreground">Vložit tlačítko</p>
+            <p className="mt-1 text-sm text-muted-foreground">Zadejte odkaz pro nové tlačítko.</p>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ function LinkEditPopover({ url, openInNewTab, onSave, onClose }: {
   }, [onClose]);
 
   return (
-    <div ref={ref} className="absolute left-0 top-full mt-1 z-50 w-80 rounded-lg border border-gray-600 bg-gray-800 p-3 shadow-lg">
+    <div ref={ref} className="editor-toolbar absolute left-0 top-full mt-1 z-50 w-80 rounded-lg p-3">
       <LinkEditorPanel
         initialUrl={url}
         initialOpenInNewTab={openInNewTab}
@@ -235,14 +235,14 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
       {/* Floating toolbar */}
       {showToolbar && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg bg-gray-800 px-1 py-1.5 shadow-lg"
+          className="editor-toolbar absolute left-1/2 -translate-x-1/2 z-50 flex items-center rounded-lg"
           style={{ bottom: "calc(100% + 8px)" }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Go to link */}
           <button
             type="button"
-            className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+            className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
             onClick={() => {
               if (!block.url) return;
               const href = block.url.startsWith("http") || block.url.startsWith("/")
@@ -254,13 +254,13 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
             Přejít na odkaz
           </button>
 
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
           {/* Change link */}
           <div className="relative">
             <button
               type="button"
-              className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+              className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
               onClick={() => {
                 setShowLinkEdit(!showLinkEdit);
                 setShowStyleDropdown(false);
@@ -283,13 +283,13 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
             )}
           </div>
 
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
           {/* Style dropdown */}
           <div className="relative">
             <button
               type="button"
-              className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+              className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
               onClick={() => {
                 setShowStyleDropdown(!showStyleDropdown);
                 setShowAlignDropdown(false);
@@ -301,13 +301,13 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
               <ChevronDown className="h-3 w-3" />
             </button>
             {showStyleDropdown && (
-              <div className="absolute left-0 top-full mt-1 z-50 w-32 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+              <div className="editor-toolbar-dropdown absolute left-0 top-full mt-1 z-50 w-32 rounded-lg">
                 {BUTTON_STYLES.map((style) => (
                   <button
                     key={style.value}
                     type="button"
-                    className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
-                      block.variant === style.value ? "text-white font-medium" : "text-white/70"
+                    className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
+                      block.variant === style.value ? "editor-toolbar-dropdown-item-active" : "editor-toolbar-dropdown-item"
                     }`}
                     onClick={() => {
                       onChange({ ...block, variant: style.value });
@@ -322,13 +322,13 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
             )}
           </div>
 
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
           {/* Alignment dropdown */}
           <div className="relative">
             <button
               type="button"
-              className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 whitespace-nowrap"
+              className="editor-toolbar-btn flex items-center gap-1 rounded px-2.5 py-1 text-xs whitespace-nowrap"
               onClick={() => {
                 setShowAlignDropdown(!showAlignDropdown);
                 setShowStyleDropdown(false);
@@ -340,15 +340,15 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
               <ChevronDown className="h-3 w-3" />
             </button>
             {showAlignDropdown && (
-              <div className="absolute left-0 top-full mt-1 z-50 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+              <div className="editor-toolbar-dropdown absolute left-0 top-full mt-1 z-50 w-36 rounded-lg">
                 {ALIGNMENT_OPTIONS.map((opt) => {
                   const Icon = opt.icon;
                   return (
                     <button
                       key={opt.value}
                       type="button"
-                      className={`flex w-full items-center gap-2 px-3 py-1.5 text-xs transition-colors hover:bg-white/10 ${
-                        alignment === opt.value ? "text-white font-medium" : "text-white/70"
+                      className={`flex w-full items-center gap-2 px-3 py-1.5 text-xs transition-colors hover:bg-accent ${
+                        alignment === opt.value ? "editor-toolbar-dropdown-item-active" : "editor-toolbar-dropdown-item"
                       }`}
                       onClick={() => {
                         onChange({ ...block, alignment: opt.value });
@@ -365,12 +365,12 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
             )}
           </div>
 
-          <div className="mx-0.5 h-4 w-px bg-white/20" />
+          <div className="editor-toolbar-separator mx-0.5 h-4 w-px" />
 
           {/* Delete */}
           <button
             type="button"
-            className="flex items-center rounded px-2 py-1 text-white/90 transition-colors hover:bg-white/10"
+            className="editor-toolbar-btn flex items-center rounded px-2 py-1"
             onClick={() => {
               setShowToolbar(false);
               closeAllDropdowns();
@@ -385,7 +385,7 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
           <div className="relative">
             <button
               type="button"
-              className="flex items-center rounded px-1.5 py-1 text-white/90 transition-colors hover:bg-white/10"
+              className="editor-toolbar-btn flex items-center rounded px-1.5 py-1"
               onClick={() => {
                 setShowMoreMenu(!showMoreMenu);
                 setShowStyleDropdown(false);
@@ -396,10 +396,10 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
               <MoreVertical className="h-3.5 w-3.5" />
             </button>
             {showMoreMenu && (
-              <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg">
+              <div className="editor-toolbar-dropdown absolute right-0 top-full mt-1 z-50 w-36 rounded-lg">
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-white/70 transition-colors hover:bg-white/10"
+                  className="editor-toolbar-dropdown-item flex w-full items-center gap-2 px-3 py-1.5 text-xs"
                   onClick={() => {
                     setShowToolbar(false);
                     closeAllDropdowns();
@@ -415,7 +415,7 @@ export function ButtonBlockEditor({ block, onChange, onDelete, onCopy, onActiveC
           </div>
 
           {/* Arrow pointer */}
-          <div className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 h-0 w-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-gray-800" />
+          <div className="editor-toolbar-arrow absolute left-1/2 -bottom-1.5 -translate-x-1/2" />
         </div>
       )}
     </div>

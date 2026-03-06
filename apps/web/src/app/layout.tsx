@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Allura, Inter, Josefin_Sans, Open_Sans } from "next/font/google";
 import { I18nProvider } from "@/components/i18n-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import "@/styles/global.css";
 
 const inter = Inter({
@@ -56,8 +57,10 @@ export default async function RootLayout({
       className={`${inter.variable} ${josefinSans.variable} ${openSans.variable} ${allura.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-white text-[var(--foreground)] font-sans antialiased">
-        <I18nProvider locale={locale}>{children}</I18nProvider>
+      <body className="min-h-screen bg-background text-foreground font-sans antialiased">
+        <ThemeProvider>
+          <I18nProvider locale={locale}>{children}</I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
