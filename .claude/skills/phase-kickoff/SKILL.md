@@ -1,50 +1,44 @@
 ---
 name: phase-kickoff
-description: "Start a new implementation phase. Enforces the mandatory workflow: brainstorm first, write design doc, then create implementation plan. Never skip steps."
-argument-hint: "[phase-number] [phase-name]"
+description: "Start a new implementation phase or feature. Applies the 3-tier workflow: large tasks get full brainstorm/design/plan, medium tasks get a short plan, small tasks skip this skill entirely."
+argument-hint: "[task-description]"
 disable-model-invocation: true
 ---
 
 # Phase Kickoff
 
-This skill enforces the project's critical workflow rule: **brainstorm before implementing.**
+## First: Determine Task Size
 
-## Mandatory Workflow
+Before doing anything, classify the task:
 
-Every phase MUST follow these steps in order. No exceptions.
+| Size | Examples | Action |
+|------|----------|--------|
+| **Large** | New phase, new module, architecture change | Full workflow below |
+| **Medium** | New endpoint, new page, new component | Write 5-10 point plan in chat, then implement |
+| **Small** | Bug fix, CSS tweak, refactor, text change | **Skip this skill** — implement directly |
+
+If the task is **small**, tell the user and implement directly. No design doc needed.
+If the task is **medium**, write a quick plan in chat and start after approval.
+
+## Full Workflow (Large Tasks Only)
 
 ### Step 1: Brainstorm
 Invoke the `superpowers:brainstorming` skill to:
 - Review the relevant section of `architektura.md`
 - Challenge assumptions — the architecture is orientational, not definitive
-- Use Context7 to verify all technology choices against current best practices
+- Use Context7 to verify technology choices against current docs
 - Explore 2-3 approaches with trade-offs
 - Get user approval on the approach
 
 ### Step 2: Design Doc
-Write the validated design to:
-```
-docs/plans/YYYY-MM-DD-phase-$0-$1-design.md
-```
+Write to: `docs/plans/YYYY-MM-DD-<topic>-design.md`
 
-Include:
-- Goal (one sentence)
-- Architecture decisions (what changed from architektura.md and why)
-- Database schema (if applicable)
-- API endpoints (if applicable)
-- Component structure (if applicable)
-- Test strategy
-
-Commit the design doc.
+Include: Goal, architecture decisions, DB schema, API endpoints, component
+structure, test strategy (as applicable). Commit the design doc.
 
 ### Step 3: Implementation Plan
-Invoke the `superpowers:writing-plans` skill to create a detailed
-step-by-step implementation plan with TDD checkpoints.
-
-Save to:
-```
-docs/plans/YYYY-MM-DD-phase-$0-$1-implementation.md
-```
+Invoke the `superpowers:writing-plans` skill. Save to:
+`docs/plans/YYYY-MM-DD-<topic>-implementation.md`
 
 ### Step 4: Execute
 Use `superpowers:executing-plans` or `superpowers:subagent-driven-development`
@@ -60,7 +54,6 @@ to implement the plan task by task.
 - Phase 7: Vouchers
 
 ## Rules
-- NEVER skip brainstorming
-- NEVER start coding without a written plan
-- ALWAYS commit design docs before implementation begins
+- NEVER skip brainstorming for large tasks
+- For medium tasks, a chat plan is sufficient — no design doc file needed
 - ALWAYS use TDD during implementation
