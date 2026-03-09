@@ -1,0 +1,20 @@
+app = "samofujera-quarkus"
+primary_region = "fra"
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+
+[checks]
+  [checks.health]
+    port = 8080
+    type = "http"
+    interval = "15s"
+    timeout = "5s"
+    path = "/q/health/live"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

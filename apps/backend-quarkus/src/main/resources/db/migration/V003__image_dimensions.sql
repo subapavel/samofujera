@@ -1,0 +1,2 @@
+ALTER TABLE images ADD COLUMN width INT;
+ALTER TABLE images ADD COLUMN height INT;

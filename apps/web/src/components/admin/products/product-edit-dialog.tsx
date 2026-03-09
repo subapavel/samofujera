@@ -118,6 +118,16 @@ function GalleryTab({
   images: ProductImageResponse[];
   onInvalidate: () => Promise<void>;
 }) {
+  // Debug: track renders
+  const renderCount = useRef(0);
+  renderCount.current++;
+  useEffect(() => {
+    console.log("[GalleryTab] mounted, images:", images.length);
+    return () => console.log("[GalleryTab] unmounted");
+  }, []);
+  useEffect(() => {
+    console.log("[GalleryTab] render #" + renderCount.current, "images:", images.length);
+  });
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
@@ -571,8 +581,22 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
 
   const pageQuery = useQuery({
     queryKey: ["admin", "pages", "by-product", productId],
-    queryFn: () => pageAdminApi.getPageByProduct(productId!),
+    queryFn: () => {
+      console.log("[ProductEditDialog] fetching page for product:", productId);
+      return pageAdminApi.getPageByProduct(productId!);
+    },
     enabled: !!productId,
+    retry: false,
+    staleTime: 30_000,
+  });
+
+  // Debug render tracking
+  const dialogRenderCount = useRef(0);
+  dialogRenderCount.current++;
+  useEffect(() => {
+    console.log("[ProductEditDialog] render #" + dialogRenderCount.current,
+      "pageQuery:", pageQuery.status, pageQuery.fetchStatus,
+      "data:", pageQuery.data?.data ? "exists" : "null");
   });
 
   const [slugManual, setSlugManual] = useState(false);
@@ -611,6 +635,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
     queryKey: ["admin", "product", productId],
     queryFn: () => adminApi.getProduct(productId!),
     enabled: Boolean(productId) && open,
+    retry: false,
   });
 
   const product = productQuery.data?.data;
@@ -618,6 +643,7 @@ export function ProductEditDialog({ productId, open, onOpenChange }: ProductEdit
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: () => catalogApi.getCategories(),
+    retry: false,
   });
 
   useEffect(() => {
