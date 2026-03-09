@@ -30,7 +30,7 @@ public class EmailTemplateOverrideEntity extends PanacheEntityBase {
     @Column(name = "custom_subject")
     public String customSubject;
 
-    @Column(name = "custom_body_html")
+    @Column(name = "custom_body_html", columnDefinition = "text")
     public String customBodyHtml;
 
     @Column(name = "updated_at", nullable = false)

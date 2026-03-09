@@ -8,12 +8,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "shipping_records")
-public class ShippingRecordEntity extends PanacheEntityBase {
+@Table(name = "order_items")
+public class OrderItemEntity extends PanacheEntityBase {
 
     @Id
     @Column(columnDefinition = "uuid")
@@ -22,19 +24,23 @@ public class ShippingRecordEntity extends PanacheEntityBase {
     @Column(name = "order_id", nullable = false)
     public UUID orderId;
 
-    public String carrier;
+    @Column(name = "product_id")
+    public UUID productId;
 
-    @Column(name = "tracking_number")
-    public String trackingNumber;
+    @Column(name = "variant_id")
+    public UUID variantId;
 
-    @Column(name = "tracking_url")
-    public String trackingUrl;
+    @Column(nullable = false)
+    public int quantity;
 
-    @Column(name = "shipped_at")
-    public Instant shippedAt;
+    @Column(name = "unit_price", nullable = false)
+    public BigDecimal unitPrice;
 
-    @Column(name = "delivered_at")
-    public Instant deliveredAt;
+    @Column(name = "total_price", nullable = false)
+    public BigDecimal totalPrice;
+
+    @Column(name = "product_snapshot", columnDefinition = "jsonb")
+    public String productSnapshot;
 
     @Column(name = "created_at", nullable = false)
     public Instant createdAt;
@@ -45,7 +51,7 @@ public class ShippingRecordEntity extends PanacheEntityBase {
         if (createdAt == null) createdAt = Instant.now();
     }
 
-    public static Uni<ShippingRecordEntity> findByOrderId(UUID orderId) {
-        return find("orderId", orderId).firstResult();
+    public static Uni<List<OrderItemEntity>> findByOrderId(UUID orderId) {
+        return list("orderId", orderId);
     }
 }

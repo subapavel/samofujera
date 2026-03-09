@@ -37,13 +37,13 @@ public class OrderEntity extends PanacheEntityBase {
     @Column(name = "discount_amount")
     public BigDecimal discountAmount;
 
-    @Column(name = "stripe_payment_id")
+    @Column(name = "stripe_payment_id", columnDefinition = "text")
     public String stripePaymentId;
 
-    @Column(name = "billing_address")
+    @Column(name = "billing_address", columnDefinition = "jsonb")
     public String billingAddress;
 
-    @Column(name = "shipping_address")
+    @Column(name = "shipping_address", columnDefinition = "jsonb")
     public String shippingAddress;
 
     @Column(nullable = false)

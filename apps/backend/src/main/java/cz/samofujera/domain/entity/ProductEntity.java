@@ -28,6 +28,7 @@ public class ProductEntity extends PanacheEntityBase {
     @Column(nullable = false, unique = true)
     public String slug;
 
+    @Column(columnDefinition = "text")
     public String description;
 
     @Column(name = "short_description")
@@ -39,7 +40,7 @@ public class ProductEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public String status;
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", columnDefinition = "text")
     public String thumbnailUrl;
 
     @Column(name = "meta_title")
@@ -67,7 +68,7 @@ public class ProductEntity extends PanacheEntityBase {
     @Column(name = "weight_kg")
     public BigDecimal weightKg;
 
-    @Column(name = "og_image_url")
+    @Column(name = "og_image_url", columnDefinition = "text")
     public String ogImageUrl;
 
     @Column(name = "variant_category_name")

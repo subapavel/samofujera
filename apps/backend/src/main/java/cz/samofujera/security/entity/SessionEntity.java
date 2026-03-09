@@ -38,7 +38,7 @@ public class SessionEntity extends PanacheEntityBase {
     @Column(name = "ip_address")
     public String ipAddress;
 
-    @Column(name = "user_agent")
+    @Column(name = "user_agent", columnDefinition = "text")
     public String userAgent;
 
     public static Uni<SessionEntity> findValidById(String sessionId) {

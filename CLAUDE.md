@@ -188,7 +188,7 @@ main <- develop <- feature/<phase>-<description>
 ### Local Dev
 ```bash
 docker compose up -d          # PostgreSQL, Redis, Mailpit, MinIO
-cd apps/backend-quarkus && ./mvnw quarkus:dev -Dquarkus.http.host=0.0.0.0
+cd apps/backend && ./mvnw quarkus:dev -Dquarkus.http.host=0.0.0.0
 pnpm dev                      # from apps/web
 ```
 
@@ -202,7 +202,7 @@ samofujera/
 ├── .claude/skills/              # Custom project skills
 ├── apps/
 │   ├── web/                     # Next.js 16 app
-│   └── backend-quarkus/         # Quarkus 3 (Hibernate Reactive, Panache)
+│   └── backend/         # Quarkus 3 (Hibernate Reactive, Panache)
 ├── packages/
 │   ├── ui/                      # Shared shadcn/ui components
 │   ├── api-client/              # Typed API client

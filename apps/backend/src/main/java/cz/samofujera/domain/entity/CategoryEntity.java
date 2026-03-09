@@ -10,15 +10,11 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 @Entity
-@Table(name = "membership_plans")
-public class MembershipPlanEntity extends PanacheEntityBase {
+@Table(name = "product_categories")
+public class CategoryEntity extends PanacheEntityBase {
 
     @Id
     @Column(columnDefinition = "uuid")
@@ -30,23 +26,11 @@ public class MembershipPlanEntity extends PanacheEntityBase {
     @Column(nullable = false, unique = true)
     public String slug;
 
+    @Column(columnDefinition = "text")
     public String description;
-
-    @Column(name = "stripe_price_id_czk")
-    public String stripePriceIdCzk;
-
-    @Column(name = "stripe_price_id_eur")
-    public String stripePriceIdEur;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "jsonb")
-    public String features;
 
     @Column(name = "sort_order", nullable = false)
     public int sortOrder;
-
-    @Column(nullable = false)
-    public boolean active;
 
     @Column(name = "created_at", nullable = false)
     public Instant createdAt;
@@ -67,11 +51,7 @@ public class MembershipPlanEntity extends PanacheEntityBase {
         updatedAt = Instant.now();
     }
 
-    public static Uni<MembershipPlanEntity> findBySlug(String slug) {
+    public static Uni<CategoryEntity> findBySlug(String slug) {
         return find("slug", slug).firstResult();
-    }
-
-    public static Uni<List<MembershipPlanEntity>> findActivePlans() {
-        return list("active = true order by sortOrder");
     }
 }

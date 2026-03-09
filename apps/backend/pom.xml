@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cz.samofujera</groupId>
-    <artifactId>backend-quarkus</artifactId>
+    <artifactId>backend</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 

@@ -33,7 +33,7 @@ public class EventOccurrenceEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public String status;
 
-    @Column(name = "stream_url")
+    @Column(name = "stream_url", columnDefinition = "text")
     public String streamUrl;
 
     @Column(name = "created_at", nullable = false)

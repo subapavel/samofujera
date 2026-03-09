@@ -1,7 +1,6 @@
 package cz.samofujera.domain.entity;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,28 +12,39 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "events")
-public class EventEntity extends PanacheEntityBase {
+@Table(name = "images")
+public class ImageEntity extends PanacheEntityBase {
 
     @Id
     @Column(columnDefinition = "uuid")
     public UUID id;
 
-    @Column(name = "product_id", nullable = false)
-    public UUID productId;
+    @Column(name = "original_filename")
+    public String originalFilename;
 
-    public String venue;
+    @Column(name = "storage_key")
+    public String storageKey;
 
-    public Integer capacity;
+    @Column(name = "mime_type")
+    public String mimeType;
 
-    @Column(name = "is_online", nullable = false)
-    public boolean isOnline;
+    @Column(name = "file_size_bytes")
+    public Long fileSizeBytes;
 
-    @Column(name = "stream_url")
-    public String streamUrl;
+    @Column(name = "alt_text", columnDefinition = "text")
+    public String altText;
 
-    @Column(name = "recording_product_id")
-    public UUID recordingProductId;
+    public String title;
+
+    @Column(nullable = false)
+    public String source;
+
+    public Integer width;
+
+    public Integer height;
+
+    @Column(name = "is_public", nullable = false)
+    public boolean isPublic;
 
     @Column(name = "created_at", nullable = false)
     public Instant createdAt;
@@ -53,9 +63,5 @@ public class EventEntity extends PanacheEntityBase {
     @PreUpdate
     public void preUpdate() {
         updatedAt = Instant.now();
-    }
-
-    public static Uni<EventEntity> findByProductId(UUID productId) {
-        return find("productId", productId).firstResult();
     }
 }
