@@ -8,6 +8,8 @@ import {
   Users,
   Crown,
   Mail,
+  Store,
+  Settings,
 } from "lucide-react";
 import { msg } from "@lingui/core/macro";
 import type { SidebarData } from "./types";
@@ -28,12 +30,13 @@ export const adminSidebarData: SidebarData = {
       ],
     },
     {
-      title: msg`Prodej`,
+      title: msg`E-shop`,
       items: [
         { title: msg`Produkty`, url: "/admin/produkty", icon: Package },
         { title: msg`Kategorie`, url: "/admin/produkty/kategorie", icon: Tags },
         { title: msg`Objednávky`, url: "/admin/objednavky", icon: ShoppingCart },
         { title: msg`Členství`, url: "/admin/clenstvi", icon: Crown },
+        { title: msg`Nastavení`, url: "/admin/nastaveni", icon: Settings },
       ],
     },
     {
