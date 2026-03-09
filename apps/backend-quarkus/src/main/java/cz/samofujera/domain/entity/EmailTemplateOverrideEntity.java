@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "email_template_overrides", schema = "quarkus_poc")
+@Table(name = "email_template_overrides")
 public class EmailTemplateOverrideEntity extends PanacheEntityBase {
 
     @Id

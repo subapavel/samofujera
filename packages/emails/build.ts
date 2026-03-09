@@ -10,7 +10,7 @@ import { OrderConfirmation } from "./src/OrderConfirmation";
 import { DigitalDelivery } from "./src/DigitalDelivery";
 import type { Locale } from "./src/translations";
 
-const OUTPUT_DIR = "../../apps/backend/src/main/resources/templates/email";
+const OUTPUT_DIR = "../../apps/backend-quarkus/src/main/resources/templates/email";
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 

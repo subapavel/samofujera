@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product_gallery", schema = "quarkus_poc")
+@Table(name = "product_gallery")
 public class ProductGalleryEntity extends PanacheEntityBase {
 
     @Id

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "variant_prices", schema = "quarkus_poc")
+@Table(name = "variant_prices")
 public class VariantPriceEntity extends PanacheEntityBase {
 
     @Id

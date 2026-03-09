@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product_category_assignments", schema = "quarkus_poc")
+@Table(name = "product_category_assignments")
 @IdClass(ProductCategoryAssignmentEntity.PK.class)
 public class ProductCategoryAssignmentEntity extends PanacheEntityBase {
 

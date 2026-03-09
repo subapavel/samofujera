@@ -3,9 +3,9 @@ name: backend
 on:
   push:
     branches: [main, develop]
-    paths: ['apps/backend/**']
+    paths: ['apps/backend-quarkus/**']
   pull_request:
-    paths: ['apps/backend/**']
+    paths: ['apps/backend-quarkus/**']
 
 jobs:
   test:
@@ -20,9 +20,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('apps/backend/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('apps/backend-quarkus/pom.xml') }}
       - name: test
-        working-directory: apps/backend
+        working-directory: apps/backend-quarkus
         run: ./mvnw verify
 
   deploy:
@@ -36,11 +36,11 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: build jar
-        working-directory: apps/backend
+        working-directory: apps/backend-quarkus
         run: ./mvnw package -DskipTests
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: deploy
-        working-directory: apps/backend
+        working-directory: apps/backend-quarkus
         run: flyctl deploy --local-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

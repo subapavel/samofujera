@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "page_revisions", schema = "quarkus_poc")
+@Table(name = "page_revisions")
 public class PageRevisionEntity extends PanacheEntityBase {
 
     @Id

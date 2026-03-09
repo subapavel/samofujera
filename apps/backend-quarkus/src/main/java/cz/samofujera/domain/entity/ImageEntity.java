@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "images", schema = "quarkus_poc")
+@Table(name = "images")
 public class ImageEntity extends PanacheEntityBase {
 
     @Id

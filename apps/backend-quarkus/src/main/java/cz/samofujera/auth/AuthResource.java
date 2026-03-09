@@ -18,9 +18,11 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Path("/api/auth")
 @ApplicationScoped
@@ -35,6 +37,9 @@ public class AuthResource {
 
     @Inject
     SecurityIdentity identity;
+
+    @ConfigProperty(name = "app.superadmin.email")
+    Optional<String> superadminEmail;
 
     @POST
     @Path("/login")
@@ -92,7 +97,10 @@ public class AuthResource {
                     user.email = request.email();
                     user.passwordHash = passwordService.hash(request.password());
                     user.displayName = request.displayName();
-                    user.role = "USER";
+                    user.role = superadminEmail
+                            .filter(sa -> !sa.isBlank() && sa.equalsIgnoreCase(request.email()))
+                            .map(sa -> "ADMIN")
+                            .orElse("USER");
                     user.isActive = true;
                     user.createdAt = Instant.now();
                     user.updatedAt = Instant.now();

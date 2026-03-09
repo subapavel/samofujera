@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product_content", schema = "quarkus_poc")
+@Table(name = "product_content")
 public class ProductContentEntity extends PanacheEntityBase {
 
     @Id

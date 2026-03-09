@@ -20,9 +20,9 @@ event flows, deployment config, design system, and roadmap.
 | UI Components  | shadcn/ui (customized brand theme)                      |
 | Styling        | Tailwind CSS 4 (CSS-based config, `@theme` directive)   |
 | i18n           | Lingui (ICU MessageFormat, cs/sk plurals)               |
-| Backend        | Java 25, Spring Boot 4, Spring Modulith 2               |
-| DB Access      | JOOQ (generated from schema), Flyway migrations         |
-| Auth           | Spring Security + Spring Session (Redis, 30-day TTL)    |
+| Backend        | Java 25, Quarkus 3 (Hibernate Reactive, Panache)        |
+| DB Access      | Hibernate Reactive Panache, Flyway migrations            |
+| Auth           | Custom session auth (DB-backed sessions, cookie-based)   |
 | Payments       | Stripe (one-time + subscriptions)                       |
 | Storage        | Cloudflare R2 (files), Cloudflare Stream (video)        |
 | Email          | React Email templates, Resend (prod), Mailpit (dev)     |
@@ -87,11 +87,8 @@ Czech: one/few/many/other. Slovak: one/few/other.
 ### 9. Feature flags from day one
 Every new feature behind a flag. DB-backed with Redis cache.
 
-### 10. Module boundaries are sacred
-Spring Modulith modules communicate only through public APIs and events.
-Never access another module's `internal/` package.
-
-### 11. JOOQ only — no JPA, no raw SQL
+### 10. Panache entities — no raw SQL
+All database access through Hibernate Reactive Panache entities.
 
 ### 12. pnpm only — no npm, no yarn
 
@@ -101,10 +98,12 @@ Middleware protects `/admin` and `/muj-ucet` via `SESSION` cookie. `AuthGuard` v
 
 ## Code Conventions
 
-### Backend (Java/Spring)
-- Package: `cz.samofujera.<module>` with `internal/` and `event/` sub-packages
-- Public API at module root (Service + Records), internal details in `internal/`
-- Records for DTOs, constructor injection, PascalCase/camelCase/UPPER_SNAKE
+### Backend (Java/Quarkus)
+- Package: `cz.samofujera.<module>` (auth, domain, security, realtime)
+- Panache entities extend `PanacheEntityBase`, public fields
+- Records for DTOs, `@Inject` for CDI injection, PascalCase/camelCase/UPPER_SNAKE
+- RESTEasy Reactive endpoints with `Uni<>` return types
+- `@WithTransaction` for write operations
 
 ### Frontend (TypeScript/React)
 - Strict TypeScript — no `any`, no `// @ts-ignore`
@@ -126,17 +125,11 @@ Middleware protects `/admin` and `/muj-ucet` via `SESSION` cookie. `AuthGuard` v
 - Stream tokens: `sub=video-uid`, `exp=duration+30min`, `accessRules` with IP
 - Rate limit downloads: max 5/hour/user (Redis counter)
 
-### Spring Modulith
-- Module root = public API (Service + Records), `internal/` = private, `event/` = domain events
-- `@NamedInterface("events")` in `package-info.java` to expose event sub-packages
-- `@Transactional` required on methods calling `publishEvent()` (listeners use `@TransactionalEventListener`)
-- Avoid bean name conflicts with Spring framework beans (e.g. `UserSessionRepository` not `SessionRepository`)
-
-### Testcontainers
-- Always real PostgreSQL + Redis via Testcontainers — never H2 or mocks
-- `@ServiceConnection` beans in shared `TestcontainersConfig`
-- `@ApplicationModuleTest` + `Scenario` API for event-driven test flows
-- Build pipeline: Flyway → Testcontainers PG → JOOQ codegen → compile → test
+### Quarkus Patterns
+- Custom session auth via `SessionAuthMechanism` (cookie-based, DB sessions)
+- Superadmin: set `SUPERADMIN_EMAIL` env var — user registering with that email gets ADMIN role
+- CSRF filter checks Origin/Referer headers on mutating requests
+- SSE for real-time updates via PostgreSQL LISTEN/NOTIFY
 
 ### Database
 - Flyway migrations (`V{number}__{description}.sql`), UUIDs for PKs
@@ -194,8 +187,8 @@ main <- develop <- feature/<phase>-<description>
 
 ### Local Dev
 ```bash
-docker compose up -d          # PostgreSQL, Redis, Mailpit, Stripe CLI
-cd apps/backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+docker compose up -d          # PostgreSQL, Redis, Mailpit, MinIO
+cd apps/backend-quarkus && ./mvnw quarkus:dev -Dquarkus.http.host=0.0.0.0
 pnpm dev                      # from apps/web
 ```
 
@@ -209,7 +202,7 @@ samofujera/
 ├── .claude/skills/              # Custom project skills
 ├── apps/
 │   ├── web/                     # Next.js 16 app
-│   └── backend/                 # Spring Boot 4 + Modulith
+│   └── backend-quarkus/         # Quarkus 3 (Hibernate Reactive, Panache)
 ├── packages/
 │   ├── ui/                      # Shared shadcn/ui components
 │   ├── api-client/              # Typed API client
@@ -225,7 +218,7 @@ samofujera/
 
 ## Skills Reference (`.claude/skills/`)
 
-**Backend:** `spring-module`, `flyway-migration`, `jooq-regen`, `jooq-repository`, `api-endpoint`, `stripe-webhook`
+**Backend:** `flyway-migration`, `api-endpoint`, `stripe-webhook`
 
 **Frontend:** `nextjs-page`, `tanstack-query-hook`, `react-component`, `shadcn-component`, `email-template`, `lingui-extract`
 

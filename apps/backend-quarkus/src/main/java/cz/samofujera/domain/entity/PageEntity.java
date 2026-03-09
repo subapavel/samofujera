@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "pages", schema = "quarkus_poc")
+@Table(name = "pages")
 public class PageEntity extends PanacheEntityBase {
 
     @Id

@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 @Entity
-@Table(name = "sessions", schema = "quarkus_poc")
+@Table(name = "sessions")
 public class SessionEntity extends PanacheEntityBase {
 
     @Id

@@ -17,7 +17,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "membership_plans", schema = "quarkus_poc")
+@Table(name = "membership_plans")
 public class MembershipPlanEntity extends PanacheEntityBase {
 
     @Id

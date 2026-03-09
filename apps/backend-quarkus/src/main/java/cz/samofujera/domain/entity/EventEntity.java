@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "events", schema = "quarkus_poc")
+@Table(name = "events")
 public class EventEntity extends PanacheEntityBase {
 
     @Id

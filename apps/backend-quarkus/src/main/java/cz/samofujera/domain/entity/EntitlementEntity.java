@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "entitlements", schema = "quarkus_poc")
+@Table(name = "entitlements")
 public class EntitlementEntity extends PanacheEntityBase {
 
     @Id

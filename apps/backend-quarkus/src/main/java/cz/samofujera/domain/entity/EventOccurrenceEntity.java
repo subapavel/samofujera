@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "event_occurrences", schema = "quarkus_poc")
+@Table(name = "event_occurrences")
 public class EventOccurrenceEntity extends PanacheEntityBase {
 
     @Id
